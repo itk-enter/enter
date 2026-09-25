@@ -85,10 +85,12 @@ class ToiletOtherTest extends TestCase
     public function testItDoesNotPublishTheEmployeeUsernames(): void
     {
         // oprettet_af and rettet_af are personal data; the feed carries them
-        // on every record and nothing published may restate them.
+        // on every record and nothing published may restate them. The
+        // usernames here are placeholders: the real ones do not belong in a
+        // committed test.
         $payload = json_encode($this->entities, \JSON_THROW_ON_ERROR);
 
-        $this->assertStringNotContainsString('az25000', $payload);
+        $this->assertStringNotContainsString('az00000', $payload);
         $this->assertStringNotContainsString('spatial_reader', $payload);
     }
 
@@ -125,7 +127,7 @@ class ToiletOtherTest extends TestCase
                     'beskrivelse' => 'Handicaptoilet',
                     'adresse' => 'Ørneredevej 55',
                     'saeson' => 'Hele året',
-                    'oprettet_af' => 'az25000',
+                    'oprettet_af' => 'az00000',
                     'oprettet_dato' => '2018-10-01 13:11:49.08',
                     'rettet_af' => 'spatial_reader',
                     'rettet_dato' => '2022-06-02 09:12:08.087',
@@ -142,7 +144,7 @@ class ToiletOtherTest extends TestCase
                     'beskrivelse' => 'Primitivt skovtoilet',
                     'adresse' => 'Ørnevænget',
                     'saeson' => 'Vinterlukket',
-                    'oprettet_af' => 'az25000',
+                    'oprettet_af' => 'az00000',
                     'oprettet_dato' => '2018-10-01 13:11:49.08',
                     'rettet_af' => 'spatial_reader',
                     // No rettet_dato — the record has never been edited.
