@@ -28,11 +28,11 @@ final readonly class BrokerReader
     /**
      * Everything the broker holds for a query, in one request.
      *
-     * @param string $path
-     * @param array<string, mixed> $query
+     * @param array<string, mixed>  $query
      * @param array<string, string> $headers
      *
      * @return array<string, mixed>
+     *
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
