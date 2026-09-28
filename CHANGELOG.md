@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-40](https://github.com/itk-dev/enter/pull/40)
   Served each test source's entities from the broker as GeoJSON, for the developer map
+* [PR-50](https://github.com/itk-dev/enter/pull/50)
+  Consolidated the seven draft ADRs into three finalized ones, and added
+  a adr file for future planned ADRs.
 * [PR-51](https://github.com/itk-enter/enter/pull/51)
   Removed ADR 008 on vocabulary fallback outside Smart Data Models
 * [PR-46](https://github.com/itk-dev/enter/pull/46)
