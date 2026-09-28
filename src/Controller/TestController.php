@@ -81,7 +81,7 @@ final class TestController extends AbstractController
     }
 
     /**
-     * What one test source published, as the broker holds it.
+     * What a given test source currently holds in the broker, as plain GeoJSON.
      */
     #[Route(
         path: '/map/{sourceId}.{_format}',

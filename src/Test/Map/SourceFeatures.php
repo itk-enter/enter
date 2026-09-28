@@ -40,12 +40,6 @@ final readonly class SourceFeatures
      * Fetches the source's entities from the broker and converts them to a
      * GeoJSON FeatureCollection.
      *
-     * The request uses the short model name from the source definition and
-     * sends the definition's context URL along. That is the context the
-     * source published under, so the broker understands the short names and
-     * answers with short names too. Nothing has to be expanded or shortened
-     * on our side.
-     *
      * @return array{type: string, features: list<array<string, mixed>>}
      *
      * @throws ClientExceptionInterface
@@ -98,10 +92,7 @@ final readonly class SourceFeatures
      * Turns an entity's NGSI-LD attributes into plain GeoJSON properties.
      *
      * Each attribute arrives as {"type": "Property", "value": ...} and only
-     * the value is kept. The entity id is added as a property so the map can
-     * show it. The entity type and the location attribute are left out: the
-     * type is the model that was asked for, and the location is already the
-     * feature's geometry.
+     * the value is kept.
      *
      * @param array<string, mixed> $feature
      *
