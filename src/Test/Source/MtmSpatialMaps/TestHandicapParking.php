@@ -34,7 +34,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         'rettet_dato' => 'Describes the register record.',
         'mi_style' => 'MapInfo rendering style, empty throughout the export.',
     ],
-    sourceId: 'mtm_spatialmaps-handicap-parking',
+    dataUrlBase: 'https://webkort.aarhuskommune.dk/spatialmap?page=get_geojson_opendata&datasource=invap',
 )]
 final class TestHandicapParking extends AbstractSource
 {

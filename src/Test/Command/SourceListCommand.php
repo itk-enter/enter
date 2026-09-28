@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 #[AsCommand(
     name: 'test:source:list',
+    description: 'List all test sources',
 )]
 #[When('dev')]
 class SourceListCommand

@@ -34,11 +34,11 @@ The data files can be updated by running
 docker compose exec phpfpm php bin/console test:source:fetch-content
 ```
 
-As shown above, test sources can be imported just like real sources, but for convenience the `test:sources:import`
+As shown above, test sources can be imported just like real sources, but for convenience the `test:source:import-all`
 command can be used to import *all test sources*:
 
 ```shell
-docker compose exec phpfpm php bin/console test:sources:import
+docker compose exec phpfpm php bin/console test:source:import-all
 ```
 
 To empty your local broker, e.g. before loading test data, run

@@ -1,18 +1,10 @@
 # Enter
 
-We use [ITK-dev docker setup] or [DDEV](https://ddev.com/) and [Task](https://taskfile.dev/) for development:
+We use [ITK-dev docker setup] and [Task](https://taskfile.dev/) for development:
 
 ``` shell
 task site:install
 ```
-
-Set
-
-``` dotenv
-TASK_USE_DDEV=true
-```
-
-in `.env.local` to make `task` use `ddev` rather than `docker compose` for running commands.
 
 ``` shell
 task site:update
