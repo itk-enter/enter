@@ -6,6 +6,11 @@ namespace App\Broker;
 
 use App\Broker\Exception\IncompleteResultException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -23,14 +28,16 @@ final readonly class BrokerReader
     /**
      * Everything the broker holds for a query, in one request.
      *
-     * The broker answers a page at a time and says nothing in the payload
-     * about what it left out, so it is asked to count and the answer is held
-     * against the count.
-     *
-     * @param array<string, mixed>  $query
+     * @param string $path
+     * @param array<string, mixed> $query
      * @param array<string, string> $headers
      *
      * @return array<string, mixed>
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function readAll(string $path, array $query, array $headers): array
     {
@@ -41,6 +48,7 @@ final readonly class BrokerReader
 
         $data = $response->toArray();
         $total = (int) ($response->getHeaders()['ngsild-results-count'][0] ?? 0);
+
         // Entities come back as a bare list, GeoJSON as a FeatureCollection
         // wrapping one.
         $received = \count($data['features'] ?? $data);

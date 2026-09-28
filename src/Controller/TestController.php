@@ -38,12 +38,12 @@ final class TestController extends AbstractController
 
     #[Route(
         path: '/data/{path}.{_format}',
-        methods: [Request::METHOD_GET],
         requirements: [
             'path' => Requirement::CATCH_ALL,
             '_format' => 'json|geojson',
         ],
         defaults: ['_format' => self::FORMAT_JSON],
+        methods: [Request::METHOD_GET],
         priority: -98,
     )]
     public function data(Request $request, string $path, string $_format): Response
@@ -86,9 +86,9 @@ final class TestController extends AbstractController
     #[Route(
         path: '/map/{sourceId}.{_format}',
         name: 'map',
-        methods: [Request::METHOD_GET],
         requirements: ['sourceId' => '[^/.]+', '_format' => self::FORMAT_GEOJSON],
         defaults: ['_format' => self::FORMAT_GEOJSON],
+        methods: [Request::METHOD_GET],
     )]
     public function map(
         string $sourceId,

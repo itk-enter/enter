@@ -6,6 +6,11 @@ namespace App\Test\Map;
 
 use App\Broker\BrokerReader;
 use App\Source\SourceInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * The entities of one source, as plain GeoJSON.
@@ -31,9 +36,15 @@ final readonly class SourceFeatures
      * it expanded against a default vocabulary and can no longer be queried
      * on. The whole model is read and the source's own picked out here.
      *
+     * @param SourceInterface $source
      * @param string $type the expanded entity type
      *
      * @return array{type: string, features: list<array<string, mixed>>}
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function forSource(SourceInterface $source, string $type): array
     {
