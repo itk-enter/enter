@@ -42,8 +42,8 @@ class TestControllerTest extends WebTestCase
     }
 
     /**
-     * The page carries no data of its own: it points the script at the list,
-     * and everything else is fetched from there.
+     * The page carries no data of its own: it points the data sets controller
+     * at the list, and everything else is fetched from there.
      */
     public function testItServesTheMapPageWithTheListToFetch(): void
     {
@@ -51,8 +51,12 @@ class TestControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/test');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSame('/test/datasets', $crawler->filter('form.test-map-datasets')->attr('data-datasets-url'));
-        $this->assertCount(1, $crawler->filter('.test-map'));
+
+        $wrapper = $crawler->filter('[data-controller~="test-datasets"]');
+
+        $this->assertSame('/test/datasets', $wrapper->attr('data-test-datasets-url-value'));
+        $this->assertStringContainsString('test-map', (string) $wrapper->attr('data-controller'));
+        $this->assertCount(1, $crawler->filter('[data-test-map-target="canvas"]'));
     }
 
     public function testItServesNoDataSetForASourceThatIsNotATestSource(): void
