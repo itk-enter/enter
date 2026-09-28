@@ -2,7 +2,7 @@
 
 | Field              | Value                                                  |
 |--------------------|--------------------------------------------------------|
-| **Created By**     | Mikkel Ricky                                           |
+| **Created By**     | Martin Yde                                             |
 | **Date**           | 2026-09-23                                             |
 | **Decision Maker** | ITK Dev team                                           |
 | **Stakeholders**   | ITK Dev developers, data consumers, future maintainers |
