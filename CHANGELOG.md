@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-51](https://github.com/itk-enter/enter/pull/51)
+  Removed ADR 008 on vocabulary fallback outside Smart Data Models
 * [PR-46](https://github.com/itk-dev/enter/pull/46)
   Added mtm_spatialmaps-toilet-city source
 * [PR-45](https://github.com/itk-dev/enter/pull/45)
