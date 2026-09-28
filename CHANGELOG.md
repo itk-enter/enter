@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-40](https://github.com/itk-dev/enter/pull/40)
-  Served each test source's entities from the broker as GeoJSON, for the developer map
+* [PR-40](https://github.com/itk-enter/enter/pull/40)
+  Stamped every entity with the id of its source, and published the list of sources on `/sources` and `/sources.json`
 * [PR-50](https://github.com/itk-dev/enter/pull/50)
   Consolidated the seven draft ADRs into three finalized ones, and added
   a adr file for future planned ADRs.
