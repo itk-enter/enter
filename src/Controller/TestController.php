@@ -104,6 +104,31 @@ final class TestController extends AbstractController
     }
 
     /**
+     * The data sets the map may draw, and where to fetch each.
+     */
+    #[Route(
+        path: '/datasets.{_format}',
+        name: 'datasets',
+        requirements: ['_format' => self::FORMAT_JSON],
+        defaults: ['_format' => self::FORMAT_JSON],
+        methods: [Request::METHOD_GET],
+    )]
+    public function datasets(SourceManager $manager): JsonResponse
+    {
+        $datasets = [];
+        foreach ($this->testSources($manager) as $id => $source) {
+            $datasets[] = [
+                'id' => $id,
+                'title' => $source->definition->title,
+                'model' => $source->definition->model,
+                'url' => $this->generateUrl('test_map', ['sourceId' => $id]),
+            ];
+        }
+
+        return new JsonResponse($datasets);
+    }
+
+    /**
      * @return array<string, SourceInterface>
      */
     private function testSources(SourceManager $manager): array
