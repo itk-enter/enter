@@ -92,15 +92,13 @@ final class TestController extends AbstractController
     )]
     public function map(
         string $sourceId,
-        #[MapQueryParameter('type')]
-        string $type,
         SourceManager $manager,
         SourceFeatures $features,
     ): JsonResponse {
         $source = $this->testSources($manager)[$sourceId]
             ?? throw new NotFoundHttpException(sprintf('No test source "%s".', $sourceId));
 
-        return new JsonResponse($features->forSource($source, $type), headers: [
+        return new JsonResponse($features->forSource($source), headers: [
             'content-type' => self::APPLICATION_GEOJSON,
         ]);
     }
