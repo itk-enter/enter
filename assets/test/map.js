@@ -1,14 +1,14 @@
 /*
  * The test map: the test sources' data sets, drawn by MapLibre in one colour
- * per data set. Nothing is drawn until a data set is switched on.
+ * per data set.
  */
 
-/* Dokk1, from far enough out to take in the town. */
+/* Center at DOKK1, zoomed out a bunch. */
 const CENTER = [10.2144, 56.1535];
 const ZOOM = 11;
 
 /*
- * One colour per data set, in the order the sources come: saturated and far
+ * One color per data set, in the order the sources come: saturated and far
  * apart in hue, so they stand out from the pale base map and from each other.
  */
 const COLOURS = [
@@ -20,6 +20,9 @@ const COLOURS = [
     "#00acc1",
 ];
 
+/*
+ * Init MapLibre
+ */
 function createMap(container) {
     return new window.maplibregl.Map({
         container,
@@ -45,8 +48,8 @@ function createMap(container) {
 }
 
 /*
- * A data set is fetched the first time it is switched on; after that its
- * layers are only shown or hidden.
+ * Fired when a dataset is toggled via the UI. After a dataset is loaded
+ * it will be hidden or shown upon toggling.
  */
 function showDataset(map, dataset, visible) {
     const id = `dataset-${dataset.index}`;
@@ -91,6 +94,9 @@ function showDataset(map, dataset, visible) {
     map.setLayoutProperty(`${id}-points`, "visibility", visibility);
 }
 
+/*
+ * Groups the datasets by model, keeping the order they came in.
+ */
 function groupByModel(datasets) {
     const groups = new Map();
 
@@ -104,6 +110,10 @@ function groupByModel(datasets) {
     return groups;
 }
 
+/*
+ * Builds a Bootstrap checkbox row. The attributes end up as data-* on the
+ * input, which is how the change handler tells a model from a dataset.
+ */
 function checkbox(id, label, attributes) {
     const wrapper = document.createElement("div");
     wrapper.className = "form-check";
@@ -163,6 +173,11 @@ function reflectGroup(fieldset) {
     head.indeterminate = on > 0 && on < inputs.length;
 }
 
+/*
+ * Handles toggling. A model checkbox switches every dataset in its group,
+ * a dataset checkbox just that one. Either way the group's checkbox is
+ * updated afterwards.
+ */
 function wireToggles(form, map, datasets) {
     form.addEventListener("change", (event) => {
         const input = event.target;
@@ -187,6 +202,9 @@ function wireToggles(form, map, datasets) {
     });
 }
 
+/*
+ * Fetch available datasets from the datasets endpoint.
+ */
 async function fetchDatasets(url) {
     const response = await fetch(url, {
         headers: { accept: "application/json" },
