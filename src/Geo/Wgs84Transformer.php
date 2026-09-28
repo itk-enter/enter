@@ -11,7 +11,14 @@ use proj4php\Proj4php;
 /**
  * Reprojects coordinates from any registered CRS to WGS84.
  *
- * @see docs/adr/004-coordinate-reference-system.md
+ * GeoJSON fixes its coordinates as WGS84 and NGSI-LD inherits that, so every
+ * geometry passes through here on its way to an entity and nowhere else.
+ *
+ * The ETRS89 grids are transformed with a null datum shift, so what is
+ * published is ETRS89 labelled WGS84. The two coincided in 1989 and separate by
+ * some 2.5 cm a year — ordinary practice in web GIS, and the largest error
+ * introduced here. Nothing is rounded on the way: the round trip is exact only
+ * at full precision.
  */
 final class Wgs84Transformer
 {
