@@ -15,8 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
-    name: 'test:sources:fetch-content',
-    description: 'Fetch test source content',
+    name: 'test:source:fetch-content',
+    description: 'Fetch content for all test sources',
 )]
 #[When('dev')]
 class SourceFetchContentCommand
@@ -37,10 +37,13 @@ class SourceFetchContentCommand
 
             try {
                 $io->section($source);
-                $sourceDefinition = $manager->getSource($definition->sourceId)->definition;
-                $url = $sourceDefinition->accessUrlBase();
-                $query = $sourceDefinition->accessUrlQuery();
+                $url = $definition->dataUrlBase;
+                $query = $definition->dataUrlQuery;
+                // Extract content filename from source data URL (the path must start with `/test`).
                 $filename = preg_replace('@^[a-z]+://[^/]+/test/@', '', $definition->accessUrl);
+                if ($filename === $definition->accessUrl) {
+                    throw new \RuntimeException(sprintf('Invalid test source URL: %s. Its path must start with "/test/".', $definition->accessUrl));
+                }
                 $filename = __DIR__.'/../../../tests/resources/'.$filename;
 
                 if ($filesystem->exists($filename)) {

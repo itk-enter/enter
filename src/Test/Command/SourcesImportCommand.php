@@ -13,7 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 #[AsCommand(
-    name: 'test:sources:import',
+    name: 'test:source:import-all',
     description: 'Import all test sources',
 )]
 #[When('dev')]

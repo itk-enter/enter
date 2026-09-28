@@ -45,7 +45,18 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         'operator' => 'Who runs the facility; a fact about the business rather than its reserved bays. 1% of records carry it.',
         'brand' => 'Commercial brand of the facility; the name already identifies it. Under 1% of records carry it.',
     ],
-    sourceId: 'osm-handicap-parking',
+    dataUrlBase: 'https://overpass-api.de/api/interpreter',
+    dataUrlQuery: [
+        'data' => <<<'DATA'
+[out:json][timeout:180];
+area(3601784663)->.a;
+(
+ nwr["parking_space"="disabled"](area.a);
+ nwr["capacity:disabled"]["capacity:disabled"!~"^(no|0)$"](area.a);
+);
+out geom tags;
+DATA,
+    ]
 )]
 final class TestHandicapParking extends AbstractSource
 {
