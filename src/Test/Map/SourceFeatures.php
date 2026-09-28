@@ -14,16 +14,20 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
- * The entities of one source, as plain GeoJSON.
+ * Reads what one source has in the broker and turns it into plain GeoJSON.
+ *
+ * The broker answers in NGSI-LD, where every attribute is wrapped in a
+ * Property object. The map wants one feature per entity with bare values
+ * under readable names, and that is what this produces.
  */
 final readonly class SourceFeatures
 {
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
-     * The attribute every source stamps its access URL onto, and so what
-     * tells its entities from those of another source publishing the same
-     * model.
+     * All sources publish into the same model, so the broker cannot tell
+     * their entities apart by type. Every source therefore stamps its access
+     * URL onto this attribute when it publishes, and the query filters on it.
      */
     private const string SOURCE_ATTRIBUTE = 'source';
 
@@ -33,9 +37,14 @@ final readonly class SourceFeatures
     }
 
     /**
-     * The model and the stamp are asked for as the source declared them. Sent
-     * along with the source's own context, the broker expands both exactly as
-     * it did on publication, and compacts its answer back to the same terms.
+     * Fetches the source's entities from the broker and converts them to a
+     * GeoJSON FeatureCollection.
+     *
+     * The request uses the short model name from the source definition and
+     * sends the definition's context URL along. That is the context the
+     * source published under, so the broker understands the short names and
+     * answers with short names too. Nothing has to be expanded or shortened
+     * on our side.
      *
      * @return array{type: string, features: list<array<string, mixed>>}
      *
@@ -74,8 +83,8 @@ final readonly class SourceFeatures
     }
 
     /**
-     * The context a request is read under, in the form NGSI-LD takes it: a
-     * JSON-LD context link.
+     * The Link header that tells the broker which JSON-LD context to read
+     * the request under.
      */
     private function contextLink(Definition $definition): string
     {
@@ -86,8 +95,13 @@ final readonly class SourceFeatures
     }
 
     /**
-     * The attributes free of the Property wrapper, with the entity's own id
-     * among them.
+     * Turns an entity's NGSI-LD attributes into plain GeoJSON properties.
+     *
+     * Each attribute arrives as {"type": "Property", "value": ...} and only
+     * the value is kept. The entity id is added as a property so the map can
+     * show it. The entity type and the location attribute are left out: the
+     * type is the model that was asked for, and the location is already the
+     * feature's geometry.
      *
      * @param array<string, mixed> $feature
      *
@@ -98,8 +112,6 @@ final readonly class SourceFeatures
         $properties = ['id' => $feature['id'] ?? null];
 
         foreach ($feature['properties'] ?? [] as $name => $value) {
-            // The entity type repeats what was asked for, and the geometry is
-            // carried by the feature itself.
             if ('type' === $name || 'location' === $name) {
                 continue;
             }
