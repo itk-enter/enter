@@ -7,8 +7,18 @@
 const CENTER = [10.2144, 56.1535];
 const ZOOM = 11;
 
-/* One colour per data set, in the order the sources come. */
-const COLOURS = ["#e6194b", "#3e7bfa", "#2ca02c", "#ff7f0e", "#9467bd"];
+/*
+ * One colour per data set, in the order the sources come: saturated and far
+ * apart in hue, so they stand out from the pale base map and from each other.
+ */
+const COLOURS = [
+    "#d50000",
+    "#2962ff",
+    "#00a000",
+    "#ff6d00",
+    "#7b1fa2",
+    "#00acc1",
+];
 
 function createMap(container) {
     return new window.maplibregl.Map({
@@ -52,7 +62,11 @@ function showDataset(map, dataset, visible) {
             id: `${id}-areas`,
             type: "fill",
             source: id,
-            paint: { "fill-color": dataset.colour, "fill-opacity": 0.35 },
+            paint: {
+                "fill-color": dataset.colour,
+                "fill-opacity": 0.35,
+                "fill-outline-color": dataset.colour,
+            },
         });
 
         /* Left to itself a circle layer dots every corner of an area. */
@@ -61,7 +75,12 @@ function showDataset(map, dataset, visible) {
             type: "circle",
             source: id,
             filter: ["==", ["geometry-type"], "Point"],
-            paint: { "circle-color": dataset.colour, "circle-radius": 4 },
+            paint: {
+                "circle-color": dataset.colour,
+                "circle-radius": 5,
+                "circle-stroke-color": "#212121",
+                "circle-stroke-width": 1.5,
+            },
         });
 
         return;
