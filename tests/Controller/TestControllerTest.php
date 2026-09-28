@@ -41,6 +41,20 @@ class TestControllerTest extends WebTestCase
         }
     }
 
+    /**
+     * The page carries no data of its own: it points the script at the list,
+     * and everything else is fetched from there.
+     */
+    public function testItServesTheMapPageWithTheListToFetch(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/test');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame('/test/datasets', $crawler->filter('form.test-map-datasets')->attr('data-datasets-url'));
+        $this->assertCount(1, $crawler->filter('.test-map'));
+    }
+
     public function testItServesNoDataSetForASourceThatIsNotATestSource(): void
     {
         $client = static::createClient();

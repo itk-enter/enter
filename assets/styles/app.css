@@ -1,3 +1,40 @@
+.test-map-wrapper {
+    position: relative;
+}
+
 .test-map {
     height: 80vh;
+}
+
+.test-map-panel {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1;
+    max-height: calc(100% - 1rem);
+    overflow: auto;
+}
+
+.test-map-datasets {
+    margin-top: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.test-map-datasets:empty {
+    display: none;
+}
+
+.test-map-group .form-check + .form-check {
+    margin-top: 0.125rem;
+}
+
+.test-map-swatch {
+    display: inline-block;
+    width: 0.75em;
+    height: 0.75em;
+    margin-right: 0.35em;
+    border-radius: 50%;
+    vertical-align: baseline;
 }

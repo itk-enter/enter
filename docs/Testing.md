@@ -37,6 +37,9 @@ Each feature carries the entity's attributes as plain values under the names the
 source id) and `id` (the entity id). The model and the source stamp are sent to the broker under the source's own
 context, so a new test source needs nothing beyond its `#[TestDefinition]` to be served.
 
+The map page at `/test` lists the data sets as toggles grouped by model, all off to begin with, and fetches a data set
+the first time it is switched on. The checkbox on a group switches every data set of that model at once.
+
 ### Refreshing test source data
 
 The data for test sources are stored as plain files in the [../tests/resources/data](../tests/resources/data) folder.

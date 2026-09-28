@@ -15,7 +15,17 @@
 {% block importmap %}{{ importmap(['app', 'test/map']) }}{% endblock %}
 
 {% block content %}
-    <h2>{{ type }}</h2>
+    <div class="test-map-wrapper">
+        <div class="test-map"></div>
 
-    <div class="test-map" data-urls="{{ urls|json_encode }}"></div>
+        <div class="test-map-panel">
+            <button class="btn btn-light btn-sm shadow-sm" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
+                    aria-expanded="true" aria-controls="test-map-datasets">
+                Datasæt
+            </button>
+            <form id="test-map-datasets" class="test-map-datasets collapse show shadow-sm"
+                  data-datasets-url="{{ path('test_datasets') }}" aria-label="Datasæt"></form>
+        </div>
+    </div>
 {% endblock %}

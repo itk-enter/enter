@@ -28,26 +28,13 @@ final class TestController extends AbstractController
     private const string APPLICATION_JSON = 'application/json';
 
     /**
-     * The one model the map draws.
-     */
-    private const string TYPE_ON_STREET_PARKING = 'https://smartdatamodels.org/dataModel.Parking/OnStreetParking';
-
-    /**
-     * The developer map: what the test sources published, as the broker
-     * holds it.
+     * The developer map. The page fetches the data sets and draws each as
+     * it is switched on.
      */
     #[Route('', name: 'default', methods: [Request::METHOD_GET])]
-    public function index(SourceManager $manager): Response
+    public function index(): Response
     {
-        $urls = [];
-        foreach (array_keys($this->testSources($manager)) as $id) {
-            $urls[] = $this->generateUrl('test_map', ['sourceId' => $id, 'type' => self::TYPE_ON_STREET_PARKING]);
-        }
-
-        return $this->render('test/index.html.twig', [
-            'type' => self::TYPE_ON_STREET_PARKING,
-            'urls' => $urls,
-        ]);
+        return $this->render('test/index.html.twig');
     }
 
     #[Route(
