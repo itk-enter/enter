@@ -24,6 +24,19 @@ docker compose exec phpfpm curl 'http://scorpio:9090/ngsi-ld/v1/entities?type=ht
 
 See the result on <https://enter.local.itkdev.dk/test>.
 
+### The developer map's data
+
+The test controller reads what the test sources published back out of the broker, as plain GeoJSON:
+
+| Path                           | Returns                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| `/test/datasets.json`          | The test sources as data sets, each with `id`, `title`, `model` and `url` |
+| `/test/map/{sourceId}.geojson` | One data set as a `FeatureCollection`, one feature per entity             |
+
+Each feature carries the entity's attributes as plain values under the names the source declared, plus `dataset` (the
+source id) and `id` (the entity id). The model and the source stamp are sent to the broker under the source's own
+context, so a new test source needs nothing beyond its `#[TestDefinition]` to be served.
+
 ### Refreshing test source data
 
 The data for test sources are stored as plain files in the [../tests/resources/data](../tests/resources/data) folder.
