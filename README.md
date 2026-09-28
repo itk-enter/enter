@@ -74,6 +74,8 @@ php bin/console app:source:list
 
 list all data sources.
 
+The sources are also published on `/sources` as a page and on `/sources.json` for programs.
+
 Design decisions are recorded in [docs/adr](docs/adr/README.md).
 
 [NGSI-LD]: https://www.etsi.org/committee/cim

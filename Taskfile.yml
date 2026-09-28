@@ -35,6 +35,7 @@ tasks:
     desc: Run all tests
     cmds:
       # - task: test:unit
+      - task: test:controller
       - task: test:geo
       - task: test:source
       - task: test:sourceImporter
@@ -49,6 +50,7 @@ tasks:
       vars:
         TASK_ARGS: bin/phpunit tests/{{.TASK | replace "test:" "" | title }}
 
+  test:controller: *test_task
   test:geo: *test_task
   test:source: *test_task
   test:sourceImporter: *test_task
