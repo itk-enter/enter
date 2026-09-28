@@ -5,20 +5,31 @@ declare(strict_types=1);
 namespace App\Test\Map;
 
 use App\Broker\BrokerReader;
+use App\Source\Definition;
 use App\Source\SourceInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
- * The entities of one source, as plain GeoJSON.
+ * Reads what one source has in the broker and turns it into plain GeoJSON.
+ *
+ * The broker answers in NGSI-LD, where every attribute is wrapped in a
+ * Property object. The map wants one feature per entity with bare values
+ * under readable names, and that is what this produces.
  */
 final readonly class SourceFeatures
 {
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
-     * The attribute every source stamps its access URL onto, and so the only
-     * thing in the payload that says which data set an entity came from.
+     * All sources publish into the same model, so the broker cannot tell
+     * their entities apart by type. Every source therefore stamps its access
+     * URL onto this attribute when it publishes, and the query filters on it.
      */
-    private const string SOURCE_ATTRIBUTE = 'https://smartdatamodels.org/source';
+    private const string SOURCE_ATTRIBUTE = 'source';
 
     public function __construct(
         private BrokerReader $reader,
@@ -26,35 +37,39 @@ final readonly class SourceFeatures
     }
 
     /**
-     * Every source publishes into the same model, so the broker cannot be
-     * asked for one data set at a time: what separates them is an attribute
-     * it expanded against a default vocabulary and can no longer be queried
-     * on. The whole model is read and the source's own picked out here.
-     *
-     * @param string $type the expanded entity type
+     * Fetches the source's entities from the broker and converts them to a
+     * GeoJSON FeatureCollection.
      *
      * @return array{type: string, features: list<array<string, mixed>>}
+     *
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
-    public function forSource(SourceInterface $source, string $type): array
+    public function forSource(SourceInterface $source): array
     {
+        $definition = $source->definition;
+
         $collection = $this->reader->readAll(
             self::ENTITIES_PATH,
-            ['type' => $type],
-            ['accept' => 'application/geo+json'],
+            [
+                'type' => $definition->model,
+                'q' => \sprintf('%s=="%s"', self::SOURCE_ATTRIBUTE, $definition->accessUrlBase()),
+            ],
+            [
+                'accept' => 'application/geo+json',
+                'link' => $this->contextLink($definition),
+            ],
         );
-
-        $own = $source->definition->accessUrlBase();
 
         $features = [];
         foreach ($collection['features'] ?? [] as $feature) {
-            if ($own !== $this->sourceOf($feature)) {
-                continue;
-            }
-
             $features[] = [
                 'type' => 'Feature',
                 'geometry' => $feature['geometry'] ?? null,
-                'properties' => ['dataset' => $source->definition->id] + $this->flatten($feature),
+                'properties' => ['dataset' => $definition->id] + $this->flatten($feature),
             ];
         }
 
@@ -62,18 +77,22 @@ final readonly class SourceFeatures
     }
 
     /**
-     * @param array<string, mixed> $feature
+     * The Link header that tells the broker which JSON-LD context to read
+     * the request under.
      */
-    private function sourceOf(array $feature): ?string
+    private function contextLink(Definition $definition): string
     {
-        $source = $feature['properties'][self::SOURCE_ATTRIBUTE] ?? null;
-
-        return \is_array($source) ? ($source['value'] ?? null) : $source;
+        return \sprintf(
+            '<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"',
+            $definition->contextUrl,
+        );
     }
 
     /**
-     * The attributes under their short names, free of the Property wrapper,
-     * with the entity's own id among them.
+     * Turns an entity's NGSI-LD attributes into plain GeoJSON properties.
+     *
+     * Each attribute arrives as {"type": "Property", "value": ...} and only
+     * the value is kept.
      *
      * @param array<string, mixed> $feature
      *
@@ -84,28 +103,15 @@ final readonly class SourceFeatures
         $properties = ['id' => $feature['id'] ?? null];
 
         foreach ($feature['properties'] ?? [] as $name => $value) {
-            // The entity type repeats what was asked for, and the geometry is
-            // carried by the feature itself.
             if ('type' === $name || 'location' === $name) {
                 continue;
             }
 
-            $properties[$this->shortName($name)] = \is_array($value) && isset($value['value'])
+            $properties[$name] = \is_array($value) && isset($value['value'])
                 ? $value['value']
                 : $value;
         }
 
         return $properties;
-    }
-
-    /**
-     * The last segment of an expanded attribute name, which is the term the
-     * source declared before the broker expanded it.
-     */
-    private function shortName(string $name): string
-    {
-        $position = strrpos($name, '/');
-
-        return false === $position ? $name : substr($name, $position + 1);
     }
 }

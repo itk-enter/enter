@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-40](https://github.com/itk-dev/enter/pull/40)
+  Served each test source's entities from the broker as GeoJSON, for the developer map
+* [PR-51](https://github.com/itk-enter/enter/pull/51)
+  Removed ADR 008 on vocabulary fallback outside Smart Data Models
+* [PR-46](https://github.com/itk-dev/enter/pull/46)
+  Added mtm_spatialmaps-toilet-city source
+* [PR-45](https://github.com/itk-dev/enter/pull/45)
+  Update public toilet source with mtm_spatialmaps-toilet-other
+* [PR-43](https://github.com/itk-enter/enter/pull/43)
+  Added a findToilet source importer
+* [PR-42](https://github.com/itk-enter/enter/pull/42)
+  Added ADR for decisions on vocabs outside smart data models
+* [PR-35](https://github.com/itk-dev/enter/pull/35)
+  Removed DDEV setup
+* [PR-31](https://github.com/itk-dev/enter/pull/31)
+  Made test sources independent from real sources
 * [PR-28](https://github.com/itk-dev/enter/pull/28)
   Aligned the test setup with the new importer approach
 * [PR-24](https://github.com/itk-dev/enter/pull/24)

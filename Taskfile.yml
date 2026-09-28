@@ -8,36 +8,22 @@ tasks:
     desc: Install site from scratch
     prompt: Really (re)install site?
     cmds:
-      - if: '[ "$TASK_USE_DDEV" = "true" ]'
-        cmd: |
-          ddev delete --omit-snapshot --yes
-          rm -fr .ddev/data/scorpio-db/
+      - docker compose down --volumes --remove-orphans
       - task: site:update
 
   site:update:
     desc: Update site
     cmds:
-      - if: '[ "$TASK_USE_DDEV" != "true" ]'
-        task: compose
-        vars:
-          TASK_ARGS: pull
-      - if: '[ "$TASK_USE_DDEV" = "true" ]'
-        cmd: ddev restart
+      - docker compose pull
+      - docker compose up --detach --wait
       - task: composer:install
-      # - task: console
-      #   vars:
-      #       TASK_ARGS: doctrine:migrations:migrate --no-interaction
       - task: console
         vars:
           TASK_ARGS: cache:clear
 
   site:open:
     desc: Open the site in a browser
-    cmds:
-      - if: '[ "$TASK_USE_DDEV" != "true" ]'
-        cmd: open 'http://enter.local.itkdev.dk/'
-      - if: '[ "$TASK_USE_DDEV" = "true" ]'
-        cmd: ddev launch
+    cmd: open 'http://enter.local.itkdev.dk/'
 
   test:start:
     desc: 'Start services needed to run test'
@@ -50,6 +36,7 @@ tasks:
     cmds:
       # - task: test:unit
       - task: test:broker
+      - task: test:controller
       - task: test:geo
       - task: test:source
       - task: test:test
@@ -65,6 +52,7 @@ tasks:
         TASK_ARGS: bin/phpunit tests/{{.TASK | replace "test:" "" | title }}
 
   test:broker: *test_task
+  test:controller: *test_task
   test:geo: *test_task
   test:source: *test_task
   test:test: *test_task
@@ -246,12 +234,9 @@ tasks:
   php:
     internal: true
     cmds:
-      - if: '[ "$TASK_USE_DDEV" != "true" ]'
-        task: compose
+      - task: compose
         vars:
           TASK_ARGS: exec phpfpm php {{.TASK_ARGS}}
-      - if: '[ "$TASK_USE_DDEV" = "true" ]'
-        cmd: ddev php {{.TASK_ARGS}}
 
   default:
     cmds:

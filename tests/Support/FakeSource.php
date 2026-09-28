@@ -40,7 +40,7 @@ final class FakeSource implements SourceInterface
             model: 'OnStreetParking',
             contextUrl: 'https://example.com/context.jsonld',
             omittedFields: [],
-            sourceId: $id ?? strtolower($title),
+            dataUrlBase: 'https://example.com/data',
         ));
     }
 

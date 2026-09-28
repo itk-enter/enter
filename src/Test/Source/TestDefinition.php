@@ -10,6 +10,9 @@ use App\Source\Definition;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 readonly class TestDefinition extends Definition
 {
+    /**
+     * @param array<string, mixed> $dataUrlQuery
+     */
     public function __construct(
         string $id,
         string $title,
@@ -20,7 +23,8 @@ readonly class TestDefinition extends Definition
         string $model,
         string $contextUrl,
         array $omittedFields,
-        public string $sourceId,
+        public string $dataUrlBase,
+        public array $dataUrlQuery = [],
     ) {
         parent::__construct(
             id: $id,
