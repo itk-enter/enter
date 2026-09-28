@@ -10,9 +10,6 @@ services:
         environment:
             - HTTP_EXPOSE=9090:9999
             - DBHOST=scorpio-db
-            # Ships as 1000, which is below the number of entities a single
-            # data set already publishes. Keep at or above APP_BROKER_MAX_RESULTS.
-            - SCORPIO_ENTITY_MAX_LIMIT=10000
         depends_on:
             - "scorpio-db"
         networks:
