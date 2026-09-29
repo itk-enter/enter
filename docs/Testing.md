@@ -27,8 +27,9 @@ See the result on <https://enter.local.itkdev.dk/test>.
 One source's entities can be read back on their own by the id they are stamped with; see
 [Reading a source's data](../README.md#reading-a-sources-data).
 
-The map page at `/test` lists the data sets as toggles grouped by model, all off to begin with, and fetches a data set
-the first time it is switched on. The checkbox on a group switches every data set of that model at once.
+The map page at `/test` lists every source as a toggle grouped by model, all off to begin with, and reads a source's
+entities from the broker the first time it is switched on. The checkbox on a group switches every source of that model
+at once.
 
 ### Refreshing test source data
 

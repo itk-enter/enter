@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * The data sets the map may draw: fetched from the list endpoint, given a
- * colour each, and offered as toggles grouped by model. Nothing here knows
+ * The data sets the map may draw: the sources, fetched from the list, given
+ * a colour each, and offered as toggles grouped by model. Nothing here knows
  * about the map; what is known and what is switched is dispatched as events
  * for the map controller on the same element.
  */
@@ -18,10 +18,12 @@ const COLOURS = [
     "#ff6d00",
     "#7b1fa2",
     "#00acc1",
+    "#c51162",
+    "#6d4c41",
 ];
 
 /*
- * Fetch available datasets from the datasets endpoint.
+ * Fetch the sources from the list. Each is a data set the map may draw.
  */
 async function loadDatasets(url) {
     const response = await fetch(url, {
