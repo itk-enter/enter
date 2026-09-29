@@ -7,45 +7,13 @@ namespace App\Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * The developer map's feed: which data sets there are, and where each is
- * fetched from.
+ * The developer map page carries no data of its own: it points its
+ * controllers at the sources list and the broker proxy, and everything
+ * drawn is fetched from there.
  */
 class TestControllerTest extends WebTestCase
 {
-    public function testItListsEveryTestSourceAsADataSet(): void
-    {
-        $datasets = $this->datasets();
-
-        $this->assertContains('test:osm-handicap-parking', array_column($datasets, 'id'));
-        $this->assertContains('test:mtm_spatialmaps-handicap-parking', array_column($datasets, 'id'));
-    }
-
-    public function testItListsTestSourcesOnly(): void
-    {
-        foreach (array_column($this->datasets(), 'id') as $id) {
-            $this->assertStringStartsWith('test:', $id);
-        }
-    }
-
-    /**
-     * The map asks nothing of a data set beyond what is listed here: a label
-     * to show, a model to group by, and a URL to fetch.
-     */
-    public function testItSaysWhatEachDataSetIsAndWhereToFetchIt(): void
-    {
-        foreach ($this->datasets() as $dataset) {
-            $this->assertSame(['id', 'title', 'model', 'url'], array_keys($dataset));
-            $this->assertNotSame('', $dataset['title']);
-            $this->assertNotSame('', $dataset['model']);
-            $this->assertStringStartsWith('/test/map/'.$dataset['id'], $dataset['url']);
-        }
-    }
-
-    /**
-     * The page carries no data of its own: it points the data sets controller
-     * at the list, and everything else is fetched from there.
-     */
-    public function testItServesTheMapPageWithTheListToFetch(): void
+    public function testItServesTheMapPageWithWhereToFetchFrom(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/test');
@@ -54,30 +22,9 @@ class TestControllerTest extends WebTestCase
 
         $wrapper = $crawler->filter('[data-controller~="test-datasets"]');
 
-        $this->assertSame('/test/datasets', $wrapper->attr('data-test-datasets-url-value'));
         $this->assertStringContainsString('test-map', (string) $wrapper->attr('data-controller'));
+        $this->assertSame('/sources.json', $wrapper->attr('data-test-datasets-url-value'));
+        $this->assertSame('/data/ngsi-ld/v1/entities.geojson', $wrapper->attr('data-test-map-entities-url-value'));
         $this->assertCount(1, $crawler->filter('[data-test-map-target="canvas"]'));
-    }
-
-    public function testItServesNoDataSetForASourceThatIsNotATestSource(): void
-    {
-        $client = static::createClient();
-        $client->request('GET', '/test/map/mtm_spatialmaps-handicap-parking');
-
-        $this->assertResponseStatusCodeSame(404);
-    }
-
-    /**
-     * @return list<array<string, string>>
-     */
-    private function datasets(): array
-    {
-        $client = static::createClient();
-        $client->request('GET', '/test/datasets.json');
-
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('content-type', 'application/json');
-
-        return json_decode((string) $client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
 }

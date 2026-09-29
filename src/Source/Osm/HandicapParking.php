@@ -96,7 +96,8 @@ final class HandicapParking extends AbstractSource
             ->setProperty('description', trim((string) ($tags['description'] ?? '')))
             ->setProperty('category', $this->category($tags))
             ->setProperty('totalSpotNumber', $this->reservedBays($tags))
-            ->setProperty('source', $this->definition->accessUrl)
+            // The model's source is a URL; the query sent with it is not part of it.
+            ->setProperty('source', $this->definition->accessUrlBase())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
 
             // Add custom attributes

@@ -40,11 +40,10 @@ tasks:
     desc: Run all tests
     cmds:
       # - task: test:unit
-      - task: test:broker
       - task: test:controller
       - task: test:geo
       - task: test:source
-      - task: test:test
+      - task: test:sourceImporter
 
   test:unit: &test_task
     env:
@@ -56,11 +55,10 @@ tasks:
       vars:
         TASK_ARGS: bin/phpunit tests/{{.TASK | replace "test:" "" | title }}
 
-  test:broker: *test_task
   test:controller: *test_task
   test:geo: *test_task
   test:source: *test_task
-  test:test: *test_task
+  test:sourceImporter: *test_task
 
   import:
     desc: 'Import a source into the broker, e.g. `task {{.TASK}} -- mtm_spatialmaps-handicap-parking`'

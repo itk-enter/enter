@@ -15,7 +15,8 @@
     {# The two controllers share the element: the data sets one reports, the map one draws. #}
     <div class="test-map-wrapper"
          data-controller="test-map test-datasets"
-         data-test-datasets-url-value="{{ path('test_datasets') }}"
+         data-test-datasets-url-value="{{ path('app_sources', {_format: 'json'}) }}"
+         data-test-map-entities-url-value="{{ path('app_data', {path: 'ngsi-ld/v1/entities', _format: 'geojson'}) }}"
          data-action="test-datasets:toggle->test-map#show">
         <div class="test-map" data-test-map-target="canvas"></div>
 
