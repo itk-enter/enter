@@ -70,15 +70,15 @@ function nextPage(response, url) {
  * GeoJSON collection.
  *
  * The data set says where its entities are; this only asks for them as
- * GeoJSON with key values and follows the broker's link to each next page.
- * The source's context goes in the Link header so the broker answers with
- * the names the source declared.
+ * GeoJSON in the simplified format, which leaves bare values, and follows
+ * the broker's link to each next page. The source's context goes in the
+ * Link header so the broker answers with the names the source declared.
  */
 async function loadFeatures(dataset) {
     const features = [];
 
     let url = new URL(dataset.entities_url, window.location.href);
-    url.searchParams.set("options", "keyValues");
+    url.searchParams.set("format", "simplified");
     url.searchParams.set("limit", PAGE_SIZE);
 
     while (url !== null) {
