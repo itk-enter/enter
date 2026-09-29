@@ -110,13 +110,24 @@ class PublicToiletTest extends TestCase
         $this->assertSame('Hele året', $additional['openingHours']);
     }
 
-    public function testItCarriesTheFacilityCodesTheModelCannotHold(): void
+    public function testItMapsTheFacilityCodesOntoTheModel(): void
     {
-        $additional = $this->entities[0]['additionalInformation']['value'];
+        // 0 is no and 1 is yes.
+        $this->assertFalse($this->entities[1]['babyChange']['value']);
+        $this->assertFalse($this->entities[1]['sharpsDisposal']['value']);
+        $this->assertTrue($this->entities[2]['babyChange']['value']);
+        $this->assertTrue($this->entities[2]['sharpsDisposal']['value']);
+    }
 
-        // The feed's 0/1/2 codes are undocumented and carried verbatim.
-        $this->assertSame('2', $additional['needleContainer']);
-        $this->assertSame('2', $additional['changingTable']);
+    public function testItLeavesAFacilityCodedAsUnknownOut(): void
+    {
+        // 2 is the site's "unknown", which is not the same as no.
+        $this->assertArrayNotHasKey('babyChange', $this->entities[0]);
+        $this->assertArrayNotHasKey('sharpsDisposal', $this->entities[0]);
+
+        $additional = $this->entities[0]['additionalInformation']['value'];
+        $this->assertArrayNotHasKey('needleContainer', $additional);
+        $this->assertArrayNotHasKey('changingTable', $additional);
     }
 
     public function testItMapsAnAbsentChargeOntoFreeAccess(): void
@@ -207,6 +218,8 @@ class PublicToiletTest extends TestCase
                 ],
                 'type' => 'unisex',
                 'tap' => '0',
+                'needle_container' => '0',
+                'changing_table' => '0',
                 // Constructed: the live feed states no charge anywhere.
                 'payment' => '1',
                 'images' => [],
@@ -223,6 +236,9 @@ class PublicToiletTest extends TestCase
                 ],
                 // A category the mapping does not know.
                 'type' => 'ukendt',
+                // Constructed: the live feed has no record with 1 in both.
+                'needle_container' => '1',
+                'changing_table' => '1',
                 // No payment field — nothing is stated about charging.
             ],
             [

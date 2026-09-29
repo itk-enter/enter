@@ -79,6 +79,8 @@ final class TestPublicToilet extends AbstractSource
             ->setProperty('changingPlace', 'changingplace' === $category ? true : null)
             ->setProperty('staffed', $this->flag($data['manned'] ?? null))
             ->setProperty('handwashing', $this->flag($data['tap'] ?? null))
+            ->setProperty('babyChange', $this->flag($data['changing_table'] ?? null))
+            ->setProperty('sharpsDisposal', $this->flag($data['needle_container'] ?? null))
             ->setProperty('isAccessibleForFree', $this->isAccessibleForFree($data))
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
@@ -88,18 +90,13 @@ final class TestPublicToilet extends AbstractSource
             // A category the mapping above does not recognise is kept, so that
             // a new value on the site is not silently lost. openingHours is the
             // site's free text ("Hele året", "Vinterlukket"), not the
-            // opening-hours syntax the model's attribute requires. needleContainer and changingTable
-            // carry the feed's codes verbatim: their 0/1/2 values are
-            // undocumented, so publishing them raw states what the feed says
-            // without adding an interpretation to it. images has no
-            // counterpart in the model's context.
+            // opening-hours syntax the model's attribute requires. images has
+            // no counterpart in the model's context.
             ->additionalInformation([
                 'category' => \in_array($category, self::MAPPED_CATEGORIES, true) ? '' : $category,
                 'placement' => $placement,
                 'addressAdditional' => trim((string) ($location['additional'] ?? '')),
                 'openingHours' => $openingHours,
-                'needleContainer' => trim((string) ($data['needle_container'] ?? '')),
-                'changingTable' => trim((string) ($data['changing_table'] ?? '')),
                 'images' => array_column(\is_array($data['images'] ?? null) ? $data['images'] : [], 'url') ?: null,
             ]);
     }
@@ -140,7 +137,9 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * The feed's plain 0/1 flags. Anything else states nothing.
+     * The feed's 0/1 flags. needle_container and changing_table also use 2,
+     * which the site shows as unknown, so like any other value it states
+     * nothing.
      */
     private function flag(mixed $value): ?bool
     {
