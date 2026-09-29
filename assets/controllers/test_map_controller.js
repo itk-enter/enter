@@ -1,4 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.min.css";
 
 /*
  * The developer map: each source's entities read from the broker and drawn
@@ -20,7 +22,7 @@ const PAGE_SIZE = 1000;
  * Init MapLibre
  */
 function createMap(container) {
-    return new window.maplibregl.Map({
+    return new maplibregl.Map({
         container,
         style: {
             version: 8,

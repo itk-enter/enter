@@ -1,16 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    {# Pinned: the map should change when we change it, not when a release does. #}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css">
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
-{% endblock %}
-
 {% block content %}
     {# The two controllers share the element: the data sets one reports, the map one draws. #}
     <div class="test-map-wrapper"
