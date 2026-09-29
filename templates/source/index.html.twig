@@ -5,7 +5,7 @@
 {% block content %}
     <p>
         The data sets published to the broker. Every entity carries a <code>sourceId</code> attribute holding
-        the id of the source it came from, so one source's entities can be queried on it.
+        the id of the source it came from, and each source below links to its entities in the broker.
         This list is also available as <a href="{{ path('app_sources', {_format: 'json'}) }}">JSON</a>.
     </p>
 
@@ -53,6 +53,9 @@
 
                 <dt class="col-sm-3">Context</dt>
                 <dd class="col-sm-9"><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
+
+                <dt class="col-sm-3">Entities</dt>
+                <dd class="col-sm-9"><a href="{{ entitiesUrls[definition.id] }}">{{ entitiesUrls[definition.id] }}</a></dd>
 
                 {% if definition.updateFrequency %}
                     <dt class="col-sm-3">Update frequency</dt>

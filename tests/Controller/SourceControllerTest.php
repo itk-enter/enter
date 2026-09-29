@@ -23,8 +23,8 @@ class SourceControllerTest extends WebTestCase
 
     /**
      * A reader needs no more than this to fetch a source's entities from
-     * the broker: the id they are stamped with, the model to ask for, and
-     * the context that expands the model's name.
+     * the broker: the URL that selects them by the id they are stamped
+     * with, and the context that gives them the names the source declared.
      */
     public function testItSaysHowToReadEachSource(): void
     {
@@ -33,6 +33,10 @@ class SourceControllerTest extends WebTestCase
             $this->assertNotSame('', $source['title']);
             $this->assertNotSame('', $source['model']);
             $this->assertStringStartsWith('https://', $source['context_url']);
+
+            $entitiesUrl = urldecode($source['entities_url']);
+            $this->assertStringContainsString('/ngsi-ld/v1/entities?', $entitiesUrl);
+            $this->assertStringEndsWith(\sprintf('q=sourceId=="%s"', $source['id']), $entitiesUrl);
         }
     }
 
