@@ -1,11 +1,13 @@
 import { Controller } from "@hotwired/stimulus";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.min.css";
+import { MARKS_LAYER, wireClicks } from "../test/popup.js";
 
 /*
  * The developer map: each source's entities read from the broker and drawn
  * by MapLibre in one colour per data set. It shares its element with the
  * data sets controller and draws whatever that one reports switched on.
+ * What a click opens lives in popup.js.
  */
 
 /* Center at DOKK1, zoomed out a bunch. */
@@ -93,7 +95,17 @@ async function loadFeatures(dataset) {
             throw new Error(`${url} answered ${response.status}`);
         }
 
-        features.push(...((await response.json()).features ?? []));
+        /*
+         * MapLibre hands a clicked feature's properties back, not its
+         * string id, and the popup tells features apart by the id.
+         */
+        const page = ((await response.json()).features ?? []).map(
+            (feature) => ({
+                ...feature,
+                properties: { ...feature.properties, id: feature.id },
+            }),
+        );
+        features.push(...page);
 
         url = nextPage(response, url);
     }
@@ -101,33 +113,52 @@ async function loadFeatures(dataset) {
     return { type: "FeatureCollection", features };
 }
 
-/* Adds a data set to the map as a source with an area layer and a point layer. */
+/*
+ * Adds a data set to the map as a source with an area layer and a point
+ * layer. Its layers go in below the marks, so a mark is never hidden by
+ * what it marks.
+ */
 function addDataset(map, id, dataset, collection) {
     map.addSource(id, { type: "geojson", data: collection });
 
-    map.addLayer({
-        id: `${id}-areas`,
-        type: "fill",
-        source: id,
-        paint: {
-            "fill-color": dataset.colour,
-            "fill-opacity": 0.35,
-            "fill-outline-color": dataset.colour,
+    map.addLayer(
+        {
+            id: `${id}-areas`,
+            type: "fill",
+            source: id,
+            paint: {
+                "fill-color": dataset.colour,
+                "fill-opacity": 0.35,
+                "fill-outline-color": dataset.colour,
+            },
         },
-    });
+        MARKS_LAYER,
+    );
 
     /* Left to itself a circle layer dots every corner of an area. */
-    map.addLayer({
-        id: `${id}-points`,
-        type: "circle",
-        source: id,
-        filter: ["==", ["geometry-type"], "Point"],
-        paint: {
-            "circle-color": dataset.colour,
-            "circle-radius": 5,
-            "circle-stroke-color": "#212121",
-            "circle-stroke-width": 1.5,
+    map.addLayer(
+        {
+            id: `${id}-points`,
+            type: "circle",
+            source: id,
+            filter: ["==", ["geometry-type"], "Point"],
+            paint: {
+                "circle-color": dataset.colour,
+                "circle-radius": 5,
+                "circle-stroke-color": "#212121",
+                "circle-stroke-width": 1.5,
+            },
         },
+        MARKS_LAYER,
+    );
+
+    [`${id}-areas`, `${id}-points`].forEach((layer) => {
+        map.on("mouseenter", layer, () => {
+            map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", layer, () => {
+            map.getCanvas().style.cursor = "";
+        });
     });
 }
 
@@ -143,8 +174,18 @@ export default class extends Controller {
     connect() {
         this.map = createMap(this.canvasTarget);
 
+        /* What the popup calls each data set, filled in once they are known. */
+        this.titles = {};
+
         /* Nothing may be added to the map before its style has loaded. */
-        this.ready = new Promise((resolve) => this.map.on("load", resolve));
+        this.ready = new Promise((resolve) =>
+            this.map.on("load", resolve),
+        ).then(() => {
+            wireClicks(this.map, {
+                titles: this.titles,
+                layers: () => this.layers(),
+            });
+        });
 
         /* Per data set: the fetch under way, and whether it is wanted on. */
         this.loading = new Map();
@@ -153,6 +194,13 @@ export default class extends Controller {
 
     disconnect() {
         this.map.remove();
+    }
+
+    /* The data sets are known: the popup can name them. */
+    datasets(event) {
+        event.detail.datasets.forEach((dataset) => {
+            this.titles[dataset.id] = dataset.title;
+        });
     }
 
     /*
@@ -189,5 +237,13 @@ export default class extends Controller {
             this.loading.delete(id);
             throw error;
         }
+    }
+
+    /* The ids of every data set layer on the map, hidden ones included. */
+    layers() {
+        return this.map
+            .getStyle()
+            .layers.map((layer) => layer.id)
+            .filter((id) => id.startsWith(LAYER_PREFIX));
     }
 }

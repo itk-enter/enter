@@ -5,7 +5,7 @@
     <div class="test-map-wrapper"
          data-controller="test-map test-datasets"
          data-test-datasets-url-value="{{ path('app_sources', {_format: 'json'}) }}"
-         data-action="test-datasets:toggle->test-map#show">
+         data-action="test-datasets:loaded->test-map#datasets test-datasets:toggle->test-map#show">
         <div class="test-map" data-test-map-target="canvas"></div>
 
         <div class="test-map-panel">
