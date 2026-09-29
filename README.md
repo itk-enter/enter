@@ -79,34 +79,20 @@ The sources are also published on `/sources` as a page and on `/sources.json` fo
 ### Reading a source's data
 
 Every entity carries a `sourceId` attribute holding the id of the source it came from, and each entry in
-`/sources.json` carries an `entities_url` that reads them back out of the broker, through the application's
-proxy under `/data/`. Asked for GeoJSON in the simplified format, the broker answers with one feature per entity
-and plain values:
+`/sources.json` carries an `entities_url` that reads them back out of the broker, which nginx serves under
+`/ngsi-ld/v1/`. Asked for `application/geo+json` in the simplified format, the broker answers in plain GeoJSON:
 
 ``` shell
 curl --silent \
   --header 'Accept: application/geo+json' \
   --header 'Link: <https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  'http://enter.local.itkdev.dk/data/ngsi-ld/v1/entities?q=sourceId=="mtm_spatialmaps-handicap-parking"&format=simplified&limit=1000'
+  'http://enter.local.itkdev.dk/ngsi-ld/v1/entities?q=sourceId=="mtm_spatialmaps-handicap-parking"&format=simplified&limit=1000&count=true'
 ```
 
-What we have learned about the [NGSI-LD API](https://cim.etsi.org/NGSI-LD/official/) on the way:
-
-- `format=simplified` strips the `Property` wrappers and leaves bare values. It replaces `options=keyValues`,
-  which the specification has deprecated.
-- `Accept: application/geo+json` turns the answer into a GeoJSON `FeatureCollection`, with each entity's
-  `location` as its feature's geometry.
-- The `Link` request header names a JSON-LD context. Without one, a short type name such as `OnStreetParking`
-  expands under the default context and matches nothing, and attribute names come back as full IRIs. With the
-  source's `context_url` the broker reads and answers in the names the source declared.
-- A term defined in no context, such as `sourceId`, expands under the default context both when published and
-  when queried, so it filters the same with or without a `Link` header.
-- A query needs no `type`. `q=sourceId=="…"` on its own selects a source's entities.
-- The broker returns at most 1000 entities per request. It links to the next page in a `Link` response header
-  with `rel="next"`, and to none on the last page. Asked with `count=true`, it states the total in the
-  `NGSILD-Results-Count` header.
-- The next-page link is written under the broker's own path, `/ngsi-ld/v1/entities`, not the proxy's, so a
-  reader behind `/data/` keeps its own path and takes only the link's query.
+The `Link` header names the source's context (`context_url` in the list), which is what lets the broker answer
+with the attribute names the source declared. The broker returns at most 1000 entities per request, states the
+total in the `NGSILD-Results-Count` response header and points to the next page in its own `Link` response
+header.
 
 Design decisions are recorded in [docs/adr](docs/adr/README.md).
 

@@ -60,8 +60,8 @@ final class SourceController extends AbstractController
      */
     private function entitiesUrl(SourceInterface $source): string
     {
-        return $this->generateUrl('app_data', [
-            'path' => 'ngsi-ld/v1/entities',
+        return $this->generateUrl('ngsi_ld_v1_request', [
+            'path' => 'entities',
             'q' => \sprintf('%s=="%s"', AbstracSourceImporter::SOURCE_ID_ATTRIBUTE, $source->definition->id),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
