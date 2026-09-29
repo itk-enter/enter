@@ -175,9 +175,7 @@ class HandicapParkingTest extends TestCase
 
     public function testItRecordsTheAccessUrlAsTheEntitySource(): void
     {
-        // The model's source is a URL, so the Overpass query sent with it
-        // stays out.
-        $this->assertSame($this->source->definition->accessUrlBase(), $this->entities[0]['source']['value']);
+        $this->assertSame($this->source->definition->accessUrlWithQuery(), $this->entities[0]['source']['value']);
     }
 
     public function testItCarriesTagsTheModelCannotHoldAsAdditionalInformation(): void
