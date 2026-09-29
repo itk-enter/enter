@@ -13,6 +13,19 @@ tasks:
 
   site:update:
     desc: Update site
+    vars:
+      NGINX_HTPASSWD_PATH: .docker/nginx.htpasswd
+    preconditions:
+      - sh: test -f "{{.NGINX_HTPASSWD_PATH}}"
+        msg: |
+          htpasswd file `{{.NGINX_HTPASSWD_PATH}}` does not exist.
+
+          Create it by running
+
+            htpasswd -c {{.NGINX_HTPASSWD_PATH}}
+
+          and specify username and password.
+
     cmds:
       - docker compose pull
       - docker compose up --detach --wait

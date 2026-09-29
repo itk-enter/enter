@@ -5,8 +5,6 @@ services:
     scorpio:
         image: scorpiobroker/all-in-one-runner:java-latest
         restart: "no"
-        ports:
-            - "9090"
         environment:
             - HTTP_EXPOSE=9090:9999
             - DBHOST=scorpio-db

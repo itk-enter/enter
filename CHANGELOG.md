@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-57](https://github.com/itk-enter/enter/pull/57)
+  Used nginx as proxy for Scorpio
 * [PR-56](https://github.com/itk-enter/enter/pull/56)
   Mapped the toilet sources onto the PublicToilet data model, and added
   the osm-public-toilet and findtoilet-public-toilet sources
