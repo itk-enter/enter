@@ -1,11 +1,14 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * The data sets the map may draw: the sources, fetched from the list, given
- * a colour each, and offered as toggles grouped by model. Nothing here knows
- * about the map; what is known and what is switched is dispatched as events
- * for the map controller on the same element.
+ * The data sets the map may draw: the test sources, fetched from the list,
+ * given a colour each, and offered as toggles grouped by model. Nothing here
+ * knows about the map; what is known and what is switched is dispatched as
+ * events for the map controller on the same element.
  */
+
+/* By convention a test source's id starts with this. */
+const TEST_PREFIX = "test:";
 
 /*
  * One color per data set, in the order the sources come: saturated and far
@@ -23,7 +26,8 @@ const COLOURS = [
 ];
 
 /*
- * Fetch the sources from the list. Each is a data set the map may draw.
+ * Fetch the sources from the list and keep the test ones. Each is a data set
+ * the map may draw.
  */
 async function loadDatasets(url) {
     const response = await fetch(url, {
@@ -34,13 +38,15 @@ async function loadDatasets(url) {
         throw new Error(`${url} answered ${response.status}`);
     }
 
-    const datasets = await response.json();
+    const sources = await response.json();
 
-    return datasets.map((dataset, index) => ({
-        ...dataset,
-        index,
-        colour: COLOURS[index % COLOURS.length],
-    }));
+    return sources
+        .filter((source) => source.id.startsWith(TEST_PREFIX))
+        .map((dataset, index) => ({
+            ...dataset,
+            index,
+            colour: COLOURS[index % COLOURS.length],
+        }));
 }
 
 /*
