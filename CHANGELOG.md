@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-41](https://github.com/itk-enter/enter/pull/41)
+  * Replaced the Septima widget on `/test` with a MapLibre developer map
+  * Drew each test source from the broker, toggled on and off per source
+  * Served Bootstrap and MapLibre through the importmap instead of CDN tags
 * [PR-40](https://github.com/itk-enter/enter/pull/40)
   Stamped every entity with the id of its source, and published the list of sources on `/sources` and `/sources.json`
 * [PR-57](https://github.com/itk-enter/enter/pull/57)
