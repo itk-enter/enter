@@ -40,8 +40,8 @@ class PublicToiletTest extends TestCase
 
     public function testItSkipsRecordsWithoutAnIdentifierOrGeometry(): void
     {
-        // Five elements, of which one has no id.
-        $this->assertCount(4, $this->entities);
+        // Seven elements, of which one has no id.
+        $this->assertCount(6, $this->entities);
     }
 
     public function testItAddressesEntitiesByOsmTypeAndId(): void
@@ -88,47 +88,91 @@ class PublicToiletTest extends TestCase
         $this->assertArrayNotHasKey('description', $this->entities[0]);
     }
 
-    public function testItCarriesTheFacilityTagsAsAdditionalInformation(): void
+    public function testItMapsTheFacilityTagsOntoTheModel(): void
+    {
+        $entity = $this->entities[0];
+
+        $this->assertSame('no', $entity['wheelchairAccessible']['value']);
+        $this->assertFalse($entity['babyChange']['value']);
+        $this->assertSame('flush', $entity['disposal']['value']);
+        $this->assertSame(['seated'], $entity['toiletPosition']['value']);
+        $this->assertSame(['unisex'], $entity['genderCategory']['value']);
+        $this->assertFalse($entity['staffed']['value']);
+        $this->assertTrue($entity['handwashing']['value']);
+    }
+
+    public function testItCarriesTheFacilityTagsTheModelCannotHoldAsAdditionalInformation(): void
     {
         $this->assertSame(
             [
-                'wheelchair' => 'no',
-                'toiletsChangingTable' => 'no',
-                'disposal' => 'flush',
-                'position' => 'seated',
-                'handwashing' => 'yes',
-                'paperSupplied' => 'yes',
-                'unisex' => 'yes',
                 'indoor' => 'yes',
                 'seasonal' => 'summer',
-                'supervised' => 'no',
+                'paperSupplied' => 'yes',
             ],
             $this->entities[0]['additionalInformation']['value']
         );
     }
 
-    public function testItKeepsAGeneralTagAndItsToiletsRefinementApart(): void
+    public function testItPrefersTheToiletsRefinementOverTheGeneralTag(): void
     {
-        // The place a record sits on may be larger than the toilet within it,
-        // so the two forms are not interchangeable.
+        // The general tag describes the place the record sits on, which may be
+        // larger than the toilet; the model describes the toilet itself.
+        $this->assertSame('yes', $this->entities[1]['wheelchairAccessible']['value']);
+    }
+
+    public function testItFallsBackToTheGeneralTagWithoutARefinement(): void
+    {
+        $this->assertTrue($this->entities[1]['babyChange']['value']);
+    }
+
+    public function testItMapsAWheelchairValueThatIsNeitherYesNorNo(): void
+    {
+        // wheelchair is not a boolean; "limited" is a real answer.
+        $this->assertSame('limited', $this->entities[2]['wheelchairAccessible']['value']);
+        $this->assertArrayNotHasKey('additionalInformation', $this->entities[2]);
+    }
+
+    public function testItMapsTheAccessTag(): void
+    {
+        $this->assertSame('customers', $this->entities[1]['accessType']['value']);
+        $this->assertArrayNotHasKey('additionalInformation', $this->entities[1]);
+    }
+
+    public function testItCarriesValuesThatDoNotFitTheModelAsAdditionalInformation(): void
+    {
+        $this->assertArrayNotHasKey('accessType', $this->entities[4]);
+        $this->assertArrayNotHasKey('level', $this->entities[4]);
+        $this->assertArrayNotHasKey('chargeAmount', $this->entities[4]);
         $this->assertSame(
             [
-                'toiletsWheelchair' => 'yes',
-                'changingTable' => 'yes',
-                'access' => 'customers',
+                'level' => '0;1',
+                'access' => 'permit',
+                'charge' => '5 DKR; 1€',
+                'operator' => 'Aarhus Kommune',
             ],
-            $this->entities[1]['additionalInformation']['value']
+            $this->entities[4]['additionalInformation']['value']
         );
     }
 
-    public function testItCarriesAnAccessValueThatIsNeitherYesNorNo(): void
+    public function testItMapsTheListValuedTagsAndDropsUnknownValues(): void
     {
-        // wheelchair is not a boolean; "limited" is a real answer and is
-        // published as the feed states it.
-        $this->assertSame(
-            ['wheelchair' => 'limited'],
-            $this->entities[2]['additionalInformation']['value']
-        );
+        $entity = $this->entities[5];
+
+        $this->assertSame(['seated', 'urinal'], $entity['toiletPosition']['value']);
+        $this->assertSame(['electricHandDryer'], $entity['handDrying']['value']);
+        $this->assertSame(['card'], $entity['paymentMethod']['value']);
+        $this->assertSame(['female', 'male'], $entity['genderCategory']['value']);
+    }
+
+    public function testItMapsANumericLevelAndAChargeInOneCurrency(): void
+    {
+        $entity = $this->entities[5];
+
+        $this->assertSame(1.0, $entity['level']['value']);
+        $this->assertSame(5.0, $entity['chargeAmount']['value']);
+        $this->assertSame('DKK', $entity['chargeCurrency']['value']);
+        $this->assertSame('pitLatrine', $entity['disposal']['value']);
+        $this->assertArrayNotHasKey('additionalInformation', $entity);
     }
 
     public function testItMapsTheFeeTagOntoFreeAccess(): void
@@ -144,8 +188,20 @@ class PublicToiletTest extends TestCase
 
     public function testItPublishesOpeningHoursWhenStated(): void
     {
-        $this->assertSame('Mo-Su 08:00-20:00', $this->entities[1]['openingHours']['value']);
+        // The model holds opening hours as a list of rules.
+        $this->assertSame(['Mo-Su 08:00-20:00'], $this->entities[1]['openingHours']['value']);
         $this->assertArrayNotHasKey('openingHours', $this->entities[0]);
+    }
+
+    public function testItRecordsTheRequestedUrlAndQueryAsOneSourceUri(): void
+    {
+        // The model's source is a single URI, so the Overpass query travels
+        // inside it rather than beside it.
+        $source = $this->entities[0]['source']['value'];
+
+        $this->assertIsString($source);
+        $this->assertStringStartsWith('https://overpass-api.de/api/interpreter?data=', $source);
+        $this->assertStringContainsString(rawurlencode('nwr["amenity"="toilets"](area.a);'), $source);
     }
 
     public function testItOmitsAdditionalInformationWhenNeitherTagIsStated(): void
@@ -189,6 +245,7 @@ class PublicToiletTest extends TestCase
                 'tags' => [
                     'amenity' => 'toilets',
                     'toilets:wheelchair' => 'yes',
+                    'wheelchair' => 'no',
                     'changing_table' => 'yes',
                     'description' => 'Toilet ved parken',
                     'fee' => 'yes',
@@ -220,6 +277,39 @@ class PublicToiletTest extends TestCase
                 'lon' => 10.22,
                 'tags' => ['amenity' => 'toilets', 'wheelchair' => 'yes'],
                 // No id — must be skipped.
+            ],
+            [
+                'type' => 'node',
+                'id' => 333444555,
+                'lat' => 56.1545,
+                'lon' => 10.2064,
+                // Values of the kinds the model has no attribute for.
+                'tags' => [
+                    'amenity' => 'toilets',
+                    'level' => '0;1',
+                    'access' => 'permit',
+                    'charge' => '5 DKR; 1€',
+                    'operator' => 'Aarhus Kommune',
+                ],
+            ],
+            [
+                'type' => 'node',
+                'id' => 444555666,
+                'lat' => 56.1556,
+                'lon' => 10.2053,
+                'tags' => [
+                    'amenity' => 'toilets',
+                    'level' => '1',
+                    'charge' => '5 DKK',
+                    'payment:credit_cards' => 'yes',
+                    'payment:coins' => 'no',
+                    'toilets:disposal' => 'pitlatrine',
+                    'toilets:position' => 'urinal;seated;unknown',
+                    'toilets:hands_drying' => 'electric_hand_dryer',
+                    'male' => 'yes',
+                    'female' => 'yes',
+                    'unisex' => 'no',
+                ],
             ],
         ];
     }

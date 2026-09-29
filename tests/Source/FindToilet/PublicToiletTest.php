@@ -46,10 +46,46 @@ class PublicToiletTest extends TestCase
         );
     }
 
-    public function testItPublishesTheTitleAsNameAndTheStreetAsAddress(): void
+    public function testItPublishesTheTitleAsNameAndTheLocationAsAddress(): void
     {
         $this->assertSame('Strandvejen 19', $this->entities[0]['name']['value']);
-        $this->assertSame('Strandvejen 19', $this->entities[0]['address']['value']);
+        $this->assertSame(
+            [
+                'streetAddress' => 'Strandvejen 19',
+                'postalCode' => '8000',
+                'addressLocality' => 'Aarhus',
+                'addressCountry' => 'DK',
+            ],
+            $this->entities[0]['address']['value']
+        );
+    }
+
+    public function testItMapsTheCategoryOntoTheModel(): void
+    {
+        $this->assertSame('yes', $this->entities[0]['wheelchairAccessible']['value']);
+        $this->assertSame(['unisex'], $this->entities[1]['genderCategory']['value']);
+        $this->assertArrayNotHasKey('genderCategory', $this->entities[0]);
+        $this->assertArrayNotHasKey('wheelchairAccessible', $this->entities[1]);
+    }
+
+    public function testItKeepsACategoryTheMappingDoesNotRecognise(): void
+    {
+        $this->assertSame('ukendt', $this->entities[2]['additionalInformation']['value']['category']);
+        $this->assertArrayNotHasKey('category', $this->entities[0]['additionalInformation']['value']);
+    }
+
+    public function testItMapsMannedOntoStaffed(): void
+    {
+        $this->assertFalse($this->entities[0]['staffed']['value']);
+        $this->assertArrayNotHasKey('staffed', $this->entities[1]);
+    }
+
+    public function testItPublishesTheContactAsTheFaultReportingContactPoint(): void
+    {
+        $this->assertSame(
+            ['contactType' => 'fault reporting', 'email' => 'findtoilet@findtoilet.dk'],
+            $this->entities[0]['contactPoint']['value']
+        );
     }
 
     public function testItSplitsTheDescriptionIntoPlacementAndOpeningHours(): void
@@ -58,7 +94,6 @@ class PublicToiletTest extends TestCase
 
         $this->assertSame('Tangkrogen', $additional['placement']);
         $this->assertSame('Hele året', $additional['openingHours']);
-        $this->assertSame('handicap', $additional['category']);
         $this->assertSame('1', $additional['tap']);
     }
 
@@ -69,9 +104,6 @@ class PublicToiletTest extends TestCase
         // The feed's 0/1/2 codes are undocumented and carried verbatim.
         $this->assertSame('2', $additional['needleContainer']);
         $this->assertSame('2', $additional['changingTable']);
-        $this->assertSame('0', $additional['manned']);
-        $this->assertSame('findtoilet@findtoilet.dk', $additional['contact']);
-        $this->assertSame('findtoilet@findtoilet.dk', $additional['contactTitle']);
     }
 
     public function testItMapsAnAbsentChargeOntoFreeAccess(): void
@@ -106,13 +138,13 @@ class PublicToiletTest extends TestCase
                 'https://beta.findtoilet.dk/sites/default/files/images/5/2022/06/strandvejen19.jpg',
                 'https://beta.findtoilet.dk/sites/default/files/images/5/2022/06/strandvejen19-tangkrogen.jpg',
             ],
-            $this->entities[0]['image']['value']
+            $this->entities[0]['additionalInformation']['value']['images']
         );
     }
 
     public function testItOmitsImageWhenARecordCarriesNone(): void
     {
-        $this->assertArrayNotHasKey('image', $this->entities[1]);
+        $this->assertArrayNotHasKey('images', $this->entities[1]['additionalInformation']['value']);
     }
 
     /**
@@ -127,7 +159,10 @@ class PublicToiletTest extends TestCase
                 'description' => "<b>Placering:</b> Tangkrogen\r\n<b>Åbningstider:</b> Hele året",
                 'location' => [
                     'street' => 'Strandvejen 19',
+                    'additional' => '',
                     'city' => 'Aarhus',
+                    'postal_code' => '8000',
+                    'country' => 'dk',
                     'lat' => '56.139321',
                     'long' => '10.207297',
                 ],
@@ -171,7 +206,8 @@ class PublicToiletTest extends TestCase
                     'lat' => '56.16',
                     'long' => '10.21',
                 ],
-                'type' => 'unisex',
+                // A category the mapping does not know.
+                'type' => 'ukendt',
                 // No payment field — nothing is stated about charging.
             ],
             [

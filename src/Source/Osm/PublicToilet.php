@@ -42,7 +42,7 @@ DATA,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
     model: 'PublicToilet',
-    contextUrl: 'https://schema.org/docs/jsonldcontext.json',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
     licence: 'https://opendatacommons.org/licenses/odbl/1-0/',
 
@@ -85,44 +85,227 @@ final class PublicToilet extends AbstractSource
             $this->definition->model
         );
 
+        [$chargeAmount, $chargeCurrency] = $this->charge($tags);
+
         return $entity
-            ->setProperty('name', trim((string) ($tags['name'] ?? '')))
-            ->setProperty('description', trim((string) ($tags['description'] ?? '')))
-            ->setProperty('openingHours', trim((string) ($tags['opening_hours'] ?? '')))
+            ->setProperty('name', $this->tag($tags, 'name'))
+            ->setProperty('description', $this->tag($tags, 'description'))
+            ->setProperty('seeAlso', $this->tag($tags, 'website'))
+            ->setProperty('openingHours', $this->list($this->tag($tags, 'opening_hours')))
             ->setProperty('isAccessibleForFree', $this->isAccessibleForFree($tags))
-            ->setProperty('url', trim((string) ($tags['website'] ?? '')))
-            ->setProperty('source', $this->definition->accessUrl)
+            ->setProperty('chargeAmount', $chargeAmount)
+            ->setProperty('chargeCurrency', $chargeCurrency)
+            ->setProperty('paymentMethod', $this->paymentMethod($tags))
+            ->setProperty('accessType', $this->accessType($tags))
+
+            // Two facts are stated by a general tag and a toilets: prefixed
+            // refinement: the general one describes the place the record sits
+            // on, which may be larger than the toilet, and the refinement
+            // describes the toilet itself. The model describes the toilet, so
+            // the refinement wins where both are stated.
+            ->setProperty('wheelchairAccessible', $this->wheelchairAccessible(
+                $this->tag($tags, 'toilets:wheelchair') ?: $this->tag($tags, 'wheelchair')
+            ))
+            ->setProperty('babyChange', $this->yesNo(
+                $this->tag($tags, 'toilets:changing_table') ?: $this->tag($tags, 'changing_table')
+            ))
+
+            ->setProperty('disposal', $this->disposal($tags))
+            ->setProperty('toiletPosition', $this->toiletPosition($tags))
+            ->setProperty('genderCategory', $this->genderCategory($tags))
+            ->setProperty('level', is_numeric($this->tag($tags, 'level')) ? (float) $this->tag($tags, 'level') : null)
+            ->setProperty('staffed', $this->yesNo($this->tag($tags, 'supervised')))
+            ->setProperty('handwashing', $this->yesNo($this->tag($tags, 'toilets:handwashing')))
+            ->setProperty('soap', $this->yesNo($this->tag($tags, 'handwashing:soap')))
+            ->setProperty('handDrying', $this->handDrying($tags))
+            ->setProperty('drinkingWater', $this->yesNo($this->tag($tags, 'drinking_water')))
+            ->setProperty('shower', $this->yesNo($this->tag($tags, 'shower')))
+            ->setProperty('menstrualProducts', $this->yesNo($this->tag($tags, 'toilets:menstrual_products')))
+            ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
 
             // Facility facts the model has no attribute for, carried as the
             // feed states them. A record carries only the tags it has.
             //
-            // Two of them are stated by a general tag and a toilets: prefixed
-            // refinement: the general one describes the place the record sits
-            // on, which may be larger than the toilet, and the refinement
-            // describes the toilet itself. Both are kept, because a place and
-            // the toilet within it can differ.
+            // level, access and charge are carried here only when their value
+            // does not fit the model's attribute: a toilet on several levels
+            // ("0;1"), an access the model has no term for ("permit",
+            // "private"), or a charge in more than one currency. operator is a
+            // name, and the model's refOperator requires a reference to an
+            // organisation entity that is not published.
             ->additionalInformation([
-                'wheelchair' => trim((string) ($tags['wheelchair'] ?? '')),
-                'toiletsWheelchair' => trim((string) ($tags['toilets:wheelchair'] ?? '')),
-                'changingTable' => trim((string) ($tags['changing_table'] ?? '')),
-                'toiletsChangingTable' => trim((string) ($tags['toilets:changing_table'] ?? '')),
-                'disposal' => trim((string) ($tags['toilets:disposal'] ?? '')),
-                'position' => trim((string) ($tags['toilets:position'] ?? '')),
-                'handwashing' => trim((string) ($tags['toilets:handwashing'] ?? '')),
-                'paperSupplied' => trim((string) ($tags['toilets:paper_supplied'] ?? '')),
-                'unisex' => trim((string) ($tags['unisex'] ?? '')),
-                'male' => trim((string) ($tags['male'] ?? '')),
-                'female' => trim((string) ($tags['female'] ?? '')),
-                'indoor' => trim((string) ($tags['indoor'] ?? '')),
-                'level' => trim((string) ($tags['level'] ?? '')),
-                'seasonal' => trim((string) ($tags['seasonal'] ?? '')),
-                'supervised' => trim((string) ($tags['supervised'] ?? '')),
-                'access' => trim((string) ($tags['access'] ?? '')),
-                'charge' => trim((string) ($tags['charge'] ?? '')),
-                'drinkingWater' => trim((string) ($tags['drinking_water'] ?? '')),
-                'operator' => trim((string) ($tags['operator'] ?? '')),
+                'indoor' => $this->tag($tags, 'indoor'),
+                'seasonal' => $this->tag($tags, 'seasonal'),
+                'paperSupplied' => $this->tag($tags, 'toilets:paper_supplied'),
+                'level' => is_numeric($this->tag($tags, 'level')) ? '' : $this->tag($tags, 'level'),
+                'access' => null === $this->accessType($tags) ? $this->tag($tags, 'access') : '',
+                'charge' => null === $chargeAmount ? $this->tag($tags, 'charge') : '',
+                'operator' => $this->tag($tags, 'operator'),
             ]);
+    }
+
+    /**
+     * @param array<string, mixed> $tags
+     */
+    private function tag(array $tags, string $key): string
+    {
+        return trim((string) ($tags[$key] ?? ''));
+    }
+
+    /**
+     * Some tags state several values separated by semicolons.
+     *
+     * @return list<string>
+     */
+    private function list(string $value): array
+    {
+        return array_values(array_filter(array_map(trim(...), explode(';', $value)), static fn (string $item): bool => '' !== $item));
+    }
+
+    /**
+     * Only the tag's plain answers map; any other value states nothing, and
+     * an absent tag is unknown rather than "no".
+     */
+    private function yesNo(string $value): ?bool
+    {
+        return match ($value) {
+            'yes' => true,
+            'no' => false,
+            default => null,
+        };
+    }
+
+    private function wheelchairAccessible(string $value): ?string
+    {
+        return match ($value) {
+            // designated states that the toilet is built for wheelchair users,
+            // which is more than yes and so still fully accessible.
+            'yes', 'designated' => 'yes',
+            'limited' => 'limited',
+            'no' => 'no',
+            default => null,
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $tags
+     */
+    private function accessType(array $tags): ?string
+    {
+        return match ($this->tag($tags, 'access')) {
+            'yes', 'public' => 'public',
+            'customers' => 'customers',
+            'permissive' => 'permissive',
+            default => null,
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $tags
+     */
+    private function disposal(array $tags): ?string
+    {
+        return match ($this->tag($tags, 'toilets:disposal')) {
+            'flush' => 'flush',
+            'chemical' => 'chemical',
+            'pitlatrine' => 'pitLatrine',
+            'bucket' => 'bucket',
+            default => null,
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $tags
+     *
+     * @return list<string>
+     */
+    private function toiletPosition(array $tags): array
+    {
+        $positions = $this->list($this->tag($tags, 'toilets:position'));
+
+        return array_values(array_intersect(['seated', 'squat', 'urinal'], $positions));
+    }
+
+    /**
+     * unisex, male and female are separate yes/no tags. Only a "yes" names a
+     * group the toilet is designated for; "no" rules one out without naming
+     * another.
+     *
+     * @param array<string, mixed> $tags
+     *
+     * @return list<string>
+     */
+    private function genderCategory(array $tags): array
+    {
+        return array_values(array_filter(
+            ['female', 'male', 'unisex'],
+            fn (string $key): bool => 'yes' === $this->tag($tags, $key)
+        ));
+    }
+
+    /**
+     * @param array<string, mixed> $tags
+     *
+     * @return list<string>
+     */
+    private function handDrying(array $tags): array
+    {
+        $means = [
+            'electric_hand_dryer' => 'electricHandDryer',
+            'paper_towel' => 'paperTowel',
+            'towel' => 'towel',
+        ];
+
+        return array_values(array_unique(array_filter(array_map(
+            static fn (string $value): ?string => $means[$value] ?? null,
+            $this->list($this->tag($tags, 'toilets:hands_drying'))
+        ))));
+    }
+
+    /**
+     * Each payment:<method>=yes tag names one accepted method.
+     *
+     * @param array<string, mixed> $tags
+     *
+     * @return list<string>
+     */
+    private function paymentMethod(array $tags): array
+    {
+        $methods = [
+            'payment:coins' => 'coins',
+            'payment:cash' => 'cash',
+            'payment:cards' => 'card',
+            'payment:credit_cards' => 'card',
+            'payment:debit_cards' => 'card',
+            'payment:contactless' => 'contactless',
+            'payment:app' => 'mobileApp',
+        ];
+
+        $accepted = array_filter(
+            $methods,
+            fn (string $key): bool => 'yes' === $this->tag($tags, $key),
+            \ARRAY_FILTER_USE_KEY
+        );
+
+        return array_values(array_unique($accepted));
+    }
+
+    /**
+     * charge states an amount and a currency in one value, e.g. "5 DKK".
+     * Only a single amount in an ISO 4217 code maps; a charge in several
+     * currencies ("5 DKR; 1€") does not fit the model's one amount.
+     *
+     * @param array<string, mixed> $tags
+     *
+     * @return array{0: float|null, 1: string|null} [amount, currency]
+     */
+    private function charge(array $tags): array
+    {
+        if (!preg_match('/^(\d+(?:[.,]\d+)?)\s*([A-Z]{3})$/', $this->tag($tags, 'charge'), $matches)) {
+            return [null, null];
+        }
+
+        return [(float) str_replace(',', '.', $matches[1]), $matches[2]];
     }
 
     /**

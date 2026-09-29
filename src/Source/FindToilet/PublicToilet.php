@@ -30,7 +30,7 @@ use App\Source\Definition;
     mediaType: 'application/json',
     crs: 'EPSG:4326',
     model: 'PublicToilet',
-    contextUrl: 'https://schema.org/docs/jsonldcontext.json',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
 
     // No licence is stated on the site. DCAT-AP requires one, so it has to be
@@ -40,10 +40,16 @@ use App\Source\Definition;
 
     omittedFields: [
         'region' => 'Constant for this municipality-scoped feed; the data set\'s own scope.',
+        'kontakttitle' => 'The label the site shows for kontakt; constant and identical to it throughout the feed.',
     ],
 )]
 final class PublicToilet extends AbstractSource
 {
+    /**
+     * The site's categories the mapping restates in the model's own terms.
+     */
+    private const array MAPPED_CATEGORIES = ['handicap', 'unisex', 'pissoir', 'changingplace'];
+
     /**
      * Maps one feed record onto an NgsiEntity.
      *
@@ -71,31 +77,89 @@ final class PublicToilet extends AbstractSource
         );
 
         [$placement, $openingHours] = $this->description((string) ($data['description'] ?? ''));
+        $category = trim((string) ($data['type'] ?? ''));
 
         return $entity
             ->setProperty('name', trim((string) ($data['title'] ?? '')))
-            ->setProperty('address', trim((string) ($location['street'] ?? '')))
-            ->setProperty('image', array_column(\is_array($data['images'] ?? null) ? $data['images'] : [], 'url'))
+            ->setProperty('address', $this->address($location))
+            ->setProperty('contactPoint', $this->contactPoint($data))
+            ->setProperty('wheelchairAccessible', 'handicap' === $category ? 'yes' : null)
+            ->setProperty('genderCategory', 'unisex' === $category ? ['unisex'] : [])
+            ->setProperty('toiletPosition', 'pissoir' === $category ? ['urinal'] : [])
+            ->setProperty('changingPlace', 'changingplace' === $category ? true : null)
+            ->setProperty('staffed', $this->flag($data['manned'] ?? null))
             ->setProperty('isAccessibleForFree', $this->isAccessibleForFree($data))
-            ->setProperty('source', $this->definition->accessUrl)
+            ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
 
-            // The site's own category, and facility facts the model has no
-            // attribute for. needleContainer and changingTable carry the
-            // feed's codes verbatim: their 0/1/2 values are undocumented, so
-            // publishing them raw states what the feed says without adding an
-            // interpretation to it.
+            // Facility facts the model has no attribute for.
+            //
+            // A category the mapping above does not recognise is kept, so that
+            // a new value on the site is not silently lost. openingHours is the
+            // site's free text ("Hele året", "Vinterlukket"), not the
+            // opening-hours syntax the model's attribute requires. tap is not
+            // documented as either a hand-washing or a drinking-water tap, so
+            // it is not asserted as one. needleContainer and changingTable
+            // carry the feed's codes verbatim: their 0/1/2 values are
+            // undocumented, so publishing them raw states what the feed says
+            // without adding an interpretation to it. images has no
+            // counterpart in the model's context.
             ->additionalInformation([
-                'category' => trim((string) ($data['type'] ?? '')),
+                'category' => \in_array($category, self::MAPPED_CATEGORIES, true) ? '' : $category,
                 'placement' => $placement,
                 'openingHours' => $openingHours,
                 'tap' => trim((string) ($data['tap'] ?? '')),
-                'manned' => trim((string) ($data['manned'] ?? '')),
                 'needleContainer' => trim((string) ($data['needle_container'] ?? '')),
                 'changingTable' => trim((string) ($data['changing_table'] ?? '')),
-                'contact' => trim((string) ($data['kontakt'] ?? '')),
-                'contactTitle' => trim((string) ($data['kontakttitle'] ?? '')),
+                'images' => array_column(\is_array($data['images'] ?? null) ? $data['images'] : [], 'url') ?: null,
             ]);
+    }
+
+    /**
+     * @param array<string, mixed> $location
+     *
+     * @return array<string, string>
+     */
+    private function address(array $location): array
+    {
+        return array_filter([
+            'streetAddress' => trim((string) ($location['street'] ?? '')),
+            'postalCode' => trim((string) ($location['postal_code'] ?? '')),
+            'addressLocality' => trim((string) ($location['city'] ?? '')),
+            // The feed states the country in lower case; the model requires
+            // an ISO 3166-1 code, which is upper case.
+            'addressCountry' => strtoupper(trim((string) ($location['country'] ?? ''))),
+        ], static fn (string $value): bool => '' !== $value);
+    }
+
+    /**
+     * kontakt is the address to report a fault to; kontakttitle is only the
+     * label the site shows for it.
+     *
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, string>
+     */
+    private function contactPoint(array $data): array
+    {
+        $email = trim((string) ($data['kontakt'] ?? ''));
+        if (false === filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            return [];
+        }
+
+        return ['contactType' => 'fault reporting', 'email' => $email];
+    }
+
+    /**
+     * The feed's plain 0/1 flags. Anything else states nothing.
+     */
+    private function flag(mixed $value): ?bool
+    {
+        return match ($value) {
+            '0' => false,
+            '1' => true,
+            default => null,
+        };
     }
 
     /**

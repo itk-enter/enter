@@ -57,6 +57,19 @@ class ToiletCityTest extends TestCase
         $this->assertSame('Banegårdspladsen 4A', $this->entities[0]['name']['value']);
     }
 
+    public function testItPublishesTheAddressAsAPostalAddress(): void
+    {
+        $this->assertSame(
+            ['streetAddress' => 'Banegårdspladsen 4A', 'postalCode' => '8000', 'addressLocality' => 'Århus C'],
+            $this->entities[0]['address']['value']
+        );
+    }
+
+    public function testItPublishesOnlyTheAddressFieldsARecordHas(): void
+    {
+        $this->assertSame(['streetAddress' => 'Skolebakken 6H'], $this->entities[1]['address']['value']);
+    }
+
     public function testItPublishesAPointGeometry(): void
     {
         $geometry = $this->entities[0]['location']['value'];
@@ -125,6 +138,8 @@ class ToiletCityTest extends TestCase
                     'navn' => ' ',
                     'adresse' => 'Banegårdspladsen 4A',
                     'placeringsinfo' => ' ',
+                    'postnr_' => 8000,
+                    'by_' => 'Århus C',
                     'oprettet_af' => 'az00000',
                     'oprettet_dato' => '2018-10-01 13:12:00.333',
                     'rettet_af' => 'ADM\\az00000',

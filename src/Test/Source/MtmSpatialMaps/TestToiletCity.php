@@ -25,12 +25,10 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
     model: 'PublicToilet',
-    contextUrl: 'https://schema.org/docs/jsonldcontext.json',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'familie' => 'Category designation; constant "Toilet" throughout the export, redundant with the model every entity is published under.',
         'subfamilie' => 'Product designation; constant "TOI Cox" throughout the export.',
-        'postnr_' => 'Administrative postal code; the address already identifies the location.',
-        'by_' => 'Administrative city name; the address already identifies the location.',
         'kommune' => 'Constant "Aarhus" throughout the export, the data set\'s own scope.',
         'distrikt' => 'Internal municipal maintenance district, not a fact about the toilet.',
         'northing' => 'Stated in a different, unlabelled projection than the primary geometry and does not agree with it once reprojected; frequently absent.',
@@ -67,8 +65,8 @@ final class TestToiletCity extends AbstractSource
 
         return $entity
             ->setProperty('name', $this->name($row))
-            ->setProperty('address', trim((string) ($row['adresse'] ?? '')))
-            ->setProperty('source', $this->definition->accessUrl)
+            ->setProperty('address', $this->address($row))
+            ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
             ->additionalInformation([
                 'status' => trim((string) ($row['status'] ?? '')),
@@ -92,5 +90,22 @@ final class TestToiletCity extends AbstractSource
         $placeringsinfo = trim((string) ($row['placeringsinfo'] ?? ''));
 
         return '' !== $placeringsinfo ? $placeringsinfo : trim((string) ($row['adresse'] ?? ''));
+    }
+
+    /**
+     * The model's address is a structured postal address, which the feed
+     * states as three separate fields.
+     *
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, string>
+     */
+    private function address(array $row): array
+    {
+        return array_filter([
+            'streetAddress' => trim((string) ($row['adresse'] ?? '')),
+            'postalCode' => trim((string) ($row['postnr_'] ?? '')),
+            'addressLocality' => trim((string) ($row['by_'] ?? '')),
+        ], static fn (string $value): bool => '' !== $value);
     }
 }
