@@ -24,6 +24,9 @@ docker compose exec phpfpm curl 'http://scorpio:9090/ngsi-ld/v1/entities?type=ht
 
 See the result on <https://enter.local.itkdev.dk/test>.
 
+One source's entities can be read back on their own by the id they are stamped with; see
+[Reading a source's data](../README.md#reading-a-sources-data).
+
 ### Refreshing test source data
 
 The data for test sources are stored as plain files in the [../tests/resources/data](../tests/resources/data) folder.

@@ -20,6 +20,12 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
     use LoggerTrait;
 
     /**
+     * Stamped on every entity so readers can filter by source, which shared
+     * models cannot tell apart. The id, unlike a URL, does not change.
+     */
+    public const string SOURCE_ID_ATTRIBUTE = 'sourceId';
+
+    /**
      * @param list<string> $contextUrls
      */
     public function __construct(
@@ -54,7 +60,9 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
         $payload = [];
         foreach ($this->read($source) as $entity) {
             $this->info('Building payload for {entity}', ['entity' => $entity->id()]);
-            $payload[] = $entity->toPayload($contextUrls);
+            $payload[] = $entity
+                ->setProperty(self::SOURCE_ID_ATTRIBUTE, $source->definition->id)
+                ->toPayload($contextUrls);
         }
 
         if (1 === count($payload)) {

@@ -41,15 +41,21 @@ tasks:
   test:start:
     desc: 'Start services needed to run test'
     internal: true
+    run: once
     cmds:
       - docker compose up --detach phpfpm --no-deps
+      # Composer's auto-scripts install what a rendered page needs, such as
+      # the importmap's vendor assets, so the tests depend on no earlier step.
+      - task: composer:install
 
   test:
     desc: Run all tests
     cmds:
       # - task: test:unit
+      - task: test:controller
       - task: test:geo
       - task: test:source
+      - task: test:sourceImporter
 
   test:unit: &test_task
     env:
@@ -61,8 +67,10 @@ tasks:
       vars:
         TASK_ARGS: bin/phpunit tests/{{.TASK | replace "test:" "" | title }}
 
+  test:controller: *test_task
   test:geo: *test_task
   test:source: *test_task
+  test:sourceImporter: *test_task
 
   import:
     desc: 'Import a source into the broker, e.g. `task {{.TASK}} -- mtm_spatialmaps-handicap-parking`'

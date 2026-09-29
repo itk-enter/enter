@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-40](https://github.com/itk-enter/enter/pull/40)
+  Stamped every entity with the id of its source, and published the list of sources on `/sources` and `/sources.json`
 * [PR-57](https://github.com/itk-enter/enter/pull/57)
   Used nginx as proxy for Scorpio
 * [PR-56](https://github.com/itk-enter/enter/pull/56)

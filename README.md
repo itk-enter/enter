@@ -74,6 +74,26 @@ php bin/console app:source:list
 
 list all data sources.
 
+The sources are also published on `/sources` as a page and on `/sources.json` for programs.
+
+### Reading a source's data
+
+Every entity carries a `sourceId` attribute holding the id of the source it came from, and each entry in
+`/sources.json` carries an `entities_url` that reads them back out of the broker, which nginx serves under
+`/ngsi-ld/v1/`. Asked for `application/geo+json` in the simplified format, the broker answers in plain GeoJSON:
+
+``` shell
+curl --silent \
+  --header 'Accept: application/geo+json' \
+  --header 'Link: <https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  'http://enter.local.itkdev.dk/ngsi-ld/v1/entities?q=sourceId=="mtm_spatialmaps-handicap-parking"&format=simplified&limit=1000&count=true'
+```
+
+The `Link` header names the source's context (`context_url` in the list), which is what lets the broker answer
+with the attribute names the source declared. The broker returns at most 1000 entities per request, states the
+total in the `NGSILD-Results-Count` response header and points to the next page in its own `Link` response
+header.
+
 Design decisions are recorded in [docs/adr](docs/adr/README.md).
 
 [NGSI-LD]: https://www.etsi.org/committee/cim

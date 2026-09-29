@@ -175,7 +175,7 @@ class HandicapParkingTest extends TestCase
 
     public function testItRecordsTheAccessUrlAsTheEntitySource(): void
     {
-        $this->assertSame($this->source->definition->accessUrl, $this->entities[0]['source']['value']);
+        $this->assertSame($this->source->definition->accessUrlWithQuery(), $this->entities[0]['source']['value']);
     }
 
     public function testItCarriesTagsTheModelCannotHoldAsAdditionalInformation(): void
