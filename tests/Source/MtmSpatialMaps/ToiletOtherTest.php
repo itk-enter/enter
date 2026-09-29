@@ -34,8 +34,8 @@ class ToiletOtherTest extends TestCase
 
     public function testItSkipsRecordsWithoutAPrimaryKey(): void
     {
-        // Three features, one without mi_prinx.
-        $this->assertCount(2, $this->entities);
+        // Five features, one without mi_prinx.
+        $this->assertCount(4, $this->entities);
     }
 
     public function testItAddressesEntitiesByThePrimaryKey(): void
@@ -57,14 +57,48 @@ class ToiletOtherTest extends TestCase
     {
         $this->assertSame('Ørnereden', $this->entities[0]['name']['value']);
         $this->assertSame('Handicaptoilet', $this->entities[0]['description']['value']);
-        $this->assertSame('Ørneredevej 55', $this->entities[0]['address']['value']);
+        $this->assertSame(['streetAddress' => 'Ørneredevej 55'], $this->entities[0]['address']['value']);
     }
 
-    public function testItCarriesAccessTypeAndSeasonAsAdditionalInformation(): void
+    public function testItMapsAHandicapToiletOntoWheelchairAccess(): void
+    {
+        $this->assertSame('yes', $this->entities[0]['wheelchairAccessible']['value']);
+    }
+
+    public function testItLeavesWheelchairAccessUnknownWhenTheDescriptionStatesNone(): void
+    {
+        // Not being described as a handicap toilet is not the same as "no".
+        $this->assertArrayNotHasKey('wheelchairAccessible', $this->entities[1]);
+    }
+
+    public function testItMapsFreeAccessOntoPublicAccess(): void
+    {
+        $this->assertSame('public', $this->entities[0]['accessType']['value']);
+        $this->assertArrayNotHasKey('accessNote', $this->entities[0]);
+    }
+
+    public function testItCarriesARestrictedAccessAsAnAccessNote(): void
+    {
+        $this->assertArrayNotHasKey('accessType', $this->entities[1]);
+        $this->assertSame('SMS-låst', $this->entities[1]['accessNote']['value']);
+    }
+
+    public function testItMapsTheUrinalDescriptionsOntoToiletPosition(): void
+    {
+        $this->assertSame(['seated', 'urinal'], $this->entities[2]['toiletPosition']['value']);
+        $this->assertArrayNotHasKey('toiletPosition', $this->entities[0]);
+    }
+
+    public function testItMapsARentedCabinOntoAPortableToilet(): void
+    {
+        $this->assertSame('portable', $this->entities[3]['toiletType']['value']);
+        $this->assertArrayNotHasKey('toiletType', $this->entities[0]);
+    }
+
+    public function testItCarriesSeasonAndTheRegisterTimestampsAsAdditionalInformation(): void
     {
         $this->assertSame(
             [
-                'accessType' => 'Fri',
                 'season' => 'Hele året',
                 'registeredAt' => '2018-10-01 13:11:49.08',
                 'updatedAt' => '2022-06-02 09:12:08.087',
@@ -77,7 +111,7 @@ class ToiletOtherTest extends TestCase
     {
         // The second record carries no edit timestamp.
         $this->assertSame(
-            ['accessType' => 'SMS-låst', 'season' => 'Vinterlukket', 'registeredAt' => '2018-10-01 13:11:49.08'],
+            ['season' => 'Vinterlukket', 'registeredAt' => '2018-10-01 13:11:49.08'],
             $this->entities[1]['additionalInformation']['value']
         );
     }
@@ -85,10 +119,12 @@ class ToiletOtherTest extends TestCase
     public function testItDoesNotPublishTheEmployeeUsernames(): void
     {
         // oprettet_af and rettet_af are personal data; the feed carries them
-        // on every record and nothing published may restate them.
+        // on every record and nothing published may restate them. The
+        // usernames here are placeholders: the real ones do not belong in a
+        // committed test.
         $payload = json_encode($this->entities, \JSON_THROW_ON_ERROR);
 
-        $this->assertStringNotContainsString('az25000', $payload);
+        $this->assertStringNotContainsString('az00000', $payload);
         $this->assertStringNotContainsString('spatial_reader', $payload);
     }
 
@@ -106,7 +142,7 @@ class ToiletOtherTest extends TestCase
 
     public function testItRecordsTheAccessUrlAsTheEntitySource(): void
     {
-        $this->assertSame($this->source->definition->accessUrl, $this->entities[0]['source']['value']);
+        $this->assertSame($this->source->definition->accessUrlWithQuery(), $this->entities[0]['source']['value']);
     }
 
     /**
@@ -125,7 +161,7 @@ class ToiletOtherTest extends TestCase
                     'beskrivelse' => 'Handicaptoilet',
                     'adresse' => 'Ørneredevej 55',
                     'saeson' => 'Hele året',
-                    'oprettet_af' => 'az25000',
+                    'oprettet_af' => 'az00000',
                     'oprettet_dato' => '2018-10-01 13:11:49.08',
                     'rettet_af' => 'spatial_reader',
                     'rettet_dato' => '2022-06-02 09:12:08.087',
@@ -142,7 +178,7 @@ class ToiletOtherTest extends TestCase
                     'beskrivelse' => 'Primitivt skovtoilet',
                     'adresse' => 'Ørnevænget',
                     'saeson' => 'Vinterlukket',
-                    'oprettet_af' => 'az25000',
+                    'oprettet_af' => 'az00000',
                     'oprettet_dato' => '2018-10-01 13:11:49.08',
                     'rettet_af' => 'spatial_reader',
                     // No rettet_dato — the record has never been edited.
@@ -160,6 +196,26 @@ class ToiletOtherTest extends TestCase
                     'adresse' => 'Ajstrup Strand, Nord',
                     'saeson' => 'Vinterlukket',
                     // No mi_prinx — must be skipped.
+                ],
+            ],
+            [
+                'type' => 'Feature',
+                'geometry' => ['type' => 'MultiPoint', 'coordinates' => [[574856.36, 6223527.58]]],
+                'properties' => [
+                    'type' => 'Fri',
+                    'navn' => 'Mølleparken',
+                    'beskrivelse' => 'Toilet og urinal',
+                    'mi_prinx' => 3,
+                ],
+            ],
+            [
+                'type' => 'Feature',
+                'geometry' => ['type' => 'MultiPoint', 'coordinates' => [[575347.86, 6224178.90]]],
+                'properties' => [
+                    'type' => 'Fri',
+                    'navn' => 'Den Permanente',
+                    'beskrivelse' => 'Indlejet toiletkabine',
+                    'mi_prinx' => 4,
                 ],
             ],
         ];
