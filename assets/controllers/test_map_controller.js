@@ -46,23 +46,42 @@ function createMap(container) {
 }
 
 /*
+ * The URL of the page after this one, or null on the last page. The broker
+ * links to the next page under its own path, which the proxy does not
+ * serve, so only the link's query is taken and put on the page's URL.
+ */
+function nextPage(response, url) {
+    const match = /<([^>]*)>[^,]*rel="next"/.exec(
+        response.headers.get("link") ?? "",
+    );
+
+    if (match === null) {
+        return null;
+    }
+
+    const next = new URL(url);
+    next.search = new URL(match[1], url).search;
+
+    return next;
+}
+
+/*
  * Reads a data set's entities from the broker, page by page, into one
  * GeoJSON collection.
  *
  * The data set says where its entities are; this only asks for them as
- * GeoJSON with key values, a page at a time. The source's context goes in
- * the Link header so the broker answers with the names the source declared.
+ * GeoJSON with key values and follows the broker's link to each next page.
+ * The source's context goes in the Link header so the broker answers with
+ * the names the source declared.
  */
 async function loadFeatures(dataset) {
     const features = [];
 
-    for (let offset = 0; ; offset += PAGE_SIZE) {
-        const url = new URL(dataset.entities_url, window.location.href);
-        url.searchParams.set("options", "keyValues");
-        url.searchParams.set("limit", PAGE_SIZE);
-        url.searchParams.set("offset", offset);
-        url.searchParams.set("count", "true");
+    let url = new URL(dataset.entities_url, window.location.href);
+    url.searchParams.set("options", "keyValues");
+    url.searchParams.set("limit", PAGE_SIZE);
 
+    while (url !== null) {
         const response = await fetch(url, {
             headers: {
                 accept: "application/geo+json",
@@ -74,13 +93,9 @@ async function loadFeatures(dataset) {
             throw new Error(`${url} answered ${response.status}`);
         }
 
-        const page = (await response.json()).features ?? [];
-        features.push(...page);
+        features.push(...((await response.json()).features ?? []));
 
-        const total = Number(response.headers.get("ngsild-results-count"));
-        if (page.length === 0 || features.length >= total) {
-            break;
-        }
+        url = nextPage(response, url);
     }
 
     return { type: "FeatureCollection", features };
