@@ -80,6 +80,14 @@ class PublicToiletTest extends TestCase
         $this->assertArrayNotHasKey('staffed', $this->entities[1]);
     }
 
+    public function testItMapsTheTapOntoHandwashing(): void
+    {
+        $this->assertTrue($this->entities[0]['handwashing']['value']);
+        $this->assertFalse($this->entities[1]['handwashing']['value']);
+        $this->assertArrayNotHasKey('handwashing', $this->entities[2]);
+        $this->assertArrayNotHasKey('tap', $this->entities[0]['additionalInformation']['value']);
+    }
+
     public function testItPublishesTheContactAsTheFaultReportingContactPoint(): void
     {
         $this->assertSame(
@@ -94,7 +102,6 @@ class PublicToiletTest extends TestCase
 
         $this->assertSame('Tangkrogen', $additional['placement']);
         $this->assertSame('Hele året', $additional['openingHours']);
-        $this->assertSame('1', $additional['tap']);
     }
 
     public function testItCarriesTheFacilityCodesTheModelCannotHold(): void
@@ -144,7 +151,7 @@ class PublicToiletTest extends TestCase
 
     public function testItOmitsImageWhenARecordCarriesNone(): void
     {
-        $this->assertArrayNotHasKey('images', $this->entities[1]['additionalInformation']['value']);
+        $this->assertArrayNotHasKey('images', $this->entities[1]['additionalInformation']['value'] ?? []);
     }
 
     /**

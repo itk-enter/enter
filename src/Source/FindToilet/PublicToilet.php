@@ -88,6 +88,7 @@ final class PublicToilet extends AbstractSource
             ->setProperty('toiletPosition', 'pissoir' === $category ? ['urinal'] : [])
             ->setProperty('changingPlace', 'changingplace' === $category ? true : null)
             ->setProperty('staffed', $this->flag($data['manned'] ?? null))
+            ->setProperty('handwashing', $this->flag($data['tap'] ?? null))
             ->setProperty('isAccessibleForFree', $this->isAccessibleForFree($data))
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
@@ -97,9 +98,7 @@ final class PublicToilet extends AbstractSource
             // A category the mapping above does not recognise is kept, so that
             // a new value on the site is not silently lost. openingHours is the
             // site's free text ("Hele året", "Vinterlukket"), not the
-            // opening-hours syntax the model's attribute requires. tap is not
-            // documented as either a hand-washing or a drinking-water tap, so
-            // it is not asserted as one. needleContainer and changingTable
+            // opening-hours syntax the model's attribute requires. needleContainer and changingTable
             // carry the feed's codes verbatim: their 0/1/2 values are
             // undocumented, so publishing them raw states what the feed says
             // without adding an interpretation to it. images has no
@@ -108,7 +107,6 @@ final class PublicToilet extends AbstractSource
                 'category' => \in_array($category, self::MAPPED_CATEGORIES, true) ? '' : $category,
                 'placement' => $placement,
                 'openingHours' => $openingHours,
-                'tap' => trim((string) ($data['tap'] ?? '')),
                 'needleContainer' => trim((string) ($data['needle_container'] ?? '')),
                 'changingTable' => trim((string) ($data['changing_table'] ?? '')),
                 'images' => array_column(\is_array($data['images'] ?? null) ? $data['images'] : [], 'url') ?: null,
