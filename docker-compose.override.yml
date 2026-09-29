@@ -8,3 +8,7 @@ services:
     phpfpm:
         image: itkdev/php8.5-fpm:latest
         depends_on: !reset
+
+    nginx:
+        volumes:
+            - ./.docker/nginx.htpasswd:/etc/nginx/auth/.htpasswd

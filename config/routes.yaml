@@ -9,3 +9,9 @@
 
 controllers:
     resource: routing.controllers
+
+# This is not a real Symfony route. It's used only to generate NGSI-LD API request example URLs.
+ngsi_ld_v1_request:
+    path: /ngsi-ld/v1/{path}
+    requirements:
+        path: !php/const \Symfony\Component\Routing\Requirement\Requirement::CATCH_ALL
