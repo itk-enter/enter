@@ -28,8 +28,12 @@ tasks:
   test:start:
     desc: 'Start services needed to run test'
     internal: true
+    run: once
     cmds:
       - docker compose up --detach phpfpm --no-deps
+      # Composer's auto-scripts install what a rendered page needs, such as
+      # the importmap's vendor assets, so the tests depend on no earlier step.
+      - task: composer:install
 
   test:
     desc: Run all tests
