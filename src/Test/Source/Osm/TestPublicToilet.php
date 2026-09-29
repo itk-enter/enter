@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     mediaType: 'application/json',
     crs: 'EPSG:4326',
     model: 'PublicToilet',
-    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'amenity' => 'Selector; every record is published under the one model this source names.',
         'building' => 'States that the toilet occupies a building of its own, and the building tags beside it describe its levels, material and roof; facts about the structure rather than the facility. 20% of records carry it.',

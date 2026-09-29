@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
     model: 'PublicToilet',
-    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'bookbar' => 'Bookable flag; constant "Nej" throughout the export.',
         'oprettet_af' => 'Directory username of the municipal employee who created the record; personal data, and not a fact about the toilet.',

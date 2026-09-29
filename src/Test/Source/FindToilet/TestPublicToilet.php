@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     mediaType: 'application/json',
     crs: 'EPSG:4326',
     model: 'PublicToilet',
-    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'region' => 'Constant for this municipality-scoped feed; the data set\'s own scope.',
         'kontakttitle' => 'The label the site shows for kontakt; constant and identical to it throughout the feed.',

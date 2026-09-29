@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
     model: 'PublicToilet',
-    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'familie' => 'Category designation; constant "Toilet" throughout the export, redundant with the model every entity is published under.',
         'subfamilie' => 'Product designation; constant "TOI Cox" throughout the export.',

@@ -30,7 +30,7 @@ use App\Source\Definition;
     mediaType: 'application/json',
     crs: 'EPSG:4326',
     model: 'PublicToilet',
-    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
 
     // No licence is stated on the site. DCAT-AP requires one, so it has to be

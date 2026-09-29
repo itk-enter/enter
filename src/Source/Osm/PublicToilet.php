@@ -42,7 +42,7 @@ DATA,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
     model: 'PublicToilet',
-    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
     licence: 'https://opendatacommons.org/licenses/odbl/1-0/',
 
