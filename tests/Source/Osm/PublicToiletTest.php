@@ -149,6 +149,8 @@ class PublicToiletTest extends TestCase
                 'access' => 'permit',
                 'charge' => '5 DKR; 1€',
                 'operator' => 'Aarhus Kommune',
+                // Tags neither mapped nor omitted, under their OSM keys.
+                'otherTags' => ['description:en' => 'Toilet by the park', 'hot_water' => 'no'],
             ],
             $this->entities[4]['additionalInformation']['value']
         );
@@ -290,6 +292,11 @@ class PublicToiletTest extends TestCase
                     'access' => 'permit',
                     'charge' => '5 DKR; 1€',
                     'operator' => 'Aarhus Kommune',
+                    'hot_water' => 'no',
+                    'description:en' => 'Toilet by the park',
+                    'building:levels' => '1',
+                    'check_date:opening_hours' => '2024-05-01',
+                    'payment:coins' => 'yes',
                 ],
             ],
             [

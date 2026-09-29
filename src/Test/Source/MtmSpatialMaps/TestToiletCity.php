@@ -70,6 +70,9 @@ final class TestToiletCity extends AbstractSource
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
             ->additionalInformation([
                 'status' => trim((string) ($row['status'] ?? '')),
+                'jcdNumber' => trim((string) ($row['jcd_nr_'] ?? '')),
+                // Only when navn names the toilet; otherwise it is the name.
+                'placement' => '' !== trim((string) ($row['navn'] ?? '')) ? trim((string) ($row['placeringsinfo'] ?? '')) : '',
                 // Not createdAt/modifiedAt: NGSI-LD reserves both, and a
                 // broker drops them without reporting it.
                 'registeredAt' => trim((string) ($row['oprettet_dato'] ?? '')),

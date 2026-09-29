@@ -96,6 +96,7 @@ final class TestPublicToilet extends AbstractSource
             ->additionalInformation([
                 'category' => \in_array($category, self::MAPPED_CATEGORIES, true) ? '' : $category,
                 'placement' => $placement,
+                'addressAdditional' => trim((string) ($location['additional'] ?? '')),
                 'openingHours' => $openingHours,
                 'needleContainer' => trim((string) ($data['needle_container'] ?? '')),
                 'changingTable' => trim((string) ($data['changing_table'] ?? '')),

@@ -52,7 +52,10 @@ DATA,
         'check_date' => 'When a mapper last verified the record, as do the check_date qualifiers beside it; describes the survey rather than the toilet. 34% of records carry it.',
         'source' => 'Where a mapper took the record from; describes the mapping, and the source this import records is the feed it read. 1% of records carry it.',
         'note' => 'Free-text remark addressed to other mappers, as is fixme. 2% of records carry it.',
+        'fixme' => 'Free-text remark addressed to other mappers.',
+        'roof' => 'Describes the building the toilet occupies rather than the facility, as the roof: qualifiers do.',
         'mapillary' => 'Identifier in an external street-imagery service, as is panoramax; a photograph of the place rather than a fact about it. 3% of records carry panoramax and 1% mapillary.',
+        'panoramax' => 'Identifier in an external street-imagery service; see mapillary.',
     ],
 )]
 final class PublicToilet extends AbstractSource
@@ -132,7 +135,9 @@ final class PublicToilet extends AbstractSource
             // ("0;1"), an access the model has no term for ("permit",
             // "private"), or a charge in more than one currency. operator is a
             // name, and the model's refOperator requires a reference to an
-            // organisation entity that is not published.
+            // organisation entity that is not published. otherTags carries
+            // every tag this mapping neither maps nor omits, under its OSM
+            // key, so a tag a mapper adds later is not silently lost.
             ->additionalInformation([
                 'indoor' => $this->tag($tags, 'indoor'),
                 'seasonal' => $this->tag($tags, 'seasonal'),
@@ -141,7 +146,54 @@ final class PublicToilet extends AbstractSource
                 'access' => null === $this->accessType($tags) ? $this->tag($tags, 'access') : '',
                 'charge' => null === $chargeAmount ? $this->tag($tags, 'charge') : '',
                 'operator' => $this->tag($tags, 'operator'),
+                'otherTags' => $this->otherTags($tags) ?: null,
             ]);
+    }
+
+    /**
+     * Tags this mapping reads.
+     */
+    private const array MAPPED_TAGS = [
+        'name', 'description', 'website', 'opening_hours', 'fee', 'charge', 'access',
+        'wheelchair', 'toilets:wheelchair', 'changing_table', 'toilets:changing_table',
+        'toilets:disposal', 'toilets:position', 'unisex', 'male', 'female', 'level', 'supervised',
+        'toilets:handwashing', 'handwashing:soap', 'toilets:hands_drying', 'drinking_water', 'shower',
+        'toilets:menstrual_products', 'indoor', 'seasonal', 'toilets:paper_supplied', 'operator',
+    ];
+
+    /**
+     * Tags left out on purpose, with the reason given in omittedFields: the
+     * key itself, and every key it prefixes with a colon.
+     */
+    private const array OMITTED_TAGS = [
+        'amenity', 'building', 'roof', 'check_date', 'source', 'note', 'fixme', 'mapillary', 'panoramax',
+    ];
+
+    /**
+     * @param array<string, mixed> $tags
+     *
+     * @return array<string, string>
+     */
+    private function otherTags(array $tags): array
+    {
+        $other = [];
+        foreach ($tags as $key => $value) {
+            $key = (string) $key;
+            $base = explode(':', $key)[0];
+            if (\in_array($key, self::MAPPED_TAGS, true)
+                || str_starts_with($key, 'payment:')
+                || \in_array($base, self::OMITTED_TAGS, true)) {
+                continue;
+            }
+
+            $value = trim((string) $value);
+            if ('' !== $value) {
+                $other[$key] = $value;
+            }
+        }
+        ksort($other);
+
+        return $other;
     }
 
     /**

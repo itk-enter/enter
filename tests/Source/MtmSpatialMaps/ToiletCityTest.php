@@ -34,8 +34,8 @@ class ToiletCityTest extends TestCase
 
     public function testItSkipsRecordsWithoutAPrimaryKey(): void
     {
-        // Three features, one without mi_prinx.
-        $this->assertCount(2, $this->entities);
+        // Four features, one without mi_prinx.
+        $this->assertCount(3, $this->entities);
     }
 
     public function testItAddressesEntitiesByThePrimaryKey(): void
@@ -70,6 +70,15 @@ class ToiletCityTest extends TestCase
         $this->assertSame(['streetAddress' => 'Skolebakken 6H'], $this->entities[1]['address']['value']);
     }
 
+    public function testItCarriesThePlacementWhenANameIsGiven(): void
+    {
+        // placeringsinfo is only the name when navn is blank; beside a name
+        // it would otherwise be lost.
+        $this->assertSame('Fintenborg Plads', $this->entities[2]['name']['value']);
+        $this->assertSame('Tangkrogen', $this->entities[2]['additionalInformation']['value']['placement']);
+        $this->assertArrayNotHasKey('placement', $this->entities[1]['additionalInformation']['value']);
+    }
+
     public function testItPublishesAPointGeometry(): void
     {
         $geometry = $this->entities[0]['location']['value'];
@@ -93,6 +102,7 @@ class ToiletCityTest extends TestCase
         $this->assertSame(
             [
                 'status' => 'Aktiv',
+                'jcdNumber' => 'AAR0004SA',
                 'registeredAt' => '2018-10-01 13:12:00.333',
                 'updatedAt' => '2018-12-03 11:47:37.597',
             ],
@@ -133,6 +143,7 @@ class ToiletCityTest extends TestCase
                 'geometry' => ['type' => 'Point', 'coordinates' => [574856.3599744864, 6223527.5789597845]],
                 'properties' => [
                     'status' => 'Aktiv',
+                    'jcd_nr_' => 'AAR0004SA',
                     'familie' => 'Toilet',
                     'subfamilie' => 'TOI Cox',
                     'navn' => ' ',
@@ -162,6 +173,17 @@ class ToiletCityTest extends TestCase
                     'rettet_af' => 'spatial_reader',
                     // No rettet_dato — the record has never been edited.
                     'mi_prinx' => 5,
+                ],
+            ],
+            [
+                'type' => 'Feature',
+                'geometry' => ['type' => 'Point', 'coordinates' => [574300.0, 6222500.0]],
+                'properties' => [
+                    'status' => 'Aktiv',
+                    'navn' => 'Fintenborg Plads',
+                    'adresse' => 'Strandvejen 19',
+                    'placeringsinfo' => 'Tangkrogen',
+                    'mi_prinx' => 7,
                 ],
             ],
             [

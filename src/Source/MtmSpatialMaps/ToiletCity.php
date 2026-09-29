@@ -89,6 +89,9 @@ final class ToiletCity extends AbstractSource
             // broker drops them from a payload without reporting it.
             ->additionalInformation([
                 'status' => trim((string) ($row['status'] ?? '')),
+                'jcdNumber' => trim((string) ($row['jcd_nr_'] ?? '')),
+                // Only when navn names the toilet; otherwise it is the name.
+                'placement' => '' !== trim((string) ($row['navn'] ?? '')) ? trim((string) ($row['placeringsinfo'] ?? '')) : '',
                 'registeredAt' => trim((string) ($row['oprettet_dato'] ?? '')),
                 'updatedAt' => trim((string) ($row['rettet_dato'] ?? '')),
             ]);

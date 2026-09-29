@@ -80,6 +80,12 @@ class PublicToiletTest extends TestCase
         $this->assertArrayNotHasKey('staffed', $this->entities[1]);
     }
 
+    public function testItCarriesTheAdditionalAddressLine(): void
+    {
+        $this->assertSame('2. sal', $this->entities[1]['additionalInformation']['value']['addressAdditional']);
+        $this->assertArrayNotHasKey('addressAdditional', $this->entities[0]['additionalInformation']['value']);
+    }
+
     public function testItMapsTheTapOntoHandwashing(): void
     {
         $this->assertTrue($this->entities[0]['handwashing']['value']);
@@ -193,6 +199,8 @@ class PublicToiletTest extends TestCase
                 'description' => '',
                 'location' => [
                     'street' => 'Testvej 1',
+                    // Constructed: blank throughout the live feed.
+                    'additional' => '2. sal',
                     'city' => 'Aarhus',
                     'lat' => '56.15',
                     'long' => '10.20',
