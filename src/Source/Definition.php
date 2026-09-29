@@ -76,6 +76,19 @@ readonly class Definition
     }
 
     /**
+     * The URL to request, with its query parameters, as one URI.
+     *
+     * An entity's source is a single URI, so the array form of the access
+     * URL cannot be published as it is.
+     */
+    public function accessUrlWithQuery(): string
+    {
+        $query = http_build_query($this->accessUrlQuery(), encoding_type: \PHP_QUERY_RFC3986);
+
+        return '' === $query ? $this->accessUrlBase() : $this->accessUrlBase().'?'.$query;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(): array

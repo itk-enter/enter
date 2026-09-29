@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
     model: 'PublicToilet',
-    contextUrl: 'https://schema.org/docs/jsonldcontext.json',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'bookbar' => 'Bookable flag; constant "Nej" throughout the export.',
         'oprettet_af' => 'Directory username of the municipal employee who created the record; personal data, and not a fact about the toilet.',
@@ -58,19 +58,96 @@ final class TestToiletOther extends AbstractSource
             $this->definition->model
         );
 
+        $description = trim((string) ($row['beskrivelse'] ?? ''));
+        $access = trim((string) ($row['type'] ?? ''));
+
         return $entity
             ->setProperty('name', trim((string) ($row['navn'] ?? '')))
-            ->setProperty('description', trim((string) ($row['beskrivelse'] ?? '')))
-            ->setProperty('address', trim((string) ($row['adresse'] ?? '')))
-            ->setProperty('source', $this->definition->accessUrl)
+            ->setProperty('description', $description)
+            ->setProperty('address', $this->address($row))
+            ->setProperty('toiletType', $this->toiletType($description))
+            ->setProperty('toiletPosition', $this->toiletPosition($description))
+            ->setProperty('wheelchairAccessible', $this->wheelchairAccessible($description))
+            ->setProperty('accessType', $this->accessType($access))
+            ->setProperty('accessNote', $this->accessNote($access))
+            ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
+
+            // The season states no hours, so it cannot be restated as the
+            // model's openingHours, and the register's own timestamps have no
+            // counterpart on the model.
+            //
+            // The timestamps are not named createdAt and modifiedAt: NGSI-LD
+            // reserves both for the entity's own system timestamps, and a
+            // broker drops them from a payload without reporting it.
             ->additionalInformation([
-                'accessType' => trim((string) ($row['type'] ?? '')),
                 'season' => trim((string) ($row['saeson'] ?? '')),
-                // Not createdAt/modifiedAt: NGSI-LD reserves both, and a
-                // broker drops them without reporting it.
                 'registeredAt' => trim((string) ($row['oprettet_dato'] ?? '')),
                 'updatedAt' => trim((string) ($row['rettet_dato'] ?? '')),
             ]);
+    }
+
+    /**
+     * The feed states only the street address.
+     *
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, string>
+     */
+    private function address(array $row): array
+    {
+        $street = trim((string) ($row['adresse'] ?? ''));
+
+        return '' !== $street ? ['streetAddress' => $street] : [];
+    }
+
+    /**
+     * beskrivelse names the kind of facility. Only the values that state
+     * something the model has a term for map; the rest state nothing.
+     */
+    private function toiletType(string $description): ?string
+    {
+        // A rented cabin is placed for the season rather than built.
+        return 'Indlejet toiletkabine' === $description ? 'portable' : null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function toiletPosition(string $description): array
+    {
+        return match ($description) {
+            'Urinal' => ['urinal'],
+            'Toilet og urinal' => ['seated', 'urinal'],
+            default => [],
+        };
+    }
+
+    private function wheelchairAccessible(string $description): ?string
+    {
+        // A record that is not described as a handicap toilet states nothing
+        // about its accessibility, so it is left unknown rather than "no".
+        return match ($description) {
+            'Handicaptoilet', 'Multi Handicaptoilet' => 'yes',
+            default => null,
+        };
+    }
+
+    /**
+     * Only "Fri" states who may use the toilet. The locked variants restrict
+     * when and how it is entered, which the model has no term for.
+     */
+    private function accessType(string $access): ?string
+    {
+        return 'Fri' === $access ? 'public' : null;
+    }
+
+    /**
+     * Any access value other than "Fri" describes a restriction, and is
+     * carried as the feed states it.
+     */
+    private function accessNote(string $access): string
+    {
+        return 'Fri' === $access ? '' : $access;
     }
 }

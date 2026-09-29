@@ -20,14 +20,8 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
     use LoggerTrait;
 
     /**
-     * Every entity is stamped with the id of the source it came from.
-     *
-     * Sources publish into shared models, so the broker cannot tell their
-     * entities apart by type; this is what a reader filters on. It is the
-     * id rather than the access URL because the id is the one thing about
-     * a source that must not change. The term is defined in no context, so
-     * it expands under the NGSI-LD default context on publish and on query
-     * alike.
+     * Stamped on every entity so readers can filter by source, which shared
+     * models cannot tell apart. The id, unlike a URL, does not change.
      */
     private const string SOURCE_ID_ATTRIBUTE = 'sourceId';
 
