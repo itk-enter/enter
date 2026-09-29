@@ -1,3 +1,13 @@
+upstream scorpio {
+    # https://www.getpagespeed.com/server-setup/nginx/nginx-upstream-resolve#basic-example
+    zone scorpio_zone 64k;
+
+    # https://www.emmanuelgautier.com/blog/nginx-docker-dns-resolution
+    resolver 127.0.0.11;
+
+    server scorpio.local:9090 resolve;
+}
+
 server {
     listen ${NGINX_PORT};
     server_name localhost;
@@ -10,6 +20,28 @@ server {
     set_real_ip_from 192.168.39.0/24;
     real_ip_recursive on;
     real_ip_header X-Forwarded-For;
+
+    # Proxy NGSI-LD API requests to Scorpio.
+    # Allow access to types and entities
+    location ~ ^/ngsi-ld/v1/(entities|types)(?:/.+)? {
+
+        # Allow only GET (and HEAD) requests for anonymous users. Require authentication for all other methods.
+        # https://nginx.org/en/docs/http/ngx_http_core_module.html#limit_except
+        limit_except GET {
+            auth_basic           "Login required";
+            auth_basic_user_file /etc/nginx/auth/.htpasswd;
+        }
+
+        proxy_pass http://scorpio$request_uri;
+        proxy_set_header Host $host;
+        # Don't pass authorization on to Scorpio.
+        proxy_set_header Authorization "";
+    }
+
+    # Deny access to all other NGSI-LD endpoints (e.g. subscriptions).
+    location ~ ^/ngsi-ld/v1/ {
+        deny all;
+    }
 
     location = /cron-metrics {
         # Proxy to supercronic metrics
