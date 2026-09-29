@@ -28,4 +28,7 @@ return [
     '@symfony/stimulus-bundle' => ['path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js'],
     'maplibre-gl' => ['version' => '5.24.0'],
     'maplibre-gl/dist/maplibre-gl.min.css' => ['version' => '5.24.0', 'type' => 'css'],
+    'bootstrap' => ['version' => '5.3.8'],
+    '@popperjs/core' => ['version' => '2.11.8'],
+    'bootstrap/dist/css/bootstrap.min.css' => ['version' => '5.3.8', 'type' => 'css'],
 ];
