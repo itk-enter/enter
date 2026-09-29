@@ -23,7 +23,7 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
      * Stamped on every entity so readers can filter by source, which shared
      * models cannot tell apart. The id, unlike a URL, does not change.
      */
-    private const string SOURCE_ID_ATTRIBUTE = 'sourceId';
+    public const string SOURCE_ID_ATTRIBUTE = 'sourceId';
 
     /**
      * @param list<string> $contextUrls
