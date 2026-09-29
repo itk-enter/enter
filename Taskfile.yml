@@ -31,10 +31,9 @@ tasks:
     run: once
     cmds:
       - docker compose up --detach phpfpm --no-deps
-      # Pages render the importmap, which needs the vendor assets it names.
-      - task: console
-        vars:
-          TASK_ARGS: importmap:install
+      # Composer's auto-scripts install what a rendered page needs, such as
+      # the importmap's vendor assets, so the tests depend on no earlier step.
+      - task: composer:install
 
   test:
     desc: Run all tests
