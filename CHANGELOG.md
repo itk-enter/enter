@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-56](https://github.com/itk-enter/enter/pull/56)
+  Mapped the toilet sources onto the PublicToilet data model, and added
+  the osm-public-toilet and findtoilet-public-toilet sources
 * [PR-50](https://github.com/itk-dev/enter/pull/50)
   Consolidated the seven draft ADRs into three finalized ones, and added
   a adr file for future planned ADRs.
