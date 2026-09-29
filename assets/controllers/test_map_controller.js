@@ -49,25 +49,23 @@ function createMap(container) {
  * Reads a data set's entities from the broker, page by page, into one
  * GeoJSON collection.
  *
- * The broker is asked for the data set's model, filtered on the source id
- * every entity is stamped with. The source's context goes in the Link
- * header so the broker reads the model's name and answers with the names
- * the source declared; key values make the answer plain GeoJSON.
+ * The data set says where its entities are; this only asks for them as
+ * GeoJSON with key values, a page at a time. The source's context goes in
+ * the Link header so the broker answers with the names the source declared.
  */
-async function loadFeatures(url, dataset) {
+async function loadFeatures(dataset) {
     const features = [];
 
     for (let offset = 0; ; offset += PAGE_SIZE) {
-        const query = new URLSearchParams({
-            type: dataset.model,
-            q: `sourceId=="${dataset.id}"`,
-            options: "keyValues",
-            limit: PAGE_SIZE,
-            offset,
-            count: "true",
-        });
-        const response = await fetch(`${url}?${query}`, {
+        const url = new URL(dataset.entities_url, window.location.href);
+        url.searchParams.set("options", "keyValues");
+        url.searchParams.set("limit", PAGE_SIZE);
+        url.searchParams.set("offset", offset);
+        url.searchParams.set("count", "true");
+
+        const response = await fetch(url, {
             headers: {
+                accept: "application/geo+json",
                 link: `<${dataset.context_url}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`,
             },
         });
@@ -126,7 +124,6 @@ function setVisible(map, id, visible) {
 
 export default class extends Controller {
     static targets = ["canvas"];
-    static values = { entitiesUrl: String };
 
     connect() {
         this.map = createMap(this.canvasTarget);
@@ -170,10 +167,7 @@ export default class extends Controller {
 
     async load(id, dataset) {
         try {
-            const collection = await loadFeatures(
-                this.entitiesUrlValue,
-                dataset,
-            );
+            const collection = await loadFeatures(dataset);
             addDataset(this.map, id, dataset, collection);
         } catch (error) {
             /* Leave the data set loadable again on the next toggle. */
