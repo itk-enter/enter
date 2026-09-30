@@ -1,10 +1,6 @@
 .idea
 *.local.yml
 
-# Raw feed data downloaded by hand while working on a source. What a test
-# needs from it belongs in tests/resources/data instead.
-/export*.geojson
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
