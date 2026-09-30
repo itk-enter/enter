@@ -103,8 +103,8 @@ function northernmost(features) {
 }
 
 /*
-* easeInOutCubic from https://easings.net/#easeInOutCubic
-*/
+ * easeInOutCubic from https://easings.net/#easeInOutCubic
+ */
 function easing(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
@@ -118,10 +118,16 @@ function escapeHtml(value) {
 }
 
 /*
- * A value as the popup shows it. MapLibre hands lists and objects back as
- * JSON text, which reads better as a list again.
+ * MapLibre hands lists and objects back as JSON text. A list reads better
+ * joined up again; anything else is left as it came.
+ *
+ *   '["forDisabled"]'                     -> 'forDisabled'
+ *   '["Mo-Fr 08-18","Sa 10-14"]'          -> 'Mo-Fr 08-18, Sa 10-14'
+ *   '{"streetAddress":"Rådhuspladsen 2"}' -> unchanged
+ *   '[not json'                           -> unchanged
+ *   42, true                              -> unchanged
  */
-function formatValue(value) {
+function rejoinList(value) {
     if (typeof value === "string" && /^[[{]/.test(value)) {
         try {
             const parsed = JSON.parse(value);
@@ -155,7 +161,7 @@ function popupHtml(sections) {
                 )
                 .map(
                     (key) =>
-                        `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(formatValue(properties[key]))}</dd>`,
+                        `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(rejoinList(properties[key]))}</dd>`,
                 )
                 .join("");
 
