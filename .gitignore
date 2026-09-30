@@ -1,6 +1,15 @@
 .idea
 *.local.yml
 
+# Local development sandbox: its config, and the compose overrides and
+# mounted files a sandbox needs but the project does not.
+/sandbox-local/
+sbxenv.yaml
+
+# Raw feed data downloaded by hand while working on a source. What a test
+# needs from it belongs in tests/resources/data instead.
+/export*.geojson
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
