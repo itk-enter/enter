@@ -1,12 +1,22 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    {% set type = 'https://smartdatamodels.org/dataModel.Parking/OnStreetParking' %}
+    {# The two controllers share the element: the data sets one reports, the map one draws. #}
+    <div class="test-map-wrapper"
+         data-controller="test-map test-datasets"
+         data-test-datasets-url-value="{{ path('app_sources', {_format: 'json'}) }}"
+         data-action="test-datasets:loaded->test-map#datasets test-datasets:toggle->test-map#show">
+        <div class="test-map" data-test-map-target="canvas"></div>
 
-    <h2>{{ type }}</h2>
-
-    <div data-widget-url="{{ path('test_config', {type: type}) }}"></div>
-    {# <script src="https://widget.cdn.septima.dk/3.23.0/widgetconfig.js"></script> #}
-    {# https://github.com/Septima/widget-issues/issues/24#issuecomment-5478400091 #}
-    <script src="https://widget.cdn.septima.dk/3.19.0/widgetconfig.js"></script>
+        <div class="test-map-panel">
+            <button class="btn btn-light btn-sm shadow-sm" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
+                    aria-expanded="true" aria-controls="test-map-datasets">
+                Datasæt
+            </button>
+            <form id="test-map-datasets" class="test-map-datasets collapse show shadow-sm"
+                  data-test-datasets-target="form" data-action="change->test-datasets#toggle"
+                  aria-label="Datasæt"></form>
+        </div>
+    </div>
 {% endblock %}
