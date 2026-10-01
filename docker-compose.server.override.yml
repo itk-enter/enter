@@ -1,0 +1,39 @@
+networks:
+    scorpio:
+
+services:
+    phpfpm:
+        image: itkdev/php8.5-fpm:alpine
+
+    scorpio:
+        image: scorpiobroker/all-in-one-runner:java-latest
+        restart: unless-stopped
+        ports:
+            - "9090"
+        environment:
+            - DBHOST=scorpio-db
+        depends_on:
+            - "scorpio-db"
+        networks:
+            app:
+                aliases: [scorpio.local]
+            scorpio:
+        platform: "linux/amd64"
+
+    scorpio-db:
+        image: postgis/postgis
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=ngb
+            - POSTGRES_PASSWORD=ngb
+            - POSTGRES_DB=ngb
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready --username=ngb --dbname=ngb"]
+            start_period: 10s
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        networks:
+            - scorpio
+        volumes:
+            - ./.docker/data/scorpio-db:/var/lib/postgresql/data

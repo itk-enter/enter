@@ -1,0 +1,259 @@
+version: '3'
+
+# https://taskfile.dev/usage/#env-files
+dotenv: ['.env.local', '.env']
+
+tasks:
+  site:install:
+    desc: Install site from scratch
+    prompt: Really (re)install site?
+    cmds:
+      - docker compose down --volumes --remove-orphans
+      - task: site:update
+
+  site:update:
+    desc: Update site
+    vars:
+      NGINX_HTPASSWD_PATH: .docker/nginx.htpasswd
+    preconditions:
+      - sh: test -f "{{.NGINX_HTPASSWD_PATH}}"
+        msg: |
+          htpasswd file `{{.NGINX_HTPASSWD_PATH}}` does not exist.
+
+          Create it by running
+
+            htpasswd -c {{.NGINX_HTPASSWD_PATH}}
+
+          and specify username and password.
+
+    cmds:
+      - docker compose pull
+      - docker compose up --detach --wait
+      - task: composer:install
+      - task: console
+        vars:
+          TASK_ARGS: cache:clear
+
+  site:open:
+    desc: Open the site in a browser
+    cmd: open 'http://enter.local.itkdev.dk/'
+
+  test:start:
+    desc: 'Start services needed to run test'
+    internal: true
+    run: once
+    cmds:
+      - docker compose up --detach phpfpm --no-deps
+      # Composer's auto-scripts install what a rendered page needs, such as
+      # the importmap's vendor assets, so the tests depend on no earlier step.
+      - task: composer:install
+
+  test:
+    desc: Run all tests
+    cmds:
+      # - task: test:unit
+      - task: test:controller
+      - task: test:geo
+      - task: test:source
+      - task: test:sourceImporter
+
+  test:unit: &test_task
+    env:
+      APP_ENV: test
+    desc: 'Run all {{.TASK | replace "test:" "" }} tests'
+    deps: [test:start]
+    cmd:
+      task: php
+      vars:
+        TASK_ARGS: bin/phpunit tests/{{.TASK | replace "test:" "" | title }}
+
+  test:controller: *test_task
+  test:geo: *test_task
+  test:source: *test_task
+  test:sourceImporter: *test_task
+
+  import:
+    desc: 'Import a source into the broker, e.g. `task {{.TASK}} -- mtm_spatialmaps-handicap-parking`'
+    cmd:
+      task: console
+      vars:
+        TASK_ARGS: app:import
+
+  coding-standards:apply:
+    desc: 'Apply coding standards'
+    cmds:
+      - task: coding-standards:assets:apply
+      - task: coding-standards:composer:apply
+      - task: coding-standards:markdown:apply
+      - task: coding-standards:php:apply
+      - task: coding-standards:twig:apply
+      - task: coding-standards:yaml:apply
+
+  coding-standards:check:
+    desc: 'Apply coding standards'
+    cmds:
+      - task: coding-standards:assets:check
+      - task: coding-standards:composer:check
+      - task: coding-standards:markdown:check
+      - task: coding-standards:php:check
+      - task: coding-standards:twig:check
+      - task: coding-standards:yaml:check
+
+  coding-standards:assets:apply:
+    desc: 'Apply coding standards for assets'
+    cmd:
+      task: compose
+      vars:
+        TASK_ARGS: run --rm prettier 'assets/' --write
+
+  coding-standards:assets:check:
+    desc: 'Apply and check coding standards for assets'
+    cmds:
+      - task: coding-standards:assets:apply
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm prettier 'assets/' --check
+
+  coding-standards:composer:apply:
+    desc: 'Apply coding standards for Composer'
+    cmd:
+      task: composer
+      vars:
+        TASK_ARGS: normalize
+
+  coding-standards:composer:check:
+    desc: 'Apply and check coding standards for Composer'
+    cmds:
+      - task: coding-standards:composer:apply
+      - task: composer
+        vars:
+          TASK_ARGS: audit
+      - task: composer
+        vars:
+          TASK_ARGS: normalize --dry-run
+      - task: composer
+        vars:
+          TASK_ARGS: validate --strict
+
+  coding-standards:markdown:apply:
+    desc: 'Apply coding standards for Markdown'
+    cmds:
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm markdownlint '**/*.md' --fix
+
+  coding-standards:markdown:check:
+    desc: 'Apply and check coding standards for Markdown'
+    cmds:
+      - task: coding-standards:markdown:apply
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm markdownlint '**/*.md'
+
+  coding-standards:php:apply:
+    desc: 'Apply coding standards for PHP'
+    cmds:
+      - task: php
+        vars:
+          TASK_ARGS: vendor/bin/rector
+      - task: php
+        vars:
+          TASK_ARGS: vendor/bin/php-cs-fixer fix
+
+  coding-standards:php:check:
+    desc: 'Apply and check coding standards for PHP'
+    cmds:
+      - task: coding-standards:php:apply
+      - task: php
+        vars:
+          TASK_ARGS: vendor/bin/rector --dry-run
+      - task: php
+        vars:
+          TASK_ARGS: vendor/bin/php-cs-fixer check
+
+  coding-standards:twig:apply:
+    desc: 'Apply coding standards for Twig'
+    cmds:
+      - task: php
+        vars:
+          TASK_ARGS: vendor/bin/twig-cs-fixer fix
+
+  coding-standards:twig:check:
+    desc: 'Apply and check coding standards for Twig'
+    cmds:
+      - task: coding-standards:twig:apply
+      - task: php
+        vars:
+          TASK_ARGS: vendor/bin/twig-cs-fixer check
+
+  coding-standards:yaml:apply:
+    desc: 'Apply coding standards for YAML'
+    cmds:
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm prettier --parser yaml phpstan*.neon '**/*.{yml,yaml}' --write
+
+  coding-standards:yaml:check:
+    desc: 'Apply and check coding standards for YAML'
+    cmds:
+      - task: coding-standards:yaml:apply
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm prettier --parser yaml phpstan*.neon '**/*.{yml,yaml}' --check
+
+  code-analysis:
+    desc: 'Run code analysis'
+    cmds:
+      - task: code-analysis:phpstan
+
+  code-analysis:phpstan:
+    desc: 'Run PHPStan'
+    cmds:
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm --no-deps phpfpm composer install --no-scripts
+      - task: compose
+        vars:
+          TASK_ARGS: run --rm --no-deps phpfpm vendor/bin/phpstan
+
+  compose:
+    internal: true
+    cmd: 'docker compose {{.TASK_ARGS}} {{.CLI_ARGS}}'
+
+  composer:
+    internal: true
+    cmd:
+      task: compose
+      vars:
+        TASK_ARGS: run --rm --no-deps phpfpm composer {{.TASK_ARGS}}
+
+  composer:install:
+    internal: true
+    cmds:
+      - if: '[ "$APP_ENV" != "prod" ]'
+        task: composer
+        vars:
+          TASK_ARGS: install
+      - if: '[ "$APP_ENV" = "prod" ]'
+        task: composer
+        vars:
+          TASK_ARGS: install --no-dev --classmap-authoritative
+
+  console:
+    internal: true
+    cmd:
+      task: php
+      vars:
+        TASK_ARGS: bin/console {{.TASK_ARGS}}
+
+  php:
+    internal: true
+    cmds:
+      - task: compose
+        vars:
+          TASK_ARGS: exec phpfpm php {{.TASK_ARGS}}
+
+  default:
+    cmds:
+      - task --list-all
+    silent: true

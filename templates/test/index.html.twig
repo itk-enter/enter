@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {# The two controllers share the element: the data sets one reports, the map one draws. #}
+    <div class="test-map-wrapper"
+         data-controller="test-map test-datasets"
+         data-test-datasets-url-value="{{ path('app_sources', {_format: 'json'}) }}"
+         data-action="test-datasets:loaded->test-map#datasets test-datasets:toggle->test-map#show">
+        <div class="test-map" data-test-map-target="canvas"></div>
+
+        <div class="test-map-panel">
+            <button class="btn btn-light btn-sm shadow-sm" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
+                    aria-expanded="true" aria-controls="test-map-datasets">
+                Datasæt
+            </button>
+            <form id="test-map-datasets" class="test-map-datasets collapse show shadow-sm"
+                  data-test-datasets-target="form" data-action="change->test-datasets#toggle"
+                  aria-label="Datasæt"></form>
+        </div>
+    </div>
+{% endblock %}

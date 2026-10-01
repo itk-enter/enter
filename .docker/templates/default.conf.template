@@ -1,0 +1,88 @@
+upstream scorpio {
+    # https://www.getpagespeed.com/server-setup/nginx/nginx-upstream-resolve#basic-example
+    zone scorpio_zone 64k;
+
+    # https://www.emmanuelgautier.com/blog/nginx-docker-dns-resolution
+    resolver 127.0.0.11;
+
+    server scorpio.local:9090 resolve;
+}
+
+server {
+    listen ${NGINX_PORT};
+    server_name localhost;
+
+    root ${NGINX_WEB_ROOT};
+
+    client_max_body_size ${NGINX_MAX_BODY_SIZE};
+
+    set_real_ip_from 172.16.0.0/16;
+    set_real_ip_from 192.168.39.0/24;
+    real_ip_recursive on;
+    real_ip_header X-Forwarded-For;
+
+    # Proxy NGSI-LD API requests to Scorpio.
+    # Allow access to types and entities
+    location ~ ^/ngsi-ld/v1/(entities|types)(?:/.+)? {
+
+        # Allow only GET (and HEAD) requests for anonymous users. Require authentication for all other methods.
+        # https://nginx.org/en/docs/http/ngx_http_core_module.html#limit_except
+        limit_except GET {
+            auth_basic           "Login required";
+            auth_basic_user_file /etc/nginx/auth/.htpasswd;
+        }
+
+        proxy_pass http://scorpio$request_uri;
+        proxy_set_header Host $host;
+        # Don't pass authorization on to Scorpio.
+        proxy_set_header Authorization "";
+    }
+
+    # Deny access to all other NGSI-LD endpoints (e.g. subscriptions).
+    location ~ ^/ngsi-ld/v1/ {
+        deny all;
+    }
+
+    location = /cron-metrics {
+        # Proxy to supercronic metrics
+        proxy_pass http://${NGINX_CRON_METRICS}/metrics;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        # try to serve file directly, fallback to index.php
+        try_files $uri /index.php$is_args$args;
+    }
+
+    # Protect files and directories from prying eyes.
+    location ~* \.(engine|inc|install|make|module|profile|po|sh|.*sql|.tar|.gz|.bz2|theme|twig|tpl(\.php)?|xtmpl|yml)(~|\.sw[op]|\.bak|\.orig|\.save)?$|^(\.(?!well-known).*|Entries.*|Repository|Root|Tag|Template|composer\.(json|lock)|web\.config)$|^#.*#$|\.php(~|\.sw[op]|\.bak|\.orig|\.save)$ {
+        deny all;
+        return 404;
+    }
+
+    location ~ ^/index\.php(/|$) {
+        fastcgi_buffers 16 32k;
+        fastcgi_buffer_size 64k;
+        fastcgi_busy_buffers_size 64k;
+
+        fastcgi_pass ${NGINX_FPM_SERVICE};
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+
+        internal;
+    }
+
+    location ~ \.php$ {
+        return 404;
+    }
+
+    # Send log message to files symlinked to stdout/stderr.
+    error_log /dev/stderr;
+    access_log /dev/stdout main;
+}
