@@ -45,15 +45,15 @@ class HandicapParkingTest extends TestCase
         // the identifier; the osm marker keeps it clear of other data sets'
         // aarhus-handicap ids.
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-node-3580886094', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-node-3580886094', $this->source->definition->model()),
             $this->entities[0]['id']
         );
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-way-384028175', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-way-384028175', $this->source->definition->model()),
             $this->entities[2]['id']
         );
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-relation-17151325', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-relation-17151325', $this->source->definition->model()),
             $this->entities[4]['id']
         );
     }
@@ -61,7 +61,7 @@ class HandicapParkingTest extends TestCase
     public function testItTakesTheTypeFromTheSourceModel(): void
     {
         foreach ($this->entities as $entity) {
-            $this->assertSame($this->source->definition->model, $entity['type']);
+            $this->assertSame($this->source->definition->model(), $entity['type']);
         }
     }
 

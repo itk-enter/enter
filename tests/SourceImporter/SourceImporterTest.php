@@ -6,6 +6,10 @@ namespace App\Tests\SourceImporter;
 
 use App\Broker\NgsiLdBroker;
 use App\Geo\Wgs84Transformer;
+use App\Ngsi\NgsiEntity;
+use App\Source\AbstractSource;
+use App\Source\DataType;
+use App\Source\Definition;
 use App\Source\MtmSpatialMaps\HandicapParking;
 use App\Source\SourceInterface;
 use App\SourceImporter\GetJsonSourceImporter;
@@ -40,6 +44,21 @@ class SourceImporterTest extends TestCase
                 $entity['sourceId'],
             );
         }
+    }
+
+    /**
+     * The catalogue says which models a source publishes, and the map, the
+     * list of sources and any reader trust it. A mapping that strays from
+     * it is a bug to fix, not data to publish.
+     */
+    public function testItRefusesAnEntityOfAModelTheSourceDoesNotDeclare(): void
+    {
+        $source = new UndeclaredModelSource();
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('ParkingSpot');
+
+        $this->import($source, [$this->feature(1)]);
     }
 
     /**
@@ -101,5 +120,33 @@ class SourceImporterTest extends TestCase
                 'invalidepladser' => 2,
             ],
         ];
+    }
+}
+
+/**
+ * Declares one model and maps onto another.
+ */
+#[Definition(
+    id: 'test:undeclared-model',
+    title: 'Test',
+    description: '',
+    publisher: '',
+    contact: '',
+    landingPage: '',
+    accessUrl: 'https://example.com',
+    dataType: DataType::GeoJSON,
+    mediaType: 'application/geo+json',
+    crs: 'EPSG:4326',
+    models: ['OnStreetParking'],
+    contextUrl: 'https://example.com/context.jsonld',
+    updateFrequency: '',
+    licence: null,
+    omittedFields: [],
+)]
+final class UndeclaredModelSource extends AbstractSource
+{
+    public function createNgsiEntity(array $data, Wgs84Transformer $transformer): NgsiEntity
+    {
+        return new NgsiEntity('urn:ngsi-ld:ParkingSpot:test', 'ParkingSpot');
     }
 }

@@ -11,7 +11,9 @@ use App\Source\Definition;
 readonly class TestDefinition extends Definition
 {
     /**
-     * @param array<string, mixed> $dataUrlQuery
+     * @param list<string>          $models
+     * @param array<string, string> $omittedFields
+     * @param array<string, mixed>  $dataUrlQuery
      */
     public function __construct(
         string $id,
@@ -20,7 +22,7 @@ readonly class TestDefinition extends Definition
         DataType $dataType,
         string $mediaType,
         string $crs,
-        string $model,
+        array $models,
         string $contextUrl,
         array $omittedFields,
         public string $dataUrlBase,
@@ -37,7 +39,7 @@ readonly class TestDefinition extends Definition
             dataType: $dataType,
             mediaType: $mediaType,
             crs: $crs,
-            model: $model,
+            models: $models,
             contextUrl: $contextUrl,
             updateFrequency: '',
             licence: '',

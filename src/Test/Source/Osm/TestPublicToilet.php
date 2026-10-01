@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::Overpass,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    model: 'PublicToilet',
+    models: ['PublicToilet'],
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'amenity' => 'Selector; every record is published under the one model this source names.',
@@ -71,8 +71,8 @@ final class TestPublicToilet extends AbstractSource
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-%s-%d', $this->definition->model, $type, $id),
-            $this->definition->model
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-%s-%d', $this->definition->model(), $type, $id),
+            $this->definition->model()
         );
 
         [$chargeAmount, $chargeCurrency] = $this->charge($tags);

@@ -69,6 +69,12 @@
     line-height: 1.25;
 }
 
+.test-map-model {
+    margin-left: 0.4rem;
+    color: #555;
+    font-weight: 400;
+}
+
 .test-map-details {
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr);

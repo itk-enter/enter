@@ -43,7 +43,7 @@ DATA,
     dataType: DataType::Overpass,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    model: 'OnStreetParking',
+    models: ['OnStreetParking'],
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
     updateFrequency: 'continuous',
     licence: 'https://opendatacommons.org/licenses/odbl/1-0/',
@@ -87,8 +87,8 @@ final class HandicapParking extends AbstractSource
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $this->definition->model, $type, $id),
-            $this->definition->model
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $this->definition->model(), $type, $id),
+            $this->definition->model()
         );
 
         return $entity
