@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-XX](https://github.com/itk-enter/enter/pull/XX)
+  * Sorted the handicap parking records by what each describes: a single reserved bay is a `ParkingSpot`, a
+    site with reserved bays an `OnStreetParking` or, for the OSM facilities the feed places off the street, an
+    `OffStreetParking`
+  * Read a municipal record with a blank bay count as one bay, instead of publishing a count of zero
+  * Mapped the OSM orientation tag onto `parkingMode`
+* [PR-XX](https://github.com/itk-enter/enter/pull/XX)
   * A source adapter can now handle more than one target model.
   * Listed each test source on the `/test` map with a toggle per model it publishes.
 * [PR-59](https://github.com/itk-enter/enter/pull/59)

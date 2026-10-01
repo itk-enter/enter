@@ -13,6 +13,12 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
  * Disabled parking bays in Aarhus Municipality.
+ *
+ * The register's grain varies: most records are one bay each — several may
+ * share an address — while some are a location with a count of bays. A
+ * record of one bay is published as that bay, the rest as a site with the
+ * bays it counts, so that a bay here and the same bay in another source
+ * come out under one model.
  */
 #[When('dev')]
 #[When('test')]
@@ -24,10 +30,10 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::GeoJSON,
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
-    models: ['OnStreetParking'],
+    models: ['ParkingSpot', 'OnStreetParking'],
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
     omittedFields: [
-        'ident' => 'Single-letter code; its meaning is not documented and not confirmed by the data owner.',
+        'ident' => 'Code of varying shape (single letters, numbers, pairs of numbers); its meaning is not documented and not confirmed by the data owner.',
         'oprettet_af' => 'Directory username of the municipal employee who created the record.',
         'rettet_af' => 'Directory username of the municipal employee who last edited the record.',
         'oprettet_dato' => 'Describes the register record.',
@@ -38,6 +44,9 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 )]
 final class TestHandicapParking extends AbstractSource
 {
+    private const string PARKING_SPOT = 'ParkingSpot';
+    private const string ON_STREET_PARKING = 'OnStreetParking';
+
     /**
      * Maps one feed record onto an NgsiEntity.
      *
@@ -60,18 +69,45 @@ final class TestHandicapParking extends AbstractSource
             return null;
         }
 
-        $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $this->definition->model(), $key),
-            $this->definition->model()
-        );
+        $bays = $this->bays($row);
+        $model = 1 === $bays ? self::PARKING_SPOT : self::ON_STREET_PARKING;
 
-        return $entity
+        $entity = (new NgsiEntity(
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
+            $model
+        ))
             ->setProperty('name', $this->address($row))
             ->setProperty('description', trim((string) ($row['bemrk'] ?? '')))
-            ->setProperty('category', ['forDisabled'])
-            ->setProperty('totalSpotNumber', (int) ($row['invalidepladser'] ?? 0))
             ->setProperty('source', $this->definition->accessUrl)
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
+
+        if (self::PARKING_SPOT === $model) {
+            return $entity
+                // The model requires an occupancy status, which the register
+                // does not observe; unknown is the schema's own value for that.
+                ->setProperty('status', 'unknown')
+                // The register is the road authority's, and its notes place
+                // bays by house number and end of street.
+                ->setProperty('category', ['onStreet']);
+        }
+
+        return $entity
+            ->setProperty('category', ['forDisabled'])
+            ->setProperty('totalSpotNumber', $bays);
+    }
+
+    /**
+     * The number of reserved bays the record counts. The register's grain is
+     * the bay, and a record with the count left blank is a bay entered
+     * without one, so it counts as one.
+     *
+     * @param array<string, mixed> $row
+     */
+    private function bays(array $row): int
+    {
+        $value = $row['invalidepladser'] ?? null;
+
+        return is_numeric($value) ? (int) $value : 1;
     }
 
     /**
