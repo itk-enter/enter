@@ -98,10 +98,10 @@ final class TestHandicapParking extends AbstractSource
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
         $model = $this->model($tags);
 
-        $entity = (new NgsiEntity(
+        $entity = new NgsiEntity(
             \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $model, $type, $id),
             $model
-        ))
+        )
             ->setProperty('name', trim((string) ($tags['name'] ?? '')))
             ->setProperty('description', trim((string) ($tags['description'] ?? '')))
             ->setProperty('source', $this->definition->accessUrlWithQuery())

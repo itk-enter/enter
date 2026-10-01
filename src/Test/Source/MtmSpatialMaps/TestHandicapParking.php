@@ -72,10 +72,10 @@ final class TestHandicapParking extends AbstractSource
         $bays = $this->bays($row);
         $model = 1 === $bays ? self::PARKING_SPOT : self::ON_STREET_PARKING;
 
-        $entity = (new NgsiEntity(
+        $entity = new NgsiEntity(
             \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
             $model
-        ))
+        )
             ->setProperty('name', $this->address($row))
             ->setProperty('description', trim((string) ($row['bemrk'] ?? '')))
             ->setProperty('source', $this->definition->accessUrl)
