@@ -28,7 +28,7 @@ use App\Source\Definition;
     dataType: DataType::GeoJSON,
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
-    model: 'PublicToilet',
+    models: ['PublicToilet'],
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
 
@@ -67,8 +67,8 @@ final class ToiletOther extends AbstractSource
         }
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-other-%s', $this->definition->model, $key),
-            $this->definition->model
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-other-%s', $this->definition->model(), $key),
+            $this->definition->model()
         );
 
         $description = trim((string) ($row['beskrivelse'] ?? ''));

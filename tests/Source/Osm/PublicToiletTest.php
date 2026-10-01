@@ -47,15 +47,15 @@ class PublicToiletTest extends TestCase
     public function testItAddressesEntitiesByOsmTypeAndId(): void
     {
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-node-1234567890', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-node-1234567890', $this->source->definition->model()),
             $this->entities[0]['id']
         );
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-way-987654321', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-way-987654321', $this->source->definition->model()),
             $this->entities[1]['id']
         );
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-relation-555666777', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-relation-555666777', $this->source->definition->model()),
             $this->entities[2]['id']
         );
     }

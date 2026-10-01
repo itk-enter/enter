@@ -45,11 +45,11 @@ class BenchTest extends TestCase
     public function testItAddressesEntitiesByOsmTypeAndId(): void
     {
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-bench-osm-node-841826867', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-bench-osm-node-841826867', $this->source->definition->model()),
             $this->entities[0]['id']
         );
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-bench-osm-way-522107919', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-bench-osm-way-522107919', $this->source->definition->model()),
             $this->entities[1]['id']
         );
     }

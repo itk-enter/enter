@@ -59,6 +59,12 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
         $contextUrls = array_merge([$source->definition->contextUrl], $this->contextUrls);
         $payload = [];
         foreach ($this->read($source) as $entity) {
+            // The catalogue lists what a source publishes, so an entity of a
+            // model the source does not declare is a mapping error, not data.
+            if (!\in_array($entity->type(), $source->definition->models, true)) {
+                throw new \LogicException(sprintf('Source %s mapped %s onto model %s, which it does not declare (declared: %s).', $source->definition->id, $entity->id(), $entity->type(), implode(', ', $source->definition->models)));
+            }
+
             $this->info('Building payload for {entity}', ['entity' => $entity->id()]);
             $payload[] = $entity
                 ->setProperty(self::SOURCE_ID_ATTRIBUTE, $source->definition->id)

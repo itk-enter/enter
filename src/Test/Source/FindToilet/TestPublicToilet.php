@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::FindToilet,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    model: 'PublicToilet',
+    models: ['PublicToilet'],
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'region' => 'Constant for this municipality-scoped feed; the data set\'s own scope.',
@@ -62,8 +62,8 @@ final class TestPublicToilet extends AbstractSource
         $geometry = ['type' => 'Point', 'coordinates' => [(float) $longitude, (float) $latitude]];
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-findtoilet-%s', $this->definition->model, $id),
-            $this->definition->model
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-findtoilet-%s', $this->definition->model(), $id),
+            $this->definition->model()
         );
 
         [$placement, $openingHours] = $this->description((string) ($data['description'] ?? ''));
