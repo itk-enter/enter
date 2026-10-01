@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-59](https://github.com/itk-enter/enter/pull/59)
+  Added the osm-bench source for benches from OpenStreetMap, published under
+  the Bench data model
 * [PR-41](https://github.com/itk-enter/enter/pull/41)
   * Replaced the Septima widget on `/test` with a MapLibre developer map
   * Drew each test source from the broker, toggled on and off per source
