@@ -17,6 +17,7 @@ readonly class Definition
      *      url: string,
      *      query: array<string, mixed>
      * } $accessUrl
+     * @param list<string>          $models        the Smart Data Models a source publishes; one per kind of record it sorts its feed into
      * @param array<string, string> $omittedFields
      */
     public function __construct(
@@ -30,12 +31,33 @@ readonly class Definition
         public DataType $dataType,
         public string $mediaType,
         public string $crs,
-        public string $model,
+        public array $models,
         public string $contextUrl,
         public string $updateFrequency,
         public ?string $licence,
         public array $omittedFields,
     ) {
+        if ([] === $models || !array_is_list($models)) {
+            throw new \InvalidArgumentException(sprintf('Source %s must declare a list of at least one model.', $id));
+        }
+        foreach ($models as $model) {
+            if (!\is_string($model) || '' === $model) {
+                throw new \InvalidArgumentException(sprintf('Source %s declares an invalid model.', $id));
+            }
+        }
+    }
+
+    /**
+     * The model of a source whose records are all of one kind.
+     *
+     * A source that sorts its records into several kinds picks the model per
+     * record instead, so asking it for the one model is a mistake.
+     */
+    public function model(): string
+    {
+        return 1 === \count($this->models)
+            ? $this->models[0]
+            : throw new \LogicException(sprintf('Source %s publishes %d models; the model is chosen per record.', $this->id, \count($this->models)));
     }
 
     /**
@@ -104,7 +126,7 @@ readonly class Definition
             'data_type' => $this->dataType,
             'media_type' => $this->mediaType,
             'crs' => $this->crs,
-            'model' => $this->model,
+            'models' => $this->models,
             'context_url' => $this->contextUrl,
             'update_frequency' => $this->updateFrequency,
             'licence' => $this->licence,

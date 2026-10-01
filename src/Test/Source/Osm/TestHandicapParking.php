@@ -28,7 +28,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::Overpass,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    model: 'OnStreetParking',
+    models: ['OnStreetParking'],
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
 
     omittedFields: [
@@ -84,8 +84,8 @@ final class TestHandicapParking extends AbstractSource
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $this->definition->model, $type, $id),
-            $this->definition->model
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $this->definition->model(), $type, $id),
+            $this->definition->model()
         );
 
         return $entity

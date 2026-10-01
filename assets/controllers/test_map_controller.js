@@ -4,21 +4,26 @@ import "maplibre-gl/dist/maplibre-gl.min.css";
 import { MARKS_LAYER, wireClicks } from "../test/popup.js";
 
 /*
- * The developer map: each source's entities read from the broker and drawn
- * by MapLibre in one colour per data set. It shares its element with the
- * data sets controller and draws whatever that one reports switched on.
- * What a click opens lives in popup.js.
+ * The developer map: each source's entities read from the broker, a layer
+ * per model the source publishes, drawn by MapLibre in one colour per data
+ * set. It shares its element with the data sets controller and draws
+ * whatever that one reports switched on. What a click opens lives in
+ * popup.js.
  */
 
 /* Center at DOKK1, zoomed out a bunch. */
 const CENTER = [10.2144, 56.1535];
 const ZOOM = 11;
 
-/* What every data set's layer id starts with, so they can be told apart. */
+/* What every data set layer's id starts with, so they can be told apart. */
 const LAYER_PREFIX = "dataset-";
 
 /* The most entities the broker hands out per request. */
 const PAGE_SIZE = 1000;
+
+/* The stroke around every dot and area, dark so it reads on any colour. */
+const STROKE_COLOUR = "#212121";
+const STROKE_WIDTH = 1.5;
 
 /*
  * Init MapLibre
@@ -68,18 +73,20 @@ function nextPage(response, url) {
 }
 
 /*
- * Reads a data set's entities from the broker, page by page, into one
- * GeoJSON collection.
+ * Reads the entities of one model of a data set from the broker, page by
+ * page, into one GeoJSON collection.
  *
- * The data set says where its entities are; this only asks for them as
- * GeoJSON in the simplified format, which leaves bare values, and follows
- * the broker's link to each next page. The source's context goes in the
- * Link header so the broker answers with the names the source declared.
+ * The data set says where its entities are; this narrows that to the model,
+ * asks for GeoJSON in the simplified format, which leaves bare values, and
+ * follows the broker's link to each next page. The source's context goes in
+ * the Link header so the broker expands the model's short name and answers
+ * with the names the source declared.
  */
-async function loadFeatures(dataset) {
+async function loadFeatures(dataset, model) {
     const features = [];
 
     let url = new URL(dataset.entities_url, window.location.href);
+    url.searchParams.set("type", model);
     url.searchParams.set("format", "simplified");
     url.searchParams.set("limit", PAGE_SIZE);
 
@@ -114,9 +121,9 @@ async function loadFeatures(dataset) {
 }
 
 /*
- * Adds a data set to the map as a source with an area layer and a point
- * layer. Its layers go in below the marks, so a mark is never hidden by
- * what it marks.
+ * Adds one model of a data set to the map as a source with an area layer,
+ * an outline layer and a point layer, in the data set's colour. Its layers
+ * go in below the marks, so a mark is never hidden by what it marks.
  */
 function addDataset(map, id, dataset, collection) {
     map.addSource(id, { type: "geojson", data: collection });
@@ -129,7 +136,21 @@ function addDataset(map, id, dataset, collection) {
             paint: {
                 "fill-color": dataset.colour,
                 "fill-opacity": 0.35,
-                "fill-outline-color": dataset.colour,
+            },
+        },
+        MARKS_LAYER,
+    );
+
+    /* A fill's own outline is one pixel wide; the dots have a thicker one. */
+    map.addLayer(
+        {
+            id: `${id}-outlines`,
+            type: "line",
+            source: id,
+            filter: ["==", ["geometry-type"], "Polygon"],
+            paint: {
+                "line-color": STROKE_COLOUR,
+                "line-width": STROKE_WIDTH,
             },
         },
         MARKS_LAYER,
@@ -145,14 +166,14 @@ function addDataset(map, id, dataset, collection) {
             paint: {
                 "circle-color": dataset.colour,
                 "circle-radius": 5,
-                "circle-stroke-color": "#212121",
-                "circle-stroke-width": 1.5,
+                "circle-stroke-color": STROKE_COLOUR,
+                "circle-stroke-width": STROKE_WIDTH,
             },
         },
         MARKS_LAYER,
     );
 
-    [`${id}-areas`, `${id}-points`].forEach((layer) => {
+    [`${id}-areas`, `${id}-outlines`, `${id}-points`].forEach((layer) => {
         map.on("mouseenter", layer, () => {
             map.getCanvas().style.cursor = "pointer";
         });
@@ -165,6 +186,7 @@ function addDataset(map, id, dataset, collection) {
 function setVisible(map, id, visible) {
     const visibility = visible ? "visible" : "none";
     map.setLayoutProperty(`${id}-areas`, "visibility", visibility);
+    map.setLayoutProperty(`${id}-outlines`, "visibility", visibility);
     map.setLayoutProperty(`${id}-points`, "visibility", visibility);
 }
 
@@ -187,7 +209,7 @@ export default class extends Controller {
             });
         });
 
-        /* Per data set: the fetch under way, and whether it is wanted on. */
+        /* Per layer: the fetch under way, and whether it is wanted on. */
         this.loading = new Map();
         this.wanted = new Map();
     }
@@ -204,15 +226,15 @@ export default class extends Controller {
     }
 
     /*
-     * A data set was switched on or off. The first time one is switched on
-     * its entities are fetched; a toggle while that is under way takes
-     * effect once the fetch is done.
+     * One model of a data set was switched on or off. The first time it is
+     * switched on its entities are fetched; a toggle while that is under
+     * way takes effect once the fetch is done.
      */
     async show(event) {
         await this.ready;
 
-        const { dataset, on } = event.detail;
-        const id = `${LAYER_PREFIX}${dataset.index}`;
+        const { dataset, model, on } = event.detail;
+        const id = `${LAYER_PREFIX}${dataset.index}-${model}`;
         this.wanted.set(id, on);
 
         if (this.map.getSource(id) === undefined) {
@@ -220,7 +242,7 @@ export default class extends Controller {
                 return;
             }
             if (!this.loading.has(id)) {
-                this.loading.set(id, this.load(id, dataset));
+                this.loading.set(id, this.load(id, dataset, model));
             }
             await this.loading.get(id);
         }
@@ -228,12 +250,12 @@ export default class extends Controller {
         setVisible(this.map, id, this.wanted.get(id));
     }
 
-    async load(id, dataset) {
+    async load(id, dataset, model) {
         try {
-            const collection = await loadFeatures(dataset);
+            const collection = await loadFeatures(dataset, model);
             addDataset(this.map, id, dataset, collection);
         } catch (error) {
-            /* Leave the data set loadable again on the next toggle. */
+            /* Leave the layer loadable again on the next toggle. */
             this.loading.delete(id);
             throw error;
         }

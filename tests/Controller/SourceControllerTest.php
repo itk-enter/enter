@@ -31,7 +31,10 @@ class SourceControllerTest extends WebTestCase
         foreach ($this->sources(static::createClient()) as $source) {
             $this->assertNotSame('', $source['id']);
             $this->assertNotSame('', $source['title']);
-            $this->assertNotSame('', $source['model']);
+            $this->assertNotEmpty($source['models']);
+            foreach ($source['models'] as $model) {
+                $this->assertNotSame('', $model);
+            }
             $this->assertStringStartsWith('https://', $source['context_url']);
 
             $entitiesUrl = urldecode($source['entities_url']);

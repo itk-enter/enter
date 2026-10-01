@@ -31,10 +31,20 @@ const POPUP_MARGIN = 12;
 const POPUP_PAN = 300;
 
 /*
- * The attributes the popup leaves out: the source is what the heading says,
- * the type is what the toggle group says, and the location is the geometry.
+ * The attributes the popup leaves out: the source and the type are what the
+ * heading says, and the location is the geometry.
  */
 const HIDDEN = ["sourceId", "source", "type", "location"];
+
+/*
+ * The model's short name. The broker spells the type as the context it was
+ * given lets it: a short name, or the full URI when the name is not in it.
+ */
+function modelName(type) {
+    return String(type ?? "")
+        .split(/[/#]/)
+        .pop();
+}
 
 /*
  * The layers a clicked feature is outlined on. They are added before any
@@ -143,9 +153,9 @@ function rejoinList(value) {
 
 /*
  * The popup for whatever a click landed on: a section per feature, headed by
- * the data set it came from in the colour it was marked with. Which
- * attributes an entity carries is the source's business, so this walks
- * whatever arrived rather than naming fields.
+ * the data set it came from in the colour it was marked with, and the model
+ * it is published under. Which attributes an entity carries is the source's
+ * business, so this walks whatever arrived rather than naming fields.
  */
 function popupHtml(sections) {
     return sections
@@ -170,6 +180,7 @@ function popupHtml(sections) {
                 '<div class="test-map-title">',
                 `<span class="test-map-swatch" style="background:${escapeHtml(colour)}"></span>`,
                 escapeHtml(title),
+                `<span class="test-map-model">${escapeHtml(modelName(properties.type))}</span>`,
                 "</div>",
                 `<dl class="test-map-details">${rows}</dl>`,
                 "</div>",
