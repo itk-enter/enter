@@ -12,12 +12,6 @@ use App\Source\Definition;
 
 /**
  * Disabled parking bays in Aarhus Municipality.
- *
- * The register's grain varies: most records are one bay each — several may
- * share an address — while some are a location with a count of bays. A
- * record of one bay is published as that bay, the rest as a site with the
- * bays it counts, so that a bay here and the same bay in another source
- * come out under one model.
  */
 #[Definition(
     id: 'mtm_spatialmaps-handicap-parking',
@@ -75,13 +69,14 @@ final class HandicapParking extends AbstractSource
             return null;
         }
 
+        // If a number of bays are not defined, assume that the entry cover a single parking spot.
         $bays = $this->bays($row);
         $model = 1 === $bays ? self::PARKING_SPOT : self::ON_STREET_PARKING;
 
-        $entity = (new NgsiEntity(
+        $entity = new NgsiEntity(
             \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
             $model
-        ))
+        )
             ->setProperty('name', $this->address($row))
             ->setProperty('description', trim((string) ($row['bemrk'] ?? '')))
             ->setProperty('source', $this->definition->accessUrl)
@@ -89,11 +84,9 @@ final class HandicapParking extends AbstractSource
 
         if (self::PARKING_SPOT === $model) {
             return $entity
-                // The model requires an occupancy status, which the register
-                // does not observe; unknown is the schema's own value for that.
+                // The model "requires" an occupancy status.
                 ->setProperty('status', 'unknown')
-                // The register is the road authority's, and its notes place
-                // bays by house number and end of street.
+                // This assumes that the municipal register only defines "onstreet" parking spots.
                 ->setProperty('category', ['onStreet']);
         }
 

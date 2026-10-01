@@ -101,12 +101,14 @@ final class HandicapParking extends AbstractSource
         }
 
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
+
+        // Try to determine the most fitting model based on OSM tags.
         $model = $this->model($tags);
 
-        $entity = (new NgsiEntity(
+        $entity = new NgsiEntity(
             \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $model, $type, $id),
             $model
-        ))
+        )
             ->setProperty('name', trim((string) ($tags['name'] ?? '')))
             ->setProperty('description', trim((string) ($tags['description'] ?? '')))
             ->setProperty('source', $this->definition->accessUrlWithQuery())
@@ -114,8 +116,7 @@ final class HandicapParking extends AbstractSource
 
         if (self::PARKING_SPOT === $model) {
             return $entity
-                // The model requires an occupancy status, which the feed does
-                // not observe; unknown is the schema's own value for that.
+                // The model requires an occupancy status.
                 ->setProperty('status', 'unknown')
                 ->setProperty('category', $this->spotCategory($tags))
 
