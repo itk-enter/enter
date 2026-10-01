@@ -83,11 +83,9 @@ final class TestHandicapParking extends AbstractSource
 
         if (self::PARKING_SPOT === $model) {
             return $entity
-                // The model requires an occupancy status, which the register
-                // does not observe; unknown is the schema's own value for that.
+                // The model requires an occupancy status.
                 ->setProperty('status', 'unknown')
-                // The register is the road authority's, and its notes place
-                // bays by house number and end of street.
+                // This assumes that the municipal register only defines "onstreet" parking spots.
                 ->setProperty('category', ['onStreet']);
         }
 
