@@ -35,7 +35,7 @@ task import -- mtm_spatialmaps-handicap-parking --dry-run --limit 5    # print t
 To import every source in one run:
 
 ``` shell
-docker compose exec phpfpm bin/console app:source:import-all
+task import:all
 ```
 
 A failing source does not stop the run, and the command exits with a failure code if any source failed. Once the run is

@@ -79,6 +79,13 @@ tasks:
       vars:
         TASK_ARGS: app:import
 
+  import:all:
+    desc: 'Import every source into the broker, except the test sources'
+    cmd:
+      task: console
+      vars:
+        TASK_ARGS: app:source:import-all
+
   coding-standards:apply:
     desc: 'Apply coding standards'
     cmds:
