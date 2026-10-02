@@ -27,8 +27,8 @@ tasks:
           and specify username and password.
 
     cmds:
-      - docker compose pull
-      - docker compose up --detach --wait
+      - docker compose pull --ignore-buildable
+      - docker compose up --detach --wait --build
       - task: composer:install
       - task: console
         vars:
