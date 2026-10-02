@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Test\Command;
+declare(strict_types=1);
+
+namespace App\Command;
 
 use App\Import\ImportResult;
 use App\Import\SourcesImporter;
@@ -10,14 +12,18 @@ use App\Test\Source\TestDefinition;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\Attribute\When;
 
+/**
+ * Imports every source, then dispatches the run's outcome.
+ *
+ * Test sources are left to test:source:import-all; they exist only in dev
+ * and test, and read local copies of the feeds.
+ */
 #[AsCommand(
-    name: 'test:source:import-all',
-    description: 'Import all test sources',
+    name: 'app:source:import-all',
+    description: 'Import all sources',
 )]
-#[When('dev')]
-class SourcesImportCommand
+final class SourceImportAllCommand
 {
     public function __invoke(
         SymfonyStyle $io,
@@ -26,12 +32,10 @@ class SourcesImportCommand
     ): int {
         $sources = array_filter(
             $manager->getSources(),
-            static fn (SourceInterface $source): bool => $source->definition instanceof TestDefinition
+            static fn (SourceInterface $source): bool => !$source->definition instanceof TestDefinition
         );
 
-        // The run's outcome is dispatched like a real import's, so whatever
-        // follows a full import can be tried against the test sources.
-        $importer->import($sources, static function (SourceInterface $source, ImportResult|\Throwable $result) use ($io): void {
+        $event = $importer->import($sources, static function (SourceInterface $source, ImportResult|\Throwable $result) use ($io): void {
             $io->section((string) $source);
 
             if ($result instanceof \Throwable) {
@@ -43,6 +47,7 @@ class SourcesImportCommand
             $io->success(\sprintf('Upserted %d entities into %s (HTTP %d).', $result->count, $result->brokerUrl, $result->status));
         });
 
-        return Command::SUCCESS;
+        // A scheduled run must be able to tell that something failed.
+        return $event->hasFailures() ? Command::FAILURE : Command::SUCCESS;
     }
 }
