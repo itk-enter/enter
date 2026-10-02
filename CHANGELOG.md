@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-XX](https://github.com/itk-enter/enter/pull/XX)
   * A source adapter can now handle more than one target model.
   * Listed each test source on the `/test` map with a toggle per model it publishes.
+  * Split osm-handicap-parking into one source per model it publishes.
 * [PR-59](https://github.com/itk-enter/enter/pull/59)
   Added the osm-bench source for benches from OpenStreetMap, published under
   the Bench data model

@@ -17,7 +17,9 @@ class SourceControllerTest extends WebTestCase
         $ids = array_column($this->sources(static::createClient()), 'id');
 
         $this->assertContains('mtm_spatialmaps-handicap-parking', $ids);
-        $this->assertContains('osm-handicap-parking', $ids);
+        $this->assertContains('osm-handicap-parking-spot', $ids);
+        $this->assertContains('osm-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-off-street', $ids);
         $this->assertContains('test:mtm_spatialmaps-handicap-parking', $ids);
     }
 
