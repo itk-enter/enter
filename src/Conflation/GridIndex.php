@@ -15,7 +15,8 @@ namespace App\Conflation;
  * than with its square.
  *
  * Comparing every record with every other grows with the square of their
- * number, which is too slow for larger data sets; the grid compares each
+ * number, which is too slow for larger data sets: five data sets of 50,000
+ * records each would take some 3 × 10¹⁰ comparisons. The grid compares each
  * record only with the few in its neighbourhood.
  *
  * Neither geoPHP nor proj4php has a spatial index. Cells are sized in
