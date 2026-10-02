@@ -60,6 +60,28 @@ class MatcherTest extends TestCase
         );
     }
 
+    public function testItNeverMergesTwoRecordsOfTheSameDataSet(): void
+    {
+        // Same data set, same position: still two things. A record from
+        // another data set between them joins only one of them.
+        $this->assertSame(
+            [['a1'], ['a2']],
+            self::ids($this->matcher->match([
+                GridIndexTest::at('a1', 'a', 0, 0),
+                GridIndexTest::at('a2', 'a', 0, 0),
+            ], 5.0))
+        );
+
+        $this->assertSame(
+            [['a1', 'b1'], ['a2']],
+            self::ids($this->matcher->match([
+                GridIndexTest::at('a1', 'a', 0, 0),
+                GridIndexTest::at('a2', 'a', 0, 0),
+                GridIndexTest::at('b1', 'b', 1, 0),
+            ], 5.0))
+        );
+    }
+
     public function testItTakesTheClosestPairFirst(): void
     {
         // b1 is within range of both, and goes to the nearer one.

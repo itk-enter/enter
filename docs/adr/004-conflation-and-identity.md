@@ -74,6 +74,8 @@ Records are matched **one-to-one, closest first**, and the merged result is publ
   distance between one representative point per record. Pairs within the radius are accepted closest first while a
   group holds at most one record per data set and every member lies within the radius of every other. Ties are broken
   by identifier.
+- **Within one data set:** two records from the same data set are never matched or merged, however close they lie. A
+  data set's records are taken to describe distinct things.
 - **Enrichment:** a record of a configured enriching data set supplies its configured attributes to every merged entity
   whose representative point lies within its area, or within the radius of its point. It is not matched one-to-one, one
   record can enrich many entities, and it never forms or joins an entity of its own.
