@@ -8,15 +8,17 @@ namespace App\Conflation;
  * Distance on the earth's surface, in metres.
  *
  * geoPHP's LineString::greatCircleLength() gives the same result when given
- * the same radius, but it defaults to the equatorial radius and builds a line
- * and two points per call, which makes it about four times slower here, where
- * it runs once per candidate pair. proj4php transforms coordinates and has no
- * distance function.
+ * the same radius, but it builds a line and two points per call, which makes
+ * it about four times slower here, where it runs once per candidate pair.
+ * proj4php transforms coordinates and has no distance function.
  */
 final class Distance
 {
     /**
-     * The mean earth radius (IUGG), in metres.
+     * The mean earth radius (IUGG), in metres: the usual choice for a sphere
+     * used anywhere on earth. Any radius between the polar and the equatorial
+     * one changes a distance of a few metres by centimetres at most, well
+     * within the precision of the positions compared.
      */
     public const float EARTH_RADIUS = 6371008.8;
 
