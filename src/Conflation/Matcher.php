@@ -42,11 +42,13 @@ final class Matcher
         $root = [];
         /** @var array<string, list<Record>> $members cluster members by root */
         $members = [];
+        // Every record, as a cluster of its own to start with.
         foreach ($records as $record) {
             $root[$record->id] = $record->id;
             $members[$record->id] = [$record];
         }
 
+        // Every candidate pair, closest first.
         foreach ($pairs as $pair) {
             $rootA = $root[$pair->a->id];
             $rootB = $root[$pair->b->id];
@@ -55,6 +57,7 @@ final class Matcher
                 continue;
             }
 
+            // Every record of cluster B, which moves into cluster A.
             foreach ($members[$rootB] as $record) {
                 $root[$record->id] = $rootA;
             }
@@ -80,14 +83,15 @@ final class Matcher
     private function canJoin(array $a, array $b, float $radius): bool
     {
         $sourcesA = array_map(static fn (Record $record): string => $record->sourceId, $a);
+        // Every record of B, against the data sets already in A.
         foreach ($b as $record) {
             if (\in_array($record->sourceId, $sourcesA, true)) {
                 return false;
             }
         }
 
-        // Clusters hold one record per data set, so this compares only a
-        // handful of records.
+        // Every pair of a record from A and one from B. Clusters hold one
+        // record per data set, so this compares only a handful of records.
         foreach ($a as $x) {
             foreach ($b as $y) {
                 if (Distance::between($x, $y) > $radius) {
@@ -105,6 +109,7 @@ final class Matcher
     private function assertUniqueIds(array $records): void
     {
         $seen = [];
+        // Every record, to catch an id that occurs twice.
         foreach ($records as $record) {
             if (isset($seen[$record->id])) {
                 throw new \InvalidArgumentException(\sprintf('Record id %s occurs more than once.', $record->id));

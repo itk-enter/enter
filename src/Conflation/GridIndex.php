@@ -45,6 +45,7 @@ final class GridIndex
         $this->cellLatitude = $radius / Distance::METRES_PER_DEGREE;
         $this->cellLongitude = $radius / (Distance::METRES_PER_DEGREE * max(cos(deg2rad($maxLatitude)), 1e-6));
 
+        // Every record, into the cell its point falls in.
         foreach ($records as $index => $record) {
             [$column, $row] = $this->cell($record);
             $this->cells[$column][$row][] = $index;
@@ -61,11 +62,14 @@ final class GridIndex
     {
         $pairs = [];
 
+        // Every record, as the first of a pair.
         foreach ($this->records as $index => $record) {
             [$column, $row] = $this->cell($record);
 
+            // Its own cell and the eight around it.
             for ($dColumn = -1; $dColumn <= 1; ++$dColumn) {
                 for ($dRow = -1; $dRow <= 1; ++$dRow) {
+                    // Every record in that cell, as the second of the pair.
                     foreach ($this->cells[$column + $dColumn][$row + $dRow] ?? [] as $other) {
                         // Records of one data set describe different things,
                         // and a pair is reported from its lower-indexed record.
