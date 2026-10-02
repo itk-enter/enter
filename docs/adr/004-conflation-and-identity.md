@@ -67,22 +67,25 @@ own units, so distances still have to be converted to metres.
 
 Records are matched **one-to-one, closest first**, and the merged result is published as **a data set of its own**.
 
-- **Configuration per kind:** the data model, the input data sets in priority order, and the match radius; optionally,
-  data sets of other models that enrich it, each with the attributes it supplies.
-- **Matching:** records of the merged data set's model, from different data sets, are compared by the distance between
-  one representative point each. Pairs within the radius are accepted closest first while a group holds at most one record
-  per data set and every member lies within the radius of every other. Ties are broken by identifier.
-- **Enrichment:** a record of another model supplies its configured attributes to every merged entity whose
-  representative point lies within its area, or within the radius of its point. It is not matched one-to-one, one
+- **Configuration per kind:** the data model of the result, the data sets to match in priority order, and the match
+  radius; optionally, enriching data sets, each with the attributes it supplies. The configuration, not the model a
+  data set publishes, decides whether it is matched or enriching.
+- **Matching:** the configured data sets to match are matched with each other, whatever model each publishes, by the
+  distance between one representative point per record. Pairs within the radius are accepted closest first while a
+  group holds at most one record per data set and every member lies within the radius of every other. Ties are broken
+  by identifier.
+- **Enrichment:** a record of a configured enriching data set supplies its configured attributes to every merged entity
+  whose representative point lies within its area, or within the radius of its point. It is not matched one-to-one, one
   record can enrich many entities, and it never forms or joins an entity of its own.
 - **Geometry:** whether areas are compared by their full shape through GEOS, instead of by one representative point,
   is left undecided. It becomes relevant where data sets describe the same things as areas or at different
   granularity.
-- **Completeness:** a record that matches nothing forms a group of one, so the merged data set covers every input.
-- **Publication:** the merged data set has its own source identifier and uses an existing data model of the kind. The
-  input data sets stay published unchanged.
-- **Survivorship:** each attribute takes the value of the highest-priority input that states it. An absent value never
-  overrides a stated one. An enriching data set only supplies attributes that no matched input states.
+- **Completeness:** a record of a data set to match that matches nothing forms a group of one, so the merged data set
+  covers every thing those data sets describe.
+- **Publication:** the merged data set has its own source identifier, and every merged entity is built in the
+  configured data model, an existing model of the kind. The input data sets stay published unchanged.
+- **Survivorship:** each attribute takes the value of the highest-priority matched data set that states it. An absent
+  value never overrides a stated one. An enriching data set only supplies attributes that no matched data set states.
 - **Identity:** a merged entity's identifier derives from its highest-priority member, so it is stable across runs
   while that member exists.
 - **Provenance:** a merged entity lists the identifiers of the input entities it was built from, enriching ones
@@ -109,7 +112,7 @@ Rationale:
   inputs.
 - Consumers who need a single picture read one data set; those who need a specific source keep reading it.
 - A new kind needs a configuration, not a new algorithm.
-- Data sets of other models add facts to a merged entity without becoming part of its identity.
+- Enriching data sets add facts to a merged entity without becoming part of its identity.
 - The matching depends only on positions and identifiers, so it can be tested and tuned without a broker.
 
 ### Negative / Trade-offs
