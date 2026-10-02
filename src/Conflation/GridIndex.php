@@ -13,6 +13,10 @@ namespace App\Conflation;
  * around it. Only occupied cells exist, so nothing is laid out over the
  * area in advance, and the cost grows with the number of records rather
  * than with its square.
+ *
+ * Neither geoPHP nor proj4php has a spatial index. Cells are sized in
+ * degrees rather than in a projected CRS, so records need no transform and
+ * the grid works wherever they are, not only within one projection's zone.
  */
 final class GridIndex
 {

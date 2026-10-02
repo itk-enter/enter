@@ -6,6 +6,12 @@ namespace App\Conflation;
 
 /**
  * Distance on the earth's surface, in metres.
+ *
+ * geoPHP's LineString::greatCircleLength() gives the same result when given
+ * the same radius, but it defaults to the equatorial radius and builds a line
+ * and two points per call, which makes it about four times slower here, where
+ * it runs once per candidate pair. proj4php transforms coordinates and has no
+ * distance function.
  */
 final class Distance
 {
