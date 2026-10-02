@@ -15,10 +15,8 @@ namespace App\Conflation;
  * than with its square.
  *
  * Comparing every record with every other grows with the square of their
- * number. That is fine at the size of the data sets published today, but
- * too slow for data sets of tens of thousands of records each, which a
- * merge should be able to take on; the grid compares each record only with
- * the few in its neighbourhood.
+ * number, which is too slow for larger data sets; the grid compares each
+ * record only with the few in its neighbourhood.
  *
  * Neither geoPHP nor proj4php has a spatial index. Cells are sized in
  * degrees rather than in a projected CRS, so records need no transform and
