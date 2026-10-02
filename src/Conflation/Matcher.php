@@ -35,7 +35,8 @@ final class Matcher
 
         $pairs = new GridIndex($records, $radius)->pairs();
 
-        // Closest first; ties broken by id so a run is repeatable.
+        // Order the pairs closest first, ties broken by id so a run is
+        // repeatable.
         usort($pairs, static fn (Pair $x, Pair $y): int => [$x->distance, $x->a->id, $x->b->id] <=> [$y->distance, $y->a->id, $y->b->id]);
 
         /** @var array<string, string> $root cluster root by record id */
@@ -65,12 +66,15 @@ final class Matcher
             unset($members[$rootB]);
         }
 
+        // Turn every group of members into a cluster, its records ordered by
+        // data set, then id.
         $clusters = array_map(static function (array $records): Cluster {
             usort($records, static fn (Record $x, Record $y): int => [$x->sourceId, $x->id] <=> [$y->sourceId, $y->id]);
 
             return new Cluster($records);
         }, array_values($members));
 
+        // Order the clusters by their first record's id, so a run is repeatable.
         usort($clusters, static fn (Cluster $x, Cluster $y): int => $x->records[0]->id <=> $y->records[0]->id);
 
         return $clusters;
@@ -82,6 +86,7 @@ final class Matcher
      */
     private function canJoin(array $a, array $b, float $radius): bool
     {
+        // Collect the data sets A already holds.
         $sourcesA = array_map(static fn (Record $record): string => $record->sourceId, $a);
         // Refuse if B has a record from a data set A already holds.
         foreach ($b as $record) {

@@ -38,9 +38,10 @@ final class GridIndex
             throw new \InvalidArgumentException(\sprintf('The radius must be positive, got %F.', $radius));
         }
 
-        // A degree of longitude shrinks towards the poles. Sizing the cells
-        // where it is shortest keeps every cell at least the radius wide
-        // across the whole set.
+        // Size the cells for the record furthest from the equator. A degree
+        // of longitude shrinks towards the poles, so sizing the cells where
+        // it is shortest keeps every cell at least the radius wide across
+        // the whole set.
         $maxLatitude = array_reduce($records, static fn (float $max, Record $record): float => max($max, abs($record->latitude)), 0.0);
         $this->cellLatitude = $radius / Distance::METRES_PER_DEGREE;
         $this->cellLongitude = $radius / (Distance::METRES_PER_DEGREE * max(cos(deg2rad($maxLatitude)), 1e-6));
