@@ -18,6 +18,10 @@ Records of the same thing from different data sets rarely share an identifier, s
 they are and what they are. Two records of one thing can lie further apart than two distinct things of the same kind
 standing side by side, so position alone does not tell them apart.
 
+A data set of a different model can also describe something else at the same place, such as what covers the ground a
+thing stands on, and so add facts about that thing without being a record of it. One such record can concern many
+things.
+
 How records are matched, where the merged result is published, which data set's values survive, how merged entities
 are identified and how they refer back to their inputs are all undecided.
 
@@ -27,8 +31,8 @@ and identified.
 ### Drivers
 
 - **Functional:** one entity per real-world thing, for every kind of thing published; configurable per kind, since
-  kinds differ in how densely they stand and how precisely data sets locate them; a result that can be traced back to
-  its inputs.
+  kinds differ in how densely they stand and how precisely data sets locate them; facts from data sets of other models
+  at the same place; a result that can be traced back to its inputs.
 - **Non-functional:** repeatable — the same inputs give the same result; scales to tens of thousands of records per
   data set and a handful of data sets per kind; adding a kind costs configuration rather than a new algorithm.
 
@@ -63,10 +67,14 @@ own units, so distances still have to be converted to metres.
 
 Records are matched **one-to-one, closest first**, and the merged result is published as **a data set of its own**.
 
-- **Configuration per kind:** the data model, the input data sets in priority order, and the match radius.
-- **Matching:** only records of the same model and from different data sets are compared, by the distance between one
-  representative point each. Pairs within the radius are accepted closest first while a group holds at most one record
+- **Configuration per kind:** the data model, the input data sets in priority order, and the match radius; optionally,
+  data sets of other models that enrich it, each with the attributes it supplies.
+- **Matching:** records of the merged data set's model, from different data sets, are compared by the distance between
+  one representative point each. Pairs within the radius are accepted closest first while a group holds at most one record
   per data set and every member lies within the radius of every other. Ties are broken by identifier.
+- **Enrichment:** a record of another model supplies its configured attributes to every merged entity whose
+  representative point lies within its area, or within the radius of its point. It is not matched one-to-one, one
+  record can enrich many entities, and it never forms or joins an entity of its own.
 - **Geometry:** whether areas are compared by their full shape through GEOS, instead of by one representative point,
   is left undecided. It becomes relevant where data sets describe the same things as areas or at different
   granularity.
@@ -74,17 +82,21 @@ Records are matched **one-to-one, closest first**, and the merged result is publ
 - **Publication:** the merged data set has its own source identifier and uses an existing data model of the kind. The
   input data sets stay published unchanged.
 - **Survivorship:** each attribute takes the value of the highest-priority input that states it. An absent value never
-  overrides a stated one.
+  overrides a stated one. An enriching data set only supplies attributes that no matched input states.
 - **Identity:** a merged entity's identifier derives from its highest-priority member, so it is stable across runs
   while that member exists.
-- **Provenance:** a merged entity lists the identifiers of the input entities it was built from.
-- **Timing:** a merge runs after a full import, and only when every one of its inputs imported successfully.
+- **Provenance:** a merged entity lists the identifiers of the input entities it was built from, enriching ones
+  included.
+- **Timing:** a merge runs after a full import, and only when every one of its inputs, enriching ones included,
+  imported successfully.
 - **Removal:** entities of a merged data set that a run no longer produces are deleted.
 
 Rationale:
 
 - One-to-one matching separates neighbouring things that a fixed radius merges, without the training data linkage
   needs.
+- Keeping enrichment apart from matching lets another kind of data add facts without being mistaken for a record of
+  the same thing.
 - A separate data set leaves every input intact and attributable, so a wrong merge is fixed by rerunning, not by
   repairing inputs.
 - Priority survivorship and member-derived identity keep a run repeatable and explainable.
@@ -97,6 +109,7 @@ Rationale:
   inputs.
 - Consumers who need a single picture read one data set; those who need a specific source keep reading it.
 - A new kind needs a configuration, not a new algorithm.
+- Data sets of other models add facts to a merged entity without becoming part of its identity.
 - The matching depends only on positions and identifiers, so it can be tested and tuned without a broker.
 
 ### Negative / Trade-offs
@@ -107,6 +120,8 @@ Rationale:
   merged with different neighbours, or left apart.
 - A thing described at different granularity by different data sets, such as a facility and the units within it, is
   not one-to-one and is not resolved by this matching.
+- Enrichment by area depends on how areas are compared, which is left undecided; a point near an area's edge, or in
+  two overlapping areas, takes its value from whichever test that decision settles on.
 - A merged entity's identifier changes when its highest-priority member disappears.
 - Priority applies per data set, not per attribute, so a data set that is better for some attributes than others
   needs that expressed in code for its kind.
