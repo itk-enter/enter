@@ -17,7 +17,9 @@ class SourceControllerTest extends WebTestCase
         $ids = array_column($this->sources(static::createClient()), 'id');
 
         $this->assertContains('mtm_spatialmaps-handicap-parking', $ids);
-        $this->assertContains('osm-handicap-parking', $ids);
+        $this->assertContains('osm-handicap-parking-spot', $ids);
+        $this->assertContains('osm-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-off-street', $ids);
         $this->assertContains('test:mtm_spatialmaps-handicap-parking', $ids);
     }
 
@@ -31,7 +33,10 @@ class SourceControllerTest extends WebTestCase
         foreach ($this->sources(static::createClient()) as $source) {
             $this->assertNotSame('', $source['id']);
             $this->assertNotSame('', $source['title']);
-            $this->assertNotSame('', $source['model']);
+            $this->assertNotEmpty($source['models']);
+            foreach ($source['models'] as $model) {
+                $this->assertNotSame('', $model);
+            }
             $this->assertStringStartsWith('https://', $source['context_url']);
 
             $entitiesUrl = urldecode($source['entities_url']);

@@ -7,65 +7,36 @@ namespace App\Test\Source\Osm;
 use App\Geo\Wgs84Transformer;
 use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
-use App\Source\DataType;
-use App\Test\Source\TestDefinition;
-use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * Disabled parking bays in Aarhus Municipality.
+ * Disabled parking in Aarhus Municipality, one source per model.
+ *
+ * The feed mixes two kinds of record: a single reserved bay, and a site with
+ * some number of reserved bays. Each source declares the same feed and
+ * keeps only the records of its own model, so the rule that sorts records
+ * into models lives here: were it to drift between the sources, a record
+ * would be published twice or not at all, and nothing would say so.
  */
-#[When('dev')]
-#[When('test')]
-#[TestDefinition(
-    // By convention the ID as a test source must start with `test:`
-    id: 'test:osm-handicap-parking',
-    title: 'Test: Handicapparkering (OpenStreetMap), Aarhus Kommune',
-    // The Overpass QL in the URL: within Aarhus Municipality (OSM
-    // relation 1784663), select every element tagged as a disabled
-    // parking space (parking_space=disabled) or as reserving bays for
-    // disabled parking (capacity:disabled, excluding "no" and "0").
-    accessUrl: 'http://nginx:8080/test/data/overpass-api.de/api/interpreter?osm-handicap-parking',
-    dataType: DataType::Overpass,
-    mediaType: 'application/json',
-    crs: 'EPSG:4326',
-    model: 'OnStreetParking',
-    contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
-
-    omittedFields: [
-        'amenity' => 'Selector distinguishing a single bay (parking_space) from a facility (parking); the model carries no such distinction.',
-        'capacity' => 'Published for single bays only; on a facility it counts all bays and would overstate the reserved capacity.',
-        'parking' => 'Facility siting (street_side, surface, underground); every record is published under the one model this source names.',
-        'orientation' => 'How bays lie relative to the road; the model has no counterpart.',
-        'disabled' => 'Access restriction on street-side parking; redundant with the category every entity is published with.',
-        'access' => 'Who may enter; mapping it onto permit attributes needs an interpretation the tag values do not support.',
-        'fee:conditional' => 'Time-qualified refinement of fee; the category values the plain fee tag maps onto carry no schedule.',
-        'surface' => 'Paving material; the model has no counterpart. 6% of records carry it.',
-        'wheelchair' => 'Step-free access to the place, not the parking capacity. 3% of records carry it.',
-        'capacity:charging' => 'Bays with charging points; a different subset than the reserved bays this data set publishes. 2% of records carry it.',
-        'operator' => 'Who runs the facility; a fact about the business rather than its reserved bays. 1% of records carry it.',
-        'brand' => 'Commercial brand of the facility; the name already identifies it. Under 1% of records carry it.',
-    ],
-    dataUrlBase: 'https://overpass-api.de/api/interpreter',
-    dataUrlQuery: [
-        'data' => <<<'DATA'
-[out:json][timeout:180];
-area(3601784663)->.a;
-(
- nwr["parking_space"="disabled"](area.a);
- nwr["capacity:disabled"]["capacity:disabled"!~"^(no|0)$"](area.a);
-);
-out geom tags;
-DATA,
-    ]
-)]
-final class TestHandicapParking extends AbstractSource
+abstract class AbstractTestHandicapParking extends AbstractSource
 {
+    protected const string PARKING_SPOT = 'ParkingSpot';
+    protected const string ON_STREET_PARKING = 'OnStreetParking';
+    protected const string OFF_STREET_PARKING = 'OffStreetParking';
+
     /**
-     * Maps one feed record onto an NgsiEntity.
+     * parking=* values placing a site on or beside the carriageway. Every
+     * other value (surface, underground, multi-storey, rooftop, …) places
+     * it off the street.
+     */
+    private const array ON_STREET_SITING = ['street_side', 'lane', 'layby', 'on_kerb', 'half_on_kerb', 'shoulder', 'street'];
+
+    /**
+     * Maps one feed record onto an NgsiEntity, or null when the record
+     * belongs to one of the other models.
      *
      * @param array<string, mixed> $data Overpass JSON element
      */
-    public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
+    final public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
     {
         $type = $data['type'] ?? null;
         $id = $data['id'] ?? null;
@@ -76,30 +47,57 @@ final class TestHandicapParking extends AbstractSource
             return null;
         }
 
+        $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
+
+        $model = $this->definition->model();
+        if ($this->model($tags) !== $model) {
+            return null;
+        }
+
         $geometry = $this->geometry($data);
         if (null === $geometry) {
             return null;
         }
 
-        $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
-
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $this->definition->model, $type, $id),
-            $this->definition->model
-        );
-
-        return $entity
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $model, $type, $id),
+            $model
+        )
             ->setProperty('name', trim((string) ($tags['name'] ?? '')))
             ->setProperty('description', trim((string) ($tags['description'] ?? '')))
-            ->setProperty('category', $this->category($tags))
-            ->setProperty('totalSpotNumber', $this->reservedBays($tags))
-            ->setProperty('source', $this->definition->accessUrl)
+            ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
+
+        return $this->describe($entity, $tags);
     }
 
     /**
-     * Every record is disabled parking; the fee tag refines that with the
-     * model's charging categories. Only its two plain values map — an
+     * Sets what only this source's model holds.
+     *
+     * @param array<string, mixed> $tags
+     */
+    abstract protected function describe(NgsiEntity $entity, array $tags): NgsiEntity;
+
+    /**
+     * On or off the street, as the parking tag states it; null when the feed
+     * does not say. A parking space carries no such tag of its own.
+     *
+     * @param array<string, mixed> $tags
+     */
+    final protected function siting(array $tags): ?string
+    {
+        $parking = $tags['parking'] ?? null;
+
+        if (!\is_string($parking) || '' === $parking) {
+            return null;
+        }
+
+        return \in_array($parking, self::ON_STREET_SITING, true) ? 'onStreet' : 'offStreet';
+    }
+
+    /**
+     * Every site is disabled parking; the fee tag refines that with the
+     * site models' charging categories. Only its two plain values map — an
      * untagged or unrecognised value states nothing about charging rather
      * than assuming free.
      *
@@ -107,7 +105,7 @@ final class TestHandicapParking extends AbstractSource
      *
      * @return list<string>
      */
-    private function category(array $tags): array
+    final protected function siteCategory(array $tags): array
     {
         return match ($tags['fee'] ?? null) {
             'yes' => ['forDisabled', 'feeCharged'],
@@ -117,18 +115,33 @@ final class TestHandicapParking extends AbstractSource
     }
 
     /**
+     * How a site's bays lie relative to the road.
+     *
+     * @param array<string, mixed> $tags
+     */
+    final protected function parkingMode(array $tags): ?string
+    {
+        return match ($tags['orientation'] ?? null) {
+            'parallel' => 'parallelParking',
+            'perpendicular' => 'perpendicularParking',
+            'diagonal' => 'echelonParking',
+            default => null,
+        };
+    }
+
+    /**
      * Number of reserved bays the record carries.
      *
-     * capacity:disabled counts them directly whatever the record is. A single
-     * bay (parking_space=disabled) is reserved in its entirety, so its own
-     * capacity applies — one when untagged, per the tag's definition. A
-     * facility's plain capacity counts all its bays and is never used, and
+     * capacity:disabled counts them directly whatever the record is. A
+     * parking space (parking_space=disabled) is reserved in its entirety, so
+     * its own capacity applies — one when untagged, per the tag's definition.
+     * A facility's plain capacity counts all its bays and is never used, and
      * capacity:disabled=yes states that reserved bays exist without counting
      * them, so nothing is published for it.
      *
      * @param array<string, mixed> $tags
      */
-    private function reservedBays(array $tags): ?int
+    final protected function reservedBays(array $tags): ?int
     {
         if (null !== $count = $this->count($tags, 'capacity:disabled')) {
             return $count;
@@ -139,6 +152,50 @@ final class TestHandicapParking extends AbstractSource
         }
 
         return null;
+    }
+
+    /**
+     * The model a record is published under.
+     *
+     * A record holding exactly one reserved bay and nothing else is that bay,
+     * whether the mapper drew it as a parking space or as a parking area
+     * whose whole capacity is the reserved bay. Anything else is a site with
+     * reserved bays: a facility, or a row of bays drawn as one object. A
+     * site's model follows its siting; where the feed states none, the
+     * record keeps the model every record was published under before
+     * records were sorted.
+     *
+     * @param array<string, mixed> $tags
+     */
+    private function model(array $tags): string
+    {
+        if ($this->isSingleBay($tags)) {
+            return self::PARKING_SPOT;
+        }
+
+        return match ($this->siting($tags)) {
+            'offStreet' => self::OFF_STREET_PARKING,
+            default => self::ON_STREET_PARKING,
+        };
+    }
+
+    /**
+     * A parking space is reserved in its entirety, so it is one bay unless
+     * its capacity says more. A parking area is one bay only when its
+     * capacity is stated and is the one reserved bay; a facility of unknown
+     * size with one reserved bay is still a facility.
+     *
+     * @param array<string, mixed> $tags
+     */
+    private function isSingleBay(array $tags): bool
+    {
+        if (1 !== $this->reservedBays($tags)) {
+            return false;
+        }
+
+        $capacity = $this->count($tags, 'capacity');
+
+        return 1 === $capacity || (null === $capacity && 'disabled' === ($tags['parking_space'] ?? null));
     }
 
     /**

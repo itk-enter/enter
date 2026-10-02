@@ -27,10 +27,10 @@ See the result on <https://enter.local.itkdev.dk/test>.
 One source's entities can be read back on their own by the id they are stamped with; see
 [Reading a source's data](../README.md#reading-a-sources-data).
 
-The map page at `/test` lists the test sources as toggles grouped by model, all off to begin with, and reads a source's
-entities from the broker the first time it is switched on. The checkbox on a group switches every source of that model
-at once. Clicking a feature outlines it and opens a popup with its attributes; where several features overlap, the
-popup lists each.
+The map page at `/test` lists the test sources, each with a toggle per model it publishes, all off to begin with, and
+reads a model's entities from the broker the first time it is switched on. The checkbox on a source switches every
+model of it at once. Clicking a feature outlines it and opens a popup with its attributes under the source and model
+it came from; where several features overlap, the popup lists each.
 
 ### Refreshing test source data
 

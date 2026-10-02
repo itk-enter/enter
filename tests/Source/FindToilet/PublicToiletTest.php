@@ -41,7 +41,7 @@ class PublicToiletTest extends TestCase
     public function testItAddressesEntitiesById(): void
     {
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-findtoilet-862', $this->source->definition->model),
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-findtoilet-862', $this->source->definition->model()),
             $this->entities[0]['id']
         );
     }

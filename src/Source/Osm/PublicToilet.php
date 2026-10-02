@@ -41,7 +41,7 @@ DATA,
     dataType: DataType::Overpass,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    model: 'PublicToilet',
+    models: ['PublicToilet'],
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
     licence: 'https://opendatacommons.org/licenses/odbl/1-0/',
@@ -84,8 +84,8 @@ final class PublicToilet extends AbstractSource
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-%s-%d', $this->definition->model, $type, $id),
-            $this->definition->model
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-osm-%s-%d', $this->definition->model(), $type, $id),
+            $this->definition->model()
         );
 
         [$chargeAmount, $chargeCurrency] = $this->charge($tags);
