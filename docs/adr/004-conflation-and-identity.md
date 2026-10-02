@@ -52,6 +52,13 @@ are harder to explain, and it adds a dependency for cases that the rules above a
 mappers and improve a public source for everyone. It produces edits to that source rather than merged entities to
 publish, requires every input to carry a licence compatible with the shared map, and depends on human review.
 
+**Comparing full geometries through GEOS.** Matching areas by their actual shape rather than one point each, through
+the GEOS geometry engine as a PHP extension, gives exact point-in-area, overlap and edge-distance tests and exact
+centroids. That separates a facility from the units within it, and an area's centroid computed without it loses
+precision at real-world coordinates. GEOS is not part of the PHP runtime images, so the extension has to be built
+into them, for each image variant, from a source with no recent release; it also measures in the coordinates'
+own units, so distances still have to be converted to metres.
+
 ## Decision
 
 Records are matched **one-to-one, closest first**, and the merged result is published as **a data set of its own**.
@@ -60,6 +67,9 @@ Records are matched **one-to-one, closest first**, and the merged result is publ
 - **Matching:** only records of the same model and from different data sets are compared, by the distance between one
   representative point each. Pairs within the radius are accepted closest first while a group holds at most one record
   per data set and every member lies within the radius of every other. Ties are broken by identifier.
+- **Geometry:** whether areas are compared by their full shape through GEOS, instead of by one representative point,
+  is left undecided. It becomes relevant where data sets describe the same things as areas or at different
+  granularity.
 - **Completeness:** a record that matches nothing forms a group of one, so the merged data set covers every input.
 - **Publication:** the merged data set has its own source identifier and uses an existing data model of the kind. The
   input data sets stay published unchanged.
