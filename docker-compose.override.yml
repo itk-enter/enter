@@ -6,7 +6,48 @@ services:
     mariadb: !reset
 
     phpfpm:
-        image: itkdev/php8.5-fpm:latest
+        image: !reset
+        # We want to use GEOS in PHP, cf. https://geophp.net/geos.html.
+        build:
+            # Notice: $ must be quoted (doubled) when used inside dockerfile_inline
+            dockerfile_inline: |
+                # Lifted from https://github.com/farmOS/farmOS/blob/4.x/docker/Dockerfile
+                FROM itkdev/php8.5-fpm:latest AS php-dependencies
+
+                USER root
+
+                # Build and install the GEOS PHP extension.
+                # See https://git.osgeo.org/gitea/geos/php-geos
+                # See https://github.com/libgeos/php-geos
+                ARG PHP_GEOS_VERSION=dfe1ab17b0f155cc315bc13c75689371676e02e1
+                # https://github.com/libgeos/php-geos/commit/dfe1ab17b0f155cc315bc13c75689371676e02e1
+                ADD https://github.com/libgeos/php-geos/archive/$${PHP_GEOS_VERSION}.tar.gz /opt/php-geos.tar.gz
+                RUN apt-get update && apt-get install -y libgeos-dev \
+                  && ( tar xzf /opt/php-geos.tar.gz -C /opt/ \
+                    && cd /opt/php-geos-$${PHP_GEOS_VERSION} \
+                    && ./autogen.sh \
+                    && ./configure \
+                    && make \
+                    && make install \
+                    )
+
+                FROM itkdev/php8.5-fpm:latest
+
+                USER root
+
+                # Install and enable geos.
+                COPY --from=php-dependencies /usr/lib/php/20250925/geos.so /usr/lib/php/20250925/geos.so
+
+                RUN cat > /etc/php/8.5/mods-available/geos.ini <<'EOF'
+                ; configuration for php common module
+                ; priority=20
+                extension=geos.so
+                EOF
+
+                RUN phpenmod -s ALL geos
+
+                USER deploy
+
         depends_on: !reset
 
     nginx:
