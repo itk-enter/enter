@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-67](https://github.com/itk-enter/enter/pull/67)
+  Added ADR 004 on conflation and identity, and the matching engine that
+  groups records from several data sets into one cluster per thing
 * [PR-59](https://github.com/itk-enter/enter/pull/59)
   Added the osm-bench source for benches from OpenStreetMap, published under
   the Bench data model
