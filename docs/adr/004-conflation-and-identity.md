@@ -185,11 +185,14 @@ A merge that needs no rules of its own overrides nothing, and its class body is 
   provenance, publication and removal.
 - A rule needed by several merges lives in a helper they share, not in a class between them and the base class.
 - Whatever rules a merge runs, only records of defining models form groups, and a record belongs to at most one group.
+  The base class checks the groups an override of merging by location returns against these rules, and a run whose
+  groups break them fails without publishing.
 
 ### 1. Fetch
 
 - Every entity of the defining and augmenting models is read from the broker, from every data set that publishes
-  them, with the data set it came from.
+  them, with the data set it came from and its full geometry. The default rules compare its representative point,
+  and a merge's own rules can use the geometry.
 - The merged data set's own entities are left out, as are data sets kept for testing when published data is merged,
   and the other way round.
 
@@ -281,6 +284,7 @@ Rationale:
 - Augmenting data adds facts to merged entities without creating entities or becoming part of their identity.
 - Rules of one kind's own are confined to its class and do not change other merges.
 - Unsettled conflicts are visible on the entity, so they can be followed up at their source.
+- An override of merging by location that breaks the shared rules fails its run instead of publishing a wrong merge.
 - The default matching depends only on positions and identifiers, so it can be tested and tuned without a broker.
 
 ### Negative / Trade-offs
