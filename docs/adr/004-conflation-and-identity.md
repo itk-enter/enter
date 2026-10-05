@@ -131,10 +131,9 @@ attribute**, the way data sets are.
 
 - The data model of the result and the match radius.
 - The defining models: models whose records are matched and can each form a merged entity.
-- Optionally, augmenting models, each with the attributes it supplies. A model is either defining or augmenting in
-  one merge, not both.
+- Optionally, augmenting models, each with the attributes it supplies, named as in the result model. A model is
+  either defining or augmenting in one merge, not both.
 - An ordered list of resolution approaches, for every attribute in conflict.
-- Where an input model names an attribute differently from the result model, the mapping between the two.
 - Optionally, for each of merging by location, resolving conflicts and augmenting, a service of its own that
   replaces or extends that step's default rules.
 
@@ -149,7 +148,6 @@ settled when it is implemented:
     defining: ['ModelA', 'ModelB'],
     augmenting: ['ModelC' => ['attributeX']],
     conflictResolution: [new Majority(), new SourceAuthority(['data-set-1', 'data-set-2'])],
-    mappings: ['ModelB' => ['attributeInModelB' => 'attributeInResultModel']],
     mergingService: MergingForResult::class, // replaces or extends merging by location
     conflictResolutionService: null,         // resolving conflicts runs its defaults
     augmentingService: null,                 // augmenting runs its defaults
@@ -222,7 +220,8 @@ A merge that needs no rules of its own names no services and is declared by conf
 ### 5. Create the merged entity
 
 - Every merged entity is built in the configured data model, an existing model of the kind, with input attributes
-  mapped where configured and taken by name otherwise.
+  taken by name. Where an input model names an attribute differently, the service of the step that uses it relates
+  the two.
 - **Identity:** a merged entity's identifier derives from the member whose identifier sorts first.
 - **Provenance:** a merged entity lists the identifiers of the input entities it was built from, augmenting ones
   included.
@@ -283,6 +282,7 @@ Rationale:
 - A merge with a service cannot be understood from its configuration alone, and the service needs tests of its own.
 - The interface of each step becomes a contract; changing it touches every service built on it.
 - Changing a merge's configuration is a code change and a deploy.
+- A merge that combines models naming the same attribute differently needs a service to relate them.
 - An attribute that needs approaches in a different order from the rest of its merge needs a service for resolving
   conflicts.
 - A merged entity's identifier, and its location where no approach settles it, change when its first-sorting member
