@@ -148,8 +148,8 @@ settled when it is implemented:
     radius: 5.0,
     defining: ['ModelA', 'ModelB'],
     augmenting: ['ModelC' => ['attributeX']],
-    approaches: [new Majority(), new SourceAuthority(['data-set-1', 'data-set-2'])],
-    attributeApproaches: ['location' => [new SourceAuthority(['data-set-2'])]],
+    conflictResolution: [new Majority(), new SourceAuthority(['data-set-1', 'data-set-2'])],
+    attributeConflictResolution: ['location' => [new SourceAuthority(['data-set-2'])]],
     mappings: ['ModelB' => ['attributeInModelB' => 'attributeInResultModel']],
     mergingService: MergingForResult::class, // replaces or extends merging by location
     resolvingService: null,                  // resolving conflicts runs its defaults
