@@ -104,28 +104,36 @@ place. Every rule a kind needs has to become a configuration option, and cases s
 or reconciling models of different shape would grow the configuration into a language of its own.
 
 **Default rules that a configured service can replace or extend per step.** A kind described simply needs
-configuration only, and a kind described in several ways gets code where configuration cannot express its rules. A
-merge with a service can no longer be read from its configuration alone, each service needs tests of its own, and
-the interface of each step becomes a contract the services depend on.
+configuration only, and a kind described in several ways gets code where configuration cannot express its rules. One
+service can serve several merges, but a merge's rules are spread over its configuration and up to three further
+classes, each service needs tests of its own, and the interface of each step becomes a contract the services depend
+on.
+
+**A base class with the default rules, which each merge extends.** Every step is a method of a base class, and a
+merge replaces a step by overriding it or extends it by calling the default from its override. A merge's
+configuration and its rules of its own stay in one class, and the steps that must not change can be closed to
+overriding. A rule needed by several merges has to live in a helper they share, a merge with overrides can no longer
+be read from its configuration alone, and the methods that can be overridden become a contract every merge depends
+on.
 
 #### Declaring a merge
 
 **Configuration files.** Merges are declared in configuration files, apart from the code. A merge can be changed
-without touching a class, but services are named by strings, approaches with arguments need a schema and validation
+without touching a class, but classes are named by strings, approaches with arguments need a schema and validation
 of their own, and merges are declared differently from the data sets they read.
 
 **A class with a definition attribute, the way data sets are declared.** Each merge is a class carrying its
-configuration as an attribute, and the merges are collected by a service tag. Services and approaches are referenced
-as classes and objects that static analysis checks, and merges and data sets are declared alike. Changing a merge is
-a code change and a deploy.
+configuration as an attribute, and the merges are collected by a service tag. Approaches are referenced as objects
+that static analysis checks, rules of the merge's own sit beside its configuration, and merges and data sets are
+declared alike. Changing a merge is a code change and a deploy.
 
 ## Decision
 
 Merges are configured by **model**, run in **five steps** — fetch, merge by location, resolve conflicts, augment,
 create — and publish their result as **a data set of its own**. Inputs either **define** merged entities or only
-**augment** them. Records are matched **one-to-one, closest first** by default, and a merge can name a **service**
-per step that replaces or extends that step's default rules. Each merge is **declared as a class with a definition
-attribute**, the way data sets are.
+**augment** them. Records are matched **one-to-one, closest first** by default. Each merge is **a class with a
+definition attribute**, the way data sets are declared, that **extends a base class** holding the default rules of
+every step and overrides the steps it needs to replace or extend.
 
 ### Configuration per merge
 
@@ -134,11 +142,9 @@ attribute**, the way data sets are.
 - Optionally, augmenting models, each with the attributes it supplies, named as in the result model. A model is
   either defining or augmenting in one merge, not both.
 - An ordered list of resolution approaches, for every attribute in conflict.
-- Optionally, for each of merging by location, resolving conflicts and augmenting, a service of its own that
-  replaces or extends that step's default rules.
 
-A merge is declared like this, where the names, keys and values are illustrative and the attribute's exact shape is
-settled when it is implemented:
+A merge is declared like this, where the names, keys and values are illustrative and the exact shape of the attribute
+and the base class is settled when they are implemented:
 
 ```php
 #[Conflation(
@@ -148,26 +154,36 @@ settled when it is implemented:
     defining: ['ModelA', 'ModelB'],
     augmenting: ['ModelC' => ['attributeX']],
     conflictResolution: [new Majority(), new SourceAuthority(['data-set-1', 'data-set-2'])],
-    mergingService: MergingForResult::class, // replaces or extends merging by location
-    conflictResolutionService: null,         // resolving conflicts runs its defaults
-    augmentingService: null,                 // augmenting runs its defaults
 )]
-final class MergedResult
+final class MergedResult extends AbstractConflation
 {
+    // Replaces merging by location.
+    protected function mergeByLocation(array $records): array
+    {
+        // …
+    }
+
+    // Extends augmenting: the defaults first, then rules of this merge's own.
+    protected function augment(array $entities): array
+    {
+        $entities = parent::augment($entities);
+
+        // …
+    }
 }
 ```
 
-A merge that needs no rules of its own names no services and is declared by configuration alone.
+A merge that needs no rules of its own overrides nothing, and its class body is empty.
 
-### Default rules and services
+### Default rules and rules of a merge's own
 
-- Every step has default rules, and a merge that names no service runs the defaults alone.
-- Each of merging by location, resolving conflicts and augmenting can be given a service of its own, configured per
-  merge. A merge can name one, several or none of them, and a step without a service runs its defaults.
-- A step's service replaces or extends only that step's default rules, such as to match points against areas, to
-  settle an attribute by a rule of the kind's own, or to reconcile models of different shape.
-- Fetching and creating cannot be replaced, so every merge keeps the same rules for its inputs, identity, provenance,
-  publication and removal.
+- The base class holds the default rules of every step, and a merge that overrides nothing runs the defaults alone.
+- A merge can override merging by location, resolving conflicts and augmenting, one, several or none of them. An
+  override replaces that step's default rules, or extends them by calling the default, such as to match points
+  against areas, to settle an attribute by a rule of the kind's own, or to reconcile models of different shape.
+- Fetching and creating cannot be overridden, so every merge keeps the same rules for its inputs, identity,
+  provenance, publication and removal.
+- A rule needed by several merges lives in a helper they share, not in a class between them and the base class.
 - Whatever rules a merge runs, only records of defining models form groups, and a record belongs to at most one group.
 
 ### 1. Fetch
@@ -196,7 +212,7 @@ A merge that needs no rules of its own names no services and is declared by conf
 - An attribute is in conflict when the members of a group that state it state different values. An absent value never
   contradicts a stated one.
 - The configured approaches are tried in order until one settles the conflict, the same for every attribute. An
-  attribute that needs rules of its own is settled by the step's service:
+  attribute that needs rules of its own is settled by the merge's override of the step:
   - **Majority:** the value stated by more members than any other settles it. A tie does not.
   - **Source authority:** configured with an ordered list of data sets. The value of the earliest listed data set that
     states one settles it. Members whose data sets are not listed cannot settle it.
@@ -211,8 +227,8 @@ A merge that needs no rules of its own names no services and is declared by conf
   removes or regroups entities or changes their location.
 - **Augmenting models:** a record of an augmenting model supplies its configured attributes to every merged entity
   whose location lies within its area, or within the radius of its point. One record can augment many entities.
-- **The augment step's service:** where one is configured, it replaces or extends the default augmenting, such as to
-  add attributes it derives or looks up, under the same limits.
+- **Rules of the merge's own:** a merge that overrides augmenting replaces or extends the default, such as to add
+  attributes it derives or looks up, under the same limits.
 - Augmenting only fills attributes that the resolved entity lacks. Where several augmenting records supply one
   attribute differently, the same configured approaches settle it, and an unsettled one is recorded like any other
   conflict.
@@ -220,8 +236,8 @@ A merge that needs no rules of its own names no services and is declared by conf
 ### 5. Create the merged entity
 
 - Every merged entity is built in the configured data model, an existing model of the kind, with input attributes
-  taken by name. Where an input model names an attribute differently, the service of the step that uses it relates
-  the two.
+  taken by name. Where an input model names an attribute differently, the merge's override of the step that uses it
+  relates the two.
 - **Identity:** a merged entity's identifier derives from the member whose identifier sorts first.
 - **Provenance:** a merged entity lists the identifiers of the input entities it was built from, augmenting ones
   included.
@@ -241,13 +257,15 @@ Rationale:
 - One-to-one matching separates neighbouring things that a fixed radius merges, without the training data linkage
   needs.
 - Configuring by model lets data sets come and go without touching the merge, and ordered approaches let each kind be
-  settled the way that suits it, with a service for attributes that need rules of their own.
+  settled the way that suits it, with an override for attributes that need rules of their own.
 - Separating defining from augmenting inputs keeps data about something else from creating things or being taken for
   a record of them.
 - Default rules with replaceable steps keep simply described kinds in configuration and give the others code where
   configuration cannot express their rules, while fetching and creating stay common to every merge.
-- Declaring a merge as a class lets static analysis check its services and approaches, and declares merges the way
-  data sets are declared.
+- Declaring a merge as a class lets static analysis check its approaches, and declares merges the way data sets are
+  declared.
+- A base class keeps a merge's configuration and its rules of its own in one class, and closes the steps every merge
+  must share.
 - Separate steps keep matching, resolution, augmentation and publication testable on their own.
 - A separate data set leaves every input intact and attributable, so a wrong merge is fixed by rerunning, not by
   repairing inputs.
@@ -259,9 +277,9 @@ Rationale:
 - One entity per real-world thing is available for every kind with a merge configured.
 - A data set added for a model takes part in its merges without any change to them.
 - Consumers who need a single picture read one data set; those who need a specific source keep reading it.
-- A new kind needs a configuration, and a service only where the defaults do not suit it.
+- A new kind needs a class with its configuration, and code in it only where the defaults do not suit it.
 - Augmenting data adds facts to merged entities without creating entities or becoming part of their identity.
-- Rules of one kind's own are confined to its service and do not change other merges.
+- Rules of one kind's own are confined to its class and do not change other merges.
 - Unsettled conflicts are visible on the entity, so they can be followed up at their source.
 - The default matching depends only on positions and identifiers, so it can be tested and tuned without a broker.
 
@@ -279,11 +297,12 @@ Rationale:
   beyond the radius and stay apart.
 - Augmenting by area depends on how areas are compared, which is left undecided; a location near an area's edge, or in
   two overlapping areas, takes its value from whichever test that decision settles on.
-- A merge with a service cannot be understood from its configuration alone, and the service needs tests of its own.
-- The interface of each step becomes a contract; changing it touches every service built on it.
+- A merge with overrides cannot be understood from its configuration alone, and its overrides need tests of their own.
+- The methods a merge can override become a contract; changing one touches every merge that overrides it.
+- A rule needed by several merges has to be moved into a shared helper.
 - Changing a merge's configuration is a code change and a deploy.
-- A merge that combines models naming the same attribute differently needs a service to relate them.
-- An attribute that needs approaches in a different order from the rest of its merge needs a service for resolving
+- A merge that combines models naming the same attribute differently needs an override to relate them.
+- A merge with an attribute that needs approaches in a different order from the rest has to override resolving
   conflicts.
 - A merged entity's identifier, and its location where no approach settles it, change when its first-sorting member
   disappears, or when a new member sorts before it.
