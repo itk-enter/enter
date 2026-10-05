@@ -82,9 +82,9 @@ changed, and one order has to hold for every attribute.
 
 **Naming the models of a merge, with an ordered list of resolution approaches.** The configuration names the models
 to read, and every data set publishing them takes part. Contradictions are settled by approaches tried in a
-configured order, such as majority and then the authority of data sets, per merge or per attribute. A data set added
-for a kind joins without a change, and each attribute can be settled the way that suits it, but a new data set's
-values take part before anyone has judged them, and some contradictions stay unsettled.
+configured order per merge, such as majority and then the authority of data sets. A data set added for a kind joins
+without a change, and each kind can be settled the way that suits it, but a new data set's values take part before
+anyone has judged them, and some contradictions stay unsettled.
 
 #### Data that describes something else
 
@@ -133,7 +133,7 @@ attribute**, the way data sets are.
 - The defining models: models whose records are matched and can each form a merged entity.
 - Optionally, augmenting models, each with the attributes it supplies. A model is either defining or augmenting in
   one merge, not both.
-- An ordered list of resolution approaches, optionally overridden per attribute.
+- An ordered list of resolution approaches, for every attribute in conflict.
 - Where an input model names an attribute differently from the result model, the mapping between the two.
 - Optionally, for each of merging by location, resolving conflicts and augmenting, a service of its own that
   replaces or extends that step's default rules.
@@ -149,10 +149,9 @@ settled when it is implemented:
     defining: ['ModelA', 'ModelB'],
     augmenting: ['ModelC' => ['attributeX']],
     conflictResolution: [new Majority(), new SourceAuthority(['data-set-1', 'data-set-2'])],
-    attributeConflictResolution: ['location' => [new SourceAuthority(['data-set-2'])]],
     mappings: ['ModelB' => ['attributeInModelB' => 'attributeInResultModel']],
     mergingService: MergingForResult::class, // replaces or extends merging by location
-    resolvingService: null,                  // resolving conflicts runs its defaults
+    conflictResolutionService: null,         // resolving conflicts runs its defaults
     augmentingService: null,                 // augmenting runs its defaults
 )]
 final class MergedResult
@@ -198,7 +197,8 @@ A merge that needs no rules of its own names no services and is declared by conf
 
 - An attribute is in conflict when the members of a group that state it state different values. An absent value never
   contradicts a stated one.
-- The configured approaches are tried in order until one settles the conflict:
+- The configured approaches are tried in order until one settles the conflict, the same for every attribute. An
+  attribute that needs rules of its own is settled by the step's service:
   - **Majority:** the value stated by more members than any other settles it. A tie does not.
   - **Source authority:** configured with an ordered list of data sets. The value of the earliest listed data set that
     states one settles it. Members whose data sets are not listed cannot settle it.
@@ -216,7 +216,7 @@ A merge that needs no rules of its own names no services and is declared by conf
 - **The augment step's service:** where one is configured, it replaces or extends the default augmenting, such as to
   add attributes it derives or looks up, under the same limits.
 - Augmenting only fills attributes that the resolved entity lacks. Where several augmenting records supply one
-  attribute differently, the configured approaches settle it, and an unsettled one is recorded like any other
+  attribute differently, the same configured approaches settle it, and an unsettled one is recorded like any other
   conflict.
 
 ### 5. Create the merged entity
@@ -241,8 +241,8 @@ Rationale:
 
 - One-to-one matching separates neighbouring things that a fixed radius merges, without the training data linkage
   needs.
-- Configuring by model lets data sets come and go without touching the merge, and ordered approaches let each kind and
-  attribute be settled the way that suits it.
+- Configuring by model lets data sets come and go without touching the merge, and ordered approaches let each kind be
+  settled the way that suits it, with a service for attributes that need rules of their own.
 - Separating defining from augmenting inputs keeps data about something else from creating things or being taken for
   a record of them.
 - Default rules with replaceable steps keep simply described kinds in configuration and give the others code where
@@ -283,6 +283,8 @@ Rationale:
 - A merge with a service cannot be understood from its configuration alone, and the service needs tests of its own.
 - The interface of each step becomes a contract; changing it touches every service built on it.
 - Changing a merge's configuration is a code change and a deploy.
+- An attribute that needs approaches in a different order from the rest of its merge needs a service for resolving
+  conflicts.
 - A merged entity's identifier, and its location where no approach settles it, change when its first-sorting member
   disappears, or when a new member sorts before it.
 - Until records lost upstream are removed from the broker, merges keep publishing what they said.
