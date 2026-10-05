@@ -108,29 +108,67 @@ configuration only, and a kind described in several ways gets code where configu
 merge with a service can no longer be read from its configuration alone, each service needs tests of its own, and
 the interface of each step becomes a contract the services depend on.
 
+#### Declaring a merge
+
+**Configuration files.** Merges are declared in configuration files, apart from the code. A merge can be changed
+without touching a class, but services are named by strings, approaches with arguments need a schema and validation
+of their own, and merges are declared differently from the data sets they read.
+
+**A class with a definition attribute, the way data sets are declared.** Each merge is a class carrying its
+configuration as an attribute, and the merges are collected by a service tag. Services and approaches are referenced
+as classes and objects that static analysis checks, and merges and data sets are declared alike. Changing a merge is
+a code change and a deploy.
+
 ## Decision
 
 Merges are configured by **model**, run in **five steps** — fetch, merge by location, resolve conflicts, augment,
 create — and publish their result as **a data set of its own**. Inputs either **define** merged entities or only
 **augment** them. Records are matched **one-to-one, closest first** by default, and a merge can name a **service**
-that replaces or extends the default rules of a step.
+per step that replaces or extends that step's default rules. Each merge is **declared as a class with a definition
+attribute**, the way data sets are.
 
 ### Configuration per merge
 
 - The data model of the result and the match radius.
 - The defining models: models whose records are matched and can each form a merged entity.
-- Optionally, augmenting models, each with the attributes it supplies, and augmenting services, in the order they are
-  applied. A model is either defining or augmenting in one merge, not both.
+- Optionally, augmenting models, each with the attributes it supplies. A model is either defining or augmenting in
+  one merge, not both.
 - An ordered list of resolution approaches, optionally overridden per attribute.
 - Where an input model names an attribute differently from the result model, the mapping between the two.
-- Optionally, a service that replaces or extends the default rules of merging by location, resolving conflicts or
-  augmenting.
+- Optionally, for each of merging by location, resolving conflicts and augmenting, a service of its own that
+  replaces or extends that step's default rules.
+
+A merge is declared like this, where the names, keys and values are illustrative and the attribute's exact shape is
+settled when it is implemented:
+
+```php
+#[Conflation(
+    id: 'merged-result',
+    resultModel: 'ResultModel',
+    radius: 5.0,
+    defining: ['ModelA', 'ModelB'],
+    augmenting: ['ModelC' => ['attributeX']],
+    approaches: [new Majority(), new SourceAuthority(['data-set-1', 'data-set-2'])],
+    attributeApproaches: ['location' => [new SourceAuthority(['data-set-2'])]],
+    mappings: ['ModelB' => ['attributeInModelB' => 'attributeInResultModel']],
+    mergingService: MergingForResult::class, // replaces or extends merging by location
+    resolvingService: null,                  // resolving conflicts runs its defaults
+    augmentingService: null,                 // augmenting runs its defaults
+)]
+final class MergedResult
+{
+}
+```
+
+A merge that needs no rules of its own names no services and is declared by configuration alone.
 
 ### Default rules and services
 
 - Every step has default rules, and a merge that names no service runs the defaults alone.
-- A configured service can replace or extend the defaults of merging by location, resolving conflicts and augmenting,
-  such as to match points against areas or to reconcile models of different shape.
+- Each of merging by location, resolving conflicts and augmenting can be given a service of its own, configured per
+  merge. A merge can name one, several or none of them, and a step without a service runs its defaults.
+- A step's service replaces or extends only that step's default rules, such as to match points against areas, to
+  settle an attribute by a rule of the kind's own, or to reconcile models of different shape.
 - Fetching and creating cannot be replaced, so every merge keeps the same rules for its inputs, identity, provenance,
   publication and removal.
 - Whatever rules a merge runs, only records of defining models form groups, and a record belongs to at most one group.
@@ -175,11 +213,11 @@ that replaces or extends the default rules of a step.
   removes or regroups entities or changes their location.
 - **Augmenting models:** a record of an augmenting model supplies its configured attributes to every merged entity
   whose location lies within its area, or within the radius of its point. One record can augment many entities.
-- **Augmenting services:** a configured service receives each resolved entity and can add attributes it derives or
-  looks up.
-- Augmenting only fills attributes that the resolved entity lacks. Augmenting models are applied before augmenting
-  services, and services in their configured order. Where several augmenting records supply one attribute
-  differently, the configured approaches settle it, and an unsettled one is recorded like any other conflict.
+- **The augment step's service:** where one is configured, it replaces or extends the default augmenting, such as to
+  add attributes it derives or looks up, under the same limits.
+- Augmenting only fills attributes that the resolved entity lacks. Where several augmenting records supply one
+  attribute differently, the configured approaches settle it, and an unsettled one is recorded like any other
+  conflict.
 
 ### 5. Create the merged entity
 
@@ -187,7 +225,7 @@ that replaces or extends the default rules of a step.
   mapped where configured and taken by name otherwise.
 - **Identity:** a merged entity's identifier derives from the member whose identifier sorts first.
 - **Provenance:** a merged entity lists the identifiers of the input entities it was built from, augmenting ones
-  included, and the services that augmented it.
+  included.
 - **Publication:** the merged data set has its own source identifier. The input data sets stay published unchanged.
 - **Removal:** entities of the merged data set that a run no longer produces are deleted.
 
@@ -209,6 +247,8 @@ Rationale:
   a record of them.
 - Default rules with replaceable steps keep simply described kinds in configuration and give the others code where
   configuration cannot express their rules, while fetching and creating stay common to every merge.
+- Declaring a merge as a class lets static analysis check its services and approaches, and declares merges the way
+  data sets are declared.
 - Separate steps keep matching, resolution, augmentation and publication testable on their own.
 - A separate data set leaves every input intact and attributable, so a wrong merge is fixed by rerunning, not by
   repairing inputs.
@@ -242,6 +282,7 @@ Rationale:
   two overlapping areas, takes its value from whichever test that decision settles on.
 - A merge with a service cannot be understood from its configuration alone, and the service needs tests of its own.
 - The interface of each step becomes a contract; changing it touches every service built on it.
+- Changing a merge's configuration is a code change and a deploy.
 - A merged entity's identifier, and its location where no approach settles it, change when its first-sorting member
   disappears, or when a new member sorts before it.
 - Until records lost upstream are removed from the broker, merges keep publishing what they said.
