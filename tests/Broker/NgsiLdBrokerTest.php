@@ -11,7 +11,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 /**
  * The broker hands out and takes at most a thousand entities per request,
- * so a source of more must be read and swept in pages.
+ * so a source of more must be read, written and swept in pages.
  */
 class NgsiLdBrokerTest extends TestCase
 {
@@ -58,6 +58,31 @@ class NgsiLdBrokerTest extends TestCase
         $this->assertCount(2, $this->requests);
         $this->assertCount(1000, json_decode((string) $this->requests[0][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
         $this->assertSame(['urn:ngsi-ld:Bench:1000'], json_decode((string) $this->requests[1][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
+    }
+
+    public function testItUpsertsInBatchesTheBrokerAccepts(): void
+    {
+        $entities = $this->entities(0, 1001);
+
+        $status = $this->broker([new MockResponse('', ['http_code' => 201]), new MockResponse('', ['http_code' => 204])])->upsert($entities);
+
+        $this->assertCount(2, $this->requests);
+        $this->assertCount(1000, json_decode((string) $this->requests[0][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
+        $this->assertSame([$entities[1000]], json_decode((string) $this->requests[1][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
+        $this->assertSame(204, $status);
+    }
+
+    public function testItFailsWhenTheBrokerRefusesABatchOfTheUpsert(): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $this->broker([new MockResponse('', ['http_code' => 201]), new MockResponse('', ['http_code' => 400])])->upsert($this->entities(0, 1001));
+    }
+
+    public function testItSendsNothingToUpsertNothing(): void
+    {
+        $this->assertSame(204, $this->broker([])->upsert([]));
+        $this->assertSame([], $this->requests);
     }
 
     public function testItSendsNothingToDeleteNothing(): void

@@ -22,10 +22,16 @@ final readonly class NgsiLdBroker
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
-     * The most entities the broker hands out per request, and the most ids
-     * sent in one batch delete.
+     * The most entities the broker hands out per request; Scorpio refuses a
+     * larger limit unless its scorpio.entity.max-limit is raised.
      */
     private const int PAGE_SIZE = 1000;
+
+    /**
+     * The most entities sent in one batch operation, per Scorpio's
+     * scorpio.entity.batch-operations.*.max.
+     */
+    private const int BATCH_SIZE = 1000;
 
     /**
      * The payload carries its own @context, so it must be sent as
@@ -42,29 +48,31 @@ final readonly class NgsiLdBroker
     }
 
     /**
+     * Upserts entities, in batches the broker accepts.
+     *
      * @param list<array<string, mixed>> $entities
      *
-     * @return int the broker's HTTP status code
+     * @return int the broker's HTTP status code for the last batch
      */
     public function upsert(array $entities): int
     {
-        if ([] === $entities) {
-            return 204;
-        }
+        $status = 204;
 
-        $response = $this->client->request(
-            'POST',
-            rtrim($this->brokerUrl, '/').self::UPSERT_PATH,
-            [
-                'headers' => ['Content-Type' => self::CONTENT_TYPE],
-                'json' => $entities,
-            ]
-        );
+        foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
+            $response = $this->client->request(
+                'POST',
+                rtrim($this->brokerUrl, '/').self::UPSERT_PATH,
+                [
+                    'headers' => ['Content-Type' => self::CONTENT_TYPE],
+                    'json' => $batch,
+                ]
+            );
 
-        $status = $response->getStatusCode();
+            $status = $response->getStatusCode();
 
-        if ($status >= 400) {
-            throw new \RuntimeException(\sprintf('Broker rejected the upsert with HTTP %d: %s', $status, $response->getContent(false)));
+            if ($status >= 400) {
+                throw new \RuntimeException(\sprintf('Broker rejected the upsert with HTTP %d: %s', $status, $response->getContent(false)));
+            }
         }
 
         return $status;
@@ -128,7 +136,7 @@ final readonly class NgsiLdBroker
      */
     public function delete(array $ids): void
     {
-        foreach (array_chunk($ids, self::PAGE_SIZE) as $batch) {
+        foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
             $response = $this->client->request(
                 'POST',
                 rtrim($this->brokerUrl, '/').self::DELETE_PATH,
