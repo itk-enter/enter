@@ -23,10 +23,11 @@ class SourceImportCommand
         $result = $importer->import($source);
 
         $io->success(sprintf(
-            'Upserted %d entities into %s (HTTP %d).',
+            'Upserted %d entities into %s (HTTP %d) and deleted %d stale ones.',
             $result->count,
             $result->brokerUrl,
-            $result->status
+            $result->status,
+            $result->deleted
         ));
 
         return Command::SUCCESS;

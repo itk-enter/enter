@@ -26,6 +26,10 @@ source feed (JSON)
         → context broker
 ```
 
+After the upsert the import deletes the source's entities it no longer yields: records gone from the feed, and records a
+split feed now sorts into another source's model. An import that yields nothing deletes nothing, as an empty feed is
+likelier an outage than every record gone.
+
 ``` shell
 task import                                                # list the available sources
 task import -- mtm_spatialmaps-handicap-parking                        # import one

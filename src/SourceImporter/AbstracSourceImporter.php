@@ -4,6 +4,7 @@ namespace App\SourceImporter;
 
 use App\Broker\NgsiLdBroker;
 use App\Geo\Wgs84Transformer;
+use App\Import\Exception\SweepFailedException;
 use App\Import\Exception\UpsertFailedException;
 use App\Import\ImportResult;
 use App\Ngsi\NgsiEntity;
@@ -58,6 +59,7 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
 
         $contextUrls = array_merge([$source->definition->contextUrl], $this->contextUrls);
         $payload = [];
+        $ids = [];
         foreach ($this->read($source) as $entity) {
             // The catalogue says what a source publishes, so an entity of
             // another model than the declared one is a mapping error, not data.
@@ -66,6 +68,7 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
             }
 
             $this->info('Building payload for {entity}', ['entity' => $entity->id()]);
+            $ids[] = $entity->id();
             $payload[] = $entity
                 ->setProperty(self::SOURCE_ID_ATTRIBUTE, $source->definition->id)
                 ->toPayload($contextUrls);
@@ -83,7 +86,51 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
             throw new UpsertFailedException($exception);
         }
 
-        return new ImportResult(\count($payload), $status, $this->broker->brokerUrl());
+        try {
+            $deleted = $this->sweep($source, $ids);
+        } catch (\Throwable $exception) {
+            throw new SweepFailedException($exception);
+        }
+
+        return new ImportResult(\count($payload), $deleted, $status, $this->broker->brokerUrl());
+    }
+
+    /**
+     * Deletes the source's entities that this import did not yield: records
+     * gone from the feed, and records a split feed now sorts into another
+     * source's model, which would otherwise be published twice.
+     *
+     * A record that failed to map is not yielded either, so it is deleted
+     * too, which beats publishing what the source no longer says. An import
+     * that yields nothing sweeps nothing: an empty feed is far likelier an
+     * outage than every record gone.
+     *
+     * @param list<string> $ids the entities just upserted
+     *
+     * @return int entities deleted
+     */
+    private function sweep(SourceInterface $source, array $ids): int
+    {
+        if ([] === $ids) {
+            $this->warning('Source {source} yielded no entities; keeping what the broker holds', ['source' => $source->definition->id]);
+
+            return 0;
+        }
+
+        $stale = array_values(array_diff(
+            $this->broker->ids($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
+            $ids,
+        ));
+
+        if (1 === count($stale)) {
+            $this->info('Deleting 1 stale entity');
+        } else {
+            $this->info('Deleting {count} stale entities', ['count' => count($stale)]);
+        }
+
+        $this->broker->delete($stale);
+
+        return \count($stale);
     }
 
     /**
