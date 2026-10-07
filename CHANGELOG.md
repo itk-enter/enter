@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Grouped the `/test` map's toggles by data set, with one per source.
   * Cached each source's response for ten minutes, so sources sharing a
     feed fetch it once.
+  * Deleted a source's entities that its import no longer yields, so a
+    record sorted into another model is not published twice.
+  * Refused partial Overpass results, so a timed-out query cannot sweep
+    away the records it missed.
 * [PR-59](https://github.com/itk-enter/enter/pull/59)
   Added the osm-bench source for benches from OpenStreetMap, published under
   the Bench data model
