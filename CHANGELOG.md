@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Split osm-handicap-parking into one source per model it publishes,
     sharing one data set.
   * Let sources that split one feed declare the data set they share.
+  * Split mtm_spatialmaps-handicap-parking into one source per model it
+    publishes, sharing one data set: a record of one bay is a ParkingSpot,
+    a blank count reads as one bay.
   * Grouped the `/test` map's toggles by data set, with one per source.
   * Cached each source's response for ten minutes, so sources sharing a
     feed fetch it once.
