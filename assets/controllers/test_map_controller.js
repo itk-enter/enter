@@ -4,19 +4,18 @@ import "maplibre-gl/dist/maplibre-gl.min.css";
 import { MARKS_LAYER, wireClicks } from "../test/popup.js";
 
 /*
- * The developer map: each source's entities read from the broker, a layer
- * per model the source publishes, drawn by MapLibre in one colour per data
- * set. It shares its element with the data sets controller and draws
- * whatever that one reports switched on. What a click opens lives in
- * popup.js.
+ * The developer map: each source's entities read from the broker into a
+ * layer of their own, drawn by MapLibre in one colour per data set. It
+ * shares its element with the data sets controller and draws whatever that
+ * one reports switched on. What a click opens lives in popup.js.
  */
 
 /* Center at DOKK1, zoomed out a bunch. */
 const CENTER = [10.2144, 56.1535];
 const ZOOM = 11;
 
-/* What every data set layer's id starts with, so they can be told apart. */
-const LAYER_PREFIX = "dataset-";
+/* What every source layer's id starts with, so they can be told apart. */
+const LAYER_PREFIX = "source-";
 
 /* The most entities the broker hands out per request. */
 const PAGE_SIZE = 1000;
@@ -73,20 +72,20 @@ function nextPage(response, url) {
 }
 
 /*
- * Reads the entities of one model of a data set from the broker, page by
- * page, into one GeoJSON collection.
+ * Reads a source's entities from the broker, page by page, into one
+ * GeoJSON collection.
  *
- * The data set says where its entities are; this narrows that to the model,
- * asks for GeoJSON in the simplified format, which leaves bare values, and
- * follows the broker's link to each next page. The source's context goes in
- * the Link header so the broker expands the model's short name and answers
- * with the names the source declared.
+ * The source says where its entities are; this adds its model, which the
+ * broker requires, asks for GeoJSON in the simplified format, which leaves
+ * bare values, and follows the broker's link to each next page. The
+ * source's context goes in the Link header so the broker expands the
+ * model's short name and answers with the names the source declared.
  */
-async function loadFeatures(dataset, model) {
+async function loadFeatures(source) {
     const features = [];
 
-    let url = new URL(dataset.entities_url, window.location.href);
-    url.searchParams.set("type", model);
+    let url = new URL(source.entities_url, window.location.href);
+    url.searchParams.set("type", source.model);
     url.searchParams.set("format", "simplified");
     url.searchParams.set("limit", PAGE_SIZE);
 
@@ -94,7 +93,7 @@ async function loadFeatures(dataset, model) {
         const response = await fetch(url, {
             headers: {
                 accept: "application/geo+json",
-                link: `<${dataset.context_url}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`,
+                link: `<${source.context_url}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`,
             },
         });
 
@@ -121,11 +120,11 @@ async function loadFeatures(dataset, model) {
 }
 
 /*
- * Adds one model of a data set to the map as a source with an area layer,
- * an outline layer and a point layer, in the data set's colour. Its layers
- * go in below the marks, so a mark is never hidden by what it marks.
+ * Adds a source to the map with an area layer, an outline layer and a point
+ * layer, in its data set's colour. Its layers go in below the marks, so a
+ * mark is never hidden by what it marks.
  */
-function addDataset(map, id, dataset, collection) {
+function addSource(map, id, source, collection) {
     map.addSource(id, { type: "geojson", data: collection });
 
     map.addLayer(
@@ -134,7 +133,7 @@ function addDataset(map, id, dataset, collection) {
             type: "fill",
             source: id,
             paint: {
-                "fill-color": dataset.colour,
+                "fill-color": source.colour,
                 "fill-opacity": 0.35,
             },
         },
@@ -164,7 +163,7 @@ function addDataset(map, id, dataset, collection) {
             source: id,
             filter: ["==", ["geometry-type"], "Point"],
             paint: {
-                "circle-color": dataset.colour,
+                "circle-color": source.colour,
                 "circle-radius": 5,
                 "circle-stroke-color": STROKE_COLOUR,
                 "circle-stroke-width": STROKE_WIDTH,
@@ -218,23 +217,26 @@ export default class extends Controller {
         this.map.remove();
     }
 
-    /* The data sets are known: the popup can name them. */
-    datasets(event) {
-        event.detail.datasets.forEach((dataset) => {
-            this.titles[dataset.id] = dataset.title;
+    /*
+     * The sources are known: the popup can name them, by the data set they
+     * belong to, as the toggles do.
+     */
+    sources(event) {
+        event.detail.sources.forEach((source) => {
+            this.titles[source.id] = source.dataset.title;
         });
     }
 
     /*
-     * One model of a data set was switched on or off. The first time it is
-     * switched on its entities are fetched; a toggle while that is under
-     * way takes effect once the fetch is done.
+     * A source was switched on or off. The first time it is switched on its
+     * entities are fetched; a toggle while that is under way takes effect
+     * once the fetch is done.
      */
     async show(event) {
         await this.ready;
 
-        const { dataset, model, on } = event.detail;
-        const id = `${LAYER_PREFIX}${dataset.index}-${model}`;
+        const { source, on } = event.detail;
+        const id = `${LAYER_PREFIX}${source.index}`;
         this.wanted.set(id, on);
 
         if (this.map.getSource(id) === undefined) {
@@ -242,7 +244,7 @@ export default class extends Controller {
                 return;
             }
             if (!this.loading.has(id)) {
-                this.loading.set(id, this.load(id, dataset, model));
+                this.loading.set(id, this.load(id, source));
             }
             await this.loading.get(id);
         }
@@ -250,10 +252,10 @@ export default class extends Controller {
         setVisible(this.map, id, this.wanted.get(id));
     }
 
-    async load(id, dataset, model) {
+    async load(id, source) {
         try {
-            const collection = await loadFeatures(dataset, model);
-            addDataset(this.map, id, dataset, collection);
+            const collection = await loadFeatures(source);
+            addSource(this.map, id, source, collection);
         } catch (error) {
             /* Leave the layer loadable again on the next toggle. */
             this.loading.delete(id);
@@ -261,7 +263,7 @@ export default class extends Controller {
         }
     }
 
-    /* The ids of every data set layer on the map, hidden ones included. */
+    /* The ids of every source layer on the map, hidden ones included. */
     layers() {
         return this.map
             .getStyle()
