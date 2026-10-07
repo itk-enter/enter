@@ -18,6 +18,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final readonly class NgsiLdBroker
 {
     private const string UPSERT_PATH = '/ngsi-ld/v1/entityOperations/upsert';
+    private const string DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
+    private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
+
+    /**
+     * The most entities the broker hands out per request, and the most ids
+     * sent in one batch delete.
+     */
+    private const int PAGE_SIZE = 1000;
 
     /**
      * The payload carries its own @context, so it must be sent as
@@ -60,6 +68,81 @@ final readonly class NgsiLdBroker
         }
 
         return $status;
+    }
+
+    /**
+     * The ids of every entity of a type whose attribute holds a value, page
+     * by page. Only that attribute is fetched; asking for none at all would
+     * match no entity, as the attributes asked for also filter.
+     *
+     * The context goes in the Link header so the broker expands the type's
+     * short name as the entities were written; without it the broker
+     * expands the name against its core context and answers that nothing
+     * matches.
+     *
+     * @return list<string>
+     */
+    public function ids(string $type, string $contextUrl, string $attribute, string $value): array
+    {
+        $ids = [];
+
+        for ($offset = 0;; $offset += self::PAGE_SIZE) {
+            $response = $this->client->request(
+                'GET',
+                rtrim($this->brokerUrl, '/').self::ENTITIES_PATH,
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
+                    ],
+                    'query' => [
+                        'type' => $type,
+                        'q' => \sprintf('%s=="%s"', $attribute, $value),
+                        'attrs' => $attribute,
+                        'limit' => self::PAGE_SIZE,
+                        'offset' => $offset,
+                    ],
+                ]
+            );
+
+            $status = $response->getStatusCode();
+            if ($status >= 400) {
+                throw new \RuntimeException(\sprintf('Broker refused to list %s entities with HTTP %d: %s', $type, $status, $response->getContent(false)));
+            }
+
+            $page = $response->toArray();
+            foreach ($page as $entity) {
+                $ids[] = (string) $entity['id'];
+            }
+
+            if (\count($page) < self::PAGE_SIZE) {
+                return $ids;
+            }
+        }
+    }
+
+    /**
+     * Deletes entities by id, in batches the broker accepts.
+     *
+     * @param list<string> $ids
+     */
+    public function delete(array $ids): void
+    {
+        foreach (array_chunk($ids, self::PAGE_SIZE) as $batch) {
+            $response = $this->client->request(
+                'POST',
+                rtrim($this->brokerUrl, '/').self::DELETE_PATH,
+                ['json' => $batch]
+            );
+
+            // 207 lists the ids the broker could not delete; one that is
+            // already gone is as good as deleted, so only a refusal of the
+            // whole batch is an error.
+            $status = $response->getStatusCode();
+            if ($status >= 400) {
+                throw new \RuntimeException(\sprintf('Broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
+            }
+        }
     }
 
     public function brokerUrl(): string
