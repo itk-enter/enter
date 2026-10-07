@@ -11,7 +11,6 @@ use App\Source\Definition;
 readonly class TestDefinition extends Definition
 {
     /**
-     * @param list<string>          $models
      * @param array<string, string> $omittedFields
      * @param array<string, mixed>  $dataUrlQuery
      */
@@ -22,11 +21,13 @@ readonly class TestDefinition extends Definition
         DataType $dataType,
         string $mediaType,
         string $crs,
-        array $models,
+        string $model,
         string $contextUrl,
         array $omittedFields,
         public string $dataUrlBase,
         public array $dataUrlQuery = [],
+        ?string $dataset = null,
+        ?string $datasetTitle = null,
     ) {
         parent::__construct(
             id: $id,
@@ -39,11 +40,13 @@ readonly class TestDefinition extends Definition
             dataType: $dataType,
             mediaType: $mediaType,
             crs: $crs,
-            models: $models,
+            model: $model,
             contextUrl: $contextUrl,
             updateFrequency: '',
             licence: '',
             omittedFields: $omittedFields,
+            dataset: $dataset,
+            datasetTitle: $datasetTitle,
         );
     }
 }

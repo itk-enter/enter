@@ -23,6 +23,9 @@ abstract class AbstractHandicapParking extends AbstractSource
     protected const string ON_STREET_PARKING = 'OnStreetParking';
     protected const string OFF_STREET_PARKING = 'OffStreetParking';
 
+    protected const string DATASET = 'osm-handicap-parking';
+    protected const string DATASET_TITLE = 'Handicapparkering (OpenStreetMap), Aarhus Kommune';
+
     /**
      * parking=* values placing a site on or beside the carriageway. Every
      * other value (surface, underground, multi-storey, rooftop, …) places
@@ -49,7 +52,7 @@ abstract class AbstractHandicapParking extends AbstractSource
 
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
-        $model = $this->definition->model();
+        $model = $this->definition->model;
         if ($this->model($tags) !== $model) {
             return null;
         }

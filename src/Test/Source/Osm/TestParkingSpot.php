@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::Overpass,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    models: [self::PARKING_SPOT],
+    model: self::PARKING_SPOT,
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
 
     omittedFields: [
@@ -53,6 +53,8 @@ area(3601784663)->.a;
 out geom tags;
 DATA,
     ],
+    dataset: self::DATASET,
+    datasetTitle: self::DATASET_TITLE,
 )]
 final class TestParkingSpot extends AbstractTestHandicapParking
 {

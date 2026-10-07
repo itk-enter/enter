@@ -41,7 +41,7 @@ class ToiletOtherTest extends TestCase
     public function testItAddressesEntitiesByThePrimaryKey(): void
     {
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-other-1', $this->source->definition->model()),
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-other-1', $this->source->definition->model),
             $this->entities[0]['id']
         );
     }
@@ -49,7 +49,7 @@ class ToiletOtherTest extends TestCase
     public function testItTakesTheTypeFromTheSourceModel(): void
     {
         foreach ($this->entities as $entity) {
-            $this->assertSame($this->source->definition->model(), $entity['type']);
+            $this->assertSame($this->source->definition->model, $entity['type']);
         }
     }
 

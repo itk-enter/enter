@@ -33,16 +33,30 @@ class SourceControllerTest extends WebTestCase
         foreach ($this->sources(static::createClient()) as $source) {
             $this->assertNotSame('', $source['id']);
             $this->assertNotSame('', $source['title']);
-            $this->assertNotEmpty($source['models']);
-            foreach ($source['models'] as $model) {
-                $this->assertNotSame('', $model);
-            }
+            $this->assertNotSame('', $source['model']);
             $this->assertStringStartsWith('https://', $source['context_url']);
 
             $entitiesUrl = urldecode($source['entities_url']);
             $this->assertStringContainsString('/ngsi-ld/v1/entities?', $entitiesUrl);
             $this->assertStringEndsWith(\sprintf('q=sourceId=="%s"', $source['id']), $entitiesUrl);
         }
+    }
+
+    /**
+     * Sources that split one feed by model are listed under the data set
+     * they share; any other source is a data set of its own.
+     */
+    public function testItGroupsSourcesByTheirDataSet(): void
+    {
+        $datasets = array_column($this->sources(static::createClient()), 'dataset', 'id');
+
+        $handicapParking = ['id' => 'osm-handicap-parking', 'title' => 'Handicapparkering (OpenStreetMap), Aarhus Kommune'];
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-spot']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-on-street']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-off-street']);
+
+        $this->assertSame('osm-bench', $datasets['osm-bench']['id']);
+        $this->assertNotSame('', $datasets['osm-bench']['title']);
     }
 
     public function testItListsEverySourceOnAPage(): void

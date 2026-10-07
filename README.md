@@ -56,7 +56,7 @@ final readonly class MySource extends AbstractSource
             accessUrl: 'https://my-data.example.com/data',
             mediaType: 'application/geo+json',
             crs: 'EPSG:4326',
-            models: ['MyModel'],
+            model: 'MyModel',
             contextUrl: '',
             updateFrequency: 'daily',
         );
@@ -66,9 +66,9 @@ final readonly class MySource extends AbstractSource
 }
 ```
 
-A source declares every model it publishes. A feed whose records are of one kind names one model; a feed that
-mixes kinds — say single bays and whole facilities — names one per kind, and the adapter picks the model for each
-record. The import refuses an entity of a model its source does not declare.
+A source publishes one model. A feed that mixes kinds of record — say single bays and whole facilities — is split
+over one source per kind, each keeping only its own records, and the sources name the data set they share with
+`dataset` and `datasetTitle`. The import refuses an entity of any other model than the source's own.
 
 Run
 

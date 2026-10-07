@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::GeoJSON,
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
-    models: ['OnStreetParking'],
+    model: 'OnStreetParking',
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
     omittedFields: [
         'ident' => 'Single-letter code; its meaning is not documented and not confirmed by the data owner.',
@@ -61,8 +61,8 @@ final class TestHandicapParking extends AbstractSource
         }
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $this->definition->model(), $key),
-            $this->definition->model()
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $this->definition->model, $key),
+            $this->definition->model
         );
 
         return $entity

@@ -78,7 +78,7 @@ class HandicapParkingTest extends TestCase
     {
         $models = [];
         foreach ($this->sources as $source) {
-            $models[$source->definition->id] = $source->definition->model();
+            $models[$source->definition->id] = $source->definition->model;
         }
 
         $this->assertSame([
@@ -98,6 +98,13 @@ class HandicapParkingTest extends TestCase
         $urls = array_map(static fn (AbstractHandicapParking $source): string => $source->definition->accessUrlWithQuery(), $this->sources);
 
         $this->assertCount(1, array_unique($urls));
+    }
+
+    public function testTheSourcesBelongToOneDataSet(): void
+    {
+        $datasets = array_map(static fn (AbstractHandicapParking $source): array => [$source->definition->dataset, $source->definition->datasetTitle], $this->sources);
+
+        $this->assertSame([['osm-handicap-parking', 'Handicapparkering (OpenStreetMap), Aarhus Kommune']], array_values(array_unique($datasets, \SORT_REGULAR)));
     }
 
     public function testItTypesAParkingSpaceAsABay(): void

@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::GeoJSON,
     mediaType: 'application/geo+json',
     crs: 'EPSG:25832',
-    models: ['PublicToilet'],
+    model: 'PublicToilet',
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'familie' => 'Category designation; constant "Toilet" throughout the export, redundant with the model every entity is published under.',
@@ -59,8 +59,8 @@ final class TestToiletCity extends AbstractSource
         }
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-city-%s', $this->definition->model(), $key),
-            $this->definition->model()
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-city-%s', $this->definition->model, $key),
+            $this->definition->model
         );
 
         return $entity

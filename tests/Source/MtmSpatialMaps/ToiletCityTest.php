@@ -41,7 +41,7 @@ class ToiletCityTest extends TestCase
     public function testItAddressesEntitiesByThePrimaryKey(): void
     {
         $this->assertSame(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-city-3', $this->source->definition->model()),
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-city-3', $this->source->definition->model),
             $this->entities[0]['id']
         );
     }

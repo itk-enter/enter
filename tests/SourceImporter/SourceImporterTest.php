@@ -47,7 +47,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * The catalogue says which models a source publishes, and the map, the
+     * The catalogue says which model a source publishes, and the map, the
      * list of sources and any reader trust it. A mapping that strays from
      * it is a bug to fix, not data to publish.
      */
@@ -137,7 +137,7 @@ class SourceImporterTest extends TestCase
     dataType: DataType::GeoJSON,
     mediaType: 'application/geo+json',
     crs: 'EPSG:4326',
-    models: ['OnStreetParking'],
+    model: 'OnStreetParking',
     contextUrl: 'https://example.com/context.jsonld',
     updateFrequency: '',
     licence: null,

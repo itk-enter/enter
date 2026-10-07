@@ -29,7 +29,7 @@ use App\Source\Definition;
     dataType: DataType::FindToilet,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    models: ['PublicToilet'],
+    model: 'PublicToilet',
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
 
@@ -72,8 +72,8 @@ final class PublicToilet extends AbstractSource
         $geometry = ['type' => 'Point', 'coordinates' => [(float) $longitude, (float) $latitude]];
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-findtoilet-%s', $this->definition->model(), $id),
-            $this->definition->model()
+            \sprintf('urn:ngsi-ld:%s:aarhus-toilet-findtoilet-%s', $this->definition->model, $id),
+            $this->definition->model
         );
 
         [$placement, $openingHours] = $this->description((string) ($data['description'] ?? ''));

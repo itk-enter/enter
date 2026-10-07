@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     dataType: DataType::Overpass,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    models: ['Bench'],
+    model: 'Bench',
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/Bench/v0.0.1/dataModel.PointOfInterest/context.jsonld',
     omittedFields: [
         'amenity' => 'Selector; every record is published under the one model this source names.',
@@ -107,8 +107,8 @@ final class TestBench extends AbstractSource
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
         $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-bench-osm-%s-%d', $this->definition->model(), $type, $id),
-            $this->definition->model()
+            \sprintf('urn:ngsi-ld:%s:aarhus-bench-osm-%s-%d', $this->definition->model, $type, $id),
+            $this->definition->model
         );
 
         $material = $this->tag($tags, 'material');

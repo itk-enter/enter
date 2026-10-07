@@ -40,7 +40,7 @@ DATA,
     dataType: DataType::Overpass,
     mediaType: 'application/json',
     crs: 'EPSG:4326',
-    models: [self::OFF_STREET_PARKING],
+    model: self::OFF_STREET_PARKING,
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
     updateFrequency: 'continuous',
     licence: 'https://opendatacommons.org/licenses/odbl/1-0/',
@@ -56,6 +56,8 @@ DATA,
         'operator' => 'Who runs the facility; a fact about the business rather than its reserved bays.',
         'brand' => 'Commercial brand of the facility; the name already identifies it.',
     ],
+    dataset: self::DATASET,
+    datasetTitle: self::DATASET_TITLE,
 )]
 final class OffStreetParking extends AbstractHandicapParking
 {

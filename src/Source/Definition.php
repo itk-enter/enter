@@ -17,8 +17,8 @@ readonly class Definition
      *      url: string,
      *      query: array<string, mixed>
      * } $accessUrl
-     * @param list<string>          $models        the Smart Data Models a source publishes; one per kind of record it sorts its feed into
      * @param array<string, string> $omittedFields
+     * @param ?string               $dataset       the data set a source shares with others reading the same feed, one per model; null when the source is the whole data set
      */
     public function __construct(
         public string $id,
@@ -31,33 +31,17 @@ readonly class Definition
         public DataType $dataType,
         public string $mediaType,
         public string $crs,
-        public array $models,
+        public string $model,
         public string $contextUrl,
         public string $updateFrequency,
         public ?string $licence,
         public array $omittedFields,
+        public ?string $dataset = null,
+        public ?string $datasetTitle = null,
     ) {
-        if ([] === $models || !array_is_list($models)) {
-            throw new \InvalidArgumentException(sprintf('Source %s must declare a list of at least one model.', $id));
+        if ((null === $dataset) !== (null === $datasetTitle)) {
+            throw new \InvalidArgumentException(sprintf('Source %s must declare both a dataset and its title, or neither.', $id));
         }
-        foreach ($models as $model) {
-            if (!\is_string($model) || '' === $model) {
-                throw new \InvalidArgumentException(sprintf('Source %s declares an invalid model.', $id));
-            }
-        }
-    }
-
-    /**
-     * The model of a source whose records are all of one kind.
-     *
-     * A source that sorts its records into several kinds picks the model per
-     * record instead, so asking it for the one model is a mistake.
-     */
-    public function model(): string
-    {
-        return 1 === \count($this->models)
-            ? $this->models[0]
-            : throw new \LogicException(sprintf('Source %s publishes %d models; the model is chosen per record.', $this->id, \count($this->models)));
     }
 
     /**
@@ -126,11 +110,15 @@ readonly class Definition
             'data_type' => $this->dataType,
             'media_type' => $this->mediaType,
             'crs' => $this->crs,
-            'models' => $this->models,
+            'model' => $this->model,
             'context_url' => $this->contextUrl,
             'update_frequency' => $this->updateFrequency,
             'licence' => $this->licence,
             'omitted_fields' => $this->omittedFields,
+            'dataset' => [
+                'id' => $this->dataset ?? $this->id,
+                'title' => $this->datasetTitle ?? $this->title,
+            ],
         ];
     }
 }
