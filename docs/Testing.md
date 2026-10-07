@@ -15,10 +15,10 @@ docker compose exec phpfpm php bin/console test:source:list
 
 (the `app:source:list` command will list all source; including test sources.)
 
-Example: Import and show data from the test source `test:mtm_spatialmaps-handicap-parking`:
+Example: Import and show data from the test source `test:mtm_spatialmaps-handicap-parking-on-street`:
 
 ```shell
-docker compose exec phpfpm php bin/console app:source:import test:mtm_spatialmaps-handicap-parking
+docker compose exec phpfpm php bin/console app:source:import test:mtm_spatialmaps-handicap-parking-on-street
 docker compose exec phpfpm curl 'http://scorpio:9090/ngsi-ld/v1/entities?type=https://smartdatamodels.org/dataModel.Parking/OnStreetParking'
 ```
 

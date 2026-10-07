@@ -75,7 +75,7 @@ tasks:
   test:sourceReader: *test_task
 
   import:
-    desc: 'Import a source into the broker, e.g. `task {{.TASK}} -- mtm_spatialmaps-handicap-parking`'
+    desc: 'Import a source into the broker, e.g. `task {{.TASK}} -- mtm_spatialmaps-handicap-parking-spot`'
     cmd:
       task: console
       vars:

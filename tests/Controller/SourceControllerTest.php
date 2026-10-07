@@ -16,11 +16,13 @@ class SourceControllerTest extends WebTestCase
     {
         $ids = array_column($this->sources(static::createClient()), 'id');
 
-        $this->assertContains('mtm_spatialmaps-handicap-parking', $ids);
+        $this->assertContains('mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('mtm_spatialmaps-handicap-parking-on-street', $ids);
         $this->assertContains('osm-handicap-parking-spot', $ids);
         $this->assertContains('osm-handicap-parking-on-street', $ids);
         $this->assertContains('osm-handicap-parking-off-street', $ids);
-        $this->assertContains('test:mtm_spatialmaps-handicap-parking', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-on-street', $ids);
     }
 
     /**
@@ -54,6 +56,10 @@ class SourceControllerTest extends WebTestCase
         $this->assertSame($handicapParking, $datasets['osm-handicap-parking-spot']);
         $this->assertSame($handicapParking, $datasets['osm-handicap-parking-on-street']);
         $this->assertSame($handicapParking, $datasets['osm-handicap-parking-off-street']);
+
+        $register = ['id' => 'mtm_spatialmaps-handicap-parking', 'title' => 'Handicapparkering, Aarhus Kommune'];
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-spot']);
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-on-street']);
 
         $this->assertSame('osm-bench', $datasets['osm-bench']['id']);
         $this->assertNotSame('', $datasets['osm-bench']['title']);

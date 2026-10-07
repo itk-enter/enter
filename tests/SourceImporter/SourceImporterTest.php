@@ -11,7 +11,7 @@ use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
 use App\Source\DataType;
 use App\Source\Definition;
-use App\Source\MtmSpatialMaps\HandicapParking;
+use App\Source\MtmSpatialMaps\OnStreetParking;
 use App\Source\Osm\Bench;
 use App\Source\SourceInterface;
 use App\SourceImporter\GetJsonSourceImporter;
@@ -43,7 +43,7 @@ class SourceImporterTest extends TestCase
      */
     public function testItStampsEveryEntityWithTheIdOfItsSource(): void
     {
-        $source = new HandicapParking();
+        $source = new OnStreetParking();
 
         $this->import($source, $this->features(1, 2));
 
@@ -81,7 +81,7 @@ class SourceImporterTest extends TestCase
     {
         $stale = 'urn:ngsi-ld:OnStreetParking:aarhus-handicap-9';
 
-        $result = $this->import(new HandicapParking(), $this->features(1, 2), held: [
+        $result = $this->import(new OnStreetParking(), $this->features(1, 2), held: [
             'urn:ngsi-ld:OnStreetParking:aarhus-handicap-1',
             $stale,
             'urn:ngsi-ld:OnStreetParking:aarhus-handicap-2',
@@ -98,7 +98,7 @@ class SourceImporterTest extends TestCase
      */
     public function testItAsksTheBrokerForTheEntitiesStampedWithTheSourceId(): void
     {
-        $source = new HandicapParking();
+        $source = new OnStreetParking();
 
         $this->import($source, $this->features(1));
 
@@ -108,7 +108,7 @@ class SourceImporterTest extends TestCase
         [, $url, $options] = $listings[0];
         parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
         $this->assertSame('OnStreetParking', $query['type']);
-        $this->assertSame('sourceId=="mtm_spatialmaps-handicap-parking"', $query['q']);
+        $this->assertSame('sourceId=="mtm_spatialmaps-handicap-parking-on-street"', $query['q']);
         $this->assertContains(
             \sprintf('Link: <%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $source->definition->contextUrl),
             $options['headers'],
@@ -117,7 +117,7 @@ class SourceImporterTest extends TestCase
 
     public function testItDeletesNothingWhenTheBrokerHoldsOnlyWhatTheImportYields(): void
     {
-        $result = $this->import(new HandicapParking(), $this->features(1), held: [
+        $result = $this->import(new OnStreetParking(), $this->features(1), held: [
             'urn:ngsi-ld:OnStreetParking:aarhus-handicap-1',
         ]);
 
@@ -131,7 +131,7 @@ class SourceImporterTest extends TestCase
      */
     public function testItKeepsWhatTheBrokerHoldsWhenTheImportYieldsNothing(): void
     {
-        $result = $this->import(new HandicapParking(), $this->features(), held: [
+        $result = $this->import(new OnStreetParking(), $this->features(), held: [
             'urn:ngsi-ld:OnStreetParking:aarhus-handicap-1',
         ]);
 
