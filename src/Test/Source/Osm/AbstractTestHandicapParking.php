@@ -146,12 +146,12 @@ abstract class AbstractTestHandicapParking extends AbstractSource
      */
     final protected function reservedBays(array $tags): ?int
     {
-        if (null !== $count = $this->count($tags, 'capacity:disabled')) {
+        if (null !== $count = $this->tagAsInt($tags, 'capacity:disabled')) {
             return $count;
         }
 
         if ('disabled' === ($tags['parking_space'] ?? null)) {
-            return $this->count($tags, 'capacity') ?? 1;
+            return $this->tagAsInt($tags, 'capacity') ?? 1;
         }
 
         return null;
@@ -196,15 +196,17 @@ abstract class AbstractTestHandicapParking extends AbstractSource
             return false;
         }
 
-        $capacity = $this->count($tags, 'capacity');
+        $capacity = $this->tagAsInt($tags, 'capacity');
 
         return 1 === $capacity || (null === $capacity && 'disabled' === ($tags['parking_space'] ?? null));
     }
 
     /**
+     * The tag's value as a whole number, or null when it is not one.
+     *
      * @param array<string, mixed> $tags
      */
-    private function count(array $tags, string $tag): ?int
+    private function tagAsInt(array $tags, string $tag): ?int
     {
         $value = $tags[$tag] ?? null;
 
