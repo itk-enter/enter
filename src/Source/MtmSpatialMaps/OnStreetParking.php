@@ -14,7 +14,7 @@ use App\Source\Definition;
  */
 #[Definition(
     id: 'mtm_spatialmaps-handicap-parking-on-street',
-    title: 'Handicapparkering på gaden, Aarhus Kommune',
+    title: 'Handicapparkering på gaden (MTM), Aarhus Kommune',
     description: 'Locations in Aarhus Municipality with several disabled parking bays, with the number of reserved bays per location.',
     publisher: 'Aarhus Kommune',
     contact: 'ppg@aarhus.dk',

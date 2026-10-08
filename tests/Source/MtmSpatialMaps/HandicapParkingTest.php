@@ -96,7 +96,7 @@ class HandicapParkingTest extends TestCase
     {
         $datasets = array_map(static fn (AbstractHandicapParking $source): array => [$source->definition->dataset, $source->definition->datasetTitle], $this->sources);
 
-        $this->assertSame([['mtm_spatialmaps-handicap-parking', 'Handicapparkering, Aarhus Kommune']], array_values(array_unique($datasets, \SORT_REGULAR)));
+        $this->assertSame([['mtm_spatialmaps-handicap-parking', 'Handicapparkering (MTM), Aarhus Kommune']], array_values(array_unique($datasets, \SORT_REGULAR)));
     }
 
     public function testItTypesARecordOfOneBayAsABay(): void

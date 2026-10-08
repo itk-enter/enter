@@ -57,7 +57,7 @@ class SourceControllerTest extends WebTestCase
         $this->assertSame($handicapParking, $datasets['osm-handicap-parking-on-street']);
         $this->assertSame($handicapParking, $datasets['osm-handicap-parking-off-street']);
 
-        $register = ['id' => 'mtm_spatialmaps-handicap-parking', 'title' => 'Handicapparkering, Aarhus Kommune'];
+        $register = ['id' => 'mtm_spatialmaps-handicap-parking', 'title' => 'Handicapparkering (MTM), Aarhus Kommune'];
         $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-spot']);
         $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-on-street']);
 

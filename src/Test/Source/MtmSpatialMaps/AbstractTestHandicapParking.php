@@ -26,7 +26,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     protected const string ON_STREET_PARKING = 'OnStreetParking';
 
     protected const string DATASET = 'test:mtm_spatialmaps-handicap-parking';
-    protected const string DATASET_TITLE = 'Test: Handicapparkering, Aarhus Kommune';
+    protected const string DATASET_TITLE = 'Test: Handicapparkering (MTM), Aarhus Kommune';
 
     /**
      * Maps one feed record onto an NgsiEntity, or null when the record

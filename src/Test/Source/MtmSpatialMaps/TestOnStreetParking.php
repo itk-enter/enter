@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[TestDefinition(
     // By convention the ID as a test source must start with `test:`
     id: 'test:mtm_spatialmaps-handicap-parking-on-street',
-    title: 'Test: Handicapparkering på gaden, Aarhus Kommune',
+    title: 'Test: Handicapparkering på gaden (MTM), Aarhus Kommune',
     accessUrl: 'http://nginx:8080/test/data/webkort.aarhuskommune.dk/spatialmap?mtm_spatialmaps-handicap-parking',
     dataType: DataType::GeoJSON,
     mediaType: 'application/geo+json',
