@@ -122,7 +122,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         }
 
         $stale = array_values(array_diff(
-            $this->broker->ids($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
+            $this->broker->idsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
             $ids,
         ));
 

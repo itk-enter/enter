@@ -25,7 +25,7 @@ class NgsiLdBrokerTest extends TestCase
             new MockResponse(json_encode($this->entities(1000, 1), \JSON_THROW_ON_ERROR)),
         ]);
 
-        $ids = $broker->ids('Bench', 'https://example.com/context.jsonld', 'sourceId', 'osm-bench');
+        $ids = $broker->idsWhereAttributeEquals('Bench', 'https://example.com/context.jsonld', 'sourceId', 'osm-bench');
 
         $this->assertCount(1001, $ids);
         $this->assertSame('urn:ngsi-ld:Bench:1000', $ids[1000]);
@@ -42,7 +42,7 @@ class NgsiLdBrokerTest extends TestCase
      */
     public function testItAsksOnlyForTheAttributeItMatchesOn(): void
     {
-        $this->broker([new MockResponse('[]')])->ids('Bench', 'https://example.com/context.jsonld', 'sourceId', 'osm-bench');
+        $this->broker([new MockResponse('[]')])->idsWhereAttributeEquals('Bench', 'https://example.com/context.jsonld', 'sourceId', 'osm-bench');
 
         parse_str((string) parse_url($this->requests[0][1], \PHP_URL_QUERY), $query);
         $this->assertSame('sourceId=="osm-bench"', $query['q']);

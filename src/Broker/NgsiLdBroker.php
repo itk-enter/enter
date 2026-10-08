@@ -90,7 +90,7 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * The entities a 207 lists as rejected, with the reason the broker gave.
+     * The entities an error 207 lists as rejected, with the reason the broker gave.
      *
      * @return array<string, string>
      */
@@ -114,18 +114,13 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * The ids of every entity of a type whose attribute holds a value, page
-     * by page. Only that attribute is fetched; asking for none at all would
-     * match no entity, as the attributes asked for also filter.
+     * The ids of every entity of a type whose attribute equals a value.
      *
-     * The context goes in the Link header so the broker expands the type's
-     * short name as the entities were written; without it the broker
-     * expands the name against its core context and answers that nothing
-     * matches.
+     * Used to find broker entities that are gone from upstream, in order to delete them.
      *
      * @return list<string>
      */
-    public function ids(string $type, string $contextUrl, string $attribute, string $value): array
+    public function idsWhereAttributeEquals(string $type, string $contextUrl, string $attribute, string $value): array
     {
         $ids = [];
 
