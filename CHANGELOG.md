@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     record sorted into another model is not published twice.
   * Refused partial Overpass results, so a timed-out query cannot sweep
     away the records it missed.
+  * Reported each entity the broker rejects in a batch upsert, with the
+    reason it gave, instead of only the last batch's status.
 * [PR-59](https://github.com/itk-enter/enter/pull/59)
   Added the osm-bench source for benches from OpenStreetMap, published under
   the Bench data model

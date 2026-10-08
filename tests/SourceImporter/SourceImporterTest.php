@@ -115,6 +115,27 @@ class SourceImporterTest extends TestCase
         );
     }
 
+    /**
+     * An entity the broker rejected was still yielded, so the import keeps
+     * what the broker held for it and reports the rejection.
+     */
+    public function testItReportsTheEntitiesTheBrokerRejected(): void
+    {
+        $rejected = 'urn:ngsi-ld:OnStreetParking:aarhus-handicap-2';
+
+        $result = $this->import(new OnStreetParking(), $this->features(1, 2), held: [
+            'urn:ngsi-ld:OnStreetParking:aarhus-handicap-1',
+            $rejected,
+        ], upserted: new MockResponse(json_encode([
+            'success' => ['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1'],
+            'errors' => [['entityId' => $rejected, 'error' => ['detail' => 'Invalid location']]],
+        ], \JSON_THROW_ON_ERROR), ['http_code' => 207]));
+
+        $this->assertSame(207, $result->status);
+        $this->assertSame([$rejected => 'Invalid location'], $result->rejected);
+        $this->assertSame([], $this->deleted());
+    }
+
     public function testItDeletesNothingWhenTheBrokerHoldsOnlyWhatTheImportYields(): void
     {
         $result = $this->import(new OnStreetParking(), $this->features(1), held: [
@@ -162,13 +183,18 @@ class SourceImporterTest extends TestCase
      * Runs one import against a broker that records what it is sent and
      * holds the given entity ids for the source.
      *
-     * @param array<string, mixed> $data the feed as the reader returns it
-     * @param list<string>         $held ids the broker answers a listing with
+     * @param array<string, mixed> $data     the feed as the reader returns it
+     * @param list<string>         $held     ids the broker answers a listing with
+     * @param MockResponse|null    $upserted what the broker answers the upsert with, if not 204
      */
-    private function import(SourceInterface $source, array $data, array $held = []): ImportResult
+    private function import(SourceInterface $source, array $data, array $held = [], ?MockResponse $upserted = null): ImportResult
     {
-        $client = new MockHttpClient(function (string $method, string $url, array $options) use ($held): MockResponse {
+        $client = new MockHttpClient(function (string $method, string $url, array $options) use ($held, $upserted): MockResponse {
             $this->requests[] = [$method, $url, $options];
+
+            if (null !== $upserted && str_ends_with($url, '/entityOperations/upsert')) {
+                return $upserted;
+            }
 
             if ('GET' === $method) {
                 return new MockResponse(json_encode(array_map(

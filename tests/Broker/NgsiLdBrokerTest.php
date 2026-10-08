@@ -64,12 +64,36 @@ class NgsiLdBrokerTest extends TestCase
     {
         $entities = $this->entities(0, 1001);
 
-        $status = $this->broker([new MockResponse('', ['http_code' => 201]), new MockResponse('', ['http_code' => 204])])->upsert($entities);
+        $result = $this->broker([new MockResponse('', ['http_code' => 201]), new MockResponse('', ['http_code' => 204])])->upsert($entities);
 
         $this->assertCount(2, $this->requests);
         $this->assertCount(1000, json_decode((string) $this->requests[0][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
         $this->assertSame([$entities[1000]], json_decode((string) $this->requests[1][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
-        $this->assertSame(204, $status);
+        $this->assertSame(204, $result->status);
+        $this->assertSame([], $result->rejected);
+    }
+
+    /**
+     * A later batch that goes through must not hide the entities an earlier
+     * one had rejected.
+     */
+    public function testItReportsTheEntitiesABatchOfTheUpsertRejected(): void
+    {
+        $partly = json_encode([
+            'success' => ['urn:ngsi-ld:Bench:0'],
+            'errors' => [
+                ['entityId' => 'urn:ngsi-ld:Bench:1', 'error' => ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData', 'title' => 'Bad Request Data', 'detail' => 'Invalid location']],
+                ['entityId' => 'urn:ngsi-ld:Bench:2', 'error' => ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData']],
+            ],
+        ], \JSON_THROW_ON_ERROR);
+
+        $result = $this->broker([new MockResponse($partly, ['http_code' => 207]), new MockResponse('', ['http_code' => 204])])->upsert($this->entities(0, 1001));
+
+        $this->assertSame(207, $result->status);
+        $this->assertSame([
+            'urn:ngsi-ld:Bench:1' => 'Invalid location',
+            'urn:ngsi-ld:Bench:2' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
+        ], $result->rejected);
     }
 
     public function testItFailsWhenTheBrokerRefusesABatchOfTheUpsert(): void
@@ -81,7 +105,7 @@ class NgsiLdBrokerTest extends TestCase
 
     public function testItSendsNothingToUpsertNothing(): void
     {
-        $this->assertSame(204, $this->broker([])->upsert([]));
+        $this->assertSame(204, $this->broker([])->upsert([])->status);
         $this->assertSame([], $this->requests);
     }
 

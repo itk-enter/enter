@@ -50,13 +50,16 @@ final readonly class NgsiLdBroker
     /**
      * Upserts entities, in batches the broker accepts.
      *
-     * @param list<array<string, mixed>> $entities
+     * A batch the broker accepts only in part answers 207, listing the
+     * entities it rejected; the rest of the batch is written, so the upsert
+     * carries on and reports the rejections instead of failing.
      *
-     * @return int the broker's HTTP status code for the last batch
+     * @param list<array<string, mixed>> $entities
      */
-    public function upsert(array $entities): int
+    public function upsert(array $entities): UpsertResult
     {
         $status = 204;
+        $rejected = [];
 
         foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
             $response = $this->client->request(
@@ -68,14 +71,46 @@ final readonly class NgsiLdBroker
                 ]
             );
 
-            $status = $response->getStatusCode();
+            $batchStatus = $response->getStatusCode();
 
-            if ($status >= 400) {
-                throw new \RuntimeException(\sprintf('Broker rejected the upsert with HTTP %d: %s', $status, $response->getContent(false)));
+            if ($batchStatus >= 400) {
+                throw new \RuntimeException(\sprintf('Broker rejected the upsert with HTTP %d: %s', $batchStatus, $response->getContent(false)));
+            }
+
+            if (207 === $batchStatus) {
+                $rejected = [...$rejected, ...$this->rejections($response->getContent(false))];
+            }
+
+            if (207 !== $status) {
+                $status = $batchStatus;
             }
         }
 
-        return $status;
+        return new UpsertResult($status, $rejected);
+    }
+
+    /**
+     * The entities a 207 lists as rejected, with the reason the broker gave.
+     *
+     * @return array<string, string>
+     */
+    private function rejections(string $body): array
+    {
+        $result = json_decode($body, true);
+        $errors = \is_array($result) && \is_array($result['errors'] ?? null) ? $result['errors'] : [];
+
+        $rejected = [];
+        foreach ($errors as $error) {
+            if (!\is_array($error) || !\is_string($error['entityId'] ?? null)) {
+                continue;
+            }
+
+            $problem = \is_array($error['error'] ?? null) ? $error['error'] : [];
+            $reason = $problem['detail'] ?? $problem['title'] ?? $problem['type'] ?? null;
+            $rejected[$error['entityId']] = \is_string($reason) ? $reason : 'no reason given';
+        }
+
+        return $rejected;
     }
 
     /**

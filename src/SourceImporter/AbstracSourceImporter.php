@@ -81,9 +81,13 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
         }
 
         try {
-            $status = $this->broker->upsert($payload);
+            $upsert = $this->broker->upsert($payload);
         } catch (\Throwable $exception) {
             throw new UpsertFailedException($exception);
+        }
+
+        foreach ($upsert->rejected as $id => $reason) {
+            $this->warning('Broker rejected {entity}: {reason}', ['entity' => $id, 'reason' => $reason]);
         }
 
         try {
@@ -92,7 +96,7 @@ abstract class AbstracSourceImporter implements SourceImporterInterface
             throw new SweepFailedException($exception);
         }
 
-        return new ImportResult(\count($payload), $deleted, $status, $this->broker->brokerUrl());
+        return new ImportResult(\count($payload), $deleted, $upsert->status, $this->broker->brokerUrl(), $upsert->rejected);
     }
 
     /**
