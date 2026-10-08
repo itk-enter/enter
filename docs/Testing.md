@@ -27,11 +27,12 @@ See the result on <https://enter.local.itkdev.dk/test>.
 One source's entities can be read back on their own by the id they are stamped with; see
 [Reading a source's data](../README.md#reading-a-sources-data).
 
-The map page at `/test` lists the test data sets, each with a toggle per source, named by the model it publishes, all
-off to begin with, and reads a source's entities from the broker the first time it is switched on. Sources that split
-one feed by model are listed under the data set they share; the checkbox on a data set switches every source of it at
-once. Clicking a feature outlines it and opens a popup with its attributes under the data set and model it came from;
-where several features overlap, the popup lists each.
+The map page at `/test` lists the test sources grouped by the model they publish, so sources of one model can be laid
+over each other and compared. Each source has a toggle named by its data set, all off to begin with, and its entities
+are read from the broker the first time it is switched on; the checkbox on a model switches every source of it at
+once. Colour follows the data set, so a feed split over several models keeps one colour. Clicking a feature outlines
+it and opens a popup with its attributes under the data set and model it came from; where several features overlap,
+the popup lists each.
 
 ### Refreshing test source data
 
