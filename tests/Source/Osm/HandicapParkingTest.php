@@ -200,9 +200,16 @@ class HandicapParkingTest extends TestCase
     {
         // fee=yes and fee=no map onto the model's feeCharged and free
         // categories; a record without the tag states nothing about charging.
-        $this->assertSame(['forDisabled', 'feeCharged'], $this->entities[0]['category']['value']);
+        $this->assertContains('feeCharged', $this->entities[0]['category']['value']);
         $this->assertSame(['forDisabled', 'free'], $this->entities[4]['category']['value']);
         $this->assertSame(['forDisabled'], $this->entities[3]['category']['value']);
+    }
+
+    public function testItAddsAFacilitysKindToItsCategoryFromTheParkingTag(): void
+    {
+        $this->assertSame(['forDisabled', 'feeCharged', 'parkingLot'], $this->entities[0]['category']['value']);
+        $this->assertContains('underground', $this->entities[1]['category']['value']);
+        $this->assertContains('parkingLot', $this->entities[8]['category']['value']);
     }
 
     public function testItCarriesABaysFeeAsAdditionalInformation(): void

@@ -33,7 +33,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     omittedFields: [
         'amenity' => 'Selector distinguishing a parking space from a parking area; what a record holds decides its model, so the tag adds nothing.',
         'capacity' => 'Decides whether a record is a single bay, but a facility\'s capacity counts all its bays and would overstate the reserved ones.',
-        'parking' => 'Siting on or off the street; decides which of the two site models a record is published under.',
+        'parking' => 'Siting on or off the street, which decides the site model; the kinds of facility the category has a value for are published there.',
         'disabled' => 'Access restriction on street-side parking; redundant with the category every site is published with.',
         'access' => 'Who may enter; mapping it onto permit attributes needs an interpretation the tag values do not support.',
         'fee:conditional' => 'Time-qualified refinement of fee; the category values the plain fee tag maps onto carry no schedule.',
@@ -58,12 +58,22 @@ DATA,
 )]
 final class TestOffStreetParking extends AbstractTestHandicapParking
 {
+    /**
+     * Values of the parking tag that name a kind of facility the model's
+     * category has a value for.
+     */
+    private const array FACILITY_CATEGORY = [
+        'surface' => 'parkingLot',
+        'underground' => 'underground',
+        'multi-storey' => 'parkingGarage',
+    ];
+
     protected function describe(NgsiEntity $entity, array $tags): NgsiEntity
     {
         $parkingMode = $this->parkingMode($tags);
 
         return $entity
-            ->setProperty('category', $this->siteCategory($tags))
+            ->setProperty('category', [...$this->siteCategory($tags), ...$this->facilityCategory($tags)])
             ->setProperty('totalSpotNumber', $this->reservedBays($tags))
             // The off-street model takes a list where the on-street one
             // takes a single value.
@@ -72,5 +82,20 @@ final class TestOffStreetParking extends AbstractTestHandicapParking
                 'surface' => trim((string) ($tags['surface'] ?? '')),
                 'wheelchair' => trim((string) ($tags['wheelchair'] ?? '')),
             ]);
+    }
+
+    /**
+     * The kind of facility, as the parking tag states it; none when the tag
+     * names a kind the category has no value for.
+     *
+     * @param array<string, mixed> $tags
+     *
+     * @return list<string>
+     */
+    private function facilityCategory(array $tags): array
+    {
+        $parking = $tags['parking'] ?? null;
+
+        return \is_string($parking) && isset(self::FACILITY_CATEGORY[$parking]) ? [self::FACILITY_CATEGORY[$parking]] : [];
     }
 }
