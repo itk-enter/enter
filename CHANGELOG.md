@@ -14,7 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Split mtm_spatialmaps-handicap-parking into one source per model it
     publishes, sharing one data set: a record of one bay is a ParkingSpot,
     a blank count reads as one bay.
-  * Grouped the `/test` map's toggles by data set, with one per source.
+  * Grouped the `/test` map's toggles by model, with one per source,
+    coloured by data set.
+  * Named the municipal register sources "(MTM)" in their titles.
+  * Retried and cached the fetch of test fixtures, and kept the old fixture
+    when a fetch fails.
   * Cached each source's response for ten minutes, so sources sharing a
     feed fetch it once.
   * Deleted a source's entities that its import no longer yields, so a
