@@ -8,25 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-60](https://github.com/itk-enter/enter/pull/60)
-  * Split osm-handicap-parking into one source per model it publishes,
-    sharing one data set.
-  * Let sources that split one feed declare the data set they share.
-  * Split mtm_spatialmaps-handicap-parking into one source per model it
-    publishes, sharing one data set: a record of one bay is a ParkingSpot,
-    a blank count reads as one bay.
-  * Grouped the `/test` map's toggles by model, with one per source,
-    coloured by data set.
-  * Named the municipal register sources "(MTM)" in their titles.
-  * Retried and cached the fetch of test fixtures, and kept the old fixture
-    when a fetch fails.
-  * Cached each source's response for ten minutes, so sources sharing a
-    feed fetch it once.
-  * Deleted a source's entities that its import no longer yields, so a
-    record sorted into another model is not published twice.
-  * Refused partial Overpass results, so a timed-out query cannot sweep
-    away the records it missed.
-  * Reported each entity the broker rejects in a batch upsert, with the
-    reason it gave, instead of only the last batch's status.
+  * Split the OSM and MTM handicap parking sources into one source per
+    model, sharing a data set.
+  * Deleted entities a source no longer yields.
+  * Cached source responses and test fixture fetches.
+  * Reported entities the broker rejects.
+  * Added the kind of facility to OSM off-street parking.
+  * Grouped the `/test` map by model, coloured by data set.
 * [PR-59](https://github.com/itk-enter/enter/pull/59)
   Added the osm-bench source for benches from OpenStreetMap, published under
   the Bench data model
