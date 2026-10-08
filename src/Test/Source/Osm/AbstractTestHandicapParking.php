@@ -9,27 +9,21 @@ use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
 
 /**
- * Disabled parking in Aarhus Municipality, one source per model.
- *
- * The feed mixes two kinds of record: a single reserved bay, and a site with
- * some number of reserved bays. Each source declares the same feed and
- * keeps only the records of its own model, so the rule that sorts records
- * into models lives here: were it to drift between the sources, a record
- * would be published twice or not at all, and nothing would say so.
+ * Disabled parking in Aarhus Municipality.
  */
 abstract class AbstractTestHandicapParking extends AbstractSource
 {
+    // Models that this source produces.
     protected const string PARKING_SPOT = 'ParkingSpot';
     protected const string ON_STREET_PARKING = 'OnStreetParking';
     protected const string OFF_STREET_PARKING = 'OffStreetParking';
 
+    // Dataset reference.
     protected const string DATASET = 'test:osm-handicap-parking';
     protected const string DATASET_TITLE = 'Test: Handicapparkering (OpenStreetMap), Aarhus Kommune';
 
     /**
-     * parking=* values placing a site on or beside the carriageway. Every
-     * other value (surface, underground, multi-storey, rooftop, …) places
-     * it off the street.
+     * OSM tags used to define if a parkingSpot is on or off the street.
      */
     private const array ON_STREET_SITING = ['street_side', 'lane', 'layby', 'on_kerb', 'half_on_kerb', 'shoulder', 'street'];
 
@@ -82,8 +76,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     abstract protected function describe(NgsiEntity $entity, array $tags): NgsiEntity;
 
     /**
-     * On or off the street, as the parking tag states it; null when the feed
-     * does not say. A parking space carries no such tag of its own.
+     * On or off the street, deduced from OSM tags.
      *
      * @param array<string, mixed> $tags
      */
@@ -99,10 +92,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     }
 
     /**
-     * Every site is disabled parking; the fee tag refines that with the
-     * site models' charging categories. Only its two plain values map — an
-     * untagged or unrecognised value states nothing about charging rather
-     * than assuming free.
+     * Define whether the spot has a fee, only if the source defines it.
      *
      * @param array<string, mixed> $tags
      *
@@ -135,13 +125,6 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     /**
      * Number of reserved bays the record carries.
      *
-     * capacity:disabled counts them directly whatever the record is. A
-     * parking space (parking_space=disabled) is reserved in its entirety, so
-     * its own capacity applies — one when untagged, per the tag's definition.
-     * A facility's plain capacity counts all its bays and is never used, and
-     * capacity:disabled=yes states that reserved bays exist without counting
-     * them, so nothing is published for it.
-     *
      * @param array<string, mixed> $tags
      */
     final protected function reservedBays(array $tags): ?int
@@ -160,14 +143,6 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     /**
      * The model a record is published under.
      *
-     * A record holding exactly one reserved bay and nothing else is that bay,
-     * whether the mapper drew it as a parking space or as a parking area
-     * whose whole capacity is the reserved bay. Anything else is a site with
-     * reserved bays: a facility, or a row of bays drawn as one object. A
-     * site's model follows its siting; where the feed states none, the
-     * record keeps the model every record was published under before
-     * records were sorted.
-     *
      * @param array<string, mixed> $tags
      */
     private function model(array $tags): string
@@ -183,10 +158,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     }
 
     /**
-     * A parking space is reserved in its entirety, so it is one bay unless
-     * its capacity says more. A parking area is one bay only when its
-     * capacity is stated and is the one reserved bay; a facility of unknown
-     * size with one reserved bay is still a facility.
+     * One bay unless its capacity says more.
      *
      * @param array<string, mixed> $tags
      */
@@ -214,6 +186,11 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     }
 
     /**
+     * The element's location as GeoJSON. OSM has three kinds of element,
+     * and the feed gives each its location in its own shape: a node as a
+     * single coordinate, a way as its list of vertices, and a relation only
+     * as a bounding box.
+     *
      * @param array<string, mixed> $element
      *
      * @return array{type: string, coordinates: mixed}|null

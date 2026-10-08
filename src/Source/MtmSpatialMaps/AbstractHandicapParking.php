@@ -9,22 +9,15 @@ use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
 
 /**
- * The municipal register of disabled parking in Aarhus, one source per model.
- *
- * The register's grain varies: most records are one bay each, several of
- * which may share an address, while some are a location with a count of
- * bays. A record of one bay is published as that bay, the rest as a site
- * with the bays it counts, so a bay here and the same bay in another source
- * come out under one model. Each source declares the same feed and keeps
- * only the records of its own model, so the rule that sorts records into
- * models lives here: were it to drift between the sources, a record would
- * be published twice or not at all, and nothing would say so.
+ * The municipal register of disabled parking in Aarhus.
  */
 abstract class AbstractHandicapParking extends AbstractSource
 {
+    // Models that this source produces.
     protected const string PARKING_SPOT = 'ParkingSpot';
     protected const string ON_STREET_PARKING = 'OnStreetParking';
 
+    // Dataset reference.
     protected const string DATASET = 'mtm_spatialmaps-handicap-parking';
     protected const string DATASET_TITLE = 'Handicapparkering (MTM), Aarhus Kommune';
 
@@ -39,14 +32,15 @@ abstract class AbstractHandicapParking extends AbstractSource
         $properties = $data['properties'] ?? null;
         $geometry = $data['geometry'] ?? null;
 
+        // Skip if no properties or geometry is defined.
         if (!\is_array($properties) || !\is_array($geometry)) {
             return null;
         }
 
-        // mi_prinx is the feed's stable primary key. Without it there is no
-        // way to address the same bay again on the next import, and an upsert
-        // would create duplicates instead of updating.
+        // mi_prinx is assumed to be the feed's stable primary key.
         $key = $properties['mi_prinx'] ?? null;
+
+        // Skip if no primary id.
         if (null === $key || '' === $key) {
             return null;
         }
@@ -90,6 +84,8 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
+     * The model a record is published under.
+     *
      * @param array<string, mixed> $properties
      */
     private function model(array $properties): string
