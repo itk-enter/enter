@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-XX](https://github.com/itk-enter/enter/pull/XX)
+* [PR-60](https://github.com/itk-enter/enter/pull/60)
   * Split osm-handicap-parking into one source per model it publishes,
     sharing one data set.
   * Let sources that split one feed declare the data set they share.
