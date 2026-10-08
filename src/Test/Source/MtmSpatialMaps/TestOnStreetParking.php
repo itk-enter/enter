@@ -39,10 +39,10 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 )]
 final class TestOnStreetParking extends AbstractTestHandicapParking
 {
-    protected function describe(NgsiEntity $entity, array $row): NgsiEntity
+    protected function describe(NgsiEntity $entity, array $properties): NgsiEntity
     {
         return $entity
             ->setProperty('category', ['forDisabled'])
-            ->setProperty('totalSpotNumber', $this->bays($row));
+            ->setProperty('totalSpotNumber', $this->bays($properties));
     }
 }

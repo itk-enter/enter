@@ -45,7 +45,7 @@ use App\Source\Definition;
 )]
 final class ParkingSpot extends AbstractHandicapParking
 {
-    protected function describe(NgsiEntity $entity, array $row): NgsiEntity
+    protected function describe(NgsiEntity $entity, array $properties): NgsiEntity
     {
         return $entity
             // The model requires an occupancy status.

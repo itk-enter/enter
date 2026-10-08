@@ -39,7 +39,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 )]
 final class TestParkingSpot extends AbstractTestHandicapParking
 {
-    protected function describe(NgsiEntity $entity, array $row): NgsiEntity
+    protected function describe(NgsiEntity $entity, array $properties): NgsiEntity
     {
         return $entity
             // The model requires an occupancy status.

@@ -45,10 +45,10 @@ use App\Source\Definition;
 )]
 final class OnStreetParking extends AbstractHandicapParking
 {
-    protected function describe(NgsiEntity $entity, array $row): NgsiEntity
+    protected function describe(NgsiEntity $entity, array $properties): NgsiEntity
     {
         return $entity
             ->setProperty('category', ['forDisabled'])
-            ->setProperty('totalSpotNumber', $this->bays($row));
+            ->setProperty('totalSpotNumber', $this->bays($properties));
     }
 }

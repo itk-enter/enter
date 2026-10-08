@@ -36,23 +36,23 @@ abstract class AbstractTestHandicapParking extends AbstractSource
      */
     final public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
     {
-        $row = $data['properties'] ?? null;
+        $properties = $data['properties'] ?? null;
         $geometry = $data['geometry'] ?? null;
 
-        if (!\is_array($row) || !\is_array($geometry)) {
+        if (!\is_array($properties) || !\is_array($geometry)) {
             return null;
         }
 
         // mi_prinx is the feed's stable primary key. Without it there is no
         // way to address the same bay again on the next import, and an upsert
         // would create duplicates instead of updating.
-        $key = $row['mi_prinx'] ?? null;
+        $key = $properties['mi_prinx'] ?? null;
         if (null === $key || '' === $key) {
             return null;
         }
 
         $model = $this->definition->model;
-        if ($this->model($row) !== $model) {
+        if ($this->model($properties) !== $model) {
             return null;
         }
 
@@ -60,52 +60,52 @@ abstract class AbstractTestHandicapParking extends AbstractSource
             \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
             $model
         )
-            ->setProperty('name', $this->address($row))
-            ->setProperty('description', trim((string) ($row['bemrk'] ?? '')))
+            ->setProperty('name', $this->address($properties))
+            ->setProperty('description', trim((string) ($properties['bemrk'] ?? '')))
             ->setProperty('source', $this->definition->accessUrl)
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
 
-        return $this->describe($entity, $row);
+        return $this->describe($entity, $properties);
     }
 
     /**
      * Sets what only this source's model holds.
      *
-     * @param array<string, mixed> $row
+     * @param array<string, mixed> $properties
      */
-    abstract protected function describe(NgsiEntity $entity, array $row): NgsiEntity;
+    abstract protected function describe(NgsiEntity $entity, array $properties): NgsiEntity;
 
     /**
      * The number of reserved bays the record counts. The register's grain is
      * the bay, and a record with the count left blank is a bay entered
      * without one, so it counts as one.
      *
-     * @param array<string, mixed> $row
+     * @param array<string, mixed> $properties
      */
-    final protected function bays(array $row): int
+    final protected function bays(array $properties): int
     {
-        $value = $row['invalidepladser'] ?? null;
+        $value = $properties['invalidepladser'] ?? null;
 
         return is_numeric($value) ? (int) $value : 1;
     }
 
     /**
-     * @param array<string, mixed> $row
+     * @param array<string, mixed> $properties
      */
-    private function model(array $row): string
+    private function model(array $properties): string
     {
-        return 1 === $this->bays($row) ? self::PARKING_SPOT : self::ON_STREET_PARKING;
+        return 1 === $this->bays($properties) ? self::PARKING_SPOT : self::ON_STREET_PARKING;
     }
 
     /**
-     * @param array<string, mixed> $row
+     * @param array<string, mixed> $properties
      */
-    private function address(array $row): string
+    private function address(array $properties): string
     {
         return trim(\sprintf(
             '%s %s',
-            trim((string) ($row['vejnavn'] ?? '')),
-            trim((string) ($row['husnnr'] ?? ''))
+            trim((string) ($properties['vejnavn'] ?? '')),
+            trim((string) ($properties['husnnr'] ?? ''))
         ));
     }
 }
