@@ -49,7 +49,7 @@ class SourceFetchContentCommand
 
         if ([] !== $failed) {
             $io->warning(\sprintf(
-                "Failed: %s.\nRun the command again within the hour to fetch only these; the rest are kept.",
+                "Failed: %s.\nRun the command again within the hour to fetch the remaining.",
                 implode(', ', $failed),
             ));
 
