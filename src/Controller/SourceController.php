@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Source\SourceInterface;
-use App\SourceImporter\AbstracSourceImporter;
+use App\SourceImporter\AbstractSourceImporter;
 use App\SourceManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -62,7 +62,7 @@ final class SourceController extends AbstractController
     {
         return $this->generateUrl('ngsi_ld_v1_request', [
             'path' => 'entities',
-            'q' => \sprintf('%s=="%s"', AbstracSourceImporter::SOURCE_ID_ATTRIBUTE, $source->definition->id),
+            'q' => \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $source->definition->id),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }

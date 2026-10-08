@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-abstract class AbstracSourceImporter implements SourceImporterInterface
+abstract class AbstractSourceImporter implements SourceImporterInterface
 {
     use LoggerAwareTrait;
     use LoggerTrait;

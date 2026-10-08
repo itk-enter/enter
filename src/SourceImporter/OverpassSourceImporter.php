@@ -5,7 +5,7 @@ namespace App\SourceImporter;
 use App\Source\DataType;
 use App\Source\SourceInterface;
 
-class OverpassSourceImporter extends AbstracSourceImporter
+class OverpassSourceImporter extends AbstractSourceImporter
 {
     public function supports(SourceInterface $source): bool
     {
