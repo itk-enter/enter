@@ -32,6 +32,8 @@ final class SourceReader implements SourceReaderInterface
         $definition = $source->definition;
 
         return $this->cache->get(
+            // Key the cache on a hash of the URL, as a cache key may not
+            // hold characters such as "/", ":" or "(" that a URL does.
             hash('xxh128', $definition->accessUrlWithQuery()),
             fn (): array => $this->client->request('GET', $definition->accessUrlBase(), [
                 'query' => $definition->accessUrlQuery(),

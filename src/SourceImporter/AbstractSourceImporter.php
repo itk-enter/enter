@@ -61,14 +61,15 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         $payload = [];
         $ids = [];
         foreach ($this->read($source) as $entity) {
-            // The catalogue says what a source publishes, so an entity of
-            // another model than the declared one is a mapping error, not data.
+            // Fail if the entity's model is not the one the source's
+            // #[Definition] declares.
             if ($entity->type() !== $source->definition->model) {
                 throw new \LogicException(sprintf('Source %s mapped %s onto model %s, but declares %s.', $source->definition->id, $entity->id(), $entity->type(), $source->definition->model));
             }
 
             $this->info('Building payload for {entity}', ['entity' => $entity->id()]);
             $ids[] = $entity->id();
+            // Stamp the entity with the id of its source.
             $payload[] = $entity
                 ->setProperty(self::SOURCE_ID_ATTRIBUTE, $source->definition->id)
                 ->toPayload($contextUrls);
@@ -80,16 +81,19 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             $this->info('Upserting {count} entities', ['count' => count($payload)]);
         }
 
+        // Write every entity to the broker.
         try {
             $upsert = $this->broker->upsert($payload);
         } catch (\Throwable $exception) {
             throw new UpsertFailedException($exception);
         }
 
+        // Log each entity the broker rejected.
         foreach ($upsert->rejected as $id => $reason) {
             $this->warning('Broker rejected {entity}: {reason}', ['entity' => $id, 'reason' => $reason]);
         }
 
+        // Delete the source's entities this import did not yield.
         try {
             $deleted = $this->sweep($source, $ids);
         } catch (\Throwable $exception) {
@@ -106,8 +110,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
      *
      * A record that failed to map is not yielded either, so it is deleted
      * too, which beats publishing what the source no longer says. An import
-     * that yields nothing sweeps nothing: an empty feed is far likelier an
-     * outage than every record gone.
+     * that yields nothing, sweeps nothing.
      *
      * @param list<string> $ids the entities just upserted
      *
@@ -121,6 +124,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             return 0;
         }
 
+        // The source's entities in the broker, less those just upserted.
         $stale = array_values(array_diff(
             $this->broker->idsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
             $ids,
@@ -146,6 +150,8 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         $items = $this->extractItems($data, $source);
 
         foreach ($items as $item) {
+            // Skip a record the source does not publish, and log one it
+            // fails to map.
             try {
                 if ($entity = $source->createNgsiEntity($item, $this->transformer)) {
                     yield $entity;
