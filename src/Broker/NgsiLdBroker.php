@@ -18,7 +18,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final readonly class NgsiLdBroker
 {
     private const string UPSERT_PATH = '/ngsi-ld/v1/entityOperations/upsert';
-    private const string DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
+    private const string BATCH_DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
