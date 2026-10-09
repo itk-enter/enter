@@ -8,6 +8,7 @@ use App\Broker\NgsiLdBroker;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The broker hands out and takes at most a thousand entities per request,
@@ -53,7 +54,7 @@ class NgsiLdBrokerTest extends TestCase
     {
         $ids = array_column($this->entities(0, 1001), 'id');
 
-        $this->broker([new MockResponse('', ['http_code' => 204]), new MockResponse('', ['http_code' => 204])])->delete($ids);
+        $this->broker([new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT]), new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT])])->delete($ids);
 
         $this->assertCount(2, $this->requests);
         $this->assertCount(1000, json_decode((string) $this->requests[0][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
@@ -64,12 +65,12 @@ class NgsiLdBrokerTest extends TestCase
     {
         $entities = $this->entities(0, 1001);
 
-        $result = $this->broker([new MockResponse('', ['http_code' => 201]), new MockResponse('', ['http_code' => 204])])->upsert($entities);
+        $result = $this->broker([new MockResponse('', ['http_code' => Response::HTTP_CREATED]), new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT])])->upsert($entities);
 
         $this->assertCount(2, $this->requests);
         $this->assertCount(1000, json_decode((string) $this->requests[0][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
         $this->assertSame([$entities[1000]], json_decode((string) $this->requests[1][2]['body'], true, flags: \JSON_THROW_ON_ERROR));
-        $this->assertSame(204, $result->status);
+        $this->assertSame(Response::HTTP_NO_CONTENT, $result->status);
         $this->assertSame([], $result->rejected);
     }
 
@@ -87,9 +88,9 @@ class NgsiLdBrokerTest extends TestCase
             ],
         ], \JSON_THROW_ON_ERROR);
 
-        $result = $this->broker([new MockResponse($partly, ['http_code' => 207]), new MockResponse('', ['http_code' => 204])])->upsert($this->entities(0, 1001));
+        $result = $this->broker([new MockResponse($partly, ['http_code' => Response::HTTP_MULTI_STATUS]), new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT])])->upsert($this->entities(0, 1001));
 
-        $this->assertSame(207, $result->status);
+        $this->assertSame(Response::HTTP_MULTI_STATUS, $result->status);
         $this->assertSame([
             'urn:ngsi-ld:Bench:1' => 'Invalid location',
             'urn:ngsi-ld:Bench:2' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
@@ -100,12 +101,12 @@ class NgsiLdBrokerTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $this->broker([new MockResponse('', ['http_code' => 201]), new MockResponse('', ['http_code' => 400])])->upsert($this->entities(0, 1001));
+        $this->broker([new MockResponse('', ['http_code' => Response::HTTP_CREATED]), new MockResponse('', ['http_code' => Response::HTTP_BAD_REQUEST])])->upsert($this->entities(0, 1001));
     }
 
     public function testItSendsNothingToUpsertNothing(): void
     {
-        $this->assertSame(204, $this->broker([])->upsert([])->status);
+        $this->assertSame(Response::HTTP_NO_CONTENT, $this->broker([])->upsert([])->status);
         $this->assertSame([], $this->requests);
     }
 
@@ -122,7 +123,7 @@ class NgsiLdBrokerTest extends TestCase
      */
     public function testItAcceptsAPartlyFailedDelete(): void
     {
-        $this->broker([new MockResponse('{"success": [], "errors": []}', ['http_code' => 207])])->delete(['urn:ngsi-ld:Bench:1']);
+        $this->broker([new MockResponse('{"success": [], "errors": []}', ['http_code' => Response::HTTP_MULTI_STATUS])])->delete(['urn:ngsi-ld:Bench:1']);
 
         $this->assertCount(1, $this->requests);
     }
@@ -131,7 +132,7 @@ class NgsiLdBrokerTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        $this->broker([new MockResponse('', ['http_code' => 400])])->delete(['urn:ngsi-ld:Bench:1']);
+        $this->broker([new MockResponse('', ['http_code' => Response::HTTP_BAD_REQUEST])])->delete(['urn:ngsi-ld:Bench:1']);
     }
 
     /**

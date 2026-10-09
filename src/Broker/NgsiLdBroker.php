@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Broker;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -58,7 +59,7 @@ final readonly class NgsiLdBroker
      */
     public function upsert(array $entities): UpsertResult
     {
-        $status = 204;
+        $status = Response::HTTP_NO_CONTENT;
         $rejected = [];
 
         foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
@@ -73,15 +74,15 @@ final readonly class NgsiLdBroker
 
             $batchStatus = $response->getStatusCode();
 
-            if ($batchStatus >= 400) {
+            if ($batchStatus >= Response::HTTP_BAD_REQUEST) {
                 throw new \RuntimeException(\sprintf('Broker rejected the upsert with HTTP %d: %s', $batchStatus, $response->getContent(false)));
             }
 
-            if (207 === $batchStatus) {
+            if (Response::HTTP_MULTI_STATUS === $batchStatus) {
                 $rejected = [...$rejected, ...$this->rejections($response->getContent(false))];
             }
 
-            if (207 !== $status) {
+            if (Response::HTTP_MULTI_STATUS !== $status) {
                 $status = $batchStatus;
             }
         }
@@ -144,7 +145,7 @@ final readonly class NgsiLdBroker
             );
 
             $status = $response->getStatusCode();
-            if ($status >= 400) {
+            if ($status >= Response::HTTP_BAD_REQUEST) {
                 throw new \RuntimeException(\sprintf('Broker refused to list %s entities with HTTP %d: %s', $type, $status, $response->getContent(false)));
             }
 
@@ -169,7 +170,7 @@ final readonly class NgsiLdBroker
         foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
             $response = $this->client->request(
                 'POST',
-                rtrim($this->brokerUrl, '/').self::DELETE_PATH,
+                rtrim($this->brokerUrl, '/').self::BATCH_DELETE_PATH,
                 ['json' => $batch]
             );
 
@@ -177,7 +178,7 @@ final readonly class NgsiLdBroker
             // already gone is as good as deleted, so only a refusal of the
             // whole batch is an error.
             $status = $response->getStatusCode();
-            if ($status >= 400) {
+            if ($status >= Response::HTTP_BAD_REQUEST) {
                 throw new \RuntimeException(\sprintf('Broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
             }
         }

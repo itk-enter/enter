@@ -14,6 +14,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Refreshing fixtures from public feeds fails now and then, so a failure
@@ -69,7 +70,7 @@ class FixtureFetcherTest extends TestCase
 
     public function testAFailedFetchKeepsTheOldFixture(): void
     {
-        $fetcher = $this->fetcher([new MockResponse('{"elements": [1]}'), new MockResponse('', ['http_code' => 504])]);
+        $fetcher = $this->fetcher([new MockResponse('{"elements": [1]}'), new MockResponse('', ['http_code' => Response::HTTP_GATEWAY_TIMEOUT])]);
         $fetch = $fetcher->fetch(new TestBench());
 
         try {
@@ -86,7 +87,7 @@ class FixtureFetcherTest extends TestCase
      */
     public function testAFailedFetchIsTriedAgainOnTheNextRun(): void
     {
-        $fetcher = $this->fetcher([new MockResponse('', ['http_code' => 429]), new MockResponse('{"elements": []}')]);
+        $fetcher = $this->fetcher([new MockResponse('', ['http_code' => Response::HTTP_TOO_MANY_REQUESTS]), new MockResponse('{"elements": []}')]);
 
         try {
             $fetcher->fetch(new TestBench());

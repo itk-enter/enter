@@ -21,6 +21,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * What the import adds to every entity on its way to the broker, whichever
@@ -129,9 +130,9 @@ class SourceImporterTest extends TestCase
         ], upserted: new MockResponse(json_encode([
             'success' => ['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1'],
             'errors' => [['entityId' => $rejected, 'error' => ['detail' => 'Invalid location']]],
-        ], \JSON_THROW_ON_ERROR), ['http_code' => 207]));
+        ], \JSON_THROW_ON_ERROR), ['http_code' => Response::HTTP_MULTI_STATUS]));
 
-        $this->assertSame(207, $result->status);
+        $this->assertSame(Response::HTTP_MULTI_STATUS, $result->status);
         $this->assertSame([$rejected => 'Invalid location'], $result->rejected);
         $this->assertSame([], $this->deleted());
     }
@@ -203,7 +204,7 @@ class SourceImporterTest extends TestCase
                 ), \JSON_THROW_ON_ERROR));
             }
 
-            return new MockResponse('', ['http_code' => 204]);
+            return new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT]);
         });
 
         $reader = new readonly class($data) implements SourceReaderInterface {

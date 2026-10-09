@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Sources that split one feed between them are imported one by one, so the
@@ -42,7 +43,7 @@ class SourceReaderTest extends TestCase
 
     public function testAFailedFetchIsNotKept(): void
     {
-        $reader = $this->reader([new MockResponse('', ['http_code' => 429]), new MockResponse('{"elements": [1]}')]);
+        $reader = $this->reader([new MockResponse('', ['http_code' => Response::HTTP_TOO_MANY_REQUESTS]), new MockResponse('{"elements": [1]}')]);
 
         try {
             $reader->read(new ParkingSpot());
