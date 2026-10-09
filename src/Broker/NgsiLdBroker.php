@@ -130,7 +130,7 @@ final readonly class NgsiLdBroker
      */
     public function fetchIdsWhereAttributeEquals(string $type, string $contextUrl, string $attribute, string $value): array
     {
-        $ids = [];
+        $pages = [];
 
         for ($offset = 0;; $offset += self::PAGE_SIZE) {
             $response = $this->brokerClient->request(
@@ -157,14 +157,15 @@ final readonly class NgsiLdBroker
             }
 
             $page = $response->toArray();
-            foreach ($page as $entity) {
-                $ids[] = (string) $entity['id'];
-            }
+            $pages[] = $page;
 
             if (\count($page) < self::PAGE_SIZE) {
-                return $ids;
+                break;
             }
         }
+
+        // Combine the pages into one list of entities and take their ids.
+        return array_column(array_merge(...$pages), 'id');
     }
 
     /**
