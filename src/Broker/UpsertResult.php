@@ -10,8 +10,8 @@ namespace App\Broker;
 final readonly class UpsertResult
 {
     /**
-     * @param int                   $status   the broker's HTTP status code, 207 if any batch was partly rejected
-     * @param array<string, string> $rejected the reason the broker gave for each entity it rejected, by entity id
+     * @param int                      $status   the broker's HTTP status code, 207 if any batch was partly rejected
+     * @param array<string, Rejection> $rejected why the broker rejected each entity, by entity id
      */
     public function __construct(
         public int $status,

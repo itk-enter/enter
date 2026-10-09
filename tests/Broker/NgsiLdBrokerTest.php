@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Broker;
 
 use App\Broker\NgsiLdBroker;
+use App\Broker\Rejection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -91,9 +92,9 @@ class NgsiLdBrokerTest extends TestCase
         $result = $this->broker([new MockResponse($partly, ['http_code' => Response::HTTP_MULTI_STATUS]), new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT])])->upsert($this->entities(0, 1001));
 
         $this->assertSame(Response::HTTP_MULTI_STATUS, $result->status);
-        $this->assertSame([
-            'urn:ngsi-ld:Bench:1' => 'Invalid location',
-            'urn:ngsi-ld:Bench:2' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
+        $this->assertEquals([
+            'urn:ngsi-ld:Bench:1' => new Rejection('Invalid location', ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData', 'title' => 'Bad Request Data', 'detail' => 'Invalid location']),
+            'urn:ngsi-ld:Bench:2' => new Rejection('https://uri.etsi.org/ngsi-ld/errors/BadRequestData', ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData']),
         ], $result->rejected);
     }
 

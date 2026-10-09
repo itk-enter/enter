@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\SourceImporter;
 
 use App\Broker\NgsiLdBroker;
+use App\Broker\Rejection;
 use App\Geo\Wgs84Transformer;
 use App\Import\ImportResult;
 use App\Ngsi\NgsiEntity;
@@ -133,7 +134,7 @@ class SourceImporterTest extends TestCase
         ], \JSON_THROW_ON_ERROR), ['http_code' => Response::HTTP_MULTI_STATUS]));
 
         $this->assertSame(Response::HTTP_MULTI_STATUS, $result->status);
-        $this->assertSame([$rejected => 'Invalid location'], $result->rejected);
+        $this->assertEquals([$rejected => new Rejection('Invalid location', ['detail' => 'Invalid location'])], $result->rejected);
         $this->assertSame([], $this->deleted());
     }
 

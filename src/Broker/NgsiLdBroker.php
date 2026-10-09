@@ -60,7 +60,7 @@ final readonly class NgsiLdBroker
     public function upsert(array $entities): UpsertResult
     {
         $status = Response::HTTP_NO_CONTENT;
-        $rejected = [];
+        $partlyRejectedBodies = [];
 
         foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
             $response = $this->client->request(
@@ -79,7 +79,7 @@ final readonly class NgsiLdBroker
             }
 
             if (Response::HTTP_MULTI_STATUS === $batchStatus) {
-                $rejected = [...$rejected, ...$this->rejections($response->getContent(false))];
+                $partlyRejectedBodies[] = $response->getContent(false);
             }
 
             if (Response::HTTP_MULTI_STATUS !== $status) {
@@ -87,13 +87,19 @@ final readonly class NgsiLdBroker
             }
         }
 
+        // Read the rejected entities out of each partly rejected batch.
+        $rejectedPerBatch = array_map($this->rejections(...), $partlyRejectedBodies);
+
+        // Combine the batches' rejections into one list.
+        $rejected = array_merge(...$rejectedPerBatch);
+
         return new UpsertResult($status, $rejected);
     }
 
     /**
      * The entities an error 207 lists as rejected, with the reason the broker gave.
      *
-     * @return array<string, string>
+     * @return array<string, Rejection>
      */
     private function rejections(string $body): array
     {
@@ -108,7 +114,7 @@ final readonly class NgsiLdBroker
 
             $problem = \is_array($error['error'] ?? null) ? $error['error'] : [];
             $reason = $problem['detail'] ?? $problem['title'] ?? $problem['type'] ?? null;
-            $rejected[$error['entityId']] = \is_string($reason) ? $reason : 'no reason given';
+            $rejected[$error['entityId']] = new Rejection(\is_string($reason) ? $reason : 'no reason given', $problem);
         }
 
         return $rejected;

@@ -89,8 +89,8 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         }
 
         // Log each entity the broker rejected.
-        foreach ($upsert->rejected as $id => $reason) {
-            $this->warning('Broker rejected {entity}: {reason}', ['entity' => $id, 'reason' => $reason]);
+        foreach ($upsert->rejected as $id => $rejection) {
+            $this->warning('Broker rejected {entity}: {reason}', ['entity' => $id, 'reason' => $rejection->reason, 'error' => $rejection->error]);
         }
 
         // Delete the source's entities this import did not yield.
