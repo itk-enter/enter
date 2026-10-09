@@ -39,7 +39,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 )]
 final class TestParkingSpot extends AbstractTestHandicapParking
 {
-    protected function accepts(array $properties): bool
+    protected function supports(array $properties): bool
     {
         return 1 === $this->bays($properties);
     }

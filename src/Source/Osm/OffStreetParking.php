@@ -71,7 +71,7 @@ final class OffStreetParking extends AbstractHandicapParking
         'multi-storey' => 'parkingGarage',
     ];
 
-    protected function accepts(array $tags): bool
+    protected function supports(array $tags): bool
     {
         return !$this->isSingleBay($tags) && 'offStreet' === $this->siting($tags);
     }

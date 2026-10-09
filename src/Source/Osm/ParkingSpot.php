@@ -61,7 +61,7 @@ DATA,
 )]
 final class ParkingSpot extends AbstractHandicapParking
 {
-    protected function accepts(array $tags): bool
+    protected function supports(array $tags): bool
     {
         return $this->isSingleBay($tags);
     }

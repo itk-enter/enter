@@ -58,7 +58,7 @@ DATA,
 )]
 final class TestOnStreetParking extends AbstractTestHandicapParking
 {
-    protected function accepts(array $tags): bool
+    protected function supports(array $tags): bool
     {
         // A site whose record does not say where it lies is kept on the street.
         return !$this->isSingleBay($tags) && 'offStreet' !== $this->siting($tags);

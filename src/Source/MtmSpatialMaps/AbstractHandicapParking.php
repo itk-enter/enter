@@ -45,7 +45,7 @@ abstract class AbstractHandicapParking extends AbstractSource
             return null;
         }
 
-        if (!$this->accepts($properties)) {
+        if (!$this->supports($properties)) {
             return null;
         }
 
@@ -68,7 +68,7 @@ abstract class AbstractHandicapParking extends AbstractSource
      *
      * @param array<string, mixed> $properties
      */
-    abstract protected function accepts(array $properties): bool;
+    abstract protected function supports(array $properties): bool;
 
     /**
      * Sets what only this source's model holds.

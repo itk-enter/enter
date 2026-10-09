@@ -46,7 +46,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
 
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
-        if (!$this->accepts($tags)) {
+        if (!$this->supports($tags)) {
             return null;
         }
 
@@ -74,7 +74,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
      *
      * @param array<string, mixed> $tags
      */
-    abstract protected function accepts(array $tags): bool;
+    abstract protected function supports(array $tags): bool;
 
     /**
      * Sets what only this source's model holds.

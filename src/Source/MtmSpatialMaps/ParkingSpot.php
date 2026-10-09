@@ -45,7 +45,7 @@ use App\Source\Definition;
 )]
 final class ParkingSpot extends AbstractHandicapParking
 {
-    protected function accepts(array $properties): bool
+    protected function supports(array $properties): bool
     {
         return 1 === $this->bays($properties);
     }
