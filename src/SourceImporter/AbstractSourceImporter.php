@@ -126,7 +126,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
 
         // The source's entities in the broker, less those just upserted.
         $stale = array_values(array_diff(
-            $this->broker->idsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
+            $this->broker->fetchIdsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
             $ids,
         ));
 

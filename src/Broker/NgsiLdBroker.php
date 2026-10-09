@@ -128,7 +128,7 @@ final readonly class NgsiLdBroker
      *
      * @return list<string>
      */
-    public function idsWhereAttributeEquals(string $type, string $contextUrl, string $attribute, string $value): array
+    public function fetchIdsWhereAttributeEquals(string $type, string $contextUrl, string $attribute, string $value): array
     {
         $ids = [];
 
