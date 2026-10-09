@@ -30,12 +30,6 @@ const COLOURS = [
 ];
 
 /*
- * What every test data set's title starts and ends with; left out of the
- * toggles, where it would only repeat.
- */
-const TITLE_NOISE = /^Test:\s*|,\s*Aarhus Kommune$/g;
-
-/*
  * Fetch the sources from the list and keep the test ones. Each is numbered,
  * so the map can draw it on its own, and takes a colour per data set, in
  * the order the data sets first appear. The sources are then grouped by
@@ -128,7 +122,7 @@ function renderToggles(form, models) {
             swatch.style.backgroundColor = source.colour;
 
             const label = document.createDocumentFragment();
-            label.append(swatch, source.dataset.title.replace(TITLE_NOISE, ""));
+            label.append(swatch, source.dataset.title);
 
             const row = checkbox(`source-${source.index}`, label, {
                 source: source.index,
