@@ -85,6 +85,20 @@ class HandicapParkingTest extends TestCase
         ], $models);
     }
 
+    public function testEachSourcePublishesEntitiesOfTheModelItDeclares(): void
+    {
+        $transformer = new Wgs84Transformer();
+
+        foreach ($this->features() as $data) {
+            foreach ($this->sources as $source) {
+                $entity = $source->createNgsiEntity($data, $transformer)?->toPayload(['https://example.com/context.jsonld']);
+                if (null !== $entity) {
+                    $this->assertSame($source->definition->model, $entity['type'], $source->definition->id);
+                }
+            }
+        }
+    }
+
     public function testTheSourcesReadOneFeed(): void
     {
         $urls = array_map(static fn (AbstractHandicapParking $source): string => $source->definition->accessUrlWithQuery(), $this->sources);
