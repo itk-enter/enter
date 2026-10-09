@@ -45,6 +45,11 @@ use App\Source\Definition;
 )]
 final class ParkingSpot extends AbstractHandicapParking
 {
+    protected function accepts(array $properties): bool
+    {
+        return 1 === $this->bays($properties);
+    }
+
     protected function describe(NgsiEntity $entity, array $properties): NgsiEntity
     {
         return $entity

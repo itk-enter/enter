@@ -61,6 +61,11 @@ DATA,
 )]
 final class ParkingSpot extends AbstractHandicapParking
 {
+    protected function accepts(array $tags): bool
+    {
+        return $this->isSingleBay($tags);
+    }
+
     protected function describe(NgsiEntity $entity, array $tags): NgsiEntity
     {
         return $entity

@@ -61,6 +61,12 @@ DATA,
 )]
 final class OnStreetParking extends AbstractHandicapParking
 {
+    protected function accepts(array $tags): bool
+    {
+        // A site whose record does not say where it lies is kept on the street.
+        return !$this->isSingleBay($tags) && 'offStreet' !== $this->siting($tags);
+    }
+
     protected function describe(NgsiEntity $entity, array $tags): NgsiEntity
     {
         return $entity

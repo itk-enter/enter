@@ -45,10 +45,11 @@ abstract class AbstractTestHandicapParking extends AbstractSource
             return null;
         }
 
-        $model = $this->definition->model;
-        if ($this->model($properties) !== $model) {
+        if (!$this->accepts($properties)) {
             return null;
         }
+
+        $model = $this->definition->model;
 
         $entity = new NgsiEntity(
             \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
@@ -61,6 +62,13 @@ abstract class AbstractTestHandicapParking extends AbstractSource
 
         return $this->describe($entity, $properties);
     }
+
+    /**
+     * Whether a record belongs to this source's model.
+     *
+     * @param array<string, mixed> $properties
+     */
+    abstract protected function accepts(array $properties): bool;
 
     /**
      * Sets what only this source's model holds.
@@ -81,16 +89,6 @@ abstract class AbstractTestHandicapParking extends AbstractSource
         $value = $properties['invalidepladser'] ?? null;
 
         return is_numeric($value) ? (int) $value : 1;
-    }
-
-    /**
-     * The model a record is published under.
-     *
-     * @param array<string, mixed> $properties
-     */
-    private function model(array $properties): string
-    {
-        return 1 === $this->bays($properties) ? self::PARKING_SPOT : self::ON_STREET_PARKING;
     }
 
     /**

@@ -68,6 +68,11 @@ final class TestOffStreetParking extends AbstractTestHandicapParking
         'multi-storey' => 'parkingGarage',
     ];
 
+    protected function accepts(array $tags): bool
+    {
+        return !$this->isSingleBay($tags) && 'offStreet' === $this->siting($tags);
+    }
+
     protected function describe(NgsiEntity $entity, array $tags): NgsiEntity
     {
         $parkingMode = $this->parkingMode($tags);

@@ -46,10 +46,11 @@ abstract class AbstractHandicapParking extends AbstractSource
 
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
-        $model = $this->definition->model;
-        if ($this->model($tags) !== $model) {
+        if (!$this->accepts($tags)) {
             return null;
         }
+
+        $model = $this->definition->model;
 
         $geometry = $this->geometry($data);
         if (null === $geometry) {
@@ -67,6 +68,13 @@ abstract class AbstractHandicapParking extends AbstractSource
 
         return $this->describe($entity, $tags);
     }
+
+    /**
+     * Whether a record belongs to this source's model.
+     *
+     * @param array<string, mixed> $tags
+     */
+    abstract protected function accepts(array $tags): bool;
 
     /**
      * Sets what only this source's model holds.
@@ -141,28 +149,11 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * The model a record is published under.
-     *
-     * @param array<string, mixed> $tags
-     */
-    private function model(array $tags): string
-    {
-        if ($this->isSingleBay($tags)) {
-            return self::PARKING_SPOT;
-        }
-
-        return match ($this->siting($tags)) {
-            'offStreet' => self::OFF_STREET_PARKING,
-            default => self::ON_STREET_PARKING,
-        };
-    }
-
-    /**
      * One bay unless its capacity says more.
      *
      * @param array<string, mixed> $tags
      */
-    private function isSingleBay(array $tags): bool
+    final protected function isSingleBay(array $tags): bool
     {
         if (1 !== $this->reservedBays($tags)) {
             return false;
