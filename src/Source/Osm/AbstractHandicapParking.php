@@ -50,23 +50,12 @@ abstract class AbstractHandicapParking extends AbstractSource
             return null;
         }
 
-        $model = $this->definition->model;
-
         $geometry = $this->geometry($data);
         if (null === $geometry) {
             return null;
         }
 
-        $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $model, $type, $id),
-            $model
-        )
-            ->setProperty('name', trim((string) ($tags['name'] ?? '')))
-            ->setProperty('description', trim((string) ($tags['description'] ?? '')))
-            ->setProperty('source', $this->definition->accessUrlWithQuery())
-            ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
-
-        return $this->describe($entity, $tags);
+        return $this->buildNgsiEntity($type, $id, $tags, $geometry, $transformer);
     }
 
     /**
@@ -82,6 +71,28 @@ abstract class AbstractHandicapParking extends AbstractSource
      * @param array<string, mixed> $tags
      */
     abstract protected function describe(NgsiEntity $entity, array $tags): NgsiEntity;
+
+    /**
+     * Maps a record this source supports onto an entity of its model.
+     *
+     * @param array<string, mixed>                    $tags
+     * @param array{type: string, coordinates: mixed} $geometry
+     */
+    private function buildNgsiEntity(string $type, int $id, array $tags, array $geometry, Wgs84Transformer $transformer): NgsiEntity
+    {
+        $model = $this->definition->model;
+
+        $entity = new NgsiEntity(
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $model, $type, $id),
+            $model
+        )
+            ->setProperty('name', trim((string) ($tags['name'] ?? '')))
+            ->setProperty('description', trim((string) ($tags['description'] ?? '')))
+            ->setProperty('source', $this->definition->accessUrlWithQuery())
+            ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
+
+        return $this->describe($entity, $tags);
+    }
 
     /**
      * On or off the street, deduced from OSM tags.

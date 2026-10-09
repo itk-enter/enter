@@ -49,18 +49,7 @@ abstract class AbstractHandicapParking extends AbstractSource
             return null;
         }
 
-        $model = $this->definition->model;
-
-        $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
-            $model
-        )
-            ->setProperty('name', $this->address($properties))
-            ->setProperty('description', trim((string) ($properties['bemrk'] ?? '')))
-            ->setProperty('source', $this->definition->accessUrl)
-            ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
-
-        return $this->describe($entity, $properties);
+        return $this->buildNgsiEntity((string) $key, $properties, $geometry, $transformer);
     }
 
     /**
@@ -76,6 +65,28 @@ abstract class AbstractHandicapParking extends AbstractSource
      * @param array<string, mixed> $properties
      */
     abstract protected function describe(NgsiEntity $entity, array $properties): NgsiEntity;
+
+    /**
+     * Maps a record this source supports onto an entity of its model.
+     *
+     * @param array<string, mixed> $properties
+     * @param array<string, mixed> $geometry
+     */
+    private function buildNgsiEntity(string $key, array $properties, array $geometry, Wgs84Transformer $transformer): NgsiEntity
+    {
+        $model = $this->definition->model;
+
+        $entity = new NgsiEntity(
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
+            $model
+        )
+            ->setProperty('name', $this->address($properties))
+            ->setProperty('description', trim((string) ($properties['bemrk'] ?? '')))
+            ->setProperty('source', $this->definition->accessUrl)
+            ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
+
+        return $this->describe($entity, $properties);
+    }
 
     /**
      * The number of reserved bays the record counts. The register's grain is
