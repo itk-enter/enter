@@ -7,6 +7,7 @@ namespace App\Broker;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * Writes entities to an NGSI-LD context broker.
@@ -60,7 +61,7 @@ final readonly class NgsiLdBroker
     public function upsert(array $entities): UpsertResult
     {
         $status = Response::HTTP_NO_CONTENT;
-        $partlyRejectedBodies = [];
+        $partlyRejectedResponses = [];
 
         foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
             $response = $this->client->request(
@@ -79,7 +80,7 @@ final readonly class NgsiLdBroker
             }
 
             if (Response::HTTP_MULTI_STATUS === $batchStatus) {
-                $partlyRejectedBodies[] = $response->getContent(false);
+                $partlyRejectedResponses[] = $response;
             }
 
             if (Response::HTTP_MULTI_STATUS !== $status) {
@@ -88,7 +89,7 @@ final readonly class NgsiLdBroker
         }
 
         // Read the rejected entities out of each partly rejected batch.
-        $rejectedPerBatch = array_map($this->rejections(...), $partlyRejectedBodies);
+        $rejectedPerBatch = array_map($this->rejections(...), $partlyRejectedResponses);
 
         // Combine the batches' rejections into one list.
         $rejected = array_merge(...$rejectedPerBatch);
@@ -101,10 +102,10 @@ final readonly class NgsiLdBroker
      *
      * @return array<string, Rejection>
      */
-    private function rejections(string $body): array
+    private function rejections(ResponseInterface $response): array
     {
-        $result = json_decode($body, true);
-        $errors = \is_array($result) && \is_array($result['errors'] ?? null) ? $result['errors'] : [];
+        $result = $response->toArray(false);
+        $errors = \is_array($result['errors'] ?? null) ? $result['errors'] : [];
 
         $rejected = [];
         foreach ($errors as $error) {
