@@ -18,7 +18,7 @@ use App\Source\Definition;
  */
 #[Definition(
     id: 'mtm_spatialmaps-toilet-other',
-    title: 'Andre toiletter, Aarhus Kommune',
+    title: 'Andre toiletter (MTM), Aarhus Kommune',
     description: 'Public toilets outside the city-kiosk network in Aarhus Municipality, including seasonal and access-restricted facilities.',
     publisher: 'Aarhus Kommune',
     contact: 'ppg@aarhus.dk',

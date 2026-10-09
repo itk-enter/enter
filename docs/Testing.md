@@ -15,10 +15,10 @@ docker compose exec phpfpm php bin/console test:source:list
 
 (the `app:source:list` command will list all source; including test sources.)
 
-Example: Import and show data from the test source `test:mtm_spatialmaps-handicap-parking`:
+Example: Import and show data from the test source `test:mtm_spatialmaps-handicap-parking-on-street`:
 
 ```shell
-docker compose exec phpfpm php bin/console app:source:import test:mtm_spatialmaps-handicap-parking
+docker compose exec phpfpm php bin/console app:source:import test:mtm_spatialmaps-handicap-parking-on-street
 docker compose exec phpfpm curl 'http://scorpio:9090/ngsi-ld/v1/entities?type=https://smartdatamodels.org/dataModel.Parking/OnStreetParking'
 ```
 
@@ -27,10 +27,12 @@ See the result on <https://enter.local.itkdev.dk/test>.
 One source's entities can be read back on their own by the id they are stamped with; see
 [Reading a source's data](../README.md#reading-a-sources-data).
 
-The map page at `/test` lists the test sources as toggles grouped by model, all off to begin with, and reads a source's
-entities from the broker the first time it is switched on. The checkbox on a group switches every source of that model
-at once. Clicking a feature outlines it and opens a popup with its attributes; where several features overlap, the
-popup lists each.
+The map page at `/test` lists the test sources grouped by the model they publish, so sources of one model can be laid
+over each other and compared. Each source has a toggle named by its data set, all off to begin with, and its entities
+are read from the broker the first time it is switched on; the checkbox on a model switches every source of it at
+once. Colour follows the data set, so a feed split over several models keeps one colour. Clicking a feature outlines
+it and opens a popup with its attributes under the data set and model it came from; where several features overlap,
+the popup lists each.
 
 ### Refreshing test source data
 
@@ -41,6 +43,11 @@ The data files can be updated by running
 ```shell
 docker compose exec phpfpm php bin/console test:source:fetch-content
 ```
+
+A fetch answered with 429 or a 5xx is retried four times with growing pauses, as the public Overpass instance is often
+busy. A file is only replaced by a complete response, so a failed fetch leaves the old one in place. Each response is
+kept for an hour: run the command again after a partial failure and only the failed feeds are fetched. Add `--fresh`
+to fetch every feed regardless.
 
 As shown above, test sources can be imported just like real sources, but for convenience the `test:source:import-all`
 command can be used to import *all test sources*:

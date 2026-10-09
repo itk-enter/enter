@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-60](https://github.com/itk-enter/enter/pull/60)
+  * Split the OSM and MTM handicap parking sources into one source per
+    model, sharing a data set.
+  * Deleted entities a source no longer yields.
+  * Cached source responses and test fixture fetches.
+  * Reported entities the broker rejects.
+  * Added the kind of facility to OSM off-street parking.
+  * Grouped the `/test` map by model, coloured by data set.
 * [PR-59](https://github.com/itk-enter/enter/pull/59)
   Added the osm-bench source for benches from OpenStreetMap, published under
   the Bench data model

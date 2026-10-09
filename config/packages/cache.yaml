@@ -15,5 +15,24 @@ framework:
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-        #my.dedicated.cache: null
+        pools:
+            # Long enough for the sources sharing a feed to be imported one
+            # after the other on a single fetch.
+            source_reader.cache:
+                adapter: cache.adapter.filesystem
+                default_lifetime: 600
+
+            # Long enough to run the fetch of test fixtures again after a
+            # partial failure without fetching what already succeeded.
+            test_fixture.cache:
+                adapter: cache.adapter.filesystem
+                default_lifetime: 3600
+
+when@test:
+    framework:
+        cache:
+            pools:
+                source_reader.cache:
+                    adapter: cache.adapter.array
+                test_fixture.cache:
+                    adapter: cache.adapter.array

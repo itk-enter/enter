@@ -18,6 +18,7 @@ readonly class Definition
      *      query: array<string, mixed>
      * } $accessUrl
      * @param array<string, string> $omittedFields
+     * @param ?string               $dataset       the data set a source shares with others reading the same feed, one per model; null when the source is the whole data set
      */
     public function __construct(
         public string $id,
@@ -35,7 +36,12 @@ readonly class Definition
         public string $updateFrequency,
         public ?string $licence,
         public array $omittedFields,
+        public ?string $dataset = null,
+        public ?string $datasetTitle = null,
     ) {
+        if ((null === $dataset) !== (null === $datasetTitle)) {
+            throw new \InvalidArgumentException(sprintf('Source %s must declare both a dataset and its title, or neither.', $id));
+        }
     }
 
     /**
@@ -109,6 +115,10 @@ readonly class Definition
             'update_frequency' => $this->updateFrequency,
             'licence' => $this->licence,
             'omitted_fields' => $this->omittedFields,
+            'dataset' => [
+                'id' => $this->dataset ?? $this->id,
+                'title' => $this->datasetTitle ?? $this->title,
+            ],
         ];
     }
 }

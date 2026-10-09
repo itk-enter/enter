@@ -11,7 +11,8 @@ use App\Source\Definition;
 readonly class TestDefinition extends Definition
 {
     /**
-     * @param array<string, mixed> $dataUrlQuery
+     * @param array<string, string> $omittedFields
+     * @param array<string, mixed>  $dataUrlQuery
      */
     public function __construct(
         string $id,
@@ -25,6 +26,8 @@ readonly class TestDefinition extends Definition
         array $omittedFields,
         public string $dataUrlBase,
         public array $dataUrlQuery = [],
+        ?string $dataset = null,
+        ?string $datasetTitle = null,
     ) {
         parent::__construct(
             id: $id,
@@ -42,6 +45,8 @@ readonly class TestDefinition extends Definition
             updateFrequency: '',
             licence: '',
             omittedFields: $omittedFields,
+            dataset: $dataset,
+            datasetTitle: $datasetTitle,
         );
     }
 }

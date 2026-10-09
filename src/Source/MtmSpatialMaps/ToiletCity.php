@@ -17,7 +17,7 @@ use App\Source\Definition;
  */
 #[Definition(
     id: 'mtm_spatialmaps-toilet-city',
-    title: 'Bytoiletter, Aarhus Kommune',
+    title: 'Bytoiletter (MTM), Aarhus Kommune',
     description: 'City-kiosk public toilets in Aarhus Municipality.',
     publisher: 'Aarhus Kommune',
     contact: 'ppg@aarhus.dk',
