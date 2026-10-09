@@ -35,18 +35,14 @@ abstract class AbstractTestHandicapParking extends AbstractSource
      */
     final public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
     {
-        $type = $data['type'] ?? null;
-        $id = $data['id'] ?? null;
-
-        // OSM ids are only unique per element type, so both are needed to
-        // address the same object again on the next import.
-        if (!\is_string($type) || !\is_int($id)) {
-            return null;
-        }
-
         $tags = \is_array($data['tags'] ?? null) ? $data['tags'] : [];
 
         if (!$this->supports($tags)) {
+            return null;
+        }
+
+        // Skip if the element cannot be addressed again on the next import.
+        if ('' === $this->getKey($data)) {
             return null;
         }
 
@@ -55,7 +51,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
             return null;
         }
 
-        return $this->buildNgsiEntity($type, $id, $tags, $geometry, $transformer);
+        return $this->buildNgsiEntity($data, $tags, $geometry, $transformer);
     }
 
     /**
@@ -66,32 +62,43 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     abstract protected function supports(array $tags): bool;
 
     /**
-     * Sets what only this source's model holds.
+     * The model the record is published under. Only called if supports()
+     * accepted the record.
      *
      * @param array<string, mixed> $tags
      */
-    abstract protected function describe(NgsiEntity $entity, array $tags): NgsiEntity;
+    abstract protected function getModel(array $tags): string;
 
     /**
-     * Maps a record this source supports onto an entity of its model.
+     * The element's stable key in the feed, or '' when it has none. It takes
+     * the whole element, as OSM keeps the type and id beside the tags. Only
+     * called if supports() accepted the record.
      *
+     * @param array<string, mixed> $element Overpass JSON element
+     */
+    abstract protected function getKey(array $element): string;
+
+    /**
+     * Maps a record onto an entity with what every model holds. Only called
+     * if supports() accepted the record; sources extend it with what only
+     * their model holds.
+     *
+     * @param array<string, mixed>                    $element  Overpass JSON element
      * @param array<string, mixed>                    $tags
      * @param array{type: string, coordinates: mixed} $geometry
      */
-    private function buildNgsiEntity(string $type, int $id, array $tags, array $geometry, Wgs84Transformer $transformer): NgsiEntity
+    protected function buildNgsiEntity(array $element, array $tags, array $geometry, Wgs84Transformer $transformer): NgsiEntity
     {
-        $model = $this->definition->model;
+        $model = $this->getModel($tags);
 
-        $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s-%d', $model, $type, $id),
+        return new NgsiEntity(
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-osm-%s', $model, $this->getKey($element)),
             $model
         )
             ->setProperty('name', trim((string) ($tags['name'] ?? '')))
             ->setProperty('description', trim((string) ($tags['description'] ?? '')))
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
-
-        return $this->describe($entity, $tags);
     }
 
     /**

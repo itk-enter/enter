@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Test\Source\Osm;
 
+use App\Geo\Wgs84Transformer;
 use App\Ngsi\NgsiEntity;
 use App\Source\DataType;
 use App\Test\Source\TestDefinition;
@@ -63,9 +64,24 @@ final class TestParkingSpot extends AbstractTestHandicapParking
         return $this->isSingleBay($tags);
     }
 
-    protected function describe(NgsiEntity $entity, array $tags): NgsiEntity
+    protected function getModel(array $tags): string
     {
-        return $entity
+        return self::PARKING_SPOT;
+    }
+
+    protected function getKey(array $element): string
+    {
+        $type = $element['type'] ?? null;
+        $id = $element['id'] ?? null;
+
+        // OSM ids are only unique per element type, so both are needed to
+        // address the same object again on the next import.
+        return \is_string($type) && \is_int($id) ? \sprintf('%s-%d', $type, $id) : '';
+    }
+
+    protected function buildNgsiEntity(array $element, array $tags, array $geometry, Wgs84Transformer $transformer): NgsiEntity
+    {
+        return parent::buildNgsiEntity($element, $tags, $geometry, $transformer)
             // The model requires an occupancy status.
             ->setProperty('status', 'unknown')
             ->setProperty('category', $this->category($tags))

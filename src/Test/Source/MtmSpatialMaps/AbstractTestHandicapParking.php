@@ -37,19 +37,16 @@ abstract class AbstractTestHandicapParking extends AbstractSource
             return null;
         }
 
-        // mi_prinx is assumed to be the feed's stable primary key.
-        $key = $properties['mi_prinx'] ?? null;
-
-        // Skip if no primary id.
-        if (null === $key || '' === $key) {
-            return null;
-        }
-
         if (!$this->supports($properties)) {
             return null;
         }
 
-        return $this->buildNgsiEntity((string) $key, $properties, $geometry, $transformer);
+        // Skip if no primary id.
+        if ('' === $this->getKey($properties)) {
+            return null;
+        }
+
+        return $this->buildNgsiEntity($properties, $geometry, $transformer);
     }
 
     /**
@@ -60,32 +57,41 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     abstract protected function supports(array $properties): bool;
 
     /**
-     * Sets what only this source's model holds.
+     * The model the record is published under. Only called if supports()
+     * accepted the record.
      *
      * @param array<string, mixed> $properties
      */
-    abstract protected function describe(NgsiEntity $entity, array $properties): NgsiEntity;
+    abstract protected function getModel(array $properties): string;
 
     /**
-     * Maps a record this source supports onto an entity of its model.
+     * The record's stable key in the feed, or '' when it has none. Only
+     * called if supports() accepted the record.
+     *
+     * @param array<string, mixed> $properties
+     */
+    abstract protected function getKey(array $properties): string;
+
+    /**
+     * Maps a record onto an entity with what every model holds. Only called
+     * if supports() accepted the record; sources extend it with what only
+     * their model holds.
      *
      * @param array<string, mixed> $properties
      * @param array<string, mixed> $geometry
      */
-    private function buildNgsiEntity(string $key, array $properties, array $geometry, Wgs84Transformer $transformer): NgsiEntity
+    protected function buildNgsiEntity(array $properties, array $geometry, Wgs84Transformer $transformer): NgsiEntity
     {
-        $model = $this->definition->model;
+        $model = $this->getModel($properties);
 
-        $entity = new NgsiEntity(
-            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $key),
+        return new NgsiEntity(
+            \sprintf('urn:ngsi-ld:%s:aarhus-handicap-%s', $model, $this->getKey($properties)),
             $model
         )
             ->setProperty('name', $this->address($properties))
             ->setProperty('description', trim((string) ($properties['bemrk'] ?? '')))
             ->setProperty('source', $this->definition->accessUrl)
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
-
-        return $this->describe($entity, $properties);
     }
 
     /**
