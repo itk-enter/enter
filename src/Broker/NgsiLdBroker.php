@@ -43,7 +43,7 @@ final readonly class NgsiLdBroker
     private const string CONTENT_TYPE = 'application/ld+json';
 
     public function __construct(
-        private HttpClientInterface $client,
+        private HttpClientInterface $brokerClient,
         #[Autowire(env: 'APP_BROKER_BASE_URI')]
         private string $brokerUrl,
     ) {
@@ -64,9 +64,9 @@ final readonly class NgsiLdBroker
         $partlyRejectedResponses = [];
 
         foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
-            $response = $this->client->request(
+            $response = $this->brokerClient->request(
                 'POST',
-                rtrim($this->brokerUrl, '/').self::UPSERT_PATH,
+                self::UPSERT_PATH,
                 [
                     'headers' => ['Content-Type' => self::CONTENT_TYPE],
                     'json' => $batch,
@@ -133,9 +133,9 @@ final readonly class NgsiLdBroker
         $ids = [];
 
         for ($offset = 0;; $offset += self::PAGE_SIZE) {
-            $response = $this->client->request(
+            $response = $this->brokerClient->request(
                 'GET',
-                rtrim($this->brokerUrl, '/').self::ENTITIES_PATH,
+                self::ENTITIES_PATH,
                 [
                     'headers' => [
                         'Accept' => 'application/json',
@@ -175,9 +175,9 @@ final readonly class NgsiLdBroker
     public function delete(array $ids): void
     {
         foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
-            $response = $this->client->request(
+            $response = $this->brokerClient->request(
                 'POST',
-                rtrim($this->brokerUrl, '/').self::BATCH_DELETE_PATH,
+                self::BATCH_DELETE_PATH,
                 ['json' => $batch]
             );
 

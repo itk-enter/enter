@@ -206,7 +206,7 @@ class SourceImporterTest extends TestCase
             }
 
             return new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT]);
-        });
+        }, 'http://broker.example');
 
         $reader = new readonly class($data) implements SourceReaderInterface {
             /**

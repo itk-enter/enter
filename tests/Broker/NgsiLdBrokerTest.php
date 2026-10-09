@@ -145,7 +145,7 @@ class NgsiLdBrokerTest extends TestCase
             $this->requests[] = [$method, $url, $options];
 
             return array_shift($responses) ?? throw new \LogicException('No response left.');
-        });
+        }, 'http://broker.example');
 
         return new NgsiLdBroker($client, 'http://broker.example');
     }
