@@ -74,6 +74,11 @@ final class GeometryHelper
     }
 
     /**
+     * @todo Fix the centroid without GEOS: geoPHP's fallback is about 3 m off
+     *   for a small building, ignores holes, and gives a line or multipolygon
+     *   the centre of its bounding box.
+     *   See https://github.com/itk-enter/enter/issues/74
+     *
      * @param Geometry $geometry
      */
     public function getCentroid(array $geometry): Point
