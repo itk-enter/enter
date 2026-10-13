@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Conflation\Fixtures;
+
+use App\Conflation\StatedValue;
+use App\Conflation\Step\AbstractConflictResolution;
+
+/**
+ * The customization ADR 006 gives as its example: "no" wins for the named
+ * attributes if any member says so, and every other attribute is left to
+ * the next approach.
+ */
+final class MostRestrictive extends AbstractConflictResolution
+{
+    /**
+     * @param list<string> $attributes
+     */
+    public function __construct(
+        private readonly array $attributes,
+    ) {
+    }
+
+    public function resolve(string $attribute, array $values): mixed
+    {
+        if (!\in_array($attribute, $this->attributes, true)) {
+            return null;
+        }
+
+        return array_any($values, static fn (StatedValue $value): bool => 'no' === $value->value) ? 'no' : null;
+    }
+}
