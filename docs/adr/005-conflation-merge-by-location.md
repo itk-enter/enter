@@ -119,7 +119,7 @@ The merge names the models whose records are matched, and the implementation it 
     defining: ['ModelA', 'ModelB'],
     mergeByLocation: new OneToOneClosestFirst(radius: 5.0),
 )]
-final class BenchConflation
+final class BenchConflation implements ConflationInterface
 {
 }
 ```
@@ -173,7 +173,7 @@ defining models with its full geometry, so it can compare areas by shape:
     defining: ['ModelA', 'ModelB'],
     mergeByLocation: new PointInArea(radius: 5.0),
 )]
-final class ToiletConflation
+final class ToiletConflation implements ConflationInterface
 {
 }
 ```
