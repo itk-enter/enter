@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Conflation;
 
 use App\Conflation\Augmentation\AbstractAugmentation;
+use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\ConflictResolution\AbstractConflictResolution;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 
@@ -22,6 +23,12 @@ use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 final readonly class Conflation
 {
     /**
+     * How augmenting records reach merged entities; null when the merge names
+     * no augmenting model.
+     */
+    public ?AbstractAugmentation $augmentation;
+
+    /**
      * @param string                           $id                 the merged data set's source identifier
      * @param string                           $resultModel        the data model merged entities are built in
      * @param list<string>                     $defining           models whose records are matched, each able to form
@@ -30,6 +37,8 @@ final readonly class Conflation
      *                                                             with none, every conflict is left out and recorded
      * @param array<string, list<string>>      $augmenting         models that only add attributes, with the attributes
      *                                                             each supplies, named as in the result model
+     * @param AbstractAugmentation|null        $augmentation       how augmenting records reach merged entities; left
+     *                                                             out, WithinAreaOrRadius with the merge's radius
      */
     public function __construct(
         public string $id,
@@ -38,7 +47,7 @@ final readonly class Conflation
         public AbstractMergeByLocation $mergeByLocation,
         public array $conflictResolution = [],
         public array $augmenting = [],
-        public ?AbstractAugmentation $augmentation = null,
+        ?AbstractAugmentation $augmentation = null,
     ) {
         if ([] === $defining) {
             throw new \InvalidArgumentException(\sprintf('Merge %s names no defining model.', $id));
@@ -55,9 +64,7 @@ final readonly class Conflation
             throw new \InvalidArgumentException(\sprintf('Merge %s names %s both as defining and as augmenting.', $id, implode(', ', $both)));
         }
 
-        if ([] !== $augmenting && null === $augmentation) {
-            throw new \InvalidArgumentException(\sprintf('Merge %s names augmenting models but no augmentation.', $id));
-        }
+        $this->augmentation = $augmentation ?? ([] === $augmenting ? null : new WithinAreaOrRadius($mergeByLocation->radius));
     }
 
     /**

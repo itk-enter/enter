@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Conflation;
 
+use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationManager;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
 use App\Tests\Conflation\Fixtures\MostRestrictive;
 use App\Tests\Conflation\Fixtures\OtherToiletConflation;
 use App\Tests\Conflation\Fixtures\PreferSource;
-use App\Tests\Conflation\Fixtures\SuppliesEveryEntity;
 use App\Tests\Conflation\Fixtures\ToiletConflation;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -31,7 +31,7 @@ class ConflationTest extends TestCase
         $this->assertInstanceOf(GroupedByThing::class, $conflation->mergeByLocation);
         $this->assertSame(5.0, $conflation->mergeByLocation->radius);
         $this->assertEquals([new MostRestrictive(['wheelchair']), new PreferSource('data-set-a')], $conflation->conflictResolution);
-        $this->assertInstanceOf(SuppliesEveryEntity::class, $conflation->augmentation);
+        $this->assertInstanceOf(WithinAreaOrRadius::class, $conflation->augmentation);
 
         $this->assertTrue($conflation->isDefining('ModelB'));
         $this->assertFalse($conflation->isDefining('ModelC'));
@@ -72,10 +72,9 @@ class ConflationTest extends TestCase
         yield 'no defining model' => [['defining' => []], 'names no defining model'];
         yield 'not an approach' => [['conflictResolution' => ['data-set-a']], 'must extend'];
         yield 'defining and augmenting' => [
-            ['augmenting' => ['ModelA' => ['surface']], 'augmentation' => new SuppliesEveryEntity(5.0)],
+            ['augmenting' => ['ModelA' => ['surface']], 'augmentation' => new WithinAreaOrRadius(5.0)],
             'both as defining and as augmenting',
         ];
-        yield 'augmenting without augmentation' => [['augmenting' => ['ModelC' => ['surface']]], 'no augmentation'];
     }
 
     public function testTheSimplestMergeNamesItsModelsAndHowToMatchThem(): void
@@ -90,6 +89,19 @@ class ConflationTest extends TestCase
         $this->assertSame([], $conflation->conflictResolution);
         $this->assertSame([], $conflation->augmenting);
         $this->assertNull($conflation->augmentation);
+    }
+
+    public function testAMergeThatNamesAugmentingModelsGetsTheDefaultAugmentation(): void
+    {
+        $conflation = new Conflation(
+            id: 'merged-parking',
+            resultModel: 'ResultModel',
+            defining: ['ModelA', 'ModelB'],
+            mergeByLocation: new GroupedByThing(5.0),
+            augmenting: ['ModelC' => ['surface']],
+        );
+
+        $this->assertEquals(new WithinAreaOrRadius(5.0), $conflation->augmentation);
     }
 
     public function testAStepRejectsARadiusThatIsNotPositive(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Conflation\Fixtures;
 
+use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationInterface;
 
@@ -18,7 +19,7 @@ use App\Conflation\ConflationInterface;
     mergeByLocation: new GroupedByThing(radius: 5.0),
     conflictResolution: [new MostRestrictive(['wheelchair']), new PreferSource('data-set-a')],
     augmenting: ['ModelC' => ['surface']],
-    augmentation: new SuppliesEveryEntity(radius: 5.0),
+    augmentation: new WithinAreaOrRadius(radius: 5.0),
 )]
 final class ToiletConflation implements ConflationInterface
 {
