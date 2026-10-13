@@ -8,7 +8,7 @@ use App\Conflation\Step\AbstractConflictResolution;
 
 /**
  * Turns a group into one merged entity, settling the attributes its members
- * disagree on with the merge's approaches (ADR 006).
+ * disagree on with the merge's approaches.
  *
  * This part is the same for every merge: what counts as a conflict, the
  * order the approaches are tried in, what happens when none settles it, and

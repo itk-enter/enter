@@ -8,7 +8,7 @@ use App\Conflation\Cluster;
 use App\Conflation\Record;
 
 /**
- * Groups the records that describe the same real-world thing (ADR 005).
+ * Groups the records that describe the same real-world thing.
  *
  * A merge names an implementation in its #[Conflation] attribute. A kind the
  * default does not suit names a subclass that replaces the default, or
@@ -32,9 +32,27 @@ abstract class AbstractMergeByLocation
     }
 
     /**
+     * Decides which records describe the same thing.
+     *
+     * The pipeline calls this once per run with the records of every
+     * defining model, from every data set, in no particular order. Each
+     * record has an id, the data set it comes from, the point it is compared
+     * by (a point's own position, or the centroid of an area), and its full
+     * geometry where it has one.
+     *
+     * Return the records sorted into groups, one group per real-world thing.
+     * A record that matches nothing is a group of its own. For example, with
+     * a radius of 5 m, toilet A-17 from data set A and toilet B-903 from data
+     * set B lying 3 m apart, and toilet A-18 with nothing near it:
+     *
+     *     [new Cluster([A-17, B-903]), new Cluster([A-18])]
+     *
+     * Every record must be in exactly one group, and a group must not hold
+     * two records of the same data set, or the run fails.
+     *
      * @param list<Record> $records every record of the merge's defining models
      *
-     * @return list<Cluster>
+     * @return list<Cluster> the groups, each holding one or more of the given records
      */
     abstract public function merge(array $records): array;
 }

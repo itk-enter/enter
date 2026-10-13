@@ -8,8 +8,8 @@ use App\Conflation\Conflation;
 use App\Conflation\ConflationInterface;
 
 /**
- * A merge declared the way ADR 004 shows, with test steps in place of the
- * defaults.
+ * A merge using every key of the #[Conflation] attribute, with test steps in
+ * place of the defaults.
  */
 #[Conflation(
     id: 'merged-toilets',

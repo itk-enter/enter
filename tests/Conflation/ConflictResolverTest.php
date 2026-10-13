@@ -17,8 +17,8 @@ use PHPUnit\Framework\TestCase;
 class ConflictResolverTest extends TestCase
 {
     /**
-     * The toilet group of ADR 006: three records of one toilet that disagree
-     * on opening hours and wheelchair access.
+     * Three records of one toilet that disagree on opening hours and
+     * wheelchair access.
      *
      * @return list<Record>
      */

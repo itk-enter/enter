@@ -10,7 +10,7 @@ use App\Conflation\StatedValue;
 
 /**
  * Adds facts to merged entities from data sets that describe something else
- * at the same place (ADR 007).
+ * at the same place.
  *
  * An implementation returns values, not entities, so it cannot create,
  * remove, regroup or move one. The pipeline checks the values it returns:
@@ -33,11 +33,35 @@ abstract class AbstractAugmentation
     }
 
     /**
-     * @param list<MergedEntity>          $entities          resolved, at their resolved location
-     * @param list<Record>                $records           every record of the merge's augmenting models
-     * @param array<string, list<string>> $attributesByModel the attributes each augmenting model supplies
+     * Decides which augmenting records add which attributes to which merged
+     * entities.
      *
-     * @return array<string, array<string, list<StatedValue>>> values to add, by entity id, then attribute
+     * The pipeline calls this once per run, after the defining records are
+     * grouped and their conflicts settled. It passes the merged entities,
+     * the records of every augmenting model, and the merge's augmenting
+     * configuration. An implementation typically finds, for each entity, the
+     * augmenting records at its location, and takes from them the attributes
+     * their model supplies and the entity lacks.
+     *
+     * For example, with augmenting: ['ModelC' => ['surface']], a merged
+     * bench A-1 standing inside ground-cover area C-5, which states
+     * surface "grass", gets:
+     *
+     *     ['A-1' => ['surface' => [StatedValue('grass', 'C-5', 'data-set-c')]]]
+     *
+     * List every record that supplies an attribute to an entity; when they
+     * state different values, the merge's conflict-resolution approaches
+     * settle them. Leave out entities that get nothing.
+     *
+     * @param list<MergedEntity>          $entities          the merged entities, with their settled attributes and
+     *                                                       location
+     * @param list<Record>                $records           every record of the merge's augmenting models, from every
+     *                                                       data set
+     * @param array<string, list<string>> $attributesByModel the merge's augmenting key: for each augmenting model, the
+     *                                                       attributes it may supply, such as
+     *                                                       ['ModelC' => ['surface']]
+     *
+     * @return array<string, array<string, list<StatedValue>>> values to add, by entity id, then attribute name
      */
     abstract public function augment(array $entities, array $records, array $attributesByModel): array;
 }

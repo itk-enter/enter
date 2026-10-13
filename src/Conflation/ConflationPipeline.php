@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Conflation;
 
 /**
- * Runs the customizable steps of a merge on its records, and checks what
- * each step returns against the limits its ADR sets (ADR 004).
+ * Runs the customizable steps of a merge on its records, and checks that
+ * what each step returns stays within the step's limits.
  *
  * Merging by location groups the records of defining models, resolving
  * conflicts turns each group into one merged entity, and augmenting adds

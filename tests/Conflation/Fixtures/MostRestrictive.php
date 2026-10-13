@@ -8,9 +8,8 @@ use App\Conflation\StatedValue;
 use App\Conflation\Step\AbstractConflictResolution;
 
 /**
- * The customization ADR 006 gives as its example: "no" wins for the named
- * attributes if any member says so, and every other attribute is left to
- * the next approach.
+ * An example customization: "no" wins for the named attributes if any member
+ * says so, and every other attribute is left to the next approach.
  */
 final class MostRestrictive extends AbstractConflictResolution
 {

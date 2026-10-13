@@ -9,7 +9,7 @@ use App\Conflation\Step\AbstractConflictResolution;
 use App\Conflation\Step\AbstractMergeByLocation;
 
 /**
- * The configuration of a merge (ADR 004).
+ * The configuration of a merge.
  *
  * A merge is a class carrying this attribute and implementing
  * ConflationInterface. Each customizable step is named by an implementation
