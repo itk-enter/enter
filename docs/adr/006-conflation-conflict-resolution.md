@@ -1,4 +1,4 @@
-# 006: Conflation, conflict resolution — ordered approaches, each extending an abstract default
+# 006: Conflation, conflict resolution — named data sets decide, through an abstract default
 
 | Field              | Value                                                  |
 |--------------------|--------------------------------------------------------|
@@ -27,9 +27,9 @@ of three records of one public toilet can state:
 The fee is no conflict: one data set says nothing, and the others agree. Opening hours and wheelchair access are:
 the data sets state different values, and the merged entity has to publish one or say that it does not know.
 
-Which value is right differs per kind and per attribute. A majority is a fair guess for opening hours, but for
-wheelchair access a wrong "yes" sends someone to a toilet they cannot use, while a wrong "no" only makes them look
-elsewhere.
+Which value is right differs per kind and per attribute. The data set kept by the toilet's operator is a fair guess
+for opening hours, but for wheelchair access a wrong "yes" sends someone to a toilet they cannot use, while a wrong
+"no" only makes them look elsewhere.
 
 When an attribute is in conflict, how a value is chosen, what happens when none can be chosen, and how a kind uses
 rules of its own are undecided.
@@ -39,26 +39,25 @@ them, and how a merge replaces or extends it.
 
 ### Drivers
 
-- **Functional:** one value per attribute where it can be settled; a conflict that cannot be settled is visible, not
-  hidden; a kind can settle an attribute by a rule of its own; a data set added for a kind takes part without a
-  change to the merge.
+- **Functional:** one value per attribute where it can be settled; a person decides which data sets are trusted; a
+  conflict that cannot be settled is visible, not hidden; a kind can settle an attribute by a rule of its own.
 - **Non-functional:** repeatable, so the same values give the same result; each way of settling testable on its own
   and reusable by other kinds.
 
 ### Options Considered
 
-**Naming the data sets in priority order.** The first data set in the list that states a value wins. It is simple
-and predictable, but every data set added for a kind needs the list changed, one order has to hold for every
-attribute, and a data set that is best for one attribute and poor for another cannot be placed.
+**Majority.** The value stated by more members than any other wins. It needs no configuration and lets a data set
+join without a change to the merge, but it cannot settle a conflict between two members, a new data set votes before
+anyone has judged it, and several data sets copying one mistaken source outvote a correct one.
+
+**Naming the data sets in priority order.** The merge lists data sets, and the value of the earliest listed data set
+that states one wins. It is predictable, a person decides whom to trust, and a new data set changes no result until it
+is listed, but the list has to be kept up as data sets are added, one order holds for every attribute, and data sets
+left off the list cannot settle a conflict.
 
 **A priority order per attribute.** Each attribute gets its own list of data sets. It settles each attribute
 precisely, but the configuration grows with every attribute and data set, and every new attribute needs a decision
 before it is published.
-
-**Ordered approaches.** The merge lists ways of settling a conflict, such as majority and then the authority of named
-data sets, tried in order until one settles it. A data set added for a kind takes part without a change, and each
-kind is settled the way that suits it, but a new data set's values take part before anyone has judged them, and some
-conflicts stay unsettled.
 
 **Most recent value.** The value observed most recently wins. It suits attributes that change, but needs a reliable
 date per value, which few data sets give.
@@ -69,9 +68,10 @@ what the merge is for.
 
 ## Decision
 
-Conflicts are settled by **ordered approaches**. Each approach is a subclass of **an abstract conflict-resolution
-class**, the merge lists the approaches it uses in its declaration, and a kind that needs rules of its own adds a
-subclass to the list.
+Conflicts are settled by **naming the data sets in priority order**, through **source authority**. Every merge names
+its data sets, so conflicts are settled by who a person has chosen to trust, not by counting. Source authority is a
+subclass of **an abstract conflict-resolution class**, and the merge lists it in its declaration, where a kind that
+needs rules of its own adds further subclasses.
 
 ### Configuration
 
@@ -79,14 +79,15 @@ subclass to the list.
 #[Conflation(
     id: 'merged-toilets',
     resultModel: 'ResultModel',
-    conflictResolution: [new Majority(), new SourceAuthority(['data-set-a', 'data-set-c'])],
+    defining: ['ModelA', 'ModelB'],
+    conflictResolution: [new SourceAuthority(['data-set-a', 'data-set-c'])],
 )]
-final class ToiletConflation
+final class ToiletConflation implements ConflationInterface
 {
 }
 ```
 
-A merge that leaves the key out uses majority alone.
+The key is required: a merge has no default order of data sets, so every merge names one.
 
 ### When an attribute is in conflict
 
@@ -96,11 +97,11 @@ A merge that leaves the key out uses majority alone.
 
 ### Settling a conflict
 
-- The approaches are tried in the listed order, and the first that settles the conflict decides the value. The same
-  list is used for every attribute; an approach that only concerns some attributes leaves the others to the next.
-- **Majority:** the value stated by more members than any other settles it. A tie does not.
-- **Source authority:** configured with an ordered list of data sets. The value of the earliest listed data set that
-  states one settles it. Members whose data sets are not listed cannot settle it.
+- **Source authority:** the value of the earliest listed data set that states one settles it. Members whose data sets
+  are not listed cannot settle it.
+- **Order:** the listed approaches are tried in order, and the first that settles the conflict decides the value. The
+  same list is used for every attribute; an approach that only concerns some attributes leaves the others to the
+  next.
 - **Unsettled:** a conflict no approach settles leaves the attribute out of the merged entity, and the conflicting
   values and the data sets stating them are recorded on it, so they can be followed up at their source.
 - **Location:** a merged entity's location is settled like any other attribute. Where no approach settles it, the
@@ -110,27 +111,28 @@ A merge that leaves the key out uses majority alone.
 
 With the configuration above, the conflicts in the toilet group are settled like this:
 
-| Attribute     | Majority             | Source authority  | Merged entity |
-|---------------|----------------------|-------------------|---------------|
-| Opening hours | 08–20 (A and C)      | not tried         | 08–20         |
-| Wheelchair    | yes (A and C)        | not tried         | yes           |
-| Fee           | no conflict          | not tried         | free          |
+| Attribute     | Data set A | Data set B | Data set C | Merged entity      |
+|---------------|------------|------------|------------|--------------------|
+| Opening hours | 08–20      | 06–22      | 08–20      | 08–20, from A      |
+| Wheelchair    | yes        | no         | yes        | yes, from A        |
+| Fee           | free       | not stated | free       | free, no conflict  |
 
-With only data sets A and B in the group, majority ties on both attributes, and source authority settles them from
-data set A, the earliest listed that states them.
+In a group of records from data sets B and D only, neither of which is listed, a conflict between them stays
+unsettled: the attribute is left out and both values are recorded on the merged entity.
 
 ### Customizing
 
-A kind that needs other rules adds a subclass of the abstract conflict-resolution class to its list. A subclass
-receives one attribute and the values the members state for it, each with its data set, and either returns a value or
-leaves the conflict to the next approach. It can concern every attribute or only some:
+A kind that needs other rules adds a subclass of the abstract conflict-resolution class to its list, before or after
+source authority. A subclass receives one attribute and the values the members state for it, each with its data set,
+and either returns a value or leaves the conflict to the next approach. It can concern every attribute or only some:
 
 ```php
-conflictResolution: [new MostRestrictive(['wheelchair']), new Majority(), new SourceAuthority(['data-set-a'])],
+conflictResolution: [new MostRestrictive(['wheelchair']), new SourceAuthority(['data-set-a', 'data-set-c'])],
 ```
 
-Here `MostRestrictive` settles wheelchair access as "no" if any member says so, and leaves every other attribute to
-majority and source authority. In the example, the merged toilet is then published as not wheelchair accessible.
+Here `MostRestrictive` settles wheelchair access as "no" if any member says so, because a wrong "yes" sends someone to
+a toilet they cannot use, and leaves every other attribute to source authority. In the example, the merged toilet is
+then published as not wheelchair accessible.
 
 ### Limits every approach keeps
 
@@ -140,8 +142,9 @@ majority and source authority. In the example, the merged toilet is then publish
 
 Rationale:
 
-- Ordered approaches let a data set join a kind without changing the merge, and let each kind settle conflicts the way
-  that suits it.
+- Naming the data sets lets a person decide whom to trust, and keeps a new data set from changing results before
+  anyone has judged it.
+- Source authority settles a conflict between two members, which majority cannot.
 - One list for every attribute keeps the configuration short; approaches that concern some attributes give the
   precision of a per-attribute order where it is needed.
 - Leaving an unsettled attribute out and recording why keeps the merged data set from stating what no rule supports,
@@ -152,17 +155,17 @@ Rationale:
 
 ### Positive
 
-- A data set added for a model takes part in settling conflicts without a change to the merge.
+- Which data set wins a conflict is stated in the merge, and is the same for every run.
+- A data set added for a model changes no conflict until it is listed.
 - Each kind, and each attribute where needed, is settled by rules that suit it.
 - Unsettled conflicts are visible on the merged entity, so they can be followed up at their source.
 - An approach written for one kind can be listed by any other.
 
 ### Negative / Trade-offs
 
-- A data set added for a model affects merges before anyone has judged its values, including through majority.
-- Majority cannot settle a conflict between two members, so merges of two data sets depend on source authority or an
-  approach of their own.
-- An attribute settled by majority can be wrong where several data sets copy the same mistaken source.
+- Every merge has to name its data sets, and the list has to be kept up as data sets are added and retired.
+- A conflict between data sets that are not listed stays unsettled until someone lists them.
+- One order holds for every attribute, unless a kind adds an approach of its own for some of them.
 - A merged entity can lack an attribute every input states, when they state it differently and nothing settles it.
 - A merged entity's location, where no approach settles it, changes when its first-sorting member disappears or a
   new member sorts before it.
