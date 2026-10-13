@@ -74,7 +74,7 @@ other rules names a subclass of it.
     augmenting: ['ModelC' => ['attributeX']],
     augmentation: new WithinAreaOrRadius(radius: 5.0),
 )]
-final class ParkingConflation
+final class ParkingConflation implements ConflationInterface
 {
 }
 ```
