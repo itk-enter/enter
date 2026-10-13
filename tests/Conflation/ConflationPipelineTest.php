@@ -9,12 +9,12 @@ use App\Conflation\Cluster;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationLimitException;
 use App\Conflation\ConflationPipeline;
+use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 use App\Conflation\MergedEntity;
 use App\Conflation\Record;
 use App\Conflation\StatedValue;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
-use App\Tests\Conflation\Fixtures\PreferSource;
 use App\Tests\Conflation\Fixtures\SuppliesEveryEntity;
 use App\Tests\Conflation\Fixtures\ToiletConflation;
 use PHPUnit\Framework\TestCase;
@@ -72,10 +72,10 @@ class ConflationPipelineTest extends TestCase
             self::record('D-6', 'data-set-d', 'ModelC', ['surface' => 'gravel']),
         ];
 
-        $entities = new ConflationPipeline()->run(self::conflation(conflictResolution: [new PreferSource('data-set-d')]), $records);
+        $entities = new ConflationPipeline()->run(self::conflation(conflictResolution: [new SourceAuthority(['data-set-d'])]), $records);
         $this->assertSame(['surface' => 'gravel'], $entities[0]->attributes);
 
-        $entities = new ConflationPipeline()->run(self::conflation(conflictResolution: [new PreferSource('data-set-x')]), $records);
+        $entities = new ConflationPipeline()->run(self::conflation(conflictResolution: [new SourceAuthority(['data-set-x'])]), $records);
         $this->assertSame([], $entities[0]->attributes);
         $this->assertEquals(
             [new StatedValue('asphalt', 'C-5', 'data-set-c'), new StatedValue('gravel', 'D-6', 'data-set-d')],
@@ -199,7 +199,7 @@ class ConflationPipelineTest extends TestCase
             resultModel: 'ResultModel',
             defining: ['ModelA', 'ModelB'],
             mergeByLocation: $mergeByLocation ?? new GroupedByThing(5.0),
-            conflictResolution: $conflictResolution ?: [new PreferSource('data-set-a')],
+            conflictResolution: $conflictResolution ?: [new SourceAuthority(['data-set-a'])],
             augmenting: ['ModelC' => ['surface']],
             augmentation: $augmentation ?? new SuppliesEveryEntity(5.0),
         );
