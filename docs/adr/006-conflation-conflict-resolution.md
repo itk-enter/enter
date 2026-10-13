@@ -68,10 +68,10 @@ what the merge is for.
 
 ## Decision
 
-Conflicts are settled by **naming the data sets in priority order**, through **source authority**. Every merge names
-its data sets, so conflicts are settled by who a person has chosen to trust, not by counting. Source authority is a
-subclass of **an abstract conflict-resolution class**, and the merge lists it in its declaration, where a kind that
-needs rules of its own adds further subclasses.
+Conflicts are settled by **naming the data sets in priority order**, through **source authority**, so they are
+settled by who a person has chosen to trust, not by counting. Source authority is a subclass of **an abstract
+conflict-resolution class**, and the merge lists it in its declaration, where a kind that needs rules of its own adds
+further subclasses. A merge that lists no approach **settles no conflict**.
 
 ### Configuration
 
@@ -87,7 +87,9 @@ final class ToiletConflation implements ConflationInterface
 }
 ```
 
-The key is required: a merge has no default order of data sets, so every merge names one.
+There is no default order of data sets, so a merge that leaves the key out settles no conflict: each attribute in
+conflict is left out and recorded, as below. Agreeing values and values stated by one member are still used. This lets
+a new merge run before anyone has chosen whom to trust, and shows which attributes need an order.
 
 ### When an attribute is in conflict
 
@@ -163,7 +165,9 @@ Rationale:
 
 ### Negative / Trade-offs
 
-- Every merge has to name its data sets, and the list has to be kept up as data sets are added and retired.
+- The list of data sets has to be kept up as data sets are added and retired.
+- A merge that leaves the key out drops every attribute its data sets disagree on, until someone lists them; the
+  conflicts are recorded, but nothing stops the merge from publishing without them.
 - A conflict between data sets that are not listed stays unsettled until someone lists them.
 - One order holds for every attribute, unless a kind adds an approach of its own for some of them.
 - A merged entity can lack an attribute every input states, when they state it differently and nothing settles it.
