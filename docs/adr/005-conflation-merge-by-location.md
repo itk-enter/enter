@@ -76,7 +76,9 @@ cannot be tested without it.
 **A grid index in memory.** Records are put into square cells at least the radius wide, so any record within the
 radius of another lies in its cell or one of the eight around it, and only those are compared. The work grows with
 the number of records rather than its square, and it is plain code that is tested without a store, but it is code of
-our own to maintain.
+our own to maintain. It is the cell method for the fixed-radius near neighbours problem, described by Bentley, Stanat
+and Williams in [The complexity of finding fixed-radius near neighbors][bentley-1977] (1977); see also
+[Fixed-radius near neighbors][frnn].
 
 #### Measuring distance
 
@@ -225,3 +227,6 @@ Rationale:
 - Comparing areas by full shape through GEOS is left undecided; a customization that needs it has to wait for the
   extension, or compare shapes in code of its own.
 - The grid index and the distance function are code of our own to maintain.
+
+[bentley-1977]: https://doi.org/10.1016/0020-0190(77)90070-9
+[frnn]: https://en.wikipedia.org/wiki/Fixed-radius_near_neighbors
