@@ -26,7 +26,8 @@ final readonly class Conflation
      * @param string                           $resultModel        the data model merged entities are built in
      * @param list<string>                     $defining           models whose records are matched, each able to form
      *                                                             a merged entity
-     * @param list<AbstractConflictResolution> $conflictResolution approaches tried in order on an attribute in conflict
+     * @param list<AbstractConflictResolution> $conflictResolution approaches tried in order on an attribute in conflict;
+     *                                                             with none, every conflict is left out and recorded
      * @param array<string, list<string>>      $augmenting         models that only add attributes, with the attributes
      *                                                             each supplies, named as in the result model
      */
@@ -35,16 +36,12 @@ final readonly class Conflation
         public string $resultModel,
         public array $defining,
         public AbstractMergeByLocation $mergeByLocation,
-        public array $conflictResolution,
+        public array $conflictResolution = [],
         public array $augmenting = [],
         public ?AbstractAugmentation $augmentation = null,
     ) {
         if ([] === $defining) {
             throw new \InvalidArgumentException(\sprintf('Merge %s names no defining model.', $id));
-        }
-
-        if ([] === $conflictResolution) {
-            throw new \InvalidArgumentException(\sprintf('Merge %s names no conflict-resolution approach.', $id));
         }
 
         foreach ($conflictResolution as $approach) {

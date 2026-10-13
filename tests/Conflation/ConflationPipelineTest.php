@@ -84,6 +84,29 @@ class ConflationPipelineTest extends TestCase
         $this->assertSame(['A-1', 'C-5', 'D-6'], $entities[0]->provenance);
     }
 
+    public function testAMergeWithoutApproachesSettlesNoConflict(): void
+    {
+        $conflation = new Conflation(
+            id: 'merged-toilets',
+            resultModel: 'ResultModel',
+            defining: ['ModelA', 'ModelB'],
+            mergeByLocation: new GroupedByThing(5.0),
+        );
+
+        $entities = new ConflationPipeline()->run($conflation, [
+            self::record('A-1', 'data-set-a', 'ModelA', ['thing' => 't1', 'fee' => 'free', 'name' => 'Park toilet']),
+            self::record('B-1', 'data-set-b', 'ModelB', ['thing' => 't1', 'fee' => '5 kr']),
+        ]);
+
+        // What the members agree on, or only one states, is kept; the fee
+        // they disagree on is left out and recorded.
+        $this->assertSame(['name' => 'Park toilet', 'thing' => 't1'], $entities[0]->attributes);
+        $this->assertEquals(
+            [new StatedValue('free', 'A-1', 'data-set-a'), new StatedValue('5 kr', 'B-1', 'data-set-b')],
+            $entities[0]->conflicts['fee'],
+        );
+    }
+
     public function testItRejectsARecordOfAModelTheMergeDoesNotName(): void
     {
         $this->expectException(\InvalidArgumentException::class);

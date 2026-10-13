@@ -70,13 +70,26 @@ class ConflationTest extends TestCase
     public static function invalidConfigurations(): iterable
     {
         yield 'no defining model' => [['defining' => []], 'names no defining model'];
-        yield 'no conflict resolution' => [['conflictResolution' => []], 'names no conflict-resolution approach'];
         yield 'not an approach' => [['conflictResolution' => ['data-set-a']], 'must extend'];
         yield 'defining and augmenting' => [
             ['augmenting' => ['ModelA' => ['surface']], 'augmentation' => new SuppliesEveryEntity(5.0)],
             'both as defining and as augmenting',
         ];
         yield 'augmenting without augmentation' => [['augmenting' => ['ModelC' => ['surface']]], 'no augmentation'];
+    }
+
+    public function testTheSimplestMergeNamesItsModelsAndHowToMatchThem(): void
+    {
+        $conflation = new Conflation(
+            id: 'merged-toilets',
+            resultModel: 'ResultModel',
+            defining: ['ModelA', 'ModelB'],
+            mergeByLocation: new GroupedByThing(5.0),
+        );
+
+        $this->assertSame([], $conflation->conflictResolution);
+        $this->assertSame([], $conflation->augmenting);
+        $this->assertNull($conflation->augmentation);
     }
 
     public function testAStepRejectsARadiusThatIsNotPositive(): void
