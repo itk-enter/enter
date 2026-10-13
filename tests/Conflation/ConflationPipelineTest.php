@@ -87,9 +87,9 @@ class ConflationPipelineTest extends TestCase
 
     public function testTheDefaultMergeByLocationKeepsNeighbouringBenchesApart(): void
     {
-        // The example of ADR 005: three benches 2.5 m apart along a
-        // promenade, recorded by data set B 0.8 m off. The radius reaches
-        // the neighbours, but each bench stays one merged entity.
+        // Three benches 2.5 m apart along a promenade, recorded by data set
+        // B 0.8 m off. The radius reaches the neighbours, but each bench
+        // stays one merged entity.
         $records = [];
         foreach ([1, 2, 3] as $bench) {
             foreach (['A' => 0.0, 'B' => 0.8] as $set => $offset) {
