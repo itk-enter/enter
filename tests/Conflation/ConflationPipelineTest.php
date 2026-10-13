@@ -10,6 +10,7 @@ use App\Conflation\Conflation;
 use App\Conflation\ConflationLimitException;
 use App\Conflation\ConflationPipeline;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
+use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 use App\Conflation\MergedEntity;
 use App\Conflation\Record;
 use App\Conflation\StatedValue;
@@ -82,6 +83,34 @@ class ConflationPipelineTest extends TestCase
             $entities[0]->conflicts['surface'],
         );
         $this->assertSame(['A-1', 'C-5', 'D-6'], $entities[0]->provenance);
+    }
+
+    public function testTheDefaultMergeByLocationKeepsNeighbouringBenchesApart(): void
+    {
+        // The example of ADR 005: three benches 2.5 m apart along a
+        // promenade, recorded by data set B 0.8 m off. The radius reaches
+        // the neighbours, but each bench stays one merged entity.
+        $records = [];
+        foreach ([1, 2, 3] as $bench) {
+            foreach (['A' => 0.0, 'B' => 0.8] as $set => $offset) {
+                $point = GridIndexTest::at($set.'-'.$bench, 'data-set-'.strtolower($set), 2.5 * $bench, $offset);
+                $records[] = new Record($point->id, $point->sourceId, $point->longitude, $point->latitude, 'Model'.$set);
+            }
+        }
+
+        $conflation = new Conflation(
+            id: 'merged-benches',
+            resultModel: 'ResultModel',
+            defining: ['ModelA', 'ModelB'],
+            mergeByLocation: new OneToOneClosestFirst(radius: 5.0),
+        );
+
+        $entities = new ConflationPipeline()->run($conflation, $records);
+
+        $this->assertSame(
+            [['A-1', 'B-1'], ['A-2', 'B-2'], ['A-3', 'B-3']],
+            array_map(static fn (MergedEntity $entity): array => $entity->provenance, $entities),
+        );
     }
 
     public function testAMergeWithoutApproachesSettlesNoConflict(): void
