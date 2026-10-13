@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation\Step;
+namespace App\Conflation\Augmentation;
 
 use App\Conflation\MergedEntity;
 use App\Conflation\Record;

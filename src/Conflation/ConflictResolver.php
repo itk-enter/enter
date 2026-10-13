@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Conflation;
 
-use App\Conflation\Step\AbstractConflictResolution;
+use App\Conflation\ConflictResolution\AbstractConflictResolution;
 
 /**
  * Turns a group into one merged entity, settling the attributes its members

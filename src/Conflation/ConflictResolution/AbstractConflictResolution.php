@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation\Step;
+namespace App\Conflation\ConflictResolution;
 
 use App\Conflation\StatedValue;
 

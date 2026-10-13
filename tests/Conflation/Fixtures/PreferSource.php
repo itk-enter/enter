@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Conflation\Fixtures;
 
+use App\Conflation\ConflictResolution\AbstractConflictResolution;
 use App\Conflation\StatedValue;
-use App\Conflation\Step\AbstractConflictResolution;
 
 /**
  * Settles a conflict by one data set's value, where it states one.

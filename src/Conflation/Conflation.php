@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Conflation;
 
-use App\Conflation\Step\AbstractAugmentation;
-use App\Conflation\Step\AbstractConflictResolution;
-use App\Conflation\Step\AbstractMergeByLocation;
+use App\Conflation\Augmentation\AbstractAugmentation;
+use App\Conflation\ConflictResolution\AbstractConflictResolution;
+use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 
 /**
  * The configuration of a merge.

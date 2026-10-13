@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Conflation\Fixtures;
 
+use App\Conflation\Augmentation\AbstractAugmentation;
 use App\Conflation\StatedValue;
-use App\Conflation\Step\AbstractAugmentation;
 
 /**
  * Lets every augmenting record supply its model's attributes to every
