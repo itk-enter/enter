@@ -106,10 +106,10 @@ so inputs, identity, provenance, publication and removal follow the same rules e
 
 ### Declaring a merge
 
-A merge is a class carrying a definition attribute, collected by a service tag the way data sets are. The attribute
-holds the merge's identifier and the data model of its result, plus the keys each customizable step defines. The
-names in this and the step ADRs' snippets are illustrative, and their exact shape is settled when they are
-implemented:
+A merge is a class carrying a definition attribute. It implements a marker interface, which holds no rules and only
+marks the class as a merge, so merges are collected by a service tag the way data sets are. The attribute holds the
+merge's identifier and the data model of its result, plus the keys each customizable step defines. The names in this and
+the step ADRs' snippets are illustrative, and their exact shape is settled when they are implemented:
 
 ```php
 #[Conflation(
@@ -117,14 +117,14 @@ implemented:
     resultModel: 'ResultModel',
     // … the keys of merging by location, resolving conflicts and augmenting
 )]
-final class ToiletConflation
+final class ToiletConflation implements ConflationInterface
 {
 }
 ```
 
-A key a merge leaves out takes its step's default. A step's default and its customizations extend the step's abstract
-class, so a merge that needs other rules for one step names a subclass in that key and keeps the defaults for the
-rest. A customization written for one kind is a class any merge can name.
+A key a merge leaves out takes its step's default, where its step has one. A step's default and its customizations
+extend the step's abstract class, so a merge that needs other rules for one step names a subclass in that key and keeps
+the defaults for the rest. A customization written for one kind is a class any merge can name.
 
 ### Checks between steps
 
