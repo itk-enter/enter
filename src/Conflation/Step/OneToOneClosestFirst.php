@@ -11,8 +11,8 @@ use App\Conflation\Pair;
 use App\Conflation\Record;
 
 /**
- * The default merge by location (ADR 005): groups records from several data
- * sets into clusters, one per real-world thing.
+ * The default merge by location: groups records from several data sets into
+ * clusters, one per real-world thing.
  *
  * Distinct things of one kind can stand closer together than two records of
  * the same thing from different data sets, so no radius alone separates
