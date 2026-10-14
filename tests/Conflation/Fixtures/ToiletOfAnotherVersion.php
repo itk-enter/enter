@@ -11,13 +11,13 @@ use App\Source\DataType;
 use App\Source\Definition;
 
 /**
- * A toilet data set declaring another version of the PublicToilet context
- * and a licence of its own.
+ * A toilet data set declaring the earlier v0.0.1 of the PublicToilet context,
+ * where the other toilet data sets declare v0.0.2, and a licence of its own.
  */
 #[Definition(
     id: 'toilet-of-another-version',
     title: 'Toilets of another version',
-    description: 'Toilets published in a later version of the model.',
+    description: 'Toilets published in an earlier version of the model.',
     publisher: 'Example publisher',
     contact: 'toilets@example.org',
     landingPage: 'https://example.org/toilets',
@@ -26,7 +26,7 @@ use App\Source\Definition;
     mediaType: 'application/geo+json',
     crs: 'EPSG:4326',
     model: 'PublicToilet',
-    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.3/dataModel.PointOfInterest/context.jsonld',
+    contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.1/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'daily',
     licence: 'https://creativecommons.org/licenses/by/4.0/',
     omittedFields: [],

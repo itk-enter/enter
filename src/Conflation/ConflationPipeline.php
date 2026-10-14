@@ -62,10 +62,6 @@ final class ConflationPipeline
      * Every defining record in exactly one group, nothing else in any, and
      * at most one record per data set in a group.
      *
-     * A merge reading other models than its result model returns its records
-     * restated in the result model. A restated record keeps its id, its data
-     * set and its location.
-     *
      * @param list<Record>  $records
      * @param list<Cluster> $clusters
      */
