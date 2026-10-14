@@ -8,6 +8,7 @@ use App\Conflation\Augmentation\AbstractAugmentation;
 use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\ConflictResolution\AbstractConflictResolution;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
+use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 
 /**
  * The configuration of a merge.
@@ -29,7 +30,10 @@ final readonly class Conflation
     public ?AbstractAugmentation $augmentation;
 
     /**
-     * @param string                           $id                 the merged data set's source identifier
+     * @param string                           $id                 the merged data set's source identifier, stamped on
+     *                                                             every merged entity as its sourceId
+     * @param string                           $title              the merged data set's title, as a source's
+     * @param string                           $description        what the merged data set holds, as a source's
      * @param string                           $resultModel        the data model merged entities are built in
      * @param list<string>                     $defining           models whose records are matched, each able to form
      *                                                             a merged entity
@@ -39,15 +43,23 @@ final readonly class Conflation
      *                                                             each supplies, named as in the result model
      * @param AbstractAugmentation|null        $augmentation       how augmenting records reach merged entities; left
      *                                                             out, WithinAreaOrRadius with the merge's radius
+     * @param string|null                      $contextUrl         the result model's JSON-LD context; left out, the one
+     *                                                             the input data sets of the result model declare
+     * @param string|null                      $licence            the merged data set's licence; left out, the one its
+     *                                                             input data sets share, if they state one
      */
     public function __construct(
         public string $id,
+        public string $title,
+        public string $description,
         public string $resultModel,
         public array $defining,
         public AbstractMergeByLocation $mergeByLocation,
         public array $conflictResolution = [],
         public array $augmenting = [],
         ?AbstractAugmentation $augmentation = null,
+        public ?string $contextUrl = null,
+        public ?string $licence = null,
     ) {
         if ([] === $defining) {
             throw new \InvalidArgumentException(\sprintf('Merge %s names no defining model.', $id));
@@ -62,6 +74,15 @@ final readonly class Conflation
         $both = array_intersect($defining, array_keys($augmenting));
         if ([] !== $both) {
             throw new \InvalidArgumentException(\sprintf('Merge %s names %s both as defining and as augmenting.', $id, implode(', ', $both)));
+        }
+
+        // The default merge by location groups records as they are, so their
+        // attributes keep the names of their own model. A merge reading other
+        // models names a merge by location of its own, which restates its
+        // records in the result model.
+        $otherModels = array_diff($defining, [$resultModel]);
+        if ([] !== $otherModels && OneToOneClosestFirst::class === $mergeByLocation::class) {
+            throw new \InvalidArgumentException(\sprintf('Merge %s reads %s, which is not its result model %s, so it needs a merge by location of its own that restates those records in %s.', $id, implode(', ', $otherModels), $resultModel, $resultModel));
         }
 
         $this->augmentation = $augmentation ?? ([] === $augmenting ? null : new WithinAreaOrRadius($mergeByLocation->radius));

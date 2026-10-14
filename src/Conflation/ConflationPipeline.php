@@ -62,12 +62,17 @@ final class ConflationPipeline
      * Every defining record in exactly one group, nothing else in any, and
      * at most one record per data set in a group.
      *
+     * A merge reading other models than its result model returns its records
+     * restated in the result model. A restated record keeps its id, its data
+     * set and its location.
+     *
      * @param list<Record>  $records
      * @param list<Cluster> $clusters
      */
     private function checkGroups(Conflation $conflation, array $records, array $clusters): void
     {
         $expected = array_fill_keys(array_map(static fn (Record $record): string => $record->id, $records), 0);
+        $given = array_column($records, null, 'id');
 
         // Count the groups each record is in, and the data sets each group holds.
         foreach ($clusters as $cluster) {
@@ -77,6 +82,11 @@ final class ConflationPipeline
                     throw new ConflationLimitException(\sprintf('Merge %s grouped record %s, which is not a record of its defining models.', $conflation->id, $record->id));
                 }
                 ++$expected[$record->id];
+
+                $original = $given[$record->id];
+                if ($record->sourceId !== $original->sourceId || $record->location() !== $original->location()) {
+                    throw new ConflationLimitException(\sprintf('Merge %s changed the data set or the location of record %s.', $conflation->id, $record->id));
+                }
 
                 if (isset($sourceIds[$record->sourceId])) {
                     throw new ConflationLimitException(\sprintf('Merge %s grouped %s and %s, two records of data set %s.', $conflation->id, $sourceIds[$record->sourceId], $record->id, $record->sourceId));

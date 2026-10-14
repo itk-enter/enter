@@ -70,6 +70,8 @@ class ConflationFetcherTest extends TestCase
     {
         return new Conflation(
             id: $id,
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new OneToOneClosestFirst(radius: 10.0),
@@ -171,6 +173,8 @@ class ConflationFetcherTest extends TestCase
     {
         $conflation = new Conflation(
             id: 'merged-public-toilets',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new OneToOneClosestFirst(radius: 10.0),

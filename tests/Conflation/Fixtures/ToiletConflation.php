@@ -15,6 +15,8 @@ use App\Conflation\ConflictResolution\SourceAuthority;
  */
 #[Conflation(
     id: 'merged-toilets',
+    title: 'Merged toilets',
+    description: 'Toilets merged from several data sets.',
     resultModel: 'ResultModel',
     defining: ['ModelA', 'ModelB'],
     mergeByLocation: new GroupedByThing(radius: 5.0),
