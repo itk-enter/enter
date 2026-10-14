@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation\Step;
+namespace App\Conflation\MergeByLocation;
 
 use App\Conflation\Cluster;
 use App\Conflation\Distance;
