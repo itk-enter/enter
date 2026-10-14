@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-79](https://github.com/itk-enter/enter/pull/79)
+  Added the conflation fetch step, reading records from the broker
 * [PR-76](https://github.com/itk-enter/enter/pull/76)
   Added the default merge by location for conflation, matching points and areas one-to-one, closest first
 * [PR-75](https://github.com/itk-enter/enter/pull/75)
