@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation\Step;
+namespace App\Tests\Conflation\MergeByLocation;
 
 use App\Conflation\Cluster;
+use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 use App\Conflation\Record;
-use App\Conflation\Step\OneToOneClosestFirst;
 use App\Tests\Conflation\GridIndexTest;
 use PHPUnit\Framework\TestCase;
 

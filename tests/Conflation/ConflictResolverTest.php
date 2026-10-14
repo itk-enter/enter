@@ -6,10 +6,10 @@ namespace App\Tests\Conflation;
 
 use App\Conflation\Cluster;
 use App\Conflation\ConflationLimitException;
+use App\Conflation\ConflictResolution\AbstractConflictResolution;
 use App\Conflation\ConflictResolver;
 use App\Conflation\Record;
 use App\Conflation\StatedValue;
-use App\Conflation\Step\AbstractConflictResolution;
 use App\Tests\Conflation\Fixtures\MostRestrictive;
 use App\Tests\Conflation\Fixtures\PreferSource;
 use PHPUnit\Framework\TestCase;

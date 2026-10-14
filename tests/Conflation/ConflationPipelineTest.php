@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Conflation;
 
+use App\Conflation\Augmentation\AbstractAugmentation;
 use App\Conflation\Cluster;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationLimitException;
 use App\Conflation\ConflationPipeline;
+use App\Conflation\MergeByLocation\AbstractMergeByLocation;
+use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 use App\Conflation\MergedEntity;
 use App\Conflation\Record;
 use App\Conflation\StatedValue;
-use App\Conflation\Step\AbstractAugmentation;
-use App\Conflation\Step\AbstractMergeByLocation;
-use App\Conflation\Step\OneToOneClosestFirst;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
 use App\Tests\Conflation\Fixtures\PreferSource;
 use App\Tests\Conflation\Fixtures\SuppliesEveryEntity;
@@ -216,7 +216,7 @@ class ConflationPipelineTest extends TestCase
     }
 
     /**
-     * @param list<\App\Conflation\Step\AbstractConflictResolution> $conflictResolution
+     * @param list<\App\Conflation\ConflictResolution\AbstractConflictResolution> $conflictResolution
      */
     private static function conflation(
         ?AbstractMergeByLocation $mergeByLocation = null,

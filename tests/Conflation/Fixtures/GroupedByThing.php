@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Conflation\Fixtures;
 
 use App\Conflation\Cluster;
-use App\Conflation\Step\AbstractMergeByLocation;
+use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 
 /**
  * Groups records by the "thing" attribute a test gives them, or alone where
