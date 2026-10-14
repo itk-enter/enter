@@ -11,7 +11,10 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class NgsiLdBrokerTest extends TestCase
 {
-    private const string CONTEXT = 'https://example.org/PublicToilet/context.jsonld';
+    /**
+     * The context of the toilet data sets, as their sources declare it.
+     */
+    private const string CONTEXT = 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld';
 
     /**
      * @param list<string> $ids

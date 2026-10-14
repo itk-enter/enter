@@ -11,7 +11,21 @@ use App\SourceManager;
 use Psr\Log\LoggerInterface;
 
 /**
- * Reads the records a merge needs from the broker: the fetch step.
+ * Reads the records a merge needs from the broker: the first step of a run.
+ *
+ * The pipeline works on Records, not on broker entities. This class decides
+ * which data sets a merge reads, reads their entities from the broker, and
+ * turns each entity into a Record: its id, its data set, its location, and
+ * the attributes that describe the thing.
+ *
+ * For example, for a merge with defining: ['PublicToilet'], it reads the four
+ * toilet data sets, and the OSM toilet entity
+ *
+ *     {"id": "urn:…:aarhus-toilet-osm-node-17", "geometry": {"type": "Point", "coordinates": [10.21, 56.15]},
+ *      "properties": {"type": "PublicToilet", "name": "Park toilet", "sourceId": "osm-public-toilet", …}}
+ *
+ * becomes a Record with that id, data set "osm-public-toilet", located at
+ * (10.21, 56.15), stating name "Park toilet".
  *
  * A merge names models, not data sets. Every data set whose source publishes
  * one of the merge's defining or augmenting models is read, so a data set
@@ -31,25 +45,35 @@ final readonly class ConflationFetcher
     public const string TEST_PREFIX = 'test:';
 
     /**
-     * Attributes left out of every record.
+     * Properties not taken as attributes of a record.
      *
-     * They describe the entity or the data set it comes from rather than the
-     * thing, or cannot be compared between data sets, so keeping them would
-     * put every group in conflict over them:
-     *
-     * - type: the model, which the record carries already.
-     * - location: the geometry, which the record carries already.
-     * - sourceId and source: which data set, and where it was read from.
-     * - additionalInformation: the source fields the model has no attribute
-     *   for, keyed by each feed's own field names.
+     * - type: the model, which the record carries as its model.
+     * - location: the broker returns the location twice, as the feature's
+     *   geometry and again as this property. The record is located by the
+     *   geometry, which matching compares, so the copy is not also taken as an
+     *   attribute.
+     * - sourceId and source: which data set the entity comes from and where it
+     *   was read. They differ between data sets by definition, so they would
+     *   put every group in conflict; the record carries its data set already.
      */
     public const array LEFT_OUT = [
         'type',
         'location',
         AbstracSourceImporter::SOURCE_ID_ATTRIBUTE,
         'source',
-        'additionalInformation',
     ];
+
+    /**
+     * The property holding the source fields the model has no attribute for,
+     * keyed by each feed's own field names.
+     */
+    public const string ADDITIONAL_INFORMATION = 'additionalInformation';
+
+    /**
+     * Joins additionalInformation and one of its keys into the name of the
+     * attribute the key is settled as.
+     */
+    public const string KEY_SEPARATOR = '.';
 
     public function __construct(
         private SourceManager $sources,
@@ -123,11 +147,42 @@ final readonly class ConflationFetcher
         }
 
         $properties = \is_array($feature['properties'] ?? null) ? $feature['properties'] : [];
-        $attributes = array_diff_key($properties, array_flip(self::LEFT_OUT));
+        $attributes = self::splitAdditionalInformation(array_diff_key($properties, array_flip(self::LEFT_OUT)));
         // A value the broker returns as null is one the record does not state.
         $attributes = array_filter($attributes, static fn (mixed $value): bool => null !== $value);
 
         return Record::fromGeometry($id, $sourceId, $geometry, $model, $attributes);
+    }
+
+    /**
+     * Splits additionalInformation into one attribute per key, so each key is
+     * settled on its own, by the same rules as any other attribute.
+     *
+     * Data sets that agree on a key, or where only one states it, keep it
+     * without conflict, and a key two data sets state differently is settled
+     * by the merge's approaches or recorded as a conflict. For example,
+     * {"additionalInformation": {"check_date": "2025-06-01", "operator": "Aarhus Kommune"}}
+     * becomes the attributes "additionalInformation.check_date" and
+     * "additionalInformation.operator". A value that is not keyed, such as a
+     * list, is kept whole.
+     *
+     * @param array<array-key, mixed> $attributes
+     *
+     * @return array<array-key, mixed>
+     */
+    private static function splitAdditionalInformation(array $attributes): array
+    {
+        $information = $attributes[self::ADDITIONAL_INFORMATION] ?? null;
+        if (!\is_array($information) || array_is_list($information)) {
+            return $attributes;
+        }
+
+        unset($attributes[self::ADDITIONAL_INFORMATION]);
+        foreach ($information as $key => $value) {
+            $attributes[self::ADDITIONAL_INFORMATION.self::KEY_SEPARATOR.$key] = $value;
+        }
+
+        return $attributes;
     }
 
     private static function isTest(string $id): bool

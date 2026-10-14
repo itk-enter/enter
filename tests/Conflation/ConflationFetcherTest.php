@@ -6,8 +6,10 @@ namespace App\Tests\Conflation;
 
 use App\Broker\NgsiLdBroker;
 use App\Conflation\Augmentation\AbstractAugmentation;
+use App\Conflation\Cluster;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationFetcher;
+use App\Conflation\ConflictResolver;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 use App\Conflation\Record;
 use App\Source\FindToilet\PublicToilet as FindToiletPublicToilet;
@@ -116,7 +118,35 @@ class ConflationFetcherTest extends TestCase
             ])],
         ])->fetch(self::conflation());
 
-        $this->assertSame(['name' => 'Park toilet', 'fee' => false], $records[0]->attributes);
+        $this->assertSame(['name' => 'Park toilet', 'fee' => false, 'additionalInformation.check_date' => '2025-06-01'], $records[0]->attributes);
+    }
+
+    public function testEachKeyOfAdditionalInformationIsSettledOnItsOwn(): void
+    {
+        $records = $this->fetcher([
+            'osm-public-toilet' => [self::feature('urn:osm-2', ['additionalInformation' => ['check_date' => '2025-06-01', 'operator' => 'Aarhus Kommune']])],
+            'findtoilet-public-toilet' => [self::feature('urn:findtoilet-1', ['additionalInformation' => ['operator' => 'Aarhus Kommune', 'manned' => 'no']])],
+        ])->fetch(self::conflation());
+
+        $entity = new ConflictResolver([])->resolve(new Cluster($records));
+
+        // The data sets agree on the operator, and each states a key the
+        // other does not, so nothing is in conflict.
+        $this->assertSame([
+            'additionalInformation.check_date' => '2025-06-01',
+            'additionalInformation.manned' => 'no',
+            'additionalInformation.operator' => 'Aarhus Kommune',
+        ], $entity->attributes);
+        $this->assertSame([], $entity->conflicts);
+    }
+
+    public function testAdditionalInformationThatIsNotKeyedIsKeptWhole(): void
+    {
+        $records = $this->fetcher([
+            'osm-public-toilet' => [self::feature('urn:osm-2', ['additionalInformation' => ['first', 'second']])],
+        ])->fetch(self::conflation());
+
+        $this->assertSame(['additionalInformation' => ['first', 'second']], $records[0]->attributes);
     }
 
     public function testAnAreaKeepsItsShape(): void
