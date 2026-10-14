@@ -7,10 +7,10 @@ namespace App\Tests\Conflation;
 use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationManager;
+use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
 use App\Tests\Conflation\Fixtures\MostRestrictive;
 use App\Tests\Conflation\Fixtures\OtherToiletConflation;
-use App\Tests\Conflation\Fixtures\PreferSource;
 use App\Tests\Conflation\Fixtures\ToiletConflation;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +30,7 @@ class ConflationTest extends TestCase
         // arguments it gives them.
         $this->assertInstanceOf(GroupedByThing::class, $conflation->mergeByLocation);
         $this->assertSame(5.0, $conflation->mergeByLocation->radius);
-        $this->assertEquals([new MostRestrictive(['wheelchair']), new PreferSource('data-set-a')], $conflation->conflictResolution);
+        $this->assertEquals([new MostRestrictive(['wheelchair']), new SourceAuthority(['data-set-a'])], $conflation->conflictResolution);
         $this->assertInstanceOf(WithinAreaOrRadius::class, $conflation->augmentation);
 
         $this->assertTrue($conflation->isDefining('ModelB'));
@@ -59,7 +59,7 @@ class ConflationTest extends TestCase
             'resultModel' => 'ResultModel',
             'defining' => ['ModelA'],
             'mergeByLocation' => new GroupedByThing(5.0),
-            'conflictResolution' => [new PreferSource('data-set-a')],
+            'conflictResolution' => [new SourceAuthority(['data-set-a'])],
             ...$arguments,
         ]);
     }
