@@ -8,6 +8,7 @@ use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationManager;
 use App\Conflation\ConflictResolution\SourceAuthority;
+use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
 use App\Tests\Conflation\Fixtures\MostRestrictive;
 use App\Tests\Conflation\Fixtures\OtherToiletConflation;
@@ -56,6 +57,8 @@ class ConflationTest extends TestCase
 
         new Conflation(...[
             'id' => 'merged',
+            'title' => 'Merged toilets',
+            'description' => 'Toilets merged from several data sets.',
             'resultModel' => 'ResultModel',
             'defining' => ['ModelA'],
             'mergeByLocation' => new GroupedByThing(5.0),
@@ -81,6 +84,8 @@ class ConflationTest extends TestCase
     {
         $conflation = new Conflation(
             id: 'merged-toilets',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'ResultModel',
             defining: ['ModelA', 'ModelB'],
             mergeByLocation: new GroupedByThing(5.0),
@@ -95,6 +100,8 @@ class ConflationTest extends TestCase
     {
         $conflation = new Conflation(
             id: 'merged-parking',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'ResultModel',
             defining: ['ModelA', 'ModelB'],
             mergeByLocation: new GroupedByThing(5.0),
@@ -102,6 +109,35 @@ class ConflationTest extends TestCase
         );
 
         $this->assertEquals(new WithinAreaOrRadius(5.0), $conflation->augmentation);
+    }
+
+    public function testTheDefaultMergeByLocationOnlyReadsTheResultModel(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('needs a merge by location of its own');
+
+        new Conflation(
+            id: 'merged',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
+            resultModel: 'PublicToilet',
+            defining: ['PublicToilet', 'Toilet'],
+            mergeByLocation: new OneToOneClosestFirst(radius: 10.0),
+        );
+    }
+
+    public function testAMergeOfOtherModelsNamesAMergeByLocationOfItsOwn(): void
+    {
+        $conflation = new Conflation(
+            id: 'merged',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
+            resultModel: 'PublicToilet',
+            defining: ['PublicToilet', 'Toilet'],
+            mergeByLocation: new GroupedByThing(radius: 10.0),
+        );
+
+        $this->assertSame(['PublicToilet', 'Toilet'], $conflation->defining);
     }
 
     public function testAStepRejectsARadiusThatIsNotPositive(): void

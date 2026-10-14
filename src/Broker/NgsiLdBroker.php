@@ -20,6 +20,8 @@ final readonly class NgsiLdBroker
 {
     private const string UPSERT_PATH = '/ngsi-ld/v1/entityOperations/upsert';
 
+    private const string DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
+
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
@@ -65,6 +67,29 @@ final readonly class NgsiLdBroker
 
         if ($status >= 400) {
             throw new \RuntimeException(\sprintf('Broker rejected the upsert with HTTP %d: %s', $status, $response->getContent(false)));
+        }
+
+        return $status;
+    }
+
+    /**
+     * Deletes entities by id, in one batch.
+     *
+     * @param list<string> $ids
+     *
+     * @return int the broker's HTTP status code
+     */
+    public function delete(array $ids): int
+    {
+        if ([] === $ids) {
+            return 204;
+        }
+
+        $response = $this->client->request('POST', rtrim($this->brokerUrl, '/').self::DELETE_PATH, ['json' => $ids]);
+
+        $status = $response->getStatusCode();
+        if ($status >= 400) {
+            throw new \RuntimeException(\sprintf('Broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
         }
 
         return $status;
