@@ -27,4 +27,23 @@ final readonly class MergedDataSet
         public array $inputs,
     ) {
     }
+
+    /**
+     * The merged data set as the list of data sets gives it, under the keys
+     * a source's definition uses, plus the data sets it is merged from.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'model' => $this->model,
+            'context_url' => $this->contextUrl,
+            'licence' => $this->licence,
+            'inputs' => $this->inputs,
+        ];
+    }
 }
