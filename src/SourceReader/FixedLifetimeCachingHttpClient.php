@@ -15,11 +15,6 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 /**
  * Keeps a successful GET for the cache pool's lifetime, whatever the
  * server's cache headers say.
- *
- * Sources that split one feed between them are imported one by one, in
- * processes of their own, and this lets them share one fetch. Symfony's
- * CachingHttpClient cannot: it obeys the cache headers, and the feeds send
- * no-cache or none at all.
  */
 final class FixedLifetimeCachingHttpClient implements HttpClientInterface
 {
