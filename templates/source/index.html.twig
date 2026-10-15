@@ -4,8 +4,9 @@
 
 {% block content %}
     <p>
-        The data sets published to the broker. Every entity carries a <code>sourceId</code> attribute holding
-        the id of the source it came from, and each source below links to its entities in the broker.
+        The data sets published to the broker: the sources, and the merged data sets built from them. Every entity
+        carries a <code>sourceId</code> attribute holding the id of the data set it belongs to, and each data set
+        below links to its entities in the broker.
         This list is also available as <a href="{{ path('app_sources', {_format: 'json'}) }}">JSON</a>.
     </p>
 
@@ -77,6 +78,42 @@
                             {% endfor %}
                         </dl>
                     </dd>
+                {% endif %}
+            </dl>
+        </section>
+    {% endfor %}
+
+    {% for dataSet in merged %}
+        <section class="mb-5">
+            <h2>{{ dataSet.title }}</h2>
+            <dl class="row">
+                <dt class="col-sm-3">Id</dt>
+                <dd class="col-sm-9"><code>{{ dataSet.id }}</code></dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">{{ dataSet.description }}</dd>
+
+                <dt class="col-sm-3">Merged from</dt>
+                <dd class="col-sm-9">
+                    {% for input in dataSet.inputs %}
+                        <code>{{ input }}</code>{% if not loop.last %}, {% endif %}
+                    {% else %}
+                        No data set publishes its models.
+                    {% endfor %}
+                </dd>
+
+                <dt class="col-sm-3">Model</dt>
+                <dd class="col-sm-9"><code>{{ dataSet.model }}</code></dd>
+
+                <dt class="col-sm-3">Context</dt>
+                <dd class="col-sm-9"><a href="{{ dataSet.contextUrl }}">{{ dataSet.contextUrl }}</a></dd>
+
+                <dt class="col-sm-3">Entities</dt>
+                <dd class="col-sm-9"><a href="{{ entitiesUrls[dataSet.id] }}">{{ entitiesUrls[dataSet.id] }}</a></dd>
+
+                {% if dataSet.licence %}
+                    <dt class="col-sm-3">Licence</dt>
+                    <dd class="col-sm-9"><a href="{{ dataSet.licence }}">{{ dataSet.licence }}</a></dd>
                 {% endif %}
             </dl>
         </section>

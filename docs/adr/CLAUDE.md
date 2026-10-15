@@ -17,6 +17,10 @@ concrete; the reasoning must hold beyond any one data set, developer or machine.
   "measured across N records", no byte or centimetre figures derived from one
   export. Standards identifiers (EPSG codes, RFC numbers, framework versions)
   and general domain facts are fine.
+- **Real data sets in examples.** Examples are wanted, but they use kinds of
+  things and made-up data sets, identifiers and values ("a municipal register
+  and a crowd-sourced map both list the toilet in a park", record `A-17`), not
+  a real source.
 - **Educational or self-referential framing.** No "two things make this easy to
   get wrong", no "note that", no "the real lesson is", no bolded aphorism
   followed by the actual fact, and no commentary on the ADR's own importance
@@ -53,6 +57,19 @@ Dates therefore need not run in the same order as numbers.
 
 Renumbering is only acceptable while nothing external cites the numbers. Once
 cited, supersede instead.
+
+## Examples and plain wording
+
+ADRs are read by non-technical readers too, now and later. Explain each
+decision in plain words, and give it at least one concrete example: a small
+table of records before and after, or a short situation such as a row of
+benches standing closer than the match radius. A configuration snippet shows
+the keys a decision adds; mark it as illustrative where its shape is settled
+when it is implemented.
+
+An ADR records one significant decision. Where several steps each need a
+decision, give the overall structure an ADR of its own and each step an ADR
+that references it.
 
 ## Before writing, ask whether it earns its place
 
