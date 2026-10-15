@@ -7,6 +7,7 @@ namespace App\Tests\SourceReader;
 use App\Source\Osm\Bench;
 use App\Source\Osm\OnStreetParking;
 use App\Source\Osm\ParkingSpot;
+use App\SourceReader\FixedLifetimeCachingHttpClient;
 use App\SourceReader\SourceReader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -29,6 +30,22 @@ class SourceReaderTest extends TestCase
 
         $this->assertSame(['elements' => [1]], $reader->read(new ParkingSpot()));
         $this->assertSame(['elements' => [1]], $reader->read(new OnStreetParking()));
+        $this->assertCount(1, $this->requested);
+    }
+
+    /**
+     * The feeds forbid reuse or say nothing about it, which would leave a
+     * cache that obeys them fetching once per source.
+     */
+    public function testSourcesShareOneFetchWhateverTheServerSaysAboutCaching(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}', ['response_headers' => [
+            'cache-control' => 'no-cache',
+            'expires' => 'Thu, 01 Jan 1970 00:00:00 GMT',
+        ]])]);
+
+        $reader->read(new ParkingSpot());
+        $reader->read(new OnStreetParking());
         $this->assertCount(1, $this->requested);
     }
 
@@ -66,6 +83,6 @@ class SourceReaderTest extends TestCase
             return array_shift($responses) ?? throw new \LogicException('No response left for '.$url);
         });
 
-        return new SourceReader($client, new ArrayAdapter());
+        return new SourceReader(new FixedLifetimeCachingHttpClient($client, new ArrayAdapter()));
     }
 }
