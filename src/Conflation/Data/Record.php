@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Data;
 
 use App\GeometryHelper;
 

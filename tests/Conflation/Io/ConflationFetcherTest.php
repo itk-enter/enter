@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Io;
 
 use App\Broker\NgsiLdBroker;
 use App\Conflation\Augmentation\AbstractAugmentation;
-use App\Conflation\Cluster;
 use App\Conflation\Conflation;
-use App\Conflation\ConflationFetcher;
-use App\Conflation\ConflictResolver;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\Record;
+use App\Conflation\Io\ConflationFetcher;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\Record;
+use App\Conflation\Pipeline\ConflictResolver;
 use App\Source\FindToilet\PublicToilet as FindToiletPublicToilet;
 use App\Source\Osm\Bench;
 use App\Source\Osm\PublicToilet as OsmPublicToilet;

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Spatial;
+
+use App\Conflation\Data\Record;
 
 /**
  * Finds the pairs of records within a radius of each other without

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Conflation\ConflationManager;
-use App\Conflation\MergedDataSet;
-use App\Conflation\MergedDataSetFactory;
+use App\Conflation\Io\MergedDataSet;
+use App\Conflation\Io\MergedDataSetFactory;
 use App\Source\SourceInterface;
 use App\SourceImporter\AbstracSourceImporter;
 use App\SourceManager;

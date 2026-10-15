@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Pipeline;
 
 use App\Conflation\Augmentation\AbstractAugmentation;
 use App\Conflation\Augmentation\WithinAreaOrRadius;
-use App\Conflation\Cluster;
 use App\Conflation\Conflation;
-use App\Conflation\ConflationLimitException;
-use App\Conflation\ConflationPipeline;
 use App\Conflation\ConflictResolution\SourceAuthority;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\Record;
+use App\Conflation\Data\StatedValue;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\MergedEntity;
-use App\Conflation\Record;
-use App\Conflation\StatedValue;
+use App\Conflation\Pipeline\ConflationLimitException;
+use App\Conflation\Pipeline\ConflationPipeline;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
 use App\Tests\Conflation\Fixtures\ToiletConflation;
+use App\Tests\Conflation\Spatial\GridIndexTest;
 use PHPUnit\Framework\TestCase;
 
 class ConflationPipelineTest extends TestCase

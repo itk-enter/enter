@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Conflation\ConflictResolution;
 
-use App\Conflation\StatedValue;
+use App\Conflation\Data\StatedValue;
 
 /**
  * One way of settling an attribute the members of a group disagree on.

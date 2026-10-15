@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Io;
 
+use App\Conflation\Conflation;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\StatedValue;
 use App\Ngsi\NgsiEntity;
 use App\SourceImporter\AbstracSourceImporter;
 

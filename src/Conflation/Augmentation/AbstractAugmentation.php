@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Conflation\Augmentation;
 
-use App\Conflation\MergedEntity;
-use App\Conflation\Record;
-use App\Conflation\StatedValue;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\Record;
+use App\Conflation\Data\StatedValue;
 
 /**
  * Adds facts to merged entities from data sets that describe something else

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Conflation\ConflictResolution;
 
 use App\Conflation\ConflictResolution\MajorityWins;
-use App\Conflation\StatedValue;
+use App\Conflation\Data\StatedValue;
 use PHPUnit\Framework\TestCase;
 
 class MajorityWinsTest extends TestCase

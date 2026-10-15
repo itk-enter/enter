@@ -2,7 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Pipeline;
+
+use App\Conflation\Conflation;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\Record;
+use App\Conflation\Data\StatedValue;
 
 /**
  * Runs the customizable steps of a merge on its records, and checks that
