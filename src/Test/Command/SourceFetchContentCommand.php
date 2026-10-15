@@ -22,8 +22,8 @@ class SourceFetchContentCommand
         SymfonyStyle $io,
         SourceManager $manager,
         FixtureFetcher $fetcher,
-        #[Option(description: 'Fetch every feed, also those fetched within the last hour')]
-        bool $fresh = false,
+        #[Option(description: 'If set, fetch without using cache.')]
+        bool $refresh = false,
     ): int {
         $failed = [];
 
@@ -35,7 +35,7 @@ class SourceFetchContentCommand
             $io->section($source);
 
             try {
-                $fetch = $fetcher->fetch($source, $fresh);
+                $fetch = $fetcher->fetch($source, $refresh);
                 $io->success(\sprintf(
                     'Content %s written to file %s',
                     $fetch->fromCache ? 'fetched earlier' : 'fetched from '.$fetch->url,
