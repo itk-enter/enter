@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-71](https://github.com/itk-enter/enter/pull/71)
+  Added ADR 006 on resolving conflicts in conflation
 * [PR-70](https://github.com/itk-enter/enter/pull/70)
   Added ADR 005 on merging conflation records by location
 * [PR-69](https://github.com/itk-enter/enter/pull/69)
