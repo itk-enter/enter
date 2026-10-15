@@ -38,6 +38,8 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         'mi_style' => 'MapInfo rendering style.',
     ],
     dataUrlBase: 'https://webkort.aarhuskommune.dk/spatialmap?page=get_geojson_opendata&datasource=by_toiletter',
+    dataset: 'test:mtm_spatialmaps-toilet-city',
+    datasetTitle: 'Test: Bytoiletter (MTM), Aarhus Kommune',
 )]
 final class TestToiletCity extends AbstractSource
 {

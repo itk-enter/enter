@@ -24,10 +24,10 @@ readonly class TestDefinition extends Definition
         string $model,
         string $contextUrl,
         array $omittedFields,
+        string $dataset,
+        string $datasetTitle,
         public string $dataUrlBase,
         public array $dataUrlQuery = [],
-        ?string $dataset = null,
-        ?string $datasetTitle = null,
     ) {
         parent::__construct(
             id: $id,

@@ -309,6 +309,8 @@ class SourceImporterTest extends TestCase
     updateFrequency: '',
     licence: null,
     omittedFields: [],
+    dataset: 'test:undeclared-model',
+    datasetTitle: 'Test',
 )]
 final class UndeclaredModelSource extends AbstractSource
 {

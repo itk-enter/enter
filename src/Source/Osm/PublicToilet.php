@@ -57,6 +57,8 @@ DATA,
         'mapillary' => 'Identifier in an external street-imagery service, as is panoramax; a photograph of the place rather than a fact about it. 3% of records carry panoramax and 1% mapillary.',
         'panoramax' => 'Identifier in an external street-imagery service; see mapillary.',
     ],
+    dataset: 'osm-public-toilet',
+    datasetTitle: 'Offentlige toiletter (OpenStreetMap), Aarhus Kommune',
 )]
 final class PublicToilet extends AbstractSource
 {

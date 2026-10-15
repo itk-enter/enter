@@ -42,6 +42,8 @@ use App\Source\Definition;
         'region' => 'Constant for this municipality-scoped feed; the data set\'s own scope.',
         'kontakttitle' => 'The label the site shows for kontakt; constant and identical to it throughout the feed.',
     ],
+    dataset: 'findtoilet-public-toilet',
+    datasetTitle: 'Offentlige toiletter (FindToilet), Aarhus Kommune',
 )]
 final class PublicToilet extends AbstractSource
 {

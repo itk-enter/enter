@@ -43,6 +43,8 @@ use App\Source\Definition;
         'rettet_af' => 'Directory username of the municipal employee who last edited the record; personal data, and not a fact about the toilet.',
         'mi_style' => 'MapInfo rendering style.',
     ],
+    dataset: 'mtm_spatialmaps-toilet-other',
+    datasetTitle: 'Andre toiletter (MTM), Aarhus Kommune',
 )]
 final class ToiletOther extends AbstractSource
 {

@@ -45,7 +45,9 @@ area(3601784663)->.a;
 nwr["amenity"="bench"](area.a);
 out center tags;
 DATA,
-    ]
+    ],
+    dataset: 'test:osm-bench',
+    datasetTitle: 'Test: Bænke (OpenStreetMap), Aarhus Kommune',
 )]
 final class TestBench extends AbstractSource
 {

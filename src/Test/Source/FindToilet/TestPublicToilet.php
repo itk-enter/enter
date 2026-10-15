@@ -32,6 +32,8 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     ],
     dataUrlBase: 'https://beta.findtoilet.dk/api/v3/toilets',
     dataUrlQuery: ['tid' => 8],
+    dataset: 'test:findtoilet-public-toilet',
+    datasetTitle: 'Test: Offentlige toiletter (FindToilet), Aarhus Kommune',
 )]
 final class TestPublicToilet extends AbstractSource
 {
