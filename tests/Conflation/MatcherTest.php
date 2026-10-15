@@ -2,16 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation\MergeByLocation;
+namespace App\Tests\Conflation;
 
 use App\Conflation\Cluster;
-use App\Conflation\MergeByLocation\OneToOneClosestFirst;
+use App\Conflation\Matcher;
 use App\Conflation\Record;
-use App\Tests\Conflation\GridIndexTest;
 use PHPUnit\Framework\TestCase;
 
-class OneToOneClosestFirstTest extends TestCase
+class MatcherTest extends TestCase
 {
+    private Matcher $matcher;
+
+    protected function setUp(): void
+    {
+        $this->matcher = new Matcher();
+    }
+
     public function testItSeparatesTwoNeighbouringThingsEachDescribedByThreeDataSets(): void
     {
         // Two public toilets at Tangkrogen, Aarhus, about 22 m apart, each
@@ -30,11 +36,11 @@ class OneToOneClosestFirstTest extends TestCase
             ['findtoilet-862', 'osm-node-828209184', 'other-18'],
         ];
 
-        $this->assertSame($expected, self::ids(new OneToOneClosestFirst(10.0)->merge($records)));
+        $this->assertSame($expected, self::ids($this->matcher->match($records, 10.0)));
 
         // A radius wide enough to reach across does not merge them either:
         // each would then hold two records from one data set.
-        $this->assertSame($expected, self::ids(new OneToOneClosestFirst(30.0)->merge($records)));
+        $this->assertSame($expected, self::ids($this->matcher->match($records, 30.0)));
     }
 
     public function testItPairsARowOfAdjacentThingsOneToOne(): void
@@ -50,7 +56,7 @@ class OneToOneClosestFirstTest extends TestCase
 
         $this->assertSame(
             [['a0', 'b0'], ['a1', 'b1'], ['a2', 'b2'], ['a3', 'b3'], ['a4', 'b4']],
-            self::ids(new OneToOneClosestFirst(5.0)->merge($records))
+            self::ids($this->matcher->match($records, 5.0))
         );
     }
 
@@ -60,30 +66,30 @@ class OneToOneClosestFirstTest extends TestCase
         // another data set between them joins only one of them.
         $this->assertSame(
             [['a1'], ['a2']],
-            self::ids(new OneToOneClosestFirst(5.0)->merge([
+            self::ids($this->matcher->match([
                 GridIndexTest::at('a1', 'a', 0, 0),
                 GridIndexTest::at('a2', 'a', 0, 0),
-            ]))
+            ], 5.0))
         );
 
         $this->assertSame(
             [['a1', 'b1'], ['a2']],
-            self::ids(new OneToOneClosestFirst(5.0)->merge([
+            self::ids($this->matcher->match([
                 GridIndexTest::at('a1', 'a', 0, 0),
                 GridIndexTest::at('a2', 'a', 0, 0),
                 GridIndexTest::at('b1', 'b', 1, 0),
-            ]))
+            ], 5.0))
         );
     }
 
     public function testItTakesTheClosestPairFirst(): void
     {
         // b1 is within range of both, and goes to the nearer one.
-        $clusters = new OneToOneClosestFirst(5.0)->merge([
+        $clusters = $this->matcher->match([
             GridIndexTest::at('a1', 'a', 0, 0),
             GridIndexTest::at('a2', 'a', 4, 0),
             GridIndexTest::at('b1', 'b', 3, 0),
-        ]);
+        ], 5.0);
 
         $this->assertSame([['a1'], ['a2', 'b1']], self::ids($clusters));
     }
@@ -93,11 +99,11 @@ class OneToOneClosestFirstTest extends TestCase
         // a1–b1 and b1–c1 are each within 5 m, but a1 and c1 are 8 m apart:
         // c1 cannot join, because every member must be within the radius of
         // every other.
-        $clusters = new OneToOneClosestFirst(5.0)->merge([
+        $clusters = $this->matcher->match([
             GridIndexTest::at('a1', 'a', 0, 0),
             GridIndexTest::at('b1', 'b', 3.9, 0),
             GridIndexTest::at('c1', 'c', 8, 0),
-        ]);
+        ], 5.0);
 
         $this->assertSame([['a1', 'b1'], ['c1']], self::ids($clusters));
     }
@@ -110,7 +116,7 @@ class OneToOneClosestFirstTest extends TestCase
             range(0, 4)
         );
 
-        $clusters = new OneToOneClosestFirst(3.0)->merge($records);
+        $clusters = $this->matcher->match($records, 3.0);
 
         $this->assertSame([['a1', 'b1', 'c1', 'd1', 'e1']], self::ids($clusters));
         $this->assertSame(['a', 'b', 'c', 'd', 'e'], $clusters[0]->sourceIds());
@@ -120,11 +126,11 @@ class OneToOneClosestFirstTest extends TestCase
 
     public function testItKeepsARecordThatMatchesNothingAsAClusterOfOne(): void
     {
-        $clusters = new OneToOneClosestFirst(5.0)->merge([
+        $clusters = $this->matcher->match([
             GridIndexTest::at('a1', 'a', 0, 0),
             GridIndexTest::at('b1', 'b', 1, 0),
             GridIndexTest::at('b2', 'b', 100, 0),
-        ]);
+        ], 5.0);
 
         $this->assertSame([['a1', 'b1'], ['b2']], self::ids($clusters));
     }
@@ -138,19 +144,19 @@ class OneToOneClosestFirstTest extends TestCase
             GridIndexTest::at('c1', 'c', 1, 1),
         ];
 
-        $expected = self::ids(new OneToOneClosestFirst(5.0)->merge($records));
+        $expected = self::ids($this->matcher->match($records, 5.0));
 
-        $this->assertSame($expected, self::ids(new OneToOneClosestFirst(5.0)->merge(array_reverse($records))));
+        $this->assertSame($expected, self::ids($this->matcher->match(array_reverse($records), 5.0)));
     }
 
     public function testItRejectsADuplicateRecordId(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new OneToOneClosestFirst(5.0)->merge([
+        $this->matcher->match([
             GridIndexTest::at('a1', 'a', 0, 0),
             GridIndexTest::at('a1', 'b', 1, 0),
-        ]);
+        ], 5.0);
     }
 
     /**
