@@ -5,6 +5,7 @@ namespace App\SourceReader;
 use App\Source\SourceInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerTrait;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class SourceReader implements SourceReaderInterface
@@ -12,7 +13,13 @@ final class SourceReader implements SourceReaderInterface
     use LoggerAwareTrait;
     use LoggerTrait;
 
+    /**
+     * The client keeps each response for a while, so sources that share an
+     * access URL share one fetch, although each source is imported in a
+     * process of its own.
+     */
     public function __construct(
+        #[Autowire(service: FixedLifetimeCachingHttpClient::class)]
         private readonly HttpClientInterface $client,
     ) {
     }
@@ -20,7 +27,6 @@ final class SourceReader implements SourceReaderInterface
     public function read(SourceInterface $source): iterable
     {
         // @todo Add some proper exception handling/logging.
-        // @todo Cache request responses.
         $definition = $source->definition;
 
         return $this->client->request('GET', $definition->accessUrlBase(), [

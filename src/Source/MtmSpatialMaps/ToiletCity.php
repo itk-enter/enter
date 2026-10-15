@@ -17,7 +17,7 @@ use App\Source\Definition;
  */
 #[Definition(
     id: 'mtm_spatialmaps-toilet-city',
-    title: 'Bytoiletter, Aarhus Kommune',
+    title: 'Bytoiletter (MTM), Aarhus Kommune',
     description: 'City-kiosk public toilets in Aarhus Municipality.',
     publisher: 'Aarhus Kommune',
     contact: 'ppg@aarhus.dk',
@@ -47,6 +47,8 @@ use App\Source\Definition;
         'rettet_af' => 'Directory username of the municipal employee who last edited the record; personal data, and not a fact about the toilet.',
         'mi_style' => 'MapInfo rendering style.',
     ],
+    dataset: 'mtm_spatialmaps-toilet-city',
+    datasetTitle: 'Bytoiletter (MTM), Aarhus Kommune',
 )]
 final class ToiletCity extends AbstractSource
 {

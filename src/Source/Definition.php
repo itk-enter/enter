@@ -18,6 +18,7 @@ readonly class Definition
      *      query: array<string, mixed>
      * } $accessUrl
      * @param array<string, string> $omittedFields
+     * @param string                $dataset       the data set the source is listed under; its own id when the source is the whole data set, shared when several sources split one feed by model
      */
     public function __construct(
         public string $id,
@@ -35,6 +36,8 @@ readonly class Definition
         public string $updateFrequency,
         public ?string $licence,
         public array $omittedFields,
+        public string $dataset,
+        public string $datasetTitle,
     ) {
     }
 
@@ -109,6 +112,10 @@ readonly class Definition
             'update_frequency' => $this->updateFrequency,
             'licence' => $this->licence,
             'omitted_fields' => $this->omittedFields,
+            'dataset' => [
+                'id' => $this->dataset,
+                'title' => $this->datasetTitle,
+            ],
         ];
     }
 }

@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[TestDefinition(
     // By convention the ID as a test source must start with `test:`
     id: 'test:mtm_spatialmaps-toilet-other',
-    title: 'Test: Andre toiletter, Aarhus Kommune',
+    title: 'Test: Andre toiletter (MTM), Aarhus Kommune',
     accessUrl: 'http://nginx:8080/test/data/webkort.aarhuskommune.dk/spatialmap?mtm_spatialmaps-toilet-other',
     dataType: DataType::GeoJSON,
     mediaType: 'application/geo+json',
@@ -33,6 +33,8 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         'mi_style' => 'MapInfo rendering style.',
     ],
     dataUrlBase: 'https://webkort.aarhuskommune.dk/spatialmap?page=get_geojson_opendata&datasource=andre_toiletter',
+    dataset: 'test:mtm_spatialmaps-toilet-other',
+    datasetTitle: 'Test: Andre toiletter (MTM), Aarhus Kommune',
 )]
 final class TestToiletOther extends AbstractSource
 {

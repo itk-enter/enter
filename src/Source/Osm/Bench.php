@@ -57,6 +57,8 @@ DATA,
         'artwork_type' => 'Describes the artwork a bench is, not the bench; see tourism.',
         'artist_name' => 'Describes the artwork a bench is, not the bench; see tourism.',
     ],
+    dataset: 'osm-bench',
+    datasetTitle: 'Bænke (OpenStreetMap), Aarhus Kommune',
 )]
 final class Bench extends AbstractSource
 {

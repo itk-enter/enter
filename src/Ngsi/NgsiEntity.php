@@ -25,6 +25,11 @@ final class NgsiEntity
         return $this->id;
     }
 
+    public function type(): string
+    {
+        return $this->type;
+    }
+
     /**
      * Null and empty-string values are dropped rather than emitted as null,
      * because the source data uses "" for "not filled in" and a broker would

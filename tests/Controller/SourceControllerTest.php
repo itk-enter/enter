@@ -16,9 +16,13 @@ class SourceControllerTest extends WebTestCase
     {
         $ids = array_column($this->sources(static::createClient()), 'id');
 
-        $this->assertContains('mtm_spatialmaps-handicap-parking', $ids);
-        $this->assertContains('osm-handicap-parking', $ids);
-        $this->assertContains('test:mtm_spatialmaps-handicap-parking', $ids);
+        $this->assertContains('mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('mtm_spatialmaps-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-spot', $ids);
+        $this->assertContains('osm-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-off-street', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-on-street', $ids);
     }
 
     /**
@@ -38,6 +42,27 @@ class SourceControllerTest extends WebTestCase
             $this->assertStringContainsString('/ngsi-ld/v1/entities?', $entitiesUrl);
             $this->assertStringEndsWith(\sprintf('q=sourceId=="%s"', $source['id']), $entitiesUrl);
         }
+    }
+
+    /**
+     * Sources that split one feed by model are listed under the data set
+     * they share; any other source is a data set of its own.
+     */
+    public function testItGroupsSourcesByTheirDataSet(): void
+    {
+        $datasets = array_column($this->sources(static::createClient()), 'dataset', 'id');
+
+        $handicapParking = ['id' => 'osm-handicap-parking', 'title' => 'Handicapparkering (OpenStreetMap), Aarhus Kommune'];
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-spot']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-on-street']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-off-street']);
+
+        $register = ['id' => 'mtm_spatialmaps-handicap-parking', 'title' => 'Handicapparkering (MTM), Aarhus Kommune'];
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-spot']);
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-on-street']);
+
+        $this->assertSame('osm-bench', $datasets['osm-bench']['id']);
+        $this->assertNotSame('', $datasets['osm-bench']['title']);
     }
 
     public function testItListsEverySourceOnAPage(): void

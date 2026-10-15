@@ -45,7 +45,9 @@ area(3601784663)->.a;
 nwr["amenity"="toilets"](area.a);
 out center tags;
 DATA,
-    ]
+    ],
+    dataset: 'test:osm-public-toilet',
+    datasetTitle: 'Test: Offentlige toiletter (OpenStreetMap), Aarhus Kommune',
 )]
 final class TestPublicToilet extends AbstractSource
 {

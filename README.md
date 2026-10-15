@@ -26,10 +26,14 @@ source feed (JSON)
         → context broker
 ```
 
+After the upsert the import deletes the source's entities it no longer yields: records gone from the feed, and records a
+split feed now sorts into another source's model. An import that yields nothing deletes nothing, as an empty feed is
+likelier an outage than every record gone.
+
 ``` shell
-task import                                                # list the available sources
-task import -- mtm_spatialmaps-handicap-parking                        # import one
-task import -- mtm_spatialmaps-handicap-parking --dry-run --limit 5    # print the payload instead
+task import                                                                 # list the available sources
+task import -- mtm_spatialmaps-handicap-parking-spot                        # import one
+task import -- mtm_spatialmaps-handicap-parking-spot --dry-run --limit 5    # print the payload instead
 ```
 
 ### Sources
@@ -66,6 +70,10 @@ final readonly class MySource extends AbstractSource
 }
 ```
 
+A source publishes one model. A feed that mixes kinds of record — say single bays and whole facilities — is split
+over one source per kind, each keeping only its own records, and the sources name the data set they share with
+`dataset` and `datasetTitle`. The import refuses an entity of any other model than the source's own.
+
 Run
 
 ``` shell
@@ -86,7 +94,7 @@ Every entity carries a `sourceId` attribute holding the id of the source it came
 curl --silent \
   --header 'Accept: application/geo+json' \
   --header 'Link: <https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  'http://enter.local.itkdev.dk/ngsi-ld/v1/entities?q=sourceId=="mtm_spatialmaps-handicap-parking"&format=simplified&limit=1000&count=true'
+  'http://enter.local.itkdev.dk/ngsi-ld/v1/entities?q=sourceId=="mtm_spatialmaps-handicap-parking-on-street"&format=simplified&limit=1000&count=true'
 ```
 
 The `Link` header names the source's context (`context_url` in the list), which is what lets the broker answer
