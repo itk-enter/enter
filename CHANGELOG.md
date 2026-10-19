@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-87](https://github.com/itk-enter/enter/pull/87)
+  Added the default merge by location for conflation, matching points and areas one-to-one, closest first
 * [PR-86](https://github.com/itk-enter/enter/pull/86)
   Added the core of the conflation pipeline: the Conflation attribute, the abstract class of each step, and the
   checks between steps
