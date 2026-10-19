@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Spatial;
+
+use App\Conflation\Data\Record;
 
 /**
  * Distance on the earth's surface, in metres.

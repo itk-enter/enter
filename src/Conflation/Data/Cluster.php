@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Data;
 
 /**
  * The records judged to describe one real-world thing: at most one from

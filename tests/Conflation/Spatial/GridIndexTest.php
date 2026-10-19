@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Spatial;
 
-use App\Conflation\Distance;
-use App\Conflation\GridIndex;
-use App\Conflation\Pair;
-use App\Conflation\Record;
+use App\Conflation\Data\Record;
+use App\Conflation\Spatial\Distance;
+use App\Conflation\Spatial\GridIndex;
+use App\Conflation\Spatial\Pair;
 use PHPUnit\Framework\TestCase;
 
 class GridIndexTest extends TestCase
