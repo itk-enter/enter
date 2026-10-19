@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-75](https://github.com/itk-enter/enter/pull/75)
   Added the core of the conflation pipeline: the Conflation attribute, the abstract class of each step, and the
   checks between steps
+* [PR-68](https://github.com/itk-enter/enter/pull/68)
+  Added app:source:import-all, and a SourcesImportedEvent dispatched when a
+  run over several sources is done
 * [PR-73](https://github.com/itk-enter/enter/pull/73)
   Added the default matching engine for merging by location
 * [PR-72](https://github.com/itk-enter/enter/pull/72)
