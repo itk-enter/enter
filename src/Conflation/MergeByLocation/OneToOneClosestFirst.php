@@ -2,11 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\MergeByLocation;
+
+use App\Conflation\Cluster;
+use App\Conflation\Distance;
+use App\Conflation\GridIndex;
+use App\Conflation\Pair;
+use App\Conflation\Record;
 
 /**
- * Groups records from several data sets into clusters, one per real-world
- * thing.
+ * The default merge by location: groups records from several data sets into
+ * clusters, one per real-world thing.
  *
  * Distinct things of one kind can stand closer together than two records of
  * the same thing from different data sets, so no radius alone separates
@@ -21,19 +27,22 @@ namespace App\Conflation;
  * record; the second keeps a chain of matches from drifting further than the
  * radius allows. A record that matches nothing is a cluster of one, so the
  * clusters cover every input record.
+ *
+ * Every record is compared by its representative point, so points and areas
+ * are matched alike: an area by its centroid (see Record::fromGeometry()).
+ * The class is open, so a customization can extend it, such as to match a
+ * point against the area it lies in and leave the rest to this rule.
  */
-final class Matcher
+class OneToOneClosestFirst extends AbstractMergeByLocation
 {
     /**
-     * @param list<Record> $records
-     *
      * @return list<Cluster> ordered by their first record's id
      */
-    public function match(array $records, float $radius): array
+    public function merge(array $records): array
     {
         $this->assertUniqueIds($records);
 
-        $pairs = new GridIndex($records, $radius)->pairs();
+        $pairs = new GridIndex($records, $this->radius)->pairs();
 
         // Order the pairs closest first, ties broken by id so a run is
         // repeatable.
@@ -54,7 +63,7 @@ final class Matcher
             $rootA = $root[$pair->a->id];
             $rootB = $root[$pair->b->id];
 
-            if ($rootA === $rootB || !$this->canJoin($members[$rootA], $members[$rootB], $radius)) {
+            if ($rootA === $rootB || !$this->canJoin($members[$rootA], $members[$rootB], $this->radius)) {
                 continue;
             }
 
