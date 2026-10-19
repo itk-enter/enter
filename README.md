@@ -32,6 +32,16 @@ task import -- mtm_spatialmaps-handicap-parking                        # import 
 task import -- mtm_spatialmaps-handicap-parking --dry-run --limit 5    # print the payload instead
 ```
 
+To import every source in one run:
+
+``` shell
+task import:all
+```
+
+A failing source does not stop the run, and the command exits with a failure code if any source failed. Once the run is
+done, it dispatches a [`SourcesImportedEvent`](src/Import/Event/SourcesImportedEvent.php) saying which sources imported
+and which failed, so work that depends on a complete import can listen for it.
+
 ### Sources
 
 Adding a data source means adding a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way
