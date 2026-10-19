@@ -7,11 +7,11 @@ namespace App\Tests\Conflation;
 use App\Conflation\Cluster;
 use App\Conflation\ConflationLimitException;
 use App\Conflation\ConflictResolution\AbstractConflictResolution;
+use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\ConflictResolver;
 use App\Conflation\Record;
 use App\Conflation\StatedValue;
 use App\Tests\Conflation\Fixtures\MostRestrictive;
-use App\Tests\Conflation\Fixtures\PreferSource;
 use PHPUnit\Framework\TestCase;
 
 class ConflictResolverTest extends TestCase
@@ -33,14 +33,14 @@ class ConflictResolverTest extends TestCase
 
     public function testItSettlesConflictsByTheApproachesInOrder(): void
     {
-        $entity = new ConflictResolver([new PreferSource('data-set-a')])->resolve(new Cluster(self::toilet()));
+        $entity = new ConflictResolver([new SourceAuthority(['data-set-a'])])->resolve(new Cluster(self::toilet()));
 
         $this->assertSame(['fee' => 'free', 'openingHours' => '08–20', 'wheelchair' => 'yes'], $entity->attributes);
         $this->assertSame([], $entity->conflicts);
 
         // A customization listed first settles the attributes it concerns,
         // and leaves the rest to the next approach.
-        $entity = new ConflictResolver([new MostRestrictive(['wheelchair']), new PreferSource('data-set-a')])->resolve(new Cluster(self::toilet()));
+        $entity = new ConflictResolver([new MostRestrictive(['wheelchair']), new SourceAuthority(['data-set-a'])])->resolve(new Cluster(self::toilet()));
 
         $this->assertSame(['fee' => 'free', 'openingHours' => '08–20', 'wheelchair' => 'no'], $entity->attributes);
     }
@@ -60,7 +60,7 @@ class ConflictResolverTest extends TestCase
 
     public function testItRecordsAConflictNoApproachSettles(): void
     {
-        $entity = new ConflictResolver([new PreferSource('data-set-d')])->resolve(new Cluster(self::toilet()));
+        $entity = new ConflictResolver([new SourceAuthority(['data-set-d'])])->resolve(new Cluster(self::toilet()));
 
         $this->assertSame(['fee' => 'free'], $entity->attributes);
         $this->assertEquals(
@@ -77,7 +77,7 @@ class ConflictResolverTest extends TestCase
 
     public function testItTakesIdentityAndProvenanceFromTheMembers(): void
     {
-        $entity = new ConflictResolver([new PreferSource('data-set-a')])->resolve(new Cluster(self::toilet()));
+        $entity = new ConflictResolver([new SourceAuthority(['data-set-a'])])->resolve(new Cluster(self::toilet()));
 
         $this->assertSame('A-17', $entity->id);
         $this->assertSame(['A-17', 'B-903', 'C-4'], $entity->provenance);
@@ -85,14 +85,14 @@ class ConflictResolverTest extends TestCase
 
     public function testItSettlesTheLocationLikeAnyOtherAttribute(): void
     {
-        $entity = new ConflictResolver([new PreferSource('data-set-c')])->resolve(new Cluster(self::toilet()));
+        $entity = new ConflictResolver([new SourceAuthority(['data-set-c'])])->resolve(new Cluster(self::toilet()));
 
         $this->assertSame(['type' => 'Point', 'coordinates' => [10.2100, 56.1501]], $entity->location);
     }
 
     public function testTheLocationFallsBackToTheFirstSortingMember(): void
     {
-        $entity = new ConflictResolver([new PreferSource('data-set-d')])->resolve(new Cluster(self::toilet()));
+        $entity = new ConflictResolver([new SourceAuthority(['data-set-d'])])->resolve(new Cluster(self::toilet()));
 
         $this->assertSame(['type' => 'Point', 'coordinates' => [10.2100, 56.1500]], $entity->location);
         $this->assertArrayNotHasKey('location', $entity->conflicts);
@@ -114,7 +114,7 @@ class ConflictResolverTest extends TestCase
 
     public function testTheResultDoesNotDependOnTheOrderOfTheMembers(): void
     {
-        $resolver = new ConflictResolver([new PreferSource('data-set-d')]);
+        $resolver = new ConflictResolver([new SourceAuthority(['data-set-d'])]);
 
         $this->assertEquals(
             $resolver->resolve(new Cluster(self::toilet())),
