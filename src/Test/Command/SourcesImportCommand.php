@@ -2,13 +2,13 @@
 
 namespace App\Test\Command;
 
+use App\Import\ImportResult;
+use App\Import\SourcesImporter;
+use App\Source\SourceInterface;
 use App\SourceManager;
 use App\Test\Source\TestDefinition;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
@@ -22,28 +22,26 @@ class SourcesImportCommand
     public function __invoke(
         SymfonyStyle $io,
         SourceManager $manager,
-        OutputInterface $output,
-        Application $application,
+        SourcesImporter $importer,
     ): int {
-        foreach ($manager->getSources() as $source) {
-            $definition = $source->definition;
-            if (!$definition instanceof TestDefinition) {
-                continue;
+        $sources = array_filter(
+            $manager->getSources(),
+            static fn (SourceInterface $source): bool => $source->definition instanceof TestDefinition
+        );
+
+        // The run's outcome is dispatched like a real import's, so whatever
+        // follows a full import can be tried against the test sources.
+        $importer->import($sources, static function (SourceInterface $source, ImportResult|\Throwable $result) use ($io): void {
+            $io->section((string) $source);
+
+            if ($result instanceof \Throwable) {
+                $io->error($result->getMessage());
+
+                return;
             }
 
-            try {
-                $io->section($source);
-                $input = new ArrayInput([
-                    'command' => 'app:source:import',
-                    'source' => $source->definition->id,
-                ]);
-                $input->setInteractive(false);
-
-                $application->doRun($input, $output);
-            } catch (\Exception $e) {
-                $io->error($e->getMessage());
-            }
-        }
+            $io->success(\sprintf('Upserted %d entities into %s (HTTP %d).', $result->count, $result->brokerUrl, $result->status));
+        });
 
         return Command::SUCCESS;
     }
