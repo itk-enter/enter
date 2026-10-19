@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-82](https://github.com/itk-enter/enter/pull/82)
+  Listed the merged data sets on /sources, in sources.json and on the map
+* [PR-81](https://github.com/itk-enter/enter/pull/81)
+  Added the public toilet merge and MajorityWins, an optional conflict-resolution approach
+* [PR-80](https://github.com/itk-enter/enter/pull/80)
+  Added creating and publishing merged entities, and app:conflation:run
+* [PR-79](https://github.com/itk-enter/enter/pull/79)
+  Added the conflation fetch step, reading records from the broker
+* [PR-89](https://github.com/itk-enter/enter/pull/89)
+  Added WithinAreaOrRadius, the default augmentation
+* [PR-88](https://github.com/itk-enter/enter/pull/88)
+  Added SourceAuthority, an optional conflict-resolution approach
+* [PR-87](https://github.com/itk-enter/enter/pull/87)
+  Added the default merge by location for conflation, matching points and areas one-to-one, closest first
+* [PR-86](https://github.com/itk-enter/enter/pull/86)
+  Added the core of the conflation pipeline: the Conflation attribute, the abstract class of each step, and the
+  checks between steps
 * [PR-68](https://github.com/itk-enter/enter/pull/68)
   Added app:source:import-all, and a SourcesImportedEvent dispatched when a
   run over several sources is done

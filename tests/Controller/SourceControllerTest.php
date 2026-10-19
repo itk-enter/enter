@@ -22,6 +22,29 @@ class SourceControllerTest extends WebTestCase
     }
 
     /**
+     * A merged data set is listed after the sources, with the data sets it
+     * is merged from, and read from the broker the same way.
+     */
+    public function testItListsEveryMergedDataSetAsJson(): void
+    {
+        $dataSets = array_column($this->sources(static::createClient()), null, 'id');
+
+        $this->assertArrayHasKey('merged-public-toilets', $dataSets);
+        $merged = $dataSets['test:merged-public-toilets'];
+
+        $this->assertSame('PublicToilet', $merged['model']);
+        $this->assertSame($dataSets['test:osm-public-toilet']['context_url'], $merged['context_url']);
+        $this->assertSame([
+            'test:findtoilet-public-toilet',
+            'test:mtm_spatialmaps-toilet-city',
+            'test:mtm_spatialmaps-toilet-other',
+            'test:osm-public-toilet',
+        ], $merged['inputs']);
+        $this->assertStringEndsWith('q=sourceId=="test:merged-public-toilets"', urldecode($merged['entities_url']));
+        $this->assertSame('test:merged-public-toilets', array_key_last($dataSets));
+    }
+
+    /**
      * A reader needs no more than this to fetch a source's entities from
      * the broker: the URL that selects them by the id they are stamped
      * with, and the context that gives them the names the source declared.
