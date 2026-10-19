@@ -74,6 +74,11 @@ final class GeometryHelper
     }
 
     /**
+     * @todo Fix the centroid without GEOS: geoPHP's fallback loses precision
+     *   as an area shrinks (3 m off for a 20 m square, 133 m for a 2 m one),
+     *   ignores holes, and gives a line or multipolygon the centre of its
+     *   bounding box. See https://github.com/itk-enter/enter/issues/74
+     *
      * @param Geometry $geometry
      */
     public function getCentroid(array $geometry): Point
