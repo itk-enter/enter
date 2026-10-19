@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-79](https://github.com/itk-enter/enter/pull/79)
   Added the conflation fetch step, reading records from the broker
-* [PR-78](https://github.com/itk-enter/enter/pull/78)
+* [PR-89](https://github.com/itk-enter/enter/pull/89)
   Added WithinAreaOrRadius, the default augmentation
-* [PR-77](https://github.com/itk-enter/enter/pull/77)
+* [PR-88](https://github.com/itk-enter/enter/pull/88)
   Added SourceAuthority, an optional conflict-resolution approach
-* [PR-76](https://github.com/itk-enter/enter/pull/76)
+* [PR-87](https://github.com/itk-enter/enter/pull/87)
   Added the default merge by location for conflation, matching points and areas one-to-one, closest first
-* [PR-75](https://github.com/itk-enter/enter/pull/75)
+* [PR-86](https://github.com/itk-enter/enter/pull/86)
   Added the core of the conflation pipeline: the Conflation attribute, the abstract class of each step, and the
   checks between steps
 * [PR-68](https://github.com/itk-enter/enter/pull/68)
