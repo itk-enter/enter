@@ -15,5 +15,15 @@ framework:
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-        #my.dedicated.cache: null
+        pools:
+            # Keeps a source feed for the sources that share it.
+            source_reader.cache:
+                adapter: cache.adapter.filesystem
+                default_lifetime: 600
+
+when@test:
+    framework:
+        cache:
+            pools:
+                source_reader.cache:
+                    adapter: cache.adapter.array
