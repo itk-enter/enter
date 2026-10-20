@@ -93,11 +93,11 @@ class SourcesImporterTest extends TestCase
             $this->dispatched[] = $event;
         });
 
-        $fake = new class($failing) implements SourceImporterInterface {
+        $fake = new readonly class($failing) implements SourceImporterInterface {
             /**
              * @param list<string> $failing
              */
-            public function __construct(private readonly array $failing)
+            public function __construct(private array $failing)
             {
             }
 
