@@ -45,9 +45,7 @@ docker compose exec phpfpm php bin/console test:source:fetch-content
 ```
 
 A fetch answered with 429 or a 5xx is retried four times with growing pauses, as the public Overpass instance is often
-busy. A file is only replaced by a complete response, so a failed fetch leaves the old one in place. Each response is
-kept for an hour: run the command again after a partial failure and only the failed feeds are fetched. Add `--refresh`
-to fetch every feed regardless.
+busy. A file is only replaced by a complete response, so a failed fetch leaves the old one in place.
 
 As shown above, test sources can be imported just like real sources, but for convenience the `test:source:import-all`
 command can be used to import *all test sources*:

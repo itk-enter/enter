@@ -6,7 +6,6 @@ use App\SourceManager;
 use App\Test\Fixture\FixtureFetcher;
 use App\Test\Source\TestDefinition;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\When;
@@ -22,8 +21,6 @@ class SourceFetchContentCommand
         SymfonyStyle $io,
         SourceManager $manager,
         FixtureFetcher $fetcher,
-        #[Option(description: 'If set, fetch without using cache.')]
-        bool $refresh = false,
     ): int {
         $failed = [];
 
@@ -35,10 +32,10 @@ class SourceFetchContentCommand
             $io->section($source);
 
             try {
-                $fetch = $fetcher->fetch($source, $refresh);
+                $fetch = $fetcher->fetch($source);
                 $io->success(\sprintf(
-                    'Content %s written to file %s',
-                    $fetch->fromCache ? 'fetched earlier' : 'fetched from '.$fetch->url,
+                    'Content fetched from %s written to file %s',
+                    $fetch->url,
                     realpath($fetch->filename),
                 ));
             } catch (\Exception $e) {
@@ -49,7 +46,7 @@ class SourceFetchContentCommand
 
         if ([] !== $failed) {
             $io->warning(\sprintf(
-                "Failed: %s.\nRun the command again within the hour to fetch the remaining.",
+                'Failed: %s. The old files of these sources are kept.',
                 implode(', ', $failed),
             ));
 

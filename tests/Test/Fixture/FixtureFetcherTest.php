@@ -10,7 +10,6 @@ use App\Test\Source\MtmSpatialMaps\TestOnStreetParking;
 use App\Test\Source\MtmSpatialMaps\TestParkingSpot;
 use App\Test\Source\Osm\TestBench;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -42,26 +41,14 @@ class FixtureFetcherTest extends TestCase
 
         $this->assertSame($this->directory.'/data/webkort.aarhuskommune.dk/spatialmap?mtm_spatialmaps-handicap-parking', $fetch->filename);
         $this->assertSame('{"features": []}', file_get_contents($fetch->filename));
-        $this->assertFalse($fetch->fromCache);
     }
 
-    public function testSourcesSplittingOneFeedFetchItOnce(): void
-    {
-        $fetcher = $this->fetcher([new MockResponse('{"features": []}')]);
-
-        $fetcher->fetch(new TestParkingSpot());
-        $fetch = $fetcher->fetch(new TestOnStreetParking());
-
-        $this->assertCount(1, $this->requested);
-        $this->assertTrue($fetch->fromCache);
-    }
-
-    public function testItFetchesAKeptFeedAgainWhenAskedForAFreshOne(): void
+    public function testEachFetchGetsTheFeedAgain(): void
     {
         $fetcher = $this->fetcher([new MockResponse('{"features": [1]}'), new MockResponse('{"features": [2]}')]);
 
         $fetcher->fetch(new TestParkingSpot());
-        $fetch = $fetcher->fetch(new TestParkingSpot(), fresh: true);
+        $fetch = $fetcher->fetch(new TestOnStreetParking());
 
         $this->assertCount(2, $this->requested);
         $this->assertSame('{"features": [2]}', file_get_contents($fetch->filename));
@@ -73,30 +60,12 @@ class FixtureFetcherTest extends TestCase
         $fetch = $fetcher->fetch(new TestBench());
 
         try {
-            $fetcher->fetch(new TestBench(), fresh: true);
+            $fetcher->fetch(new TestBench());
             $this->fail('A failed fetch passed.');
         } catch (\Exception) {
         }
 
         $this->assertSame('{"elements": [1]}', file_get_contents($fetch->filename));
-    }
-
-    /**
-     * Makes sure that the next run fetches a failed feed again.
-     */
-    public function testAFailedFetchIsTriedAgainOnTheNextRun(): void
-    {
-        $fetcher = $this->fetcher([new MockResponse('', ['http_code' => Response::HTTP_TOO_MANY_REQUESTS]), new MockResponse('{"elements": []}')]);
-
-        try {
-            $fetcher->fetch(new TestBench());
-            $this->fail('A failed fetch passed.');
-        } catch (\Exception) {
-        }
-        $fetch = $fetcher->fetch(new TestBench());
-
-        $this->assertCount(2, $this->requested);
-        $this->assertFalse($fetch->fromCache);
     }
 
     public function testItRefusesAPartialOverpassResult(): void
@@ -125,6 +94,6 @@ class FixtureFetcherTest extends TestCase
             return array_shift($responses) ?? throw new \LogicException('No response left.');
         });
 
-        return new FixtureFetcher($client, new ArrayAdapter(), new Filesystem(), $this->directory);
+        return new FixtureFetcher($client, new Filesystem(), $this->directory);
     }
 }

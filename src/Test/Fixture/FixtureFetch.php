@@ -10,14 +10,12 @@ namespace App\Test\Fixture;
 final readonly class FixtureFetch
 {
     /**
-     * @param string $url       the live feed
-     * @param string $filename  the fixture file
-     * @param bool   $fromCache true if the content comes from the cache
+     * @param string $url      the live feed
+     * @param string $filename the fixture file
      */
     public function __construct(
         public string $url,
         public string $filename,
-        public bool $fromCache,
     ) {
     }
 }

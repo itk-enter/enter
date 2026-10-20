@@ -9,7 +9,6 @@ use App\Source\SourceInterface;
 use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -20,8 +19,6 @@ final readonly class FixtureFetcher
     public function __construct(
         #[Autowire(service: 'test_fixture.client')]
         private HttpClientInterface $client,
-        #[Autowire(service: 'test_fixture.cache')]
-        private CacheInterface $cache,
         private Filesystem $filesystem,
         #[Autowire('%kernel.project_dir%/tests/resources')]
         private string $directory,
@@ -30,10 +27,8 @@ final readonly class FixtureFetcher
 
     /**
      * Fetches the live feed and writes the fixture.
-     *
-     * @param bool $fresh ignore the cached response
      */
-    public function fetch(SourceInterface $source, bool $fresh = false): FixtureFetch
+    public function fetch(SourceInterface $source): FixtureFetch
     {
         $definition = $source->definition;
         if (!$definition instanceof TestDefinition) {
@@ -41,25 +36,13 @@ final readonly class FixtureFetcher
         }
 
         $url = $definition->dataUrlBase;
-        $query = $definition->dataUrlQuery;
-
-        $fetched = false;
-        $content = $this->cache->get(
-            hash('xxh128', $url.'?'.http_build_query($query)),
-            function () use ($definition, $url, $query, &$fetched): string {
-                $fetched = true;
-                $content = $this->client->request('GET', $url, ['query' => $query])->getContent();
-                $this->assertComplete($definition, $content);
-
-                return $content;
-            },
-            $fresh ? \INF : null,
-        );
+        $content = $this->client->request('GET', $url, ['query' => $definition->dataUrlQuery])->getContent();
+        $this->assertComplete($definition, $content);
 
         $filename = $this->filename($definition);
         $this->filesystem->dumpFile($filename, $content);
 
-        return new FixtureFetch($url, $filename, !$fetched);
+        return new FixtureFetch($url, $filename);
     }
 
     /**
