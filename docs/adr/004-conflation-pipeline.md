@@ -48,7 +48,7 @@ Until that is decided, a value the data sets disagree on is left out, and the di
 **4. Augment** adds facts from data sets about something else at the same place, such as the district a bench stands in.
 By default, an augmentation has to be configured manually.
 
-**5. Create** publishes one merged entity that uses the same data model as the records it was built from as 003 requires. 
+**5. Create** publishes one merged entity that uses the same data model as the records it was built from as 003 requires.
 Its identifier is taken from one of the records by a fixed rule. Entities that a new run no longer produces are deleted.
 
 ## Consequences
@@ -62,7 +62,7 @@ Its identifier is taken from one of the records by a fixed rule. Entities that a
 
 ### Negative
 
-- Matching is automatic, so it is possible that some merged entities will join things that are different, or miss things 
+- Matching is automatic, so it is possible that some merged entities will join things that are different, or miss things
   that are the same.
 - A merged entity's identifier can change between runs, so users who store it may lose track of the thing.
 - The merged data set is only as current as the last run, and records removed from their data set stay in it until the
