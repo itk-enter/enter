@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-90](https://github.com/itk-enter/enter/pull/90)
+  Added conflation diagram svgs and markdown.
 * [PR-68](https://github.com/itk-enter/enter/pull/68)
   Added app:source:import-all, and a SourcesImportedEvent dispatched when a
   run over several sources is done
