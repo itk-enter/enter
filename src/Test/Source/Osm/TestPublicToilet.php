@@ -17,7 +17,6 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[When('dev')]
 #[When('test')]
 #[TestDefinition(
-    // By convention the ID as a test source must start with `test:`
     id: 'test:osm-public-toilet',
     title: 'Test: Offentlige toiletter (OpenStreetMap), Aarhus Kommune',
     accessUrl: 'http://nginx:8080/test/data/overpass-api.de/api/interpreter?osm-public-toilet',
@@ -52,7 +51,7 @@ DATA,
 final class TestPublicToilet extends AbstractSource
 {
     /**
-     * Maps one feed record onto an NgsiEntity.
+     * Makes an NgsiEntity from one feed record.
      *
      * @param array<string, mixed> $data Overpass JSON element
      */
@@ -89,12 +88,6 @@ final class TestPublicToilet extends AbstractSource
             ->setProperty('chargeCurrency', $chargeCurrency)
             ->setProperty('paymentMethod', $this->paymentMethod($tags))
             ->setProperty('accessType', $this->accessType($tags))
-
-            // Two facts are stated by a general tag and a toilets: prefixed
-            // refinement: the general one describes the place the record sits
-            // on, which may be larger than the toilet, and the refinement
-            // describes the toilet itself. The model describes the toilet, so
-            // the refinement wins where both are stated.
             ->setProperty('wheelchairAccessible', $this->wheelchairAccessible(
                 $this->tag($tags, 'toilets:wheelchair') ?: $this->tag($tags, 'wheelchair')
             ))
@@ -115,18 +108,6 @@ final class TestPublicToilet extends AbstractSource
             ->setProperty('menstrualProducts', $this->yesNo($this->tag($tags, 'toilets:menstrual_products')))
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
-
-            // Facility facts the model has no attribute for, carried as the
-            // feed states them. A record carries only the tags it has.
-            //
-            // level, access and charge are carried here only when their value
-            // does not fit the model's attribute: a toilet on several levels
-            // ("0;1"), an access the model has no term for ("permit",
-            // "private"), or a charge in more than one currency. operator is a
-            // name, and the model's refOperator requires a reference to an
-            // organisation entity that is not published. otherTags carries
-            // every tag this mapping neither maps nor omits, under its OSM
-            // key, so a tag a mapper adds later is not silently lost.
             ->additionalInformation([
                 'indoor' => $this->tag($tags, 'indoor'),
                 'seasonal' => $this->tag($tags, 'seasonal'),
@@ -140,7 +121,7 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * Tags this mapping reads.
+     * The tags that this mapping reads.
      */
     private const array MAPPED_TAGS = [
         'name', 'description', 'website', 'opening_hours', 'fee', 'charge', 'access',
@@ -151,8 +132,7 @@ final class TestPublicToilet extends AbstractSource
     ];
 
     /**
-     * Tags left out on purpose, with the reason given in omittedFields: the
-     * key itself, and every key it prefixes with a colon.
+     * The tags that this mapping does not use, with all keys that they prefix.
      */
     private const array OMITTED_TAGS = [
         'amenity', 'building', 'roof', 'check_date', 'source', 'note', 'fixme', 'mapillary', 'panoramax',
@@ -194,7 +174,7 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * Some tags state several values separated by semicolons.
+     * Splits a semicolon-separated tag value into a list.
      *
      * @return list<string>
      */
@@ -204,8 +184,7 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * Only the tag's plain answers map; any other value states nothing, and
-     * an absent tag is unknown rather than "no".
+     * Changes a "yes" or "no" value to a boolean, or returns null.
      */
     private function yesNo(string $value): ?bool
     {
@@ -219,8 +198,6 @@ final class TestPublicToilet extends AbstractSource
     private function wheelchairAccessible(string $value): ?string
     {
         return match ($value) {
-            // designated states that the toilet is built for wheelchair users,
-            // which is more than yes and so still fully accessible.
             'yes', 'designated' => 'yes',
             'limited' => 'limited',
             'no' => 'no',
@@ -268,9 +245,7 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * unisex, male and female are separate yes/no tags. Only a "yes" names a
-     * group the toilet is designated for; "no" rules one out without naming
-     * another.
+     * Gets the gender groups that the toilet is for.
      *
      * @param array<string, mixed> $tags
      *
@@ -304,7 +279,7 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * Each payment:<method>=yes tag names one accepted method.
+     * Gets the payment methods that the toilet accepts.
      *
      * @param array<string, mixed> $tags
      *
@@ -332,9 +307,7 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * charge states an amount and a currency in one value, e.g. "5 DKK".
-     * Only a single amount in an ISO 4217 code maps; a charge in several
-     * currencies ("5 DKR; 1€") does not fit the model's one amount.
+     * Gets the charge amount and currency.
      *
      * @param array<string, mixed> $tags
      *
@@ -350,6 +323,8 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
+     * Tells if the toilet is free of charge.
+     *
      * @param array<string, mixed> $tags
      */
     private function isAccessibleForFree(array $tags): ?bool
@@ -362,6 +337,8 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
+     * Gets the location of the element as a GeoJSON point.
+     *
      * @param array<string, mixed> $element
      *
      * @return array{type: string, coordinates: array{float, float}}|null

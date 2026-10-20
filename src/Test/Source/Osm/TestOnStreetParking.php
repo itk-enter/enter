@@ -11,19 +11,13 @@ use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * Street-side parking with bays reserved for disabled parking in Aarhus
- * Municipality.
+ * On-street parking with disabled bays in Aarhus Municipality.
  */
 #[When('dev')]
 #[When('test')]
 #[TestDefinition(
-    // By convention the ID as a test source must start with `test:`
     id: 'test:osm-handicap-parking-on-street',
     title: 'Test: Handicapparkering på gaden (OpenStreetMap), Aarhus Kommune',
-    // The Overpass QL in the URL: within Aarhus Municipality (OSM
-    // relation 1784663), select every element tagged as a disabled
-    // parking space (parking_space=disabled) or as reserving bays for
-    // disabled parking (capacity:disabled, excluding "no" and "0").
     accessUrl: 'http://nginx:8080/test/data/overpass-api.de/api/interpreter?osm-handicap-parking',
     dataType: DataType::Overpass,
     mediaType: 'application/json',
@@ -61,7 +55,6 @@ final class TestOnStreetParking extends AbstractTestHandicapParking
 {
     protected function supports(array $tags): bool
     {
-        // A site whose record does not say where it lies is kept on the street.
         return !$this->isSingleBay($tags) && 'offStreet' !== $this->siting($tags);
     }
 
@@ -75,8 +68,6 @@ final class TestOnStreetParking extends AbstractTestHandicapParking
         $type = $element['type'] ?? null;
         $id = $element['id'] ?? null;
 
-        // OSM ids are only unique per element type, so both are needed to
-        // address the same object again on the next import.
         return \is_string($type) && \is_int($id) ? \sprintf('%s-%d', $type, $id) : '';
     }
 

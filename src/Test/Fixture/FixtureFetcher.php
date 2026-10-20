@@ -13,12 +13,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Refreshes a test source's fixture from the live feed it stands in for.
- *
- * A response is kept for a while, so a run that failed halfway can be run
- * again without fetching what already succeeded, and sources splitting one
- * feed fetch it once. A fixture is only replaced by a complete response; a
- * failed fetch leaves the old one in place.
+ * Updates the fixture of a test source from the live feed.
  */
 final readonly class FixtureFetcher
 {
@@ -34,7 +29,9 @@ final readonly class FixtureFetcher
     }
 
     /**
-     * @param bool $fresh fetch the feed even when a response is kept
+     * Fetches the live feed and writes the fixture.
+     *
+     * @param bool $fresh ignore the cached response
      */
     public function fetch(SourceInterface $source, bool $fresh = false): FixtureFetch
     {
@@ -66,8 +63,7 @@ final readonly class FixtureFetcher
     }
 
     /**
-     * Overpass answers a query that timed out or ran out of memory with 200
-     * and whatever it had found so far, saying so only in a remark.
+     * Fails if Overpass gives a partial result.
      */
     private function assertComplete(TestDefinition $definition, string $content): void
     {
@@ -82,8 +78,7 @@ final readonly class FixtureFetcher
     }
 
     /**
-     * The fixture file the source reads, named by its access URL, whose
-     * path must start with /test/.
+     * Gets the fixture file name from the access URL.
      */
     private function filename(TestDefinition $definition): string
     {

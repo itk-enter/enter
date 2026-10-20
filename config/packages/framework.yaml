@@ -16,9 +16,7 @@ framework:
             broker.client:
                 base_uri: '%env(APP_BROKER_BASE_URI)%'
 
-            # Fetches the live feeds the test fixtures are made from. Public
-            # Overpass answers 429 when the slots per IP are taken and 504
-            # when it is overloaded; both pass if waited out.
+            # Fetches the live feeds for the test fixtures.
             test_fixture.client:
                 scope: '^https?://'
                 retry_failed:

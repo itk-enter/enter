@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    {# The two controllers share the element: the data sets one reports, the map one draws. #}
     <div class="test-map-wrapper"
          data-controller="test-map test-datasets"
          data-test-datasets-url-value="{{ path('app_sources', {_format: 'json'}) }}"

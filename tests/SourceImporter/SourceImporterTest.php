@@ -25,23 +25,17 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * What the import adds to every entity on its way to the broker, whichever
- * source it came from, and what it removes once there.
+ * Tests the import of a source into the broker.
  */
 class SourceImporterTest extends TestCase
 {
     /**
-     * Every request the broker was sent, as method, URL and options.
-     *
      * @var list<array{string, string, array<string, mixed>}>
      */
     private array $requests = [];
 
     /**
-     * Sources publish into shared models, so the broker cannot tell their
-     * entities apart by type. The stamp is what a reader filters on, and it
-     * is the source's id rather than its access URL because the id is the
-     * one thing about a source that must not change.
+     * Makes sure that each entity gets the id of its source.
      */
     public function testItStampsEveryEntityWithTheIdOfItsSource(): void
     {
@@ -60,9 +54,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * The catalogue says which model a source publishes, and the map, the
-     * list of sources and any reader trust it. A mapping that strays from
-     * it is a bug to fix, not data to publish.
+     * Makes sure that the import refuses an entity of a model that the source does not declare.
      */
     public function testItRefusesAnEntityOfAModelTheSourceDoesNotDeclare(): void
     {
@@ -75,9 +67,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * A record gone from the feed, or sorted into another source's model,
-     * leaves its entity behind under this source unless the import removes
-     * it; in a split feed that publishes the record twice.
+     * Makes sure that the import deletes the entities that the source no longer yields.
      */
     public function testItDeletesTheEntitiesOfTheSourceTheImportNoLongerYields(): void
     {
@@ -95,8 +85,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * The broker can only tell a source's entities apart by the stamp, and
-     * only finds the model by its short name with the source's context.
+     * Makes sure that the import asks the broker for the entities of the source.
      */
     public function testItAsksTheBrokerForTheEntitiesStampedWithTheSourceId(): void
     {
@@ -118,8 +107,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * An entity the broker rejected was still yielded, so the import keeps
-     * what the broker held for it and reports the rejection.
+     * Makes sure that the import reports the entities that the broker rejects.
      */
     public function testItReportsTheEntitiesTheBrokerRejected(): void
     {
@@ -149,8 +137,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * An empty feed is far likelier an outage than every record gone, so it
-     * must not wipe the source from the broker.
+     * Makes sure that an empty import deletes no entities.
      */
     public function testItKeepsWhatTheBrokerHoldsWhenTheImportYieldsNothing(): void
     {
@@ -163,8 +150,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * Overpass answers a query that ran out of time with 200 and what it had
-     * found so far. Imported, the part would sweep away the rest.
+     * Makes sure that the import refuses a partial Overpass result.
      */
     public function testItRefusesAPartialOverpassResult(): void
     {
@@ -182,12 +168,10 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * Runs one import against a broker that records what it is sent and
-     * holds the given entity ids for the source.
+     * Runs one import against a mock broker.
      *
-     * @param array<string, mixed> $data     the feed as the reader returns it
-     * @param list<string>         $held     ids the broker answers a listing with
-     * @param MockResponse|null    $upserted what the broker answers the upsert with, if not 204
+     * @param array<string, mixed> $data
+     * @param list<string>         $held
      */
     private function import(SourceInterface $source, array $data, array $held = [], ?MockResponse $upserted = null): ImportResult
     {
@@ -235,7 +219,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * The entities the broker was sent to upsert.
+     * Gets the entities that the import sends to upsert.
      *
      * @return list<array<string, mixed>>
      */
@@ -245,7 +229,7 @@ class SourceImporterTest extends TestCase
     }
 
     /**
-     * The ids the broker was sent to delete.
+     * Gets the ids that the import sends to delete.
      *
      * @return list<string>
      */
@@ -291,7 +275,7 @@ class SourceImporterTest extends TestCase
 }
 
 /**
- * Declares one model and maps onto another.
+ * Source that declares one model and creates entities of a different model.
  */
 #[Definition(
     id: 'test:undeclared-model',

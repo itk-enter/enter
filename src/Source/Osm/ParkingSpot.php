@@ -19,10 +19,6 @@ use App\Source\Definition;
     publisher: 'OpenStreetMap contributors',
     contact: 'https://community.openstreetmap.org/',
     landingPage: 'https://wiki.openstreetmap.org/wiki/Tag:parking_space%3Ddisabled',
-    // The Overpass QL in the URL: within Aarhus Municipality (OSM
-    // relation 1784663), select every element tagged as a disabled
-    // parking space (parking_space=disabled) or as reserving bays for
-    // disabled parking (capacity:disabled, excluding "no" and "0").
     accessUrl: [
         'url' => 'https://overpass-api.de/api/interpreter',
         'query' => [
@@ -77,20 +73,14 @@ final class ParkingSpot extends AbstractHandicapParking
         $type = $element['type'] ?? null;
         $id = $element['id'] ?? null;
 
-        // OSM ids are only unique per element type, so both are needed to
-        // address the same object again on the next import.
         return \is_string($type) && \is_int($id) ? \sprintf('%s-%d', $type, $id) : '';
     }
 
     protected function buildNgsiEntity(array $element, array $tags, array $geometry, Wgs84Transformer $transformer): NgsiEntity
     {
         return parent::buildNgsiEntity($element, $tags, $geometry, $transformer)
-            // The model requires an occupancy status.
             ->setProperty('status', 'unknown')
             ->setProperty('category', $this->category($tags))
-
-            // A bay has no category for charging, so the fee tag is carried
-            // as the feed states it.
             ->additionalInformation([
                 'fee' => trim((string) ($tags['fee'] ?? '')),
                 'surface' => trim((string) ($tags['surface'] ?? '')),
@@ -99,9 +89,7 @@ final class ParkingSpot extends AbstractHandicapParking
     }
 
     /**
-     * The bay model's category is the siting of the site the bay belongs
-     * to. It is required by the schema, but a guess would misplace half the
-     * bays, so a record the feed does not site is published without it.
+     * Gets the category of the bay from the siting of its site.
      *
      * @param array<string, mixed> $tags
      *

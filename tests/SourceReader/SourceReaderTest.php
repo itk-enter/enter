@@ -16,8 +16,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Sources that split one feed between them are imported one by one, so the
- * reader is what keeps the feed from being fetched once per source.
+ * Tests the shared fetch of a feed.
  */
 class SourceReaderTest extends TestCase
 {
@@ -34,8 +33,7 @@ class SourceReaderTest extends TestCase
     }
 
     /**
-     * The feeds forbid reuse or say nothing about it, which would leave a
-     * cache that obeys them fetching once per source.
+     * Makes sure that the sources share one fetch when the server forbids caching.
      */
     public function testSourcesShareOneFetchWhateverTheServerSaysAboutCaching(): void
     {

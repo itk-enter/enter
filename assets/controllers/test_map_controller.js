@@ -4,29 +4,24 @@ import "maplibre-gl/dist/maplibre-gl.min.css";
 import { MARKS_LAYER, wireClicks } from "../test/popup.js";
 
 /*
- * The developer map: each source's entities read from the broker into a
- * layer of their own, drawn by MapLibre in one colour per data set. It
- * shares its element with the data sets controller and draws whatever that
- * one reports switched on. What a click opens lives in popup.js.
+ * Shows the entities of the test sources on a MapLibre map.
  */
 
-/* Center at DOKK1, zoomed out a bunch. */
+/* The start view of the map. */
 const CENTER = [10.2144, 56.1535];
 const ZOOM = 11;
 
-/* What every source layer's id starts with, so they can be told apart. */
+/* The prefix of a source layer id. */
 const LAYER_PREFIX = "source-";
 
-/* The most entities the broker hands out per request. */
+/* The maximum number of entities for each broker request. */
 const PAGE_SIZE = 1000;
 
-/* The stroke around every dot and area, dark so it reads on any colour. */
+/* The stroke around each point and area. */
 const STROKE_COLOUR = "#212121";
 const STROKE_WIDTH = 1.5;
 
-/*
- * Init MapLibre
- */
+/* Makes the MapLibre map. */
 function createMap(container) {
     return new maplibregl.Map({
         container,
@@ -51,11 +46,7 @@ function createMap(container) {
     });
 }
 
-/*
- * The URL of the page after this one, or null on the last page. The broker
- * links to the next page under its own path, which the proxy does not
- * serve, so only the link's query is taken and put on the page's URL.
- */
+/* Gives the URL of the next page, or null on the last page. */
 function nextPage(response, url) {
     const match = /<([^>]*)>[^,]*rel="next"/.exec(
         response.headers.get("link") ?? "",
@@ -71,16 +62,7 @@ function nextPage(response, url) {
     return next;
 }
 
-/*
- * Reads a source's entities from the broker, page by page, into one
- * GeoJSON collection.
- *
- * The source says where its entities are; this adds its model, which the
- * broker requires, asks for GeoJSON in the simplified format, which leaves
- * bare values, and follows the broker's link to each next page. The
- * source's context goes in the Link header so the broker expands the
- * model's short name and answers with the names the source declared.
- */
+/* Reads the entities of a source from the broker into a GeoJSON collection. */
 async function loadFeatures(source) {
     const features = [];
 
@@ -101,10 +83,6 @@ async function loadFeatures(source) {
             throw new Error(`${url} answered ${response.status}`);
         }
 
-        /*
-         * MapLibre hands a clicked feature's properties back, not its
-         * string id, and the popup tells features apart by the id.
-         */
         const page = ((await response.json()).features ?? []).map(
             (feature) => ({
                 ...feature,
@@ -119,11 +97,7 @@ async function loadFeatures(source) {
     return { type: "FeatureCollection", features };
 }
 
-/*
- * Adds a source to the map with an area layer, an outline layer and a point
- * layer, in its data set's colour. Its layers go in below the marks, so a
- * mark is never hidden by what it marks.
- */
+/* Adds the area, outline and point layers of a source to the map. */
 function addSource(map, id, source, collection) {
     map.addSource(id, { type: "geojson", data: collection });
 
@@ -140,7 +114,6 @@ function addSource(map, id, source, collection) {
         MARKS_LAYER,
     );
 
-    /* A fill's own outline is one pixel wide; the dots have a thicker one. */
     map.addLayer(
         {
             id: `${id}-outlines`,
@@ -155,7 +128,6 @@ function addSource(map, id, source, collection) {
         MARKS_LAYER,
     );
 
-    /* Left to itself a circle layer dots every corner of an area. */
     map.addLayer(
         {
             id: `${id}-points`,
@@ -195,10 +167,8 @@ export default class extends Controller {
     connect() {
         this.map = createMap(this.canvasTarget);
 
-        /* What the popup calls each data set, filled in once they are known. */
         this.titles = {};
 
-        /* Nothing may be added to the map before its style has loaded. */
         this.ready = new Promise((resolve) =>
             this.map.on("load", resolve),
         ).then(() => {
@@ -208,7 +178,6 @@ export default class extends Controller {
             });
         });
 
-        /* Per layer: the fetch under way, and whether it is wanted on. */
         this.loading = new Map();
         this.wanted = new Map();
     }
@@ -217,21 +186,14 @@ export default class extends Controller {
         this.map.remove();
     }
 
-    /*
-     * The sources are known: the popup can name them, by the data set they
-     * belong to, as the toggles do.
-     */
+    /* Keeps the data set title of each source for the popup. */
     sources(event) {
         event.detail.sources.forEach((source) => {
             this.titles[source.id] = source.dataset.title;
         });
     }
 
-    /*
-     * A source was switched on or off. The first time it is switched on its
-     * entities are fetched; a toggle while that is under way takes effect
-     * once the fetch is done.
-     */
+    /* Shows or hides a source, and loads it the first time. */
     async show(event) {
         await this.ready;
 
@@ -257,13 +219,12 @@ export default class extends Controller {
             const collection = await loadFeatures(source);
             addSource(this.map, id, source, collection);
         } catch (error) {
-            /* Leave the layer loadable again on the next toggle. */
             this.loading.delete(id);
             throw error;
         }
     }
 
-    /* The ids of every source layer on the map, hidden ones included. */
+    /* Gives the ids of all source layers on the map. */
     layers() {
         return this.map
             .getStyle()

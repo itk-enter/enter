@@ -10,8 +10,7 @@ use App\Source\DataType;
 use App\Source\Definition;
 
 /**
- * Street-side parking with bays reserved for disabled parking in Aarhus
- * Municipality.
+ * On-street parking with disabled bays in Aarhus Municipality.
  */
 #[Definition(
     id: 'osm-handicap-parking-on-street',
@@ -20,10 +19,6 @@ use App\Source\Definition;
     publisher: 'OpenStreetMap contributors',
     contact: 'https://community.openstreetmap.org/',
     landingPage: 'https://wiki.openstreetmap.org/wiki/Key:capacity:disabled',
-    // The Overpass QL in the URL: within Aarhus Municipality (OSM
-    // relation 1784663), select every element tagged as a disabled
-    // parking space (parking_space=disabled) or as reserving bays for
-    // disabled parking (capacity:disabled, excluding "no" and "0").
     accessUrl: [
         'url' => 'https://overpass-api.de/api/interpreter',
         'query' => [
@@ -64,7 +59,6 @@ final class OnStreetParking extends AbstractHandicapParking
 {
     protected function supports(array $tags): bool
     {
-        // A site whose record does not say where it lies is kept on the street.
         return !$this->isSingleBay($tags) && 'offStreet' !== $this->siting($tags);
     }
 
@@ -78,8 +72,6 @@ final class OnStreetParking extends AbstractHandicapParking
         $type = $element['type'] ?? null;
         $id = $element['id'] ?? null;
 
-        // OSM ids are only unique per element type, so both are needed to
-        // address the same object again on the next import.
         return \is_string($type) && \is_int($id) ? \sprintf('%s-%d', $type, $id) : '';
     }
 

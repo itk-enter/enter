@@ -10,8 +10,7 @@ use App\Source\DataType;
 use App\Source\Definition;
 
 /**
- * Locations with several disabled parking bays in the municipal register of
- * Aarhus.
+ * Locations with more than one disabled parking bay in Aarhus Municipality.
  */
 #[Definition(
     id: 'mtm_spatialmaps-handicap-parking-on-street',
@@ -28,9 +27,6 @@ use App\Source\Definition;
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
     updateFrequency: 'continuous',
 
-    // The portal states no licence for this data set. DCAT-AP requires one, so
-    // it has to be settled with the data owner before the catalogue can be
-    // registered anywhere.
     licence: null,
 
     omittedFields: [
@@ -58,7 +54,6 @@ final class OnStreetParking extends AbstractHandicapParking
 
     protected function getKey(array $properties): string
     {
-        // mi_prinx is assumed to be the feed's stable primary key.
         return (string) ($properties['mi_prinx'] ?? '');
     }
 

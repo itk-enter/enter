@@ -17,8 +17,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Refreshing fixtures from public feeds fails now and then, so a failure
- * must cost neither the old fixture nor what already succeeded.
+ * Tests the fetch of fixtures from the public feeds.
  */
 class FixtureFetcherTest extends TestCase
 {
@@ -83,7 +82,7 @@ class FixtureFetcherTest extends TestCase
     }
 
     /**
-     * A failure is not kept, so the next run tries the feed again.
+     * Makes sure that the next run fetches a failed feed again.
      */
     public function testAFailedFetchIsTriedAgainOnTheNextRun(): void
     {

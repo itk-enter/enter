@@ -11,12 +11,11 @@ use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * Single disabled parking bays in the municipal register of Aarhus.
+ * Single disabled parking bays in Aarhus Municipality.
  */
 #[When('dev')]
 #[When('test')]
 #[TestDefinition(
-    // By convention the ID as a test source must start with `test:`
     id: 'test:mtm_spatialmaps-handicap-parking-spot',
     title: 'Test: Handicapparkeringspladser (MTM), Aarhus Kommune',
     accessUrl: 'http://nginx:8080/test/data/webkort.aarhuskommune.dk/spatialmap?mtm_spatialmaps-handicap-parking',
@@ -52,16 +51,13 @@ final class TestParkingSpot extends AbstractTestHandicapParking
 
     protected function getKey(array $properties): string
     {
-        // mi_prinx is assumed to be the feed's stable primary key.
         return (string) ($properties['mi_prinx'] ?? '');
     }
 
     protected function buildNgsiEntity(array $properties, array $geometry, Wgs84Transformer $transformer): NgsiEntity
     {
         return parent::buildNgsiEntity($properties, $geometry, $transformer)
-            // The model requires an occupancy status.
             ->setProperty('status', 'unknown')
-            // The register holds street parking only.
             ->setProperty('category', ['onStreet']);
     }
 }

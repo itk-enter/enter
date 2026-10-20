@@ -21,8 +21,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     use LoggerTrait;
 
     /**
-     * Stamped on every entity so readers can filter by source, which shared
-     * models cannot tell apart. The id, unlike a URL, does not change.
+     * The attribute that holds the source ID on each entity.
      */
     public const string SOURCE_ID_ATTRIBUTE = 'sourceId';
 
@@ -43,9 +42,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     abstract public function supports(SourceInterface $source): bool;
 
     /**
-     * Extract items from array data from source.
-     *
-     * Each item must be processable by the source.
+     * Gets the records from the source data.
      *
      * @param iterable<mixed> $data
      *
@@ -61,15 +58,12 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         $payload = [];
         $ids = [];
         foreach ($this->read($source) as $entity) {
-            // Fail if the entity's model is not the one the source's
-            // #[Definition] declares.
             if ($entity->type() !== $source->definition->model) {
                 throw new \LogicException(sprintf('Source %s mapped %s onto model %s, but declares %s.', $source->definition->id, $entity->id(), $entity->type(), $source->definition->model));
             }
 
             $this->info('Building payload for {entity}', ['entity' => $entity->id()]);
             $ids[] = $entity->id();
-            // Stamp the entity with the id of its source.
             $payload[] = $entity
                 ->setProperty(self::SOURCE_ID_ATTRIBUTE, $source->definition->id)
                 ->toPayload($contextUrls);
@@ -81,19 +75,16 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             $this->info('Upserting {count} entities', ['count' => count($payload)]);
         }
 
-        // Write every entity to the broker.
         try {
             $upsert = $this->broker->upsert($payload);
         } catch (\Throwable $exception) {
             throw new UpsertFailedException($exception);
         }
 
-        // Log each entity the broker rejected.
         foreach ($upsert->rejected as $id => $rejection) {
             $this->warning('Broker rejected {entity}: {reason}', ['entity' => $id, 'reason' => $rejection->reason, 'error' => $rejection->error]);
         }
 
-        // Delete the source's entities this import did not yield.
         try {
             $deleted = $this->sweep($source, $ids);
         } catch (\Throwable $exception) {
@@ -104,17 +95,11 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     }
 
     /**
-     * Deletes the source's entities that this import did not yield: records
-     * gone from the feed, and records a split feed now sorts into another
-     * source's model, which would otherwise be published twice.
+     * Deletes the entities of the source that this import does not give.
      *
-     * A record that failed to map is not yielded either, so it is deleted
-     * too, which beats publishing what the source no longer says. An import
-     * that yields nothing, sweeps nothing.
+     * @param list<string> $ids the upserted entity IDs
      *
-     * @param list<string> $ids the entities just upserted
-     *
-     * @return int entities deleted
+     * @return int the number of deleted entities
      */
     private function sweep(SourceInterface $source, array $ids): int
     {
@@ -124,7 +109,6 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             return 0;
         }
 
-        // The source's entities in the broker, less those just upserted.
         $stale = array_values(array_diff(
             $this->broker->fetchIdsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
             $ids,
@@ -150,8 +134,6 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         $items = $this->extractItems($data, $source);
 
         foreach ($items as $item) {
-            // Skip a record the source does not publish, and log one it
-            // fails to map.
             try {
                 if ($entity = $source->createNgsiEntity($item, $this->transformer)) {
                     yield $entity;

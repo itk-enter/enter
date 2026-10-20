@@ -14,9 +14,6 @@ class OverpassSourceImporter extends AbstractSourceImporter
 
     protected function extractItems(iterable $data, SourceInterface $source): array
     {
-        // Fail if Overpass returned only part of the result. When a query
-        // times out or runs out of memory, Overpass still answers 200 with
-        // what it found so far, and says so only in a "remark" field.
         if (isset($data['remark'])) {
             throw new \RuntimeException(sprintf('Overpass returned a partial result: %s', $data['remark']));
         }

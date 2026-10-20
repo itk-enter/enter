@@ -12,8 +12,6 @@ use App\Source\Definition;
 
 /**
  * City-kiosk public toilets in Aarhus Municipality.
- *
- * Geometry is a mix of Point and MultiPoint within this feed.
  */
 #[Definition(
     id: 'mtm_spatialmaps-toilet-city',
@@ -31,9 +29,6 @@ use App\Source\Definition;
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
 
-    // The portal states no licence for this data set. DCAT-AP requires one, so
-    // it has to be settled with the data owner before the catalogue can be
-    // registered anywhere.
     licence: null,
 
     omittedFields: [
@@ -53,7 +48,7 @@ use App\Source\Definition;
 final class ToiletCity extends AbstractSource
 {
     /**
-     * Maps one feed record onto an NgsiEntity.
+     * Makes an NgsiEntity from one feed record.
      */
     public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
     {
@@ -64,9 +59,6 @@ final class ToiletCity extends AbstractSource
             return null;
         }
 
-        // mi_prinx is the feed's stable primary key. Without it there is no
-        // way to address the same record again on the next import, and an
-        // upsert would create duplicates instead of updating.
         $key = $row['mi_prinx'] ?? null;
         if (null === $key || '' === $key) {
             return null;
@@ -83,16 +75,9 @@ final class ToiletCity extends AbstractSource
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
 
-            // The lifecycle flag and the register's own timestamps have no
-            // counterpart on the model.
-            //
-            // The timestamps are not named createdAt and modifiedAt: NGSI-LD
-            // reserves both for the entity's own system timestamps, and a
-            // broker drops them from a payload without reporting it.
             ->additionalInformation([
                 'status' => trim((string) ($row['status'] ?? '')),
                 'jcdNumber' => trim((string) ($row['jcd_nr_'] ?? '')),
-                // Only when navn names the toilet; otherwise it is the name.
                 'placement' => '' !== trim((string) ($row['navn'] ?? '')) ? trim((string) ($row['placeringsinfo'] ?? '')) : '',
                 'registeredAt' => trim((string) ($row['oprettet_dato'] ?? '')),
                 'updatedAt' => trim((string) ($row['rettet_dato'] ?? '')),
@@ -100,8 +85,7 @@ final class ToiletCity extends AbstractSource
     }
 
     /**
-     * navn is blank on almost every record; placeringsinfo, when present,
-     * names the specific spot better than the bare address.
+     * Returns the name of the toilet.
      *
      * @param array<string, mixed> $row
      */
@@ -118,8 +102,7 @@ final class ToiletCity extends AbstractSource
     }
 
     /**
-     * The model's address is a structured postal address, which the feed
-     * states as three separate fields.
+     * Returns the postal address of the toilet.
      *
      * @param array<string, mixed> $row
      *

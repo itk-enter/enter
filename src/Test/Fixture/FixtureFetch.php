@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Test\Fixture;
 
 /**
- * What one fixture fetch did.
+ * The result of one fixture fetch.
  */
 final readonly class FixtureFetch
 {
     /**
      * @param string $url       the live feed
-     * @param string $filename  the fixture written
-     * @param bool   $fromCache whether the content was a kept response rather than fetched
+     * @param string $filename  the fixture file
+     * @param bool   $fromCache true if the content comes from the cache
      */
     public function __construct(
         public string $url,

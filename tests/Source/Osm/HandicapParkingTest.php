@@ -12,12 +12,7 @@ use App\Source\Osm\ParkingSpot;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Covers the mapping only. Reading the feed is the reader's job and is
- * covered by App\Tests\SourceReader\SourceReaderOverpassTest.
- *
- * The three sources read one feed and each keeps the records of its own
- * model, so they are covered together: what one source publishes is only
- * right if the other two skip it.
+ * Tests the mapping of the sources that share one feed.
  */
 class HandicapParkingTest extends TestCase
 {
@@ -25,16 +20,11 @@ class HandicapParkingTest extends TestCase
     private array $sources;
 
     /**
-     * The entity published for each record, in feed order, from whichever
-     * source published it.
-     *
      * @var list<array<string, mixed>>
      */
     private array $entities;
 
     /**
-     * For each record, the ids of the sources that published it.
-     *
      * @var list<list<string>>
      */
     private array $publishedBy;
@@ -61,7 +51,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItSkipsRecordsWithoutAnIdentifierOrGeometry(): void
     {
-        // Twelve elements, of which one has no id and one no coordinates.
         $this->assertCount(10, $this->entities);
         $this->assertSame([], $this->publishedBy[10]);
         $this->assertSame([], $this->publishedBy[11]);
@@ -109,30 +98,23 @@ class HandicapParkingTest extends TestCase
 
     public function testItTypesAParkingSpaceAsABay(): void
     {
-        // parking_space=disabled with capacity 1, and with no capacity at
-        // all, which the tag defines as one.
         $this->assertSame('ParkingSpot', $this->entities[2]['type']);
         $this->assertSame('ParkingSpot', $this->entities[6]['type']);
     }
 
     public function testItTypesAParkingAreaOfOneReservedBayAsABay(): void
     {
-        // amenity=parking whose whole capacity is the one reserved bay is
-        // the bay, however the mapper chose to draw it.
         $this->assertSame('ParkingSpot', $this->entities[7]['type']);
     }
 
     public function testItTypesAFacilityOfUnknownSizeAsASite(): void
     {
-        // One reserved bay, but no capacity: the record is a facility, not
-        // the bay.
         $this->assertSame('OnStreetParking', $this->entities[9]['type']);
         $this->assertSame(1, $this->entities[9]['totalSpotNumber']['value']);
     }
 
     public function testItTypesARowOfBaysAsASite(): void
     {
-        // parking_space=disabled with capacity 3 holds three bays.
         $this->assertSame('OnStreetParking', $this->entities[3]['type']);
         $this->assertSame(3, $this->entities[3]['totalSpotNumber']['value']);
     }
@@ -148,16 +130,12 @@ class HandicapParkingTest extends TestCase
 
     public function testItKeepsAnUnsitedSiteOnTheStreet(): void
     {
-        // Neither a row of bays nor this facility carries a parking tag.
         $this->assertSame('OnStreetParking', $this->entities[3]['type']);
         $this->assertSame('OnStreetParking', $this->entities[5]['type']);
     }
 
     public function testItAddressesEntitiesByModelOsmTypeAndId(): void
     {
-        // OSM ids are only unique per element type, so the type is part of
-        // the identifier; the osm marker keeps it clear of other data sets'
-        // aarhus-handicap ids.
         $this->assertSame('urn:ngsi-ld:OffStreetParking:aarhus-handicap-osm-node-3580886094', $this->entities[0]['id']);
         $this->assertSame('urn:ngsi-ld:ParkingSpot:aarhus-handicap-osm-way-384028175', $this->entities[2]['id']);
         $this->assertSame('urn:ngsi-ld:OnStreetParking:aarhus-handicap-osm-relation-17151325', $this->entities[4]['id']);
@@ -165,7 +143,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItPublishesABayWithUnknownStatus(): void
     {
-        // The schema requires a status and the feed observes none.
         $this->assertSame('unknown', $this->entities[2]['status']['value']);
         $this->assertArrayNotHasKey('status', $this->entities[0]);
     }
@@ -177,8 +154,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItLeavesABayUnsitedWhenTheRecordDoesNotSay(): void
     {
-        // A parking space carries no parking tag, and a guess would misplace
-        // half of them.
         $this->assertArrayNotHasKey('category', $this->entities[2]);
         $this->assertArrayNotHasKey('category', $this->entities[6]);
     }
@@ -198,8 +173,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItRefinesASitesCategoryFromTheFeeTag(): void
     {
-        // fee=yes and fee=no map onto the model's feeCharged and free
-        // categories; a record without the tag states nothing about charging.
         $this->assertContains('feeCharged', $this->entities[0]['category']['value']);
         $this->assertSame(['forDisabled', 'free'], $this->entities[4]['category']['value']);
         $this->assertSame(['forDisabled'], $this->entities[3]['category']['value']);
@@ -214,8 +187,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItCarriesABaysFeeAsAdditionalInformation(): void
     {
-        // A bay has no charging category, so the tag is carried as stated,
-        // unrecognised value and all.
         $this->assertSame('donation', $this->entities[6]['additionalInformation']['value']['fee']);
     }
 
@@ -223,20 +194,16 @@ class HandicapParkingTest extends TestCase
     {
         $this->assertSame(4, $this->entities[0]['totalSpotNumber']['value']);
 
-        // Q-Park SHIP has capacity 299; only its three reserved bays count.
         $this->assertSame(3, $this->entities[1]['totalSpotNumber']['value']);
     }
 
     public function testItOmitsTheBayCountWhenOnlyItsExistenceIsTagged(): void
     {
-        // capacity:disabled=yes; the facility's total capacity of 36 counts
-        // every bay and must not stand in for the reserved ones.
         $this->assertArrayNotHasKey('totalSpotNumber', $this->entities[5]);
     }
 
     public function testItMapsOrientationOntoParkingMode(): void
     {
-        // The on-street model takes one value, the off-street model a list.
         $this->assertSame('perpendicularParking', $this->entities[4]['parkingMode']['value']);
         $this->assertSame(['parallelParking'], $this->entities[8]['parkingMode']['value']);
         $this->assertArrayNotHasKey('parkingMode', $this->entities[0]);
@@ -261,8 +228,6 @@ class HandicapParkingTest extends TestCase
         $this->assertSame('GeoProperty', $location['type']);
         $this->assertSame('Point', $location['value']['type']);
 
-        // The feed is already WGS84, so the coordinates pass through
-        // unchanged — in GeoJSON order, longitude first.
         $this->assertSame([10.2141175, 56.1540563], $location['value']['coordinates']);
     }
 
@@ -291,8 +256,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItPublishesARelationAtTheCentreOfItsBounds(): void
     {
-        // The feed's output mode gives a relation no member geometry, only a
-        // bounding box, so its centre stands in for the location.
         $geometry = $this->entities[4]['location']['value'];
 
         $this->assertSame('Point', $geometry['type']);
@@ -325,15 +288,6 @@ class HandicapParkingTest extends TestCase
     }
 
     /**
-     * The first five elements are records from the live feed — a facility
-     * node, a named facility, a closed bay way, a bay way and a relation —
-     * kept verbatim except the second way, whose geometry is cut to two
-     * vertices to exercise the open-way path. The rest are constructed for
-     * capacity:disabled=yes, a bay with an unrecognised fee and the tags
-     * carried as additional information, a bay drawn as a parking area, a
-     * surface facility with an orientation, a lane facility of unknown
-     * size, and the two guards that discard a record.
-     *
      * @return list<array<string, mixed>>
      */
     private function elements(): array

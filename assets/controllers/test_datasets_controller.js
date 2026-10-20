@@ -1,23 +1,13 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * The sources the map may draw: the test sources, fetched from the list,
- * grouped by the model they publish so sources of one model can be laid
- * over each other and compared, and offered as toggles: one per source,
- * named by its data set, under a toggle for the model as a whole. Colour
- * follows the data set, so a feed split over several models keeps one
- * colour on the map. Nothing here knows about the map; what is known and
- * what is switched is dispatched as events for the map controller on the
- * same element.
+ * Shows a toggle for each test source and sends toggle events to the map.
  */
 
-/* By convention a test source's id starts with this. */
+/* The prefix of a test source id. */
 const TEST_PREFIX = "test:";
 
-/*
- * One color per data set, in the order the sources come: saturated and far
- * apart in hue, so they stand out from the pale base map and from each other.
- */
+/* The colours for the data sets. */
 const COLOURS = [
     "#d50000",
     "#2962ff",
@@ -29,12 +19,7 @@ const COLOURS = [
     "#6d4c41",
 ];
 
-/*
- * Fetch the sources from the list and keep the test ones. Each is numbered,
- * so the map can draw it on its own, and takes a colour per data set, in
- * the order the data sets first appear. The sources are then grouped by
- * model, in alphabetical order.
- */
+/* Gets the test sources and groups them by model. */
 async function loadSources(url) {
     const response = await fetch(url, {
         headers: { accept: "application/json" },
@@ -78,10 +63,7 @@ async function loadSources(url) {
     };
 }
 
-/*
- * Builds a Bootstrap checkbox row. The attributes end up as data-* on the
- * input, which is how the change handler tells a model from a source.
- */
+/* Makes a Bootstrap checkbox row. */
 function checkbox(id, label, attributes) {
     const wrapper = document.createElement("div");
     wrapper.className = "form-check";
@@ -102,11 +84,7 @@ function checkbox(id, label, attributes) {
     return wrapper;
 }
 
-/*
- * One fieldset per model, headed by a checkbox that switches every source
- * of it, with a checkbox per source below, named by its data set in the
- * data set's colour.
- */
+/* Shows one fieldset of checkboxes for each model. */
 function renderToggles(form, models) {
     models.forEach((model) => {
         const fieldset = document.createElement("fieldset");
@@ -135,7 +113,7 @@ function renderToggles(form, models) {
     });
 }
 
-/* The model's checkbox mirrors its sources: all, none or some of them on. */
+/* Sets the model checkbox from the checkboxes of its sources. */
 function reflectGroup(fieldset) {
     const inputs = [...fieldset.querySelectorAll("input[data-source]")];
     const on = inputs.filter((input) => input.checked).length;
@@ -158,11 +136,7 @@ export default class extends Controller {
         renderToggles(this.formTarget, models);
     }
 
-    /*
-     * Handles toggling. A model's checkbox switches every source of it, a
-     * source's checkbox just that one. Either way the model's checkbox is
-     * updated afterward.
-     */
+    /* Switches a model or a source on or off. */
     toggle(event) {
         const input = event.target;
         const fieldset = input.closest("fieldset");
@@ -179,7 +153,7 @@ export default class extends Controller {
         reflectGroup(fieldset);
     }
 
-    /* Tells the map which source was switched, and which way. */
+    /* Sends a toggle event for a source. */
     report(input) {
         this.dispatch("toggle", {
             detail: {

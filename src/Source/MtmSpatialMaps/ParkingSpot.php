@@ -10,7 +10,7 @@ use App\Source\DataType;
 use App\Source\Definition;
 
 /**
- * Single disabled parking bays in the municipal register of Aarhus.
+ * Single disabled parking bays in Aarhus Municipality.
  */
 #[Definition(
     id: 'mtm_spatialmaps-handicap-parking-spot',
@@ -27,9 +27,6 @@ use App\Source\Definition;
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
     updateFrequency: 'continuous',
 
-    // The portal states no licence for this data set. DCAT-AP requires one, so
-    // it has to be settled with the data owner before the catalogue can be
-    // registered anywhere.
     licence: null,
 
     omittedFields: [
@@ -58,16 +55,13 @@ final class ParkingSpot extends AbstractHandicapParking
 
     protected function getKey(array $properties): string
     {
-        // mi_prinx is assumed to be the feed's stable primary key.
         return (string) ($properties['mi_prinx'] ?? '');
     }
 
     protected function buildNgsiEntity(array $properties, array $geometry, Wgs84Transformer $transformer): NgsiEntity
     {
         return parent::buildNgsiEntity($properties, $geometry, $transformer)
-            // The model requires an occupancy status.
             ->setProperty('status', 'unknown')
-            // The register holds street parking only.
             ->setProperty('category', ['onStreet']);
     }
 }

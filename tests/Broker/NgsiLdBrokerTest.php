@@ -12,8 +12,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * The broker hands out and takes at most a thousand entities per request,
- * so a source of more must be read, written and swept in pages.
+ * Tests the paged requests to the NGSI-LD broker.
  */
 class NgsiLdBrokerTest extends TestCase
 {
@@ -39,8 +38,7 @@ class NgsiLdBrokerTest extends TestCase
     }
 
     /**
-     * Asking for no attribute would match no entity, as the attributes asked
-     * for also filter, so the one matched on is asked for.
+     * Makes sure that the query asks only for the attribute that it matches on.
      */
     public function testItAsksOnlyForTheAttributeItMatchesOn(): void
     {
@@ -76,8 +74,7 @@ class NgsiLdBrokerTest extends TestCase
     }
 
     /**
-     * A later batch that goes through must not hide the entities an earlier
-     * one had rejected.
+     * Makes sure that the result shows the entities that each batch rejects.
      */
     public function testItReportsTheEntitiesABatchOfTheUpsertRejected(): void
     {
@@ -119,8 +116,7 @@ class NgsiLdBrokerTest extends TestCase
     }
 
     /**
-     * Ids the broker could not delete are listed in a 207; one already gone
-     * is as good as deleted.
+     * Makes sure that a 207 response to a delete is accepted.
      */
     public function testItAcceptsAPartlyFailedDelete(): void
     {

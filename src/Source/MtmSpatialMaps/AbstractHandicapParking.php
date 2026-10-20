@@ -9,21 +9,18 @@ use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
 
 /**
- * The municipal register of disabled parking in Aarhus.
+ * The register of disabled parking bays in Aarhus Municipality.
  */
 abstract class AbstractHandicapParking extends AbstractSource
 {
-    // Models that this source produces.
     protected const string PARKING_SPOT = 'ParkingSpot';
     protected const string ON_STREET_PARKING = 'OnStreetParking';
 
-    // Dataset reference.
     protected const string DATASET = 'mtm_spatialmaps-handicap-parking';
     protected const string DATASET_TITLE = 'Handicapparkering (MTM), Aarhus Kommune';
 
     /**
-     * Maps one feed record onto an NgsiEntity, or null when the record
-     * belongs to the other model.
+     * Makes an NgsiEntity from one feed record.
      *
      * @param array<string, mixed> $data GeoJSON Feature
      */
@@ -32,7 +29,6 @@ abstract class AbstractHandicapParking extends AbstractSource
         $properties = $data['properties'] ?? null;
         $geometry = $data['geometry'] ?? null;
 
-        // Skip if no properties or geometry is defined.
         if (!\is_array($properties) || !\is_array($geometry)) {
             return null;
         }
@@ -41,7 +37,6 @@ abstract class AbstractHandicapParking extends AbstractSource
             return null;
         }
 
-        // Skip if no primary id.
         if ('' === $this->getKey($properties)) {
             return null;
         }
@@ -50,32 +45,28 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * Whether a record belongs to this source's model.
+     * Returns true if the record is for the model of this source.
      *
      * @param array<string, mixed> $properties
      */
     abstract protected function supports(array $properties): bool;
 
     /**
-     * The model the record is published under. Only called if supports()
-     * accepted the record.
+     * Returns the model of the record.
      *
      * @param array<string, mixed> $properties
      */
     abstract protected function getModel(array $properties): string;
 
     /**
-     * The record's stable key in the feed, or '' when it has none. Only
-     * called if supports() accepted the record.
+     * Returns the key of the record in the feed.
      *
      * @param array<string, mixed> $properties
      */
     abstract protected function getKey(array $properties): string;
 
     /**
-     * Maps a record onto an entity with what every model holds. Only called
-     * if supports() accepted the record; sources extend it with what only
-     * their model holds.
+     * Makes an entity with the properties that all models have.
      *
      * @param array<string, mixed> $properties
      * @param array<string, mixed> $geometry
@@ -95,9 +86,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * The number of reserved bays the record counts. The register's grain is
-     * the bay, and a record with the count left blank is a bay entered
-     * without one, so it counts as one.
+     * Returns the number of reserved bays in the record.
      *
      * @param array<string, mixed> $properties
      */

@@ -13,8 +13,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
- * Keeps a successful GET for the cache pool's lifetime, whatever the
- * server's cache headers say.
+ * Caches a successful GET response for a fixed lifetime.
  */
 final class FixedLifetimeCachingHttpClient implements HttpClientInterface
 {
@@ -37,15 +36,11 @@ final class FixedLifetimeCachingHttpClient implements HttpClientInterface
             return $this->client->request($method, $url, $options);
         }
 
-        // Key the cache on a hash of the URL, as a cache key may not hold
-        // characters such as "/", ":" or "(" that a URL does.
         $key = hash('xxh128', $url.'?'.http_build_query($options['query'] ?? []));
 
         $cached = $this->cache->get($key, function () use ($method, $url, $options): array {
             $response = $this->client->request($method, $url, $options);
 
-            // getContent() throws on an error status, so a failed fetch is
-            // never kept.
             return [
                 'body' => $response->getContent(),
                 'status' => $response->getStatusCode(),

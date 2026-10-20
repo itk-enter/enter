@@ -1,46 +1,33 @@
 import maplibregl from "maplibre-gl";
 
 /*
- * What a click on the map opens: the features under it are outlined and a
- * popup lists their attributes. The marks are drawn on layers of their own,
- * which the map keeps every data set beneath.
+ * Marks the features at a map click and shows their attributes in a popup.
  */
 
-/*
- * The colours a clicked feature is outlined in, one per feature under the
- * click: bright and unlike the data set colours, so the marking is not taken
- * for the thing it marks.
- */
+/* The colours that mark the selected features. */
 const MARKS = ["#ffea00", "#00e5ff", "#76ff03", "#ff4081"];
 const MARK_WIDTH = 3;
 const MARK_RADIUS = 9;
 
-/* The layer the map inserts every data set below, so marks stay on top. */
+/* The layer that the map puts all data set layers below. */
 export const MARKS_LAYER = "marked-areas";
 const MARKED_POINTS = "marked-points";
 const EMPTY = { type: "FeatureCollection", features: [] };
 
-/* How far off a marker a click still counts as being on it, in pixels. */
+/* The click tolerance in pixels. */
 const HIT_TOLERANCE = 6;
 
-/* How many features one click may open a popup for. */
+/* The maximum number of features for each click. */
 const FEATURES_PER_CLICK = 10;
 
-/* How much map is left around a popup that had to be brought into view. */
+/* The margin and pan duration that move a popup into view. */
 const POPUP_MARGIN = 12;
 const POPUP_PAN = 300;
 
-/*
- * The attributes the popup leaves out: the source and the type are what the
- * heading says, and the location is the geometry.
- */
+/* The attributes that the popup does not show. */
 const HIDDEN = ["sourceId", "source", "type", "location"];
 
-/*
- * The layers a clicked feature is outlined on. They are added before any
- * data set, and every data set is inserted below them, so a mark is never
- * hidden by what it marks.
- */
+/* Adds the layers that mark the selected features. */
 function addMarks(map) {
     map.addSource("marks", { type: "geojson", data: EMPTY });
 
@@ -66,7 +53,7 @@ function addMarks(map) {
     });
 }
 
-/* The square around a click that counts as the click. */
+/* Gives the square around a click point. */
 function box(point) {
     return [
         [point.x - HIT_TOLERANCE, point.y - HIT_TOLERANCE],
@@ -74,7 +61,7 @@ function box(point) {
     ];
 }
 
-/* Every position of a geometry, whatever its nesting. */
+/* Gives all positions of a geometry. */
 function positionsOf(coordinates) {
     if (!Array.isArray(coordinates)) {
         return [];
@@ -87,11 +74,7 @@ function positionsOf(coordinates) {
     return coordinates.flatMap(positionsOf);
 }
 
-/*
- * The top of what was clicked. A popup hangs its bottom edge from wherever
- * it is put, so anchoring it here leaves the thing it describes below it
- * rather than underneath it.
- */
+/* Gives the northernmost position of the features. */
 function northernmost(features) {
     return features
         .flatMap((feature) => positionsOf(feature.geometry?.coordinates))
@@ -102,9 +85,7 @@ function northernmost(features) {
         );
 }
 
-/*
- * easeInOutCubic from https://easings.net/#easeInOutCubic
- */
+/* Gives the easeInOutCubic value from https://easings.net/#easeInOutCubic. */
 function easing(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
@@ -117,16 +98,7 @@ function escapeHtml(value) {
         .replaceAll('"', "&quot;");
 }
 
-/*
- * MapLibre hands lists and objects back as JSON text. A list reads better
- * joined up again; anything else is left as it came.
- *
- *   '["forDisabled"]'                     -> 'forDisabled'
- *   '["Mo-Fr 08-18","Sa 10-14"]'          -> 'Mo-Fr 08-18, Sa 10-14'
- *   '{"streetAddress":"Rådhuspladsen 2"}' -> unchanged
- *   '[not json'                           -> unchanged
- *   42, true                              -> unchanged
- */
+/* Changes a JSON list to a comma-separated text. */
 function rejoinList(value) {
     if (typeof value === "string" && /^[[{]/.test(value)) {
         try {
@@ -141,14 +113,7 @@ function rejoinList(value) {
     return value;
 }
 
-/*
- * The popup for whatever a click landed on: a section per feature, headed by
- * the data set it came from in the colour it was marked with, and the model
- * it is published under, which the broker spells in the short form the
- * source's context gives it. Which attributes an entity carries is the
- * source's business, so this walks whatever arrived rather than naming
- * fields.
- */
+/* Makes the popup HTML with one section for each feature. */
 function popupHtml(sections) {
     return sections
         .map(({ title, colour, properties }) => {
@@ -181,11 +146,7 @@ function popupHtml(sections) {
         .join("");
 }
 
-/*
- * What a click landed on, once over. A shape drawn by both a fill and an
- * outline is hit twice, and the popup has no business saying the same thing
- * twice. Points come first, as they are what sits on top.
- */
+/* Removes duplicate features and puts the points first. */
 function pick(hits) {
     const seen = new Set();
     const found = [];
@@ -212,21 +173,10 @@ function pick(hits) {
     return found.slice(0, FEATURES_PER_CLICK);
 }
 
-/*
- * Opens a popup for whatever a click lands on, and outlines it on the map.
- * Clicking nothing closes the popup and clears the outlines.
- *
- * titles maps a source id to what the popup calls it, and layers() names
- * the layers a click may land on.
- */
+/* Shows a popup and marks the features when the user clicks the map. */
 export function wireClicks(map, { titles, layers }) {
     addMarks(map);
 
-    /*
-     * Closing on a click is this popup's own doing, not MapLibre's. Left to
-     * MapLibre, opening it registers a listener that closes it on the next
-     * click of the map, which is how the next popup is asked for.
-     */
     const popup = new maplibregl.Popup({
         className: "test-map-popup",
         anchor: "bottom",
@@ -235,11 +185,7 @@ export function wireClicks(map, { titles, layers }) {
         closeOnClick: false,
     });
 
-    /*
-     * The popup hangs above the northernmost corner of what was clicked,
-     * which for a shape near the top of the screen puts it off the map.
-     * MapLibre leaves it where it falls, so the map is moved instead.
-     */
+    /* Moves the map so that the popup is fully visible. */
     function panPopupIntoView() {
         const node = popup.getElement();
 
@@ -288,11 +234,6 @@ export function wireClicks(map, { titles, layers }) {
             return;
         }
 
-        /*
-         * A click hands back the geometry as the tile holds it, which for a
-         * shape crossing a tile edge can be the part that is not here.
-         * Falling back on where the click landed beats dropping the popup.
-         */
         const top = northernmost(features) ?? [at.lng, at.lat];
 
         popup

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Import\Exception;
 
 /**
- * The entities were upserted, but the stale ones could not be deleted.
+ * The deletion of the stale entities failed.
  */
 final class SweepFailedException extends \RuntimeException
 {

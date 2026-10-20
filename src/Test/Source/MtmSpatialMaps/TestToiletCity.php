@@ -17,7 +17,6 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[When('dev')]
 #[When('test')]
 #[TestDefinition(
-    // By convention the ID as a test source must start with `test:`
     id: 'test:mtm_spatialmaps-toilet-city',
     title: 'Test: Bytoiletter (MTM), Aarhus Kommune',
     accessUrl: 'http://nginx:8080/test/data/webkort.aarhuskommune.dk/spatialmap?mtm_spatialmaps-toilet-city',
@@ -44,7 +43,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 final class TestToiletCity extends AbstractSource
 {
     /**
-     * Maps one feed record onto an NgsiEntity.
+     * Makes an NgsiEntity from one feed record.
      */
     public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
     {
@@ -73,16 +72,15 @@ final class TestToiletCity extends AbstractSource
             ->additionalInformation([
                 'status' => trim((string) ($row['status'] ?? '')),
                 'jcdNumber' => trim((string) ($row['jcd_nr_'] ?? '')),
-                // Only when navn names the toilet; otherwise it is the name.
                 'placement' => '' !== trim((string) ($row['navn'] ?? '')) ? trim((string) ($row['placeringsinfo'] ?? '')) : '',
-                // Not createdAt/modifiedAt: NGSI-LD reserves both, and a
-                // broker drops them without reporting it.
                 'registeredAt' => trim((string) ($row['oprettet_dato'] ?? '')),
                 'updatedAt' => trim((string) ($row['rettet_dato'] ?? '')),
             ]);
     }
 
     /**
+     * Returns the name of the toilet.
+     *
      * @param array<string, mixed> $row
      */
     private function name(array $row): string
@@ -98,8 +96,7 @@ final class TestToiletCity extends AbstractSource
     }
 
     /**
-     * The model's address is a structured postal address, which the feed
-     * states as three separate fields.
+     * Returns the postal address of the toilet.
      *
      * @param array<string, mixed> $row
      *

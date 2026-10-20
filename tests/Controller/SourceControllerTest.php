@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * The published list of sources, as JSON and as a page.
+ * Tests the list of sources as JSON and as a page.
  */
 class SourceControllerTest extends WebTestCase
 {
@@ -26,9 +26,7 @@ class SourceControllerTest extends WebTestCase
     }
 
     /**
-     * A reader needs no more than this to fetch a source's entities from
-     * the broker: the URL that selects them by the id they are stamped
-     * with, and the context that gives them the names the source declared.
+     * Makes sure that each source has a broker URL and a context URL.
      */
     public function testItSaysHowToReadEachSource(): void
     {
@@ -45,8 +43,7 @@ class SourceControllerTest extends WebTestCase
     }
 
     /**
-     * Sources that split one feed by model are listed under the data set
-     * they share; any other source is a data set of its own.
+     * Makes sure that the list groups the sources by data set.
      */
     public function testItGroupsSourcesByTheirDataSet(): void
     {

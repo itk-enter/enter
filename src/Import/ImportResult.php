@@ -7,16 +7,16 @@ namespace App\Import;
 use App\Broker\Rejection;
 
 /**
- * What one completed import did.
+ * The result of one import.
  */
 final readonly class ImportResult
 {
     /**
-     * @param int                      $count     entities sent to the broker
-     * @param int                      $deleted   entities of the source the import no longer yields, deleted from the broker
-     * @param int                      $status    the broker's HTTP status code
-     * @param string                   $brokerUrl the broker they were sent to
-     * @param array<string, Rejection> $rejected  why the broker rejected each entity, by entity id
+     * @param int                      $count     the number of upserted entities
+     * @param int                      $deleted   the number of deleted stale entities
+     * @param int                      $status    the HTTP status code from the broker
+     * @param string                   $brokerUrl the broker URL
+     * @param array<string, Rejection> $rejected  the rejections, by entity id
      */
     public function __construct(
         public int $count,

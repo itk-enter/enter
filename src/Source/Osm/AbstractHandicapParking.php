@@ -13,23 +13,20 @@ use App\Source\AbstractSource;
  */
 abstract class AbstractHandicapParking extends AbstractSource
 {
-    // Models that this source produces.
     protected const string PARKING_SPOT = 'ParkingSpot';
     protected const string ON_STREET_PARKING = 'OnStreetParking';
     protected const string OFF_STREET_PARKING = 'OffStreetParking';
 
-    // Dataset reference.
     protected const string DATASET = 'osm-handicap-parking';
     protected const string DATASET_TITLE = 'Handicapparkering (OpenStreetMap), Aarhus Kommune';
 
     /**
-     * OSM tags used to define if a parkingSpot is on or off the street.
+     * The parking tag values that put a site on the street.
      */
     private const array ON_STREET_SITING = ['street_side', 'lane', 'layby', 'on_kerb', 'half_on_kerb', 'shoulder', 'street'];
 
     /**
-     * Maps one feed record onto an NgsiEntity, or null when the record
-     * belongs to one of the other models.
+     * Makes an NgsiEntity from one feed record, or returns null for other models.
      *
      * @param array<string, mixed> $data Overpass JSON element
      */
@@ -41,7 +38,6 @@ abstract class AbstractHandicapParking extends AbstractSource
             return null;
         }
 
-        // Skip if the element cannot be addressed again on the next import.
         if ('' === $this->getKey($data)) {
             return null;
         }
@@ -55,33 +51,28 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * Whether a record belongs to this source's model.
+     * Tells if a record belongs to the model of this source.
      *
      * @param array<string, mixed> $tags
      */
     abstract protected function supports(array $tags): bool;
 
     /**
-     * The model the record is published under. Only called if supports()
-     * accepted the record.
+     * Gets the model for the record.
      *
      * @param array<string, mixed> $tags
      */
     abstract protected function getModel(array $tags): string;
 
     /**
-     * The element's stable key in the feed, or '' when it has none. It takes
-     * the whole element, as OSM keeps the type and id beside the tags. Only
-     * called if supports() accepted the record.
+     * Gets the stable key of the element, or '' if it has no key.
      *
      * @param array<string, mixed> $element Overpass JSON element
      */
     abstract protected function getKey(array $element): string;
 
     /**
-     * Maps a record onto an entity with what every model holds. Only called
-     * if supports() accepted the record; sources extend it with what only
-     * their model holds.
+     * Makes an entity with the properties that all models share.
      *
      * @param array<string, mixed>                    $element  Overpass JSON element
      * @param array<string, mixed>                    $tags
@@ -102,7 +93,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * On or off the street, deduced from OSM tags.
+     * Gets the siting, on or off the street, from the tags.
      *
      * @param array<string, mixed> $tags
      */
@@ -118,7 +109,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * Define whether the spot has a fee, only if the source defines it.
+     * Gets the site categories, with the fee status if the record has it.
      *
      * @param array<string, mixed> $tags
      *
@@ -134,7 +125,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * How a site's bays lie relative to the road.
+     * Gets the parking mode from the orientation of the bays.
      *
      * @param array<string, mixed> $tags
      */
@@ -149,7 +140,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * Number of reserved bays the record carries.
+     * Gets the number of reserved bays in the record.
      *
      * @param array<string, mixed> $tags
      */
@@ -167,7 +158,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * One bay unless its capacity says more.
+     * Tells if the record is one bay.
      *
      * @param array<string, mixed> $tags
      */
@@ -183,7 +174,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * The tag's value as a whole number, or null when it is not one.
+     * Gets the tag value as an integer, or null.
      *
      * @param array<string, mixed> $tags
      */
@@ -195,10 +186,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * The element's location as GeoJSON. OSM has three kinds of element,
-     * and the feed gives each its location in its own shape: a node as a
-     * single coordinate, a way as its list of vertices, and a relation only
-     * as a bounding box.
+     * Gets the location of the element as GeoJSON.
      *
      * @param array<string, mixed> $element
      *
@@ -209,9 +197,6 @@ abstract class AbstractHandicapParking extends AbstractSource
         return match ($element['type'] ?? null) {
             'node' => $this->point($element['lon'] ?? null, $element['lat'] ?? null),
             'way' => $this->wayGeometry($element['geometry'] ?? null),
-            // The feed's output mode carries no member geometry for
-            // relations, only their bounding box, so the centre of that box
-            // is the best location available.
             'relation' => $this->boundsCentre($element['bounds'] ?? null),
             default => null,
         };
@@ -247,10 +232,6 @@ abstract class AbstractHandicapParking extends AbstractSource
             $positions[] = [(float) $vertex['lon'], (float) $vertex['lat']];
         }
 
-        // A way that returns to its first vertex outlines an area — here a
-        // bay or a parking lot — so it becomes a Polygon ring rather than a
-        // line along its edge. Four positions are a ring's minimum: three
-        // corners plus the repeated first.
         if (\count($positions) >= 4 && $positions[0] === $positions[array_key_last($positions)]) {
             return ['type' => 'Polygon', 'coordinates' => [$positions]];
         }

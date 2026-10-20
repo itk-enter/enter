@@ -11,19 +11,13 @@ use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * Parking facilities off the street with bays reserved for disabled parking
- * in Aarhus Municipality.
+ * Off-street parking facilities with disabled bays in Aarhus Municipality.
  */
 #[When('dev')]
 #[When('test')]
 #[TestDefinition(
-    // By convention the ID as a test source must start with `test:`
     id: 'test:osm-handicap-parking-off-street',
     title: 'Test: Handicapparkering uden for gaden (OpenStreetMap), Aarhus Kommune',
-    // The Overpass QL in the URL: within Aarhus Municipality (OSM
-    // relation 1784663), select every element tagged as a disabled
-    // parking space (parking_space=disabled) or as reserving bays for
-    // disabled parking (capacity:disabled, excluding "no" and "0").
     accessUrl: 'http://nginx:8080/test/data/overpass-api.de/api/interpreter?osm-handicap-parking',
     dataType: DataType::Overpass,
     mediaType: 'application/json',
@@ -60,8 +54,7 @@ DATA,
 final class TestOffStreetParking extends AbstractTestHandicapParking
 {
     /**
-     * Values of the parking tag that name a kind of facility the model's
-     * category has a value for.
+     * The facility categories for the parking tag values.
      */
     private const array FACILITY_CATEGORY = [
         'surface' => 'parkingLot',
@@ -84,8 +77,6 @@ final class TestOffStreetParking extends AbstractTestHandicapParking
         $type = $element['type'] ?? null;
         $id = $element['id'] ?? null;
 
-        // OSM ids are only unique per element type, so both are needed to
-        // address the same object again on the next import.
         return \is_string($type) && \is_int($id) ? \sprintf('%s-%d', $type, $id) : '';
     }
 
@@ -96,8 +87,6 @@ final class TestOffStreetParking extends AbstractTestHandicapParking
         return parent::buildNgsiEntity($element, $tags, $geometry, $transformer)
             ->setProperty('category', [...$this->siteCategory($tags), ...$this->facilityCategory($tags)])
             ->setProperty('totalSpotNumber', $this->reservedBays($tags))
-            // The off-street model takes a list where the on-street one
-            // takes a single value.
             ->setProperty('parkingMode', null === $parkingMode ? null : [$parkingMode])
             ->additionalInformation([
                 'surface' => trim((string) ($tags['surface'] ?? '')),
@@ -106,8 +95,7 @@ final class TestOffStreetParking extends AbstractTestHandicapParking
     }
 
     /**
-     * The kind of facility, as the parking tag states it; none when the tag
-     * names a kind the category has no value for.
+     * Gets the facility category from the parking tag.
      *
      * @param array<string, mixed> $tags
      *

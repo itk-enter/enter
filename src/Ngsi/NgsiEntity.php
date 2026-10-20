@@ -31,9 +31,7 @@ final class NgsiEntity
     }
 
     /**
-     * Null and empty-string values are dropped rather than emitted as null,
-     * because the source data uses "" for "not filled in" and a broker would
-     * otherwise store the emptiness as a fact.
+     * Sets a property, and ignores an empty value.
      */
     public function setProperty(string $name, mixed $value, ?string $observedAt = null): self
     {
@@ -53,7 +51,7 @@ final class NgsiEntity
     }
 
     /**
-     * Source fields the model has no attribute for, gathered under one term.
+     * Sets the source fields that the model has no attribute for.
      *
      * @param array<string, mixed> $fields
      */

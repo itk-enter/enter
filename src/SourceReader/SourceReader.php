@@ -13,11 +13,6 @@ final class SourceReader implements SourceReaderInterface
     use LoggerAwareTrait;
     use LoggerTrait;
 
-    /**
-     * The client keeps each response for a while, so sources that share an
-     * access URL share one fetch, although each source is imported in a
-     * process of its own.
-     */
     public function __construct(
         #[Autowire(service: FixedLifetimeCachingHttpClient::class)]
         private readonly HttpClientInterface $client,

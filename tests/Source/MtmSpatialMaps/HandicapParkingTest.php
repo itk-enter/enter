@@ -11,11 +11,7 @@ use App\Source\MtmSpatialMaps\ParkingSpot;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Covers the mapping only.
- *
- * The two sources read one feed and each keeps the records of its own
- * model, so they are covered together: what one source publishes is only
- * right if the other skips it.
+ * Tests the mapping of the sources that share one feed.
  */
 class HandicapParkingTest extends TestCase
 {
@@ -23,16 +19,11 @@ class HandicapParkingTest extends TestCase
     private array $sources;
 
     /**
-     * The entity published for each record, in feed order, from whichever
-     * source published it.
-     *
      * @var list<array<string, mixed>>
      */
     private array $entities;
 
     /**
-     * For each record, the ids of the sources that published it.
-     *
      * @var list<list<string>>
      */
     private array $publishedBy;
@@ -59,7 +50,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItSkipsRecordsWithoutAKeyOrGeometry(): void
     {
-        // Six features, of which one has no key and one no geometry.
         $this->assertCount(4, $this->entities);
         $this->assertSame([], $this->publishedBy[4]);
         $this->assertSame([], $this->publishedBy[5]);
@@ -130,8 +120,6 @@ class HandicapParkingTest extends TestCase
 
     public function testItReadsABlankCountAsOneBay(): void
     {
-        // The register's grain is the bay; a record without a count is a bay
-        // entered without one, not a site of zero or unknown size.
         $this->assertSame('ParkingSpot', $this->entities[2]['type']);
         $this->assertSame('urn:ngsi-ld:ParkingSpot:aarhus-handicap-516', $this->entities[2]['id']);
         $this->assertArrayNotHasKey('totalSpotNumber', $this->entities[2]);
@@ -163,7 +151,6 @@ class HandicapParkingTest extends TestCase
         $this->assertSame('Klostergade 2 56', $this->entities[0]['name']['value']);
         $this->assertSame('Domkirkeplads/Bispegade 1', $this->entities[1]['name']['value']);
 
-        // A blank house number leaves just the street.
         $this->assertSame('Kystvejen', $this->entities[2]['name']['value']);
     }
 
@@ -180,8 +167,6 @@ class HandicapParkingTest extends TestCase
         $this->assertSame('GeoProperty', $location['type']);
         $this->assertSame('Point', $location['value']['type']);
 
-        // The feed is ETRS89 / UTM zone 32N; Domkirkeplads lands in the
-        // centre of Aarhus.
         $this->assertEqualsWithDelta(10.21, $location['value']['coordinates'][0], 0.01);
         $this->assertEqualsWithDelta(56.157, $location['value']['coordinates'][1], 0.01);
     }
@@ -192,10 +177,6 @@ class HandicapParkingTest extends TestCase
     }
 
     /**
-     * Four records shaped like the live feed — one bay, a site of six, a
-     * bay with a blank count, and a count stated as a string — followed by
-     * the two guards that discard a record.
-     *
      * @return list<array<string, mixed>>
      */
     private function features(): array

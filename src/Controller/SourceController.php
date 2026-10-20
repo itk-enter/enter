@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * The sources published to the broker, as a page and as JSON.
+ * Shows the sources as a page and as JSON.
  */
 final class SourceController extends AbstractController
 {
@@ -55,8 +55,7 @@ final class SourceController extends AbstractController
     }
 
     /**
-     * Where a source's entities are read from the broker: everything stamped
-     * with its id, whatever the model.
+     * Gets the broker URL for the entities of a source.
      */
     private function entitiesUrl(SourceInterface $source): string
     {

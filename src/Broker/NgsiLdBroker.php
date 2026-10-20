@@ -11,11 +11,6 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * Writes entities to an NGSI-LD context broker.
- *
- * Uses the batch upsert operation so a re-import updates the entities it
- * already created instead of failing on 409 Conflict. That makes the whole
- * import idempotent, which matters because the entity ids are derived from
- * the source's own primary key.
  */
 final readonly class NgsiLdBroker
 {
@@ -24,22 +19,15 @@ final readonly class NgsiLdBroker
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
-     * The most entities the broker hands out per request; Scorpio refuses a
-     * larger limit unless its scorpio.entity.max-limit is raised.
+     * The maximum number of entities in one read.
      */
     private const int PAGE_SIZE = 1000;
 
     /**
-     * The most entities sent in one batch operation, per Scorpio's
-     * scorpio.entity.batch-operations.*.max.
+     * The maximum number of entities in one batch operation.
      */
     private const int BATCH_SIZE = 1000;
 
-    /**
-     * The payload carries its own @context, so it must be sent as
-     * application/ld+json. Sending application/json instead requires the
-     * context in a Link header, and brokers reject the mismatch.
-     */
     private const string CONTENT_TYPE = 'application/ld+json';
 
     public function __construct(
@@ -50,11 +38,7 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Upserts entities, in batches the broker accepts.
-     *
-     * A batch the broker accepts only in part answers 207, listing the
-     * entities it rejected; the rest of the batch is written, so the upsert
-     * carries on and reports the rejections instead of failing.
+     * Upserts entities in batches.
      *
      * @param list<array<string, mixed>> $entities
      */
@@ -88,17 +72,15 @@ final readonly class NgsiLdBroker
             }
         }
 
-        // Read the rejected entities out of each partly rejected batch.
         $rejectedPerBatch = array_map($this->rejections(...), $partlyRejectedResponses);
 
-        // Combine the batches' rejections into one list.
         $rejected = array_merge(...$rejectedPerBatch);
 
         return new UpsertResult($status, $rejected);
     }
 
     /**
-     * The entities an error 207 lists as rejected, with the reason the broker gave.
+     * Gets the rejected entities from a 207 response.
      *
      * @return array<string, Rejection>
      */
@@ -122,9 +104,7 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * The ids of every entity of a type whose attribute equals a value.
-     *
-     * Used to find broker entities that are gone from upstream, in order to delete them.
+     * Gets the IDs of the entities of a type with an attribute value.
      *
      * @return list<string>
      */
@@ -164,12 +144,11 @@ final readonly class NgsiLdBroker
             }
         }
 
-        // Combine the pages into one list of entities and take their ids.
         return array_column(array_merge(...$pages), 'id');
     }
 
     /**
-     * Deletes entities by id, in batches the broker accepts.
+     * Deletes entities by ID in batches.
      *
      * @param list<string> $ids
      */
@@ -182,9 +161,6 @@ final readonly class NgsiLdBroker
                 ['json' => $batch]
             );
 
-            // 207 lists the ids the broker could not delete; one that is
-            // already gone is as good as deleted, so only a refusal of the
-            // whole batch is an error.
             $status = $response->getStatusCode();
             if ($status >= Response::HTTP_BAD_REQUEST) {
                 throw new \RuntimeException(\sprintf('Broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));

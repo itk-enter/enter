@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Broker;
 
 /**
- * Why the broker rejected an entity in a batch it accepted only in part.
+ * The reason why the broker rejected an entity.
  */
 final readonly class Rejection
 {
     /**
-     * @param string               $reason the broker's own summary of the problem
-     * @param array<string, mixed> $error  the problem details exactly as the broker gave them, for bug hunting
+     * @param string               $reason the summary from the broker
+     * @param array<string, mixed> $error  the problem details from the broker
      */
     public function __construct(
         public string $reason,
