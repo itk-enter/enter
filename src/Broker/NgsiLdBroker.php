@@ -82,6 +82,8 @@ final readonly class NgsiLdBroker
     /**
      * Gets the rejected entities from a 207 response.
      *
+     * @see https://cim.etsi.org/NGSI-LD/official/clause-5.html#5.2.16
+     *
      * @return array<string, Rejection>
      */
     private function rejections(ResponseInterface $response): array
@@ -96,11 +98,26 @@ final readonly class NgsiLdBroker
             }
 
             $problem = \is_array($error['error'] ?? null) ? $error['error'] : [];
-            $reason = $problem['detail'] ?? $problem['title'] ?? $problem['type'] ?? null;
-            $rejected[$error['entityId']] = new Rejection(\is_string($reason) ? $reason : 'no reason given', $problem);
+            $rejected[$error['entityId']] = new Rejection($this->reason($problem), $problem);
         }
 
         return $rejected;
+    }
+
+    /**
+     * Gets the first text member of a problem details object.
+     *
+     * @param array<mixed> $problem
+     */
+    private function reason(array $problem): string
+    {
+        foreach (['detail', 'title', 'type'] as $member) {
+            if (\is_string($problem[$member] ?? null) && '' !== $problem[$member]) {
+                return $problem[$member];
+            }
+        }
+
+        return 'no reason given';
     }
 
     /**

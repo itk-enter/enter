@@ -83,6 +83,8 @@ class NgsiLdBrokerTest extends TestCase
             'errors' => [
                 ['entityId' => 'urn:ngsi-ld:Bench:1', 'error' => ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData', 'title' => 'Bad Request Data', 'detail' => 'Invalid location']],
                 ['entityId' => 'urn:ngsi-ld:Bench:2', 'error' => ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData']],
+                ['entityId' => 'urn:ngsi-ld:Bench:3', 'error' => ['title' => 'Bad Request Data', 'detail' => ['attribute' => 'location']]],
+                ['entityId' => 'urn:ngsi-ld:Bench:4', 'error' => ['detail' => ['attribute' => 'location']]],
             ],
         ], \JSON_THROW_ON_ERROR);
 
@@ -92,6 +94,8 @@ class NgsiLdBrokerTest extends TestCase
         $this->assertEquals([
             'urn:ngsi-ld:Bench:1' => new Rejection('Invalid location', ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData', 'title' => 'Bad Request Data', 'detail' => 'Invalid location']),
             'urn:ngsi-ld:Bench:2' => new Rejection('https://uri.etsi.org/ngsi-ld/errors/BadRequestData', ['type' => 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData']),
+            'urn:ngsi-ld:Bench:3' => new Rejection('Bad Request Data', ['title' => 'Bad Request Data', 'detail' => ['attribute' => 'location']]),
+            'urn:ngsi-ld:Bench:4' => new Rejection('no reason given', ['detail' => ['attribute' => 'location']]),
         ], $result->rejected);
     }
 
