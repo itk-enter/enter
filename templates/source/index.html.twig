@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sources{% endblock %}
+
+{% block content %}
+    <p>
+        The data sets published to the broker. Every entity carries a <code>sourceId</code> attribute holding
+        the id of the source it came from, and each source below links to its entities in the broker.
+        This list is also available as <a href="{{ path('app_sources', {_format: 'json'}) }}">JSON</a>.
+    </p>
+
+    {% for source in sources %}
+        {% set definition = source.definition %}
+        <section class="mb-5">
+            <h2>{{ definition.title }}</h2>
+            <dl class="row">
+                <dt class="col-sm-3">Id</dt>
+                <dd class="col-sm-9"><code>{{ definition.id }}</code></dd>
+
+                {% if definition.description %}
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">{{ definition.description }}</dd>
+                {% endif %}
+
+                {% if definition.publisher %}
+                    <dt class="col-sm-3">Publisher</dt>
+                    <dd class="col-sm-9">{{ definition.publisher }}</dd>
+                {% endif %}
+
+                {% if definition.contact %}
+                    <dt class="col-sm-3">Contact</dt>
+                    <dd class="col-sm-9">{{ definition.contact }}</dd>
+                {% endif %}
+
+                {% if definition.landingPage %}
+                    <dt class="col-sm-3">Landing page</dt>
+                    <dd class="col-sm-9"><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
+                {% endif %}
+
+                <dt class="col-sm-3">Access URL</dt>
+                <dd class="col-sm-9">
+                    <a href="{{ definition.accessUrlBase }}">{{ definition.accessUrlBase }}</a>
+                    {% if definition.accessUrlQuery %}
+                        <pre class="mt-2 mb-0">{{ definition.accessUrlQuery|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Data type</dt>
+                <dd class="col-sm-9">{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
+
+                <dt class="col-sm-3">Model</dt>
+                <dd class="col-sm-9"><code>{{ definition.model }}</code></dd>
+
+                <dt class="col-sm-3">Context</dt>
+                <dd class="col-sm-9"><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
+
+                <dt class="col-sm-3">Entities</dt>
+                <dd class="col-sm-9"><a href="{{ entitiesUrls[definition.id] }}">{{ entitiesUrls[definition.id] }}</a></dd>
+
+                {% if definition.updateFrequency %}
+                    <dt class="col-sm-3">Update frequency</dt>
+                    <dd class="col-sm-9">{{ definition.updateFrequency }}</dd>
+                {% endif %}
+
+                {% if definition.licence %}
+                    <dt class="col-sm-3">Licence</dt>
+                    <dd class="col-sm-9"><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
+                {% endif %}
+
+                {% if definition.omittedFields %}
+                    <dt class="col-sm-3">Omitted fields</dt>
+                    <dd class="col-sm-9">
+                        <dl class="mb-0">
+                            {% for field, reason in definition.omittedFields %}
+                                <dt><code>{{ field }}</code></dt>
+                                <dd>{{ reason }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </dd>
+                {% endif %}
+            </dl>
+        </section>
+    {% endfor %}
+{% endblock %}
