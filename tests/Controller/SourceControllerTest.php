@@ -6,6 +6,7 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests the list of sources as JSON and as a page.
@@ -67,7 +68,7 @@ class SourceControllerTest extends WebTestCase
         $client = static::createClient();
         $ids = array_column($this->sources($client), 'id');
 
-        $client->request('GET', '/sources');
+        $client->request(Request::METHOD_GET, '/sources');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'text/html; charset=UTF-8');
@@ -84,7 +85,7 @@ class SourceControllerTest extends WebTestCase
      */
     private function sources(KernelBrowser $client): array
     {
-        $client->request('GET', '/sources.json');
+        $client->request(Request::METHOD_GET, '/sources.json');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/json');

@@ -22,6 +22,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -93,7 +94,7 @@ class SourceImporterTest extends TestCase
 
         $this->import($source, $this->features(1));
 
-        $listings = array_values(array_filter($this->requests, static fn (array $request): bool => 'GET' === $request[0]));
+        $listings = array_values(array_filter($this->requests, static fn (array $request): bool => Request::METHOD_GET === $request[0]));
         $this->assertCount(1, $listings);
 
         [, $url, $options] = $listings[0];
@@ -182,7 +183,7 @@ class SourceImporterTest extends TestCase
                 return $upserted;
             }
 
-            if ('GET' === $method) {
+            if (Request::METHOD_GET === $method) {
                 return new MockResponse(json_encode(array_map(
                     static fn (string $id): array => ['id' => $id, 'type' => 'OnStreetParking'],
                     $held,
@@ -245,7 +246,7 @@ class SourceImporterTest extends TestCase
     {
         $body = [];
         foreach ($this->requests as [$method, $url, $options]) {
-            if ('POST' === $method && str_ends_with($url, $operation)) {
+            if (Request::METHOD_POST === $method && str_ends_with($url, $operation)) {
                 $body = [...$body, ...json_decode((string) $options['body'], true, flags: \JSON_THROW_ON_ERROR)];
             }
         }

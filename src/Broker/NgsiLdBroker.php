@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Broker;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -49,7 +50,7 @@ final readonly class NgsiLdBroker
 
         foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
             $response = $this->brokerClient->request(
-                'POST',
+                Request::METHOD_POST,
                 self::UPSERT_PATH,
                 [
                     'headers' => ['Content-Type' => self::CONTENT_TYPE],
@@ -131,7 +132,7 @@ final readonly class NgsiLdBroker
 
         for ($offset = 0;; $offset += self::PAGE_SIZE) {
             $response = $this->brokerClient->request(
-                'GET',
+                Request::METHOD_GET,
                 self::ENTITIES_PATH,
                 [
                     'headers' => [
@@ -173,7 +174,7 @@ final readonly class NgsiLdBroker
     {
         foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
             $response = $this->brokerClient->request(
-                'POST',
+                Request::METHOD_POST,
                 self::BATCH_DELETE_PATH,
                 ['json' => $batch]
             );

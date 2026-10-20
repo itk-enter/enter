@@ -9,6 +9,7 @@ use App\Source\SourceInterface;
 use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -36,7 +37,7 @@ final readonly class FixtureFetcher
         }
 
         $url = $definition->dataUrlBase;
-        $content = $this->client->request('GET', $url, ['query' => $definition->dataUrlQuery])->getContent();
+        $content = $this->client->request(Request::METHOD_GET, $url, ['query' => $definition->dataUrlQuery])->getContent();
         $this->assertComplete($definition, $content);
 
         $filename = $this->filename($definition);

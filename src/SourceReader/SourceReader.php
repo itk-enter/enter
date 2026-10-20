@@ -6,6 +6,7 @@ use App\Source\SourceInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerTrait;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class SourceReader implements SourceReaderInterface
@@ -24,7 +25,7 @@ final class SourceReader implements SourceReaderInterface
         // @todo Add some proper exception handling/logging.
         $definition = $source->definition;
 
-        return $this->client->request('GET', $definition->accessUrlBase(), [
+        return $this->client->request(Request::METHOD_GET, $definition->accessUrlBase(), [
             'query' => $definition->accessUrlQuery(),
         ])->toArray();
     }
