@@ -37,7 +37,7 @@ final class FixedLifetimeCachingHttpClient implements HttpClientInterface
             return $this->client->request($method, $url, $options);
         }
 
-        $key = hash('xxh128', $url.'?'.http_build_query($options['query'] ?? []));
+        $key = hash('xxh128', json_encode([$url, $options], \JSON_THROW_ON_ERROR));
 
         $cached = $this->cache->get($key, function () use ($method, $url, $options): array {
             $response = $this->client->request($method, $url, $options);
