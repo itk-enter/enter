@@ -7,7 +7,7 @@ namespace App\Tests\Import;
 use App\Import\Event\SourcesImportedEvent;
 use App\Import\ImportResult;
 use App\Import\SourcesImporter;
-use App\Source\MtmSpatialMaps\HandicapParking;
+use App\Source\MtmSpatialMaps\ParkingSpot;
 use App\Source\MtmSpatialMaps\ToiletCity;
 use App\Source\MtmSpatialMaps\ToiletOther;
 use App\Source\SourceInterface;
@@ -70,8 +70,8 @@ class SourcesImporterTest extends TestCase
 
         // A source the run did not attempt is not imported either, so a
         // listener never treats a partial run as complete.
-        $this->assertFalse($event->isImported((new HandicapParking())->definition->id));
-        $this->assertFalse($event->areAllImported(['mtm_spatialmaps-toilet-other', 'mtm_spatialmaps-handicap-parking']));
+        $this->assertFalse($event->isImported((new ParkingSpot())->definition->id));
+        $this->assertFalse($event->areAllImported(['mtm_spatialmaps-toilet-other', 'mtm_spatialmaps-handicap-parking-spot']));
     }
 
     public function testAnEmptyRunIsStillDispatched(): void
@@ -112,7 +112,7 @@ class SourcesImporterTest extends TestCase
                     throw new \RuntimeException('Feed unreachable');
                 }
 
-                return new ImportResult(3, 201, 'http://broker.example/');
+                return new ImportResult(3, 0, 201, 'http://broker.example/');
             }
         };
 
