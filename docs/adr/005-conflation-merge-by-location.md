@@ -18,13 +18,13 @@ But position alone is not sufficient. Benches along a promenade can stand 2–3 
 same bench 1–2 m apart. A rule that joins the two records of one bench can also join it to the next bench.
 
 The simplest way to find the records that lie close to each other is to compare each record with all other records.
-But the data sets of one kind of thing can each have a lot of records, and the number of comparisons grows with the 
+But the data sets of one kind of thing can each have a lot of records, and the number of comparisons grows with the
 square of the number of records. Two data sets of 10,000 records each give 100 million comparisons, which is
 not a realistic approach.
 
 As a result of this, we need a method of matching by location. It must join all the records of the same thing, and
 keep things that stand close together apart. It must be fast enough to run after each import. As kind of data may
-require different rules for conflation, these must be configurable. 
+require different rules for conflation, these must be configurable.
 
 This ADR serves to decide that method.
 
