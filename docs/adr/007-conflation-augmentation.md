@@ -2,7 +2,7 @@
 
 | Field              | Value                                                  |
 |--------------------|--------------------------------------------------------|
-| **Created By**     | Martin Yde Granath                                     |
+| **Created By**     | Martin Yde Granath, Jeppe Julius Krogh                 |
 | **Date**           | 2026-10-13                                             |
 | **Decision Maker** | ITK Dev team                                           |
 | **Stakeholders**   | ITK Dev developers, data consumers, future maintainers |
