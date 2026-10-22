@@ -11,8 +11,8 @@
 ## Context
 
 Some data sets concern a thing without describing it. For example, an area of asphalt in a data set of ground cover
-gives its surface to every parking space on it, but it is a separate entity from the parking space itself. Such a data 
-set cannot take part in the merge in the same way as the data sets that describe the actual thing. 
+gives its surface to every parking space on it, but it is a separate entity from the parking space itself. Such a data
+set cannot take part in the merge in the same way as the data sets that describe the actual thing.
 
 Merge by location joins records one to one, so an area would join at most one of the spaces that it covers, and the
 others would not get their surface. Its records could also give a merged entity its identifier, and
@@ -45,10 +45,10 @@ overlap, the rules of the merge from 006 settle the conflict, and an unsettled c
 The identifiers of the augmenting records that were used are added to the list of records that the merged entity was
 built from.
 
-A kind of thing that the standard rule does not suit can use a rule of its own, or add to the standard rule. A rule of 
-its own can run the standard rule first and then translate the values. Every rule must keep the same limits. It adds 
-only the details that the merge names, and it never creates, removes, regroups or moves merged entities. It also never 
-overwrites a value that a merged entity already has. If a rule breaks these limits, the run stops and nothing is 
+A kind of thing that the standard rule does not suit can use a rule of its own, or add to the standard rule. A rule of
+its own can run the standard rule first and then translate the values. Every rule must keep the same limits. It adds
+only the details that the merge names, and it never creates, removes, regroups or moves merged entities. It also never
+overwrites a value that a merged entity already has. If a rule breaks these limits, the run stops and nothing is
 published.
 
 ## Consequences
