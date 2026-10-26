@@ -78,7 +78,7 @@ final class SourceController extends AbstractController
     {
         return $this->generateUrl('ngsi_ld_v1_request', [
             'path' => 'entities',
-            'q' => \sprintf('%s=="%s"', AbstracSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId),
+            'q' => \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }
