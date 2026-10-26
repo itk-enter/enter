@@ -8,7 +8,7 @@ use App\Conflation\Conflation;
 use App\Conflation\Data\MergedEntity;
 use App\Conflation\Data\StatedValue;
 use App\Ngsi\NgsiEntity;
-use App\SourceImporter\AbstracSourceImporter;
+use App\SourceImporter\AbstractSourceImporter;
 
 /**
  * Builds the entity a merged entity is published as: the create step.
@@ -80,7 +80,7 @@ final readonly class MergedEntityFactory
 
         return $result
             ->geoProperty('location', $location)
-            ->setProperty(AbstracSourceImporter::SOURCE_ID_ATTRIBUTE, $conflation->id)
+            ->setProperty(AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $conflation->id)
             ->setProperty(self::PROVENANCE, $entity->provenance)
             ->setProperty(ConflationFetcher::ADDITIONAL_INFORMATION, $information);
     }

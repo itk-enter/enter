@@ -16,6 +16,14 @@ framework:
             broker.client:
                 base_uri: '%env(APP_BROKER_BASE_URI)%'
 
+            # Fetches the live feeds for the test fixtures.
+            test_fixture.client:
+                scope: '^https?://'
+                retry_failed:
+                    max_retries: 4
+                    delay: 5000
+                    multiplier: 2
+
 when@test:
     framework:
         test: true

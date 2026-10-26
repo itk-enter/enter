@@ -30,6 +30,8 @@ use App\Source\Definition;
     updateFrequency: 'daily',
     licence: 'https://creativecommons.org/licenses/by/4.0/',
     omittedFields: [],
+    dataset: 'toilet-of-another-version',
+    datasetTitle: 'Toilets of another version',
 )]
 final class ToiletOfAnotherVersion extends AbstractSource
 {

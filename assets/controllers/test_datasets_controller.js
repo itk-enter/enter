@@ -1,19 +1,13 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * The data sets the map may draw: the test sources and test merges, fetched
- * from the list, given a colour each, and offered as toggles grouped by model. Nothing here
- * knows about the map; what is known and what is switched is dispatched as
- * events for the map controller on the same element.
+ * Shows a toggle for each test source and sends toggle events to the map.
  */
 
-/* By convention a test source's id starts with this. */
+/* The prefix of a test source id. */
 const TEST_PREFIX = "test:";
 
-/*
- * One color per data set, in the order the sources come: saturated and far
- * apart in hue, so they stand out from the pale base map and from each other.
- */
+/* The colours for the data sets. */
 const COLOURS = [
     "#d50000",
     "#2962ff",
@@ -25,11 +19,8 @@ const COLOURS = [
     "#6d4c41",
 ];
 
-/*
- * Fetch the data sets from the list and keep the test ones: sources and
- * merged data sets alike. Each is a data set the map may draw.
- */
-async function loadDatasets(url) {
+/* Gets the test sources and groups them by model. */
+async function loadSources(url) {
     const response = await fetch(url, {
         headers: { accept: "application/json" },
     });
@@ -38,37 +29,41 @@ async function loadDatasets(url) {
         throw new Error(`${url} answered ${response.status}`);
     }
 
-    const sources = await response.json();
-
-    return sources
+    const colours = new Map();
+    const sources = (await response.json())
         .filter((source) => source.id.startsWith(TEST_PREFIX))
-        .map((dataset, index) => ({
-            ...dataset,
-            index,
-            colour: COLOURS[index % COLOURS.length],
-        }));
-}
+        .map((source, index) => {
+            if (!colours.has(source.dataset.id)) {
+                colours.set(
+                    source.dataset.id,
+                    COLOURS[colours.size % COLOURS.length],
+                );
+            }
 
-/*
- * Groups the datasets by model, keeping the order they came in.
- */
-function groupByModel(datasets) {
-    const groups = new Map();
+            return {
+                ...source,
+                index,
+                colour: colours.get(source.dataset.id),
+            };
+        });
 
-    datasets.forEach((dataset) => {
-        if (!groups.has(dataset.model)) {
-            groups.set(dataset.model, []);
+    const models = new Map();
+    sources.forEach((source) => {
+        if (!models.has(source.model)) {
+            models.set(source.model, { name: source.model, sources: [] });
         }
-        groups.get(dataset.model).push(dataset);
+        models.get(source.model).sources.push(source);
     });
 
-    return groups;
+    return {
+        models: [...models.values()].sort((a, b) =>
+            a.name.localeCompare(b.name),
+        ),
+        sources,
+    };
 }
 
-/*
- * Builds a Bootstrap checkbox row. The attributes end up as data-* on the
- * input, which is how the change handler tells a model from a dataset.
- */
+/* Makes a Bootstrap checkbox row. */
 function checkbox(id, label, attributes) {
     const wrapper = document.createElement("div");
     wrapper.className = "form-check";
@@ -89,40 +84,40 @@ function checkbox(id, label, attributes) {
     return wrapper;
 }
 
-/* One fieldset per model, headed by a checkbox that switches the whole model. */
-function renderToggles(form, groups) {
-    groups.forEach((datasets, model) => {
+/* Shows one fieldset of checkboxes for each model. */
+function renderToggles(form, models) {
+    models.forEach((model) => {
         const fieldset = document.createElement("fieldset");
         fieldset.className = "test-map-group mb-3";
 
-        const head = checkbox(`model-${model}`, model, { model });
+        const head = checkbox(`model-${model.name}`, model.name, {});
         head.classList.add("fw-bold");
         fieldset.append(head);
 
-        datasets.forEach((dataset) => {
+        model.sources.forEach((source) => {
             const swatch = document.createElement("span");
             swatch.className = "test-map-swatch";
-            swatch.style.backgroundColor = dataset.colour;
+            swatch.style.backgroundColor = source.colour;
 
             const label = document.createDocumentFragment();
-            label.append(swatch, dataset.title);
+            label.append(swatch, source.dataset.title);
 
-            fieldset.append(
-                checkbox(`dataset-${dataset.index}`, label, {
-                    dataset: dataset.index,
-                }),
-            );
+            const row = checkbox(`source-${source.index}`, label, {
+                source: source.index,
+            });
+            row.classList.add("ms-3");
+            fieldset.append(row);
         });
 
         form.append(fieldset);
     });
 }
 
-/* The model's checkbox mirrors its data sets: all, none or some of them on. */
+/* Sets the model checkbox from the checkboxes of its sources. */
 function reflectGroup(fieldset) {
-    const inputs = [...fieldset.querySelectorAll("input[data-dataset]")];
+    const inputs = [...fieldset.querySelectorAll("input[data-source]")];
     const on = inputs.filter((input) => input.checked).length;
-    const head = fieldset.querySelector("input[data-model]");
+    const head = fieldset.querySelector("input:not([data-source])");
 
     head.checked = on === inputs.length;
     head.indeterminate = on > 0 && on < inputs.length;
@@ -133,29 +128,24 @@ export default class extends Controller {
     static values = { url: String };
 
     async connect() {
-        this.datasets = await loadDatasets(this.urlValue);
+        const { models, sources } = await loadSources(this.urlValue);
+        this.sources = sources;
 
-        this.dispatch("loaded", { detail: { datasets: this.datasets } });
+        this.dispatch("loaded", { detail: { sources } });
 
-        renderToggles(this.formTarget, groupByModel(this.datasets));
+        renderToggles(this.formTarget, models);
     }
 
-    /*
-     * Handles toggling. A model checkbox switches every dataset in its
-     * group, a dataset checkbox just that one. Either way the group's
-     * checkbox is updated afterward.
-     */
+    /* Switches a model or a source on or off. */
     toggle(event) {
         const input = event.target;
         const fieldset = input.closest("fieldset");
 
-        if (input.dataset.model !== undefined) {
-            fieldset
-                .querySelectorAll("input[data-dataset]")
-                .forEach((child) => {
-                    child.checked = input.checked;
-                    this.report(child);
-                });
+        if (input.dataset.source === undefined) {
+            fieldset.querySelectorAll("input[data-source]").forEach((child) => {
+                child.checked = input.checked;
+                this.report(child);
+            });
         } else {
             this.report(input);
         }
@@ -163,11 +153,11 @@ export default class extends Controller {
         reflectGroup(fieldset);
     }
 
-    /* Tells the map which data set was switched, and which way. */
+    /* Sends a toggle event for a source. */
     report(input) {
         this.dispatch("toggle", {
             detail: {
-                dataset: this.datasets[input.dataset.dataset],
+                source: this.sources[input.dataset.source],
                 on: input.checked,
             },
         });

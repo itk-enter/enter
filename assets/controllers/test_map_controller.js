@@ -4,25 +4,24 @@ import "maplibre-gl/dist/maplibre-gl.min.css";
 import { MARKS_LAYER, wireClicks } from "../test/popup.js";
 
 /*
- * The developer map: each source's entities read from the broker and drawn
- * by MapLibre in one colour per data set. It shares its element with the
- * data sets controller and draws whatever that one reports switched on.
- * What a click opens lives in popup.js.
+ * Shows the entities of the test sources on a MapLibre map.
  */
 
-/* Center at DOKK1, zoomed out a bunch. */
+/* The start view of the map. */
 const CENTER = [10.2144, 56.1535];
 const ZOOM = 11;
 
-/* What every data set's layer id starts with, so they can be told apart. */
-const LAYER_PREFIX = "dataset-";
+/* The prefix of a source layer id. */
+const LAYER_PREFIX = "source-";
 
-/* The most entities the broker hands out per request. */
+/* The maximum number of entities for each broker request. */
 const PAGE_SIZE = 1000;
 
-/*
- * Init MapLibre
- */
+/* The stroke around each point and area. */
+const STROKE_COLOUR = "#212121";
+const STROKE_WIDTH = 1.5;
+
+/* Makes the MapLibre map. */
 function createMap(container) {
     return new maplibregl.Map({
         container,
@@ -47,11 +46,7 @@ function createMap(container) {
     });
 }
 
-/*
- * The URL of the page after this one, or null on the last page. The broker
- * links to the next page under its own path, which the proxy does not
- * serve, so only the link's query is taken and put on the page's URL.
- */
+/* Gives the URL of the next page, or null on the last page. */
 function nextPage(response, url) {
     const match = /<([^>]*)>[^,]*rel="next"/.exec(
         response.headers.get("link") ?? "",
@@ -67,19 +62,12 @@ function nextPage(response, url) {
     return next;
 }
 
-/*
- * Reads a data set's entities from the broker, page by page, into one
- * GeoJSON collection.
- *
- * The data set says where its entities are; this only asks for them as
- * GeoJSON in the simplified format, which leaves bare values, and follows
- * the broker's link to each next page. The source's context goes in the
- * Link header so the broker answers with the names the source declared.
- */
-async function loadFeatures(dataset) {
+/* Reads the entities of a source from the broker into a GeoJSON collection. */
+async function loadFeatures(source) {
     const features = [];
 
-    let url = new URL(dataset.entities_url, window.location.href);
+    let url = new URL(source.entities_url, window.location.href);
+    url.searchParams.set("type", source.model);
     url.searchParams.set("format", "simplified");
     url.searchParams.set("limit", PAGE_SIZE);
 
@@ -87,7 +75,7 @@ async function loadFeatures(dataset) {
         const response = await fetch(url, {
             headers: {
                 accept: "application/geo+json",
-                link: `<${dataset.context_url}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`,
+                link: `<${source.context_url}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`,
             },
         });
 
@@ -95,10 +83,6 @@ async function loadFeatures(dataset) {
             throw new Error(`${url} answered ${response.status}`);
         }
 
-        /*
-         * MapLibre hands a clicked feature's properties back, not its
-         * string id, and the popup tells features apart by the id.
-         */
         const page = ((await response.json()).features ?? []).map(
             (feature) => ({
                 ...feature,
@@ -113,12 +97,8 @@ async function loadFeatures(dataset) {
     return { type: "FeatureCollection", features };
 }
 
-/*
- * Adds a data set to the map as a source with an area layer and a point
- * layer. Its layers go in below the marks, so a mark is never hidden by
- * what it marks.
- */
-function addDataset(map, id, dataset, collection) {
+/* Adds the area, outline and point layers of a source to the map. */
+function addSource(map, id, source, collection) {
     map.addSource(id, { type: "geojson", data: collection });
 
     map.addLayer(
@@ -127,15 +107,27 @@ function addDataset(map, id, dataset, collection) {
             type: "fill",
             source: id,
             paint: {
-                "fill-color": dataset.colour,
+                "fill-color": source.colour,
                 "fill-opacity": 0.35,
-                "fill-outline-color": dataset.colour,
             },
         },
         MARKS_LAYER,
     );
 
-    /* Left to itself a circle layer dots every corner of an area. */
+    map.addLayer(
+        {
+            id: `${id}-outlines`,
+            type: "line",
+            source: id,
+            filter: ["==", ["geometry-type"], "Polygon"],
+            paint: {
+                "line-color": STROKE_COLOUR,
+                "line-width": STROKE_WIDTH,
+            },
+        },
+        MARKS_LAYER,
+    );
+
     map.addLayer(
         {
             id: `${id}-points`,
@@ -143,16 +135,16 @@ function addDataset(map, id, dataset, collection) {
             source: id,
             filter: ["==", ["geometry-type"], "Point"],
             paint: {
-                "circle-color": dataset.colour,
+                "circle-color": source.colour,
                 "circle-radius": 5,
-                "circle-stroke-color": "#212121",
-                "circle-stroke-width": 1.5,
+                "circle-stroke-color": STROKE_COLOUR,
+                "circle-stroke-width": STROKE_WIDTH,
             },
         },
         MARKS_LAYER,
     );
 
-    [`${id}-areas`, `${id}-points`].forEach((layer) => {
+    [`${id}-areas`, `${id}-outlines`, `${id}-points`].forEach((layer) => {
         map.on("mouseenter", layer, () => {
             map.getCanvas().style.cursor = "pointer";
         });
@@ -165,6 +157,7 @@ function addDataset(map, id, dataset, collection) {
 function setVisible(map, id, visible) {
     const visibility = visible ? "visible" : "none";
     map.setLayoutProperty(`${id}-areas`, "visibility", visibility);
+    map.setLayoutProperty(`${id}-outlines`, "visibility", visibility);
     map.setLayoutProperty(`${id}-points`, "visibility", visibility);
 }
 
@@ -174,10 +167,8 @@ export default class extends Controller {
     connect() {
         this.map = createMap(this.canvasTarget);
 
-        /* What the popup calls each data set, filled in once they are known. */
         this.titles = {};
 
-        /* Nothing may be added to the map before its style has loaded. */
         this.ready = new Promise((resolve) =>
             this.map.on("load", resolve),
         ).then(() => {
@@ -187,7 +178,6 @@ export default class extends Controller {
             });
         });
 
-        /* Per data set: the fetch under way, and whether it is wanted on. */
         this.loading = new Map();
         this.wanted = new Map();
     }
@@ -196,23 +186,19 @@ export default class extends Controller {
         this.map.remove();
     }
 
-    /* The data sets are known: the popup can name them. */
-    datasets(event) {
-        event.detail.datasets.forEach((dataset) => {
-            this.titles[dataset.id] = dataset.title;
+    /* Keeps the data set title of each source for the popup. */
+    sources(event) {
+        event.detail.sources.forEach((source) => {
+            this.titles[source.id] = source.dataset.title;
         });
     }
 
-    /*
-     * A data set was switched on or off. The first time one is switched on
-     * its entities are fetched; a toggle while that is under way takes
-     * effect once the fetch is done.
-     */
+    /* Shows or hides a source, and loads it the first time. */
     async show(event) {
         await this.ready;
 
-        const { dataset, on } = event.detail;
-        const id = `${LAYER_PREFIX}${dataset.index}`;
+        const { source, on } = event.detail;
+        const id = `${LAYER_PREFIX}${source.index}`;
         this.wanted.set(id, on);
 
         if (this.map.getSource(id) === undefined) {
@@ -220,7 +206,7 @@ export default class extends Controller {
                 return;
             }
             if (!this.loading.has(id)) {
-                this.loading.set(id, this.load(id, dataset));
+                this.loading.set(id, this.load(id, source));
             }
             await this.loading.get(id);
         }
@@ -228,18 +214,17 @@ export default class extends Controller {
         setVisible(this.map, id, this.wanted.get(id));
     }
 
-    async load(id, dataset) {
+    async load(id, source) {
         try {
-            const collection = await loadFeatures(dataset);
-            addDataset(this.map, id, dataset, collection);
+            const collection = await loadFeatures(source);
+            addSource(this.map, id, source, collection);
         } catch (error) {
-            /* Leave the data set loadable again on the next toggle. */
             this.loading.delete(id);
             throw error;
         }
     }
 
-    /* The ids of every data set layer on the map, hidden ones included. */
+    /* Gives the ids of all source layers on the map. */
     layers() {
         return this.map
             .getStyle()
