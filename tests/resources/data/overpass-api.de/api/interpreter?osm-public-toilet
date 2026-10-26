@@ -2,8 +2,8 @@
   "version": 0.6,
   "generator": "Overpass API 0.7.62.11 87bfad18",
   "osm3s": {
-    "timestamp_osm_base": "2026-10-07T12:54:58Z",
-    "timestamp_areas_base": "2026-10-06T11:51:19Z",
+    "timestamp_osm_base": "2026-10-26T12:29:10Z",
+    "timestamp_areas_base": "2026-10-26T09:41:45Z",
     "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
   },
   "elements": [
@@ -299,6 +299,7 @@
   "lat": 56.1556373,
   "lon": 10.1996527,
   "tags": {
+    "access": "yes",
     "amenity": "toilets",
     "changing_table": "yes",
     "drinking_water": "no",
@@ -1395,6 +1396,7 @@
   "lat": 56.1583172,
   "lon": 10.1994371,
   "tags": {
+    "access": "yes",
     "amenity": "toilets",
     "check_date": "2026-10-01",
     "fee": "no",
@@ -1614,6 +1616,19 @@
   }
 },
 {
+  "type": "node",
+  "id": 14303445158,
+  "lat": 56.0393729,
+  "lon": 10.1954592,
+  "tags": {
+    "access": "yes",
+    "amenity": "toilets",
+    "changing_table": "no",
+    "toilets:disposal": "flush",
+    "unisex": "yes"
+  }
+},
+{
   "type": "way",
   "id": 149563661,
   "center": {
@@ -1779,6 +1794,7 @@
     "fee": "no",
     "indoor": "yes",
     "mapillary": "2925778951014459",
+    "opening_hours": "24/7",
     "seasonal": "summer",
     "source": "mapillary",
     "supervised": "no",

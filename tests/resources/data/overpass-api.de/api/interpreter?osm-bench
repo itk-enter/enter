@@ -2,8 +2,8 @@
   "version": 0.6,
   "generator": "Overpass API 0.7.62.11 87bfad18",
   "osm3s": {
-    "timestamp_osm_base": "2026-10-07T12:43:36Z",
-    "timestamp_areas_base": "2026-10-06T13:12:56Z",
+    "timestamp_osm_base": "2026-10-26T12:26:05Z",
+    "timestamp_areas_base": "2026-10-26T09:41:45Z",
     "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
   },
   "elements": [
@@ -1370,6 +1370,7 @@
   "tags": {
     "amenity": "bench",
     "backrest": "yes",
+    "check_date": "2026-10-26",
     "material": "wood"
   }
 },
@@ -3103,6 +3104,7 @@
   "lon": 10.2084854,
   "tags": {
     "amenity": "bench",
+    "armrest": "yes",
     "backrest": "yes",
     "check_date": "2026-08-01",
     "colour": "black",
@@ -8543,6 +8545,7 @@
   "lon": 10.2086105,
   "tags": {
     "amenity": "bench",
+    "armrest": "no",
     "backrest": "no"
   }
 },
@@ -8553,6 +8556,7 @@
   "lon": 10.2086811,
   "tags": {
     "amenity": "bench",
+    "armrest": "no",
     "backrest": "no"
   }
 },
@@ -23621,6 +23625,155 @@
   "id": 14245757380,
   "lat": 56.1178536,
   "lon": 10.1950844,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 14274900087,
+  "lat": 56.1899749,
+  "lon": 10.2137216,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 14275006411,
+  "lat": 56.1902221,
+  "lon": 10.2138828,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 14275008420,
+  "lat": 56.1904157,
+  "lon": 10.2140308,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 14275058487,
+  "lat": 56.0877193,
+  "lon": 10.2224822,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 14275058488,
+  "lat": 56.0882992,
+  "lon": 10.2226546,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 14275058489,
+  "lat": 56.0884813,
+  "lon": 10.2224596,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 14299923739,
+  "lat": 56.0367252,
+  "lon": 10.2026519,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14301910385,
+  "lat": 56.0376553,
+  "lon": 10.1933210,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 14301910386,
+  "lat": 56.0377395,
+  "lon": 10.1933689,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 14303063138,
+  "lat": 56.0366819,
+  "lon": 10.2016289,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14309388158,
+  "lat": 56.0371142,
+  "lon": 10.1924981,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 14309389907,
+  "lat": 56.0403612,
+  "lon": 10.2003317,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 14311783495,
+  "lat": 56.0428597,
+  "lon": 10.2062775,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 14311791802,
+  "lat": 56.0481638,
+  "lon": 10.2041291,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 14316684422,
+  "lat": 56.1896706,
+  "lon": 10.2134428,
   "tags": {
     "amenity": "bench",
     "backrest": "yes"
