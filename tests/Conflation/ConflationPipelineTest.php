@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Conflation;
 
 use App\Conflation\Augmentation\AbstractAugmentation;
+use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\Cluster;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationLimitException;
@@ -16,7 +17,6 @@ use App\Conflation\MergedEntity;
 use App\Conflation\Record;
 use App\Conflation\StatedValue;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
-use App\Tests\Conflation\Fixtures\SuppliesEveryEntity;
 use App\Tests\Conflation\Fixtures\ToiletConflation;
 use PHPUnit\Framework\TestCase;
 
@@ -230,7 +230,7 @@ class ConflationPipelineTest extends TestCase
             mergeByLocation: $mergeByLocation ?? new GroupedByThing(5.0),
             conflictResolution: $conflictResolution ?: [new SourceAuthority(['data-set-a'])],
             augmenting: ['ModelC' => ['surface']],
-            augmentation: $augmentation ?? new SuppliesEveryEntity(5.0),
+            augmentation: $augmentation ?? new WithinAreaOrRadius(5.0),
         );
     }
 
