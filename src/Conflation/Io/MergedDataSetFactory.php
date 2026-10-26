@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Io;
 
+use App\Conflation\Conflation;
 use App\Source\SourceInterface;
 
 /**

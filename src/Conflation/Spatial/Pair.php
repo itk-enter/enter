@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Spatial;
+
+use App\Conflation\Data\Record;
 
 /**
  * Two records from different data sets within matching range of each other.

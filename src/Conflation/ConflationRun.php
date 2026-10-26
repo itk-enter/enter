@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Conflation;
 
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Io\MergedDataSet;
+
 /**
  * What one run of a merge read, produced and published.
  */

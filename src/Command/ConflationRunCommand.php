@@ -6,8 +6,8 @@ namespace App\Command;
 
 use App\Conflation\ConflationManager;
 use App\Conflation\ConflationRunner;
-use App\Conflation\MergedEntity;
-use App\Conflation\StatedValue;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\StatedValue;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;

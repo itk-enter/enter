@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Conflation\Augmentation;
 
-use App\Conflation\Distance;
-use App\Conflation\MergedEntity;
-use App\Conflation\Record;
-use App\Conflation\StatedValue;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\Record;
+use App\Conflation\Data\StatedValue;
+use App\Conflation\Spatial\Distance;
 use App\GeometryHelper;
 
 /**

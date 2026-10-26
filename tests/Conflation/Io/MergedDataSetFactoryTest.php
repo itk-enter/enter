@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Io;
 
 use App\Broker\NgsiLdBroker;
 use App\Conflation\Conflation;
-use App\Conflation\ConflationFetcher;
+use App\Conflation\Io\ConflationFetcher;
+use App\Conflation\Io\MergedDataSetFactory;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\MergedDataSetFactory;
 use App\Source\FindToilet\PublicToilet as FindToiletPublicToilet;
 use App\Source\Osm\PublicToilet as OsmPublicToilet;
 use App\Source\SourceInterface;

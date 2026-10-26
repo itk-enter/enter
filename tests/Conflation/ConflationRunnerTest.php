@@ -6,12 +6,12 @@ namespace App\Tests\Conflation;
 
 use App\Broker\NgsiLdBroker;
 use App\Conflation\Conflation;
-use App\Conflation\ConflationFetcher;
-use App\Conflation\ConflationPipeline;
 use App\Conflation\ConflationRunner;
+use App\Conflation\Io\ConflationFetcher;
+use App\Conflation\Io\MergedDataSetFactory;
+use App\Conflation\Io\MergedEntityFactory;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\MergedDataSetFactory;
-use App\Conflation\MergedEntityFactory;
+use App\Conflation\Pipeline\ConflationPipeline;
 use App\Source\FindToilet\PublicToilet as FindToiletPublicToilet;
 use App\Source\Osm\PublicToilet as OsmPublicToilet;
 use App\SourceManager;

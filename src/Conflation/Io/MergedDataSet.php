@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Io;
 
 /**
  * What describes a merged data set, as a source's definition describes the

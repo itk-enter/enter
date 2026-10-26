@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace App\Conflation;
 
 use App\Broker\NgsiLdBroker;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Io\ConflationFetcher;
+use App\Conflation\Io\MergedDataSetFactory;
+use App\Conflation\Io\MergedEntityFactory;
+use App\Conflation\Pipeline\ConflationPipeline;
 use App\Ngsi\NgsiEntity;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;

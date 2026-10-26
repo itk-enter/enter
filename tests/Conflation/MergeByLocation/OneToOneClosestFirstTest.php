@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Conflation\MergeByLocation;
 
-use App\Conflation\Cluster;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\Record;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\Record;
-use App\Tests\Conflation\GridIndexTest;
+use App\Tests\Conflation\Spatial\GridIndexTest;
 use PHPUnit\Framework\TestCase;
 
 class OneToOneClosestFirstTest extends TestCase

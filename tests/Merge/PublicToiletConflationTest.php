@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Merge;
 
-use App\Conflation\Cluster;
 use App\Conflation\Conflation;
-use App\Conflation\ConflationFetcher;
 use App\Conflation\ConflationManager;
-use App\Conflation\ConflictResolver;
-use App\Conflation\Record;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\Record;
+use App\Conflation\Io\ConflationFetcher;
+use App\Conflation\Pipeline\ConflictResolver;
 use App\Merge\PublicToiletConflation;
 use App\Source\SourceInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Pipeline;
 
 /**
  * A step returned a result outside the limits the pipeline sets for it, so

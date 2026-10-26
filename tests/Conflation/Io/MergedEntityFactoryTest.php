@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Io;
 
 use App\Conflation\Conflation;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\StatedValue;
+use App\Conflation\Io\MergedEntityFactory;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\MergedEntity;
-use App\Conflation\MergedEntityFactory;
-use App\Conflation\StatedValue;
 use PHPUnit\Framework\TestCase;
 
 class MergedEntityFactoryTest extends TestCase

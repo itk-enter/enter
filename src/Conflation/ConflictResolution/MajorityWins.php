@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Conflation\ConflictResolution;
 
-use App\Conflation\StatedValue;
+use App\Conflation\Data\StatedValue;
 
 /**
  * A conflict-resolution approach: the value most members state wins, if more

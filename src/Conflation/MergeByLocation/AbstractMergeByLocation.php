@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Conflation\MergeByLocation;
 
-use App\Conflation\Cluster;
-use App\Conflation\Record;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\Record;
 
 /**
  * Groups the records that describe the same real-world thing.

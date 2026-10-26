@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Data;
 
-use App\Conflation\Distance;
-use App\Conflation\Record;
+use App\Conflation\Data\Record;
+use App\Conflation\Spatial\Distance;
 use PHPUnit\Framework\TestCase;
 
 class RecordTest extends TestCase
