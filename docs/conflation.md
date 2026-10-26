@@ -1,8 +1,8 @@
 # How conflation works
 
-The same entity (i.e. public toilet) is often described by several data sources, each with different details. Conflation finds
-the records that describe the same place and combines them into one record. The result is published as a new,
-separate dataset; the original datasets are not changed.
+The same entity (i.e. public toilet) is often described by several data sources, each with different details. 
+Conflation finds the records that describe the same place and combines them into one record. The result is published 
+as a new, separate dataset; the original datasets are not changed.
 
 Public toilets are used as the example throughout, merged from four sources. The same process applies to any kind of
 place, such as benches or parking spaces, each with a configuration of its own.
