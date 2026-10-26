@@ -58,6 +58,13 @@ class MergedDataSetFactoryTest extends TestCase
         $this->assertNull($dataSet->licence);
     }
 
+    public function testTheMergedDataSetIsItsOwnDataSet(): void
+    {
+        $dataSet = self::factory([new OsmPublicToilet()])->create(self::conflation());
+
+        $this->assertSame(['id' => 'merged-public-toilets', 'title' => 'Merged toilets'], $dataSet->toArray()['dataset']);
+    }
+
     public function testInputsSharingALicenceGiveItToTheMerge(): void
     {
         $dataSet = self::factory([new OsmPublicToilet()])->create(self::conflation());
