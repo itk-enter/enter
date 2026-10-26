@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Broker;
 
-use App\SourceImporter\AbstracSourceImporter;
+use App\SourceImporter\AbstractSourceImporter;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,15 +25,8 @@ final readonly class NgsiLdBroker
     private const string BATCH_DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
-    private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
-
     /**
      * Entities asked for per request when reading.
-     */
-    private const int PAGE_SIZE = 1000;
-
-    /**
-     * The maximum number of entities in one read.
      */
     private const int PAGE_SIZE = 1000;
 
@@ -220,13 +213,13 @@ final readonly class NgsiLdBroker
     public function features(string $sourceId, string $contextUrl): \Generator
     {
         $query = [
-            'q' => \sprintf('%s=="%s"', AbstracSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId),
+            'q' => \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId),
             'format' => 'simplified',
             'limit' => self::PAGE_SIZE,
         ];
 
         while (null !== $query) {
-            $response = $this->client->request('GET', rtrim($this->brokerUrl, '/').self::ENTITIES_PATH, [
+            $response = $this->brokerClient->request('GET', rtrim($this->brokerUrl, '/').self::ENTITIES_PATH, [
                 'query' => $query,
                 'headers' => [
                     'Accept' => 'application/geo+json',
