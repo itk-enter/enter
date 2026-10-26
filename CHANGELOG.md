@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-94](https://github.com/itk-enter/enter/pull/94)
+  Consolidated ADR 007.
+* [PR-93](https://github.com/itk-enter/enter/pull/93)
+  Consolidated ADR 006.
+* [PR-91](https://github.com/itk-enter/enter/pull/91)
+  Consolidated ADR 005.
 * [PR-85](https://github.com/itk-enter/enter/pull/85)
   Consolidated ADR 004.
 * [PR-83](https://github.com/itk-enter/enter/pull/83)
