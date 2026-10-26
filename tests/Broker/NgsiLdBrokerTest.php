@@ -69,7 +69,7 @@ class NgsiLdBrokerTest extends TestCase
         $this->assertSame([], iterator_to_array(new NgsiLdBroker($client, 'http://broker.example')->features('osm-public-toilet', self::CONTEXT)));
     }
 
-    public function testItDeletesEntitiesInOneBatch(): void
+    public function testItDeletesEntitiesInBatches(): void
     {
         $sent = [];
         $client = new MockHttpClient(function (string $method, string $url, array $options) use (&$sent): MockResponse {
@@ -80,10 +80,10 @@ class NgsiLdBrokerTest extends TestCase
 
         $broker = new NgsiLdBroker($client, 'http://broker.example');
 
-        $this->assertSame(204, $broker->delete([]));
+        $broker->delete([]);
         $this->assertSame([], $sent);
 
-        $this->assertSame(204, $broker->delete(['urn:a', 'urn:b']));
+        $broker->delete(['urn:a', 'urn:b']);
         $this->assertSame([['POST', 'http://broker.example/ngsi-ld/v1/entityOperations/delete', ['urn:a', 'urn:b']]], $sent);
     }
 

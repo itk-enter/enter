@@ -25,7 +25,6 @@ final readonly class NgsiLdBroker
 
     private const string DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
 
-    private const string BATCH_DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
@@ -175,7 +174,7 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Deletes entities by ID in batches.
+     * Deletes entities by id in batches.
      *
      * @param list<string> $ids
      */
@@ -184,7 +183,7 @@ final readonly class NgsiLdBroker
         foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
             $response = $this->brokerClient->request(
                 Request::METHOD_POST,
-                self::BATCH_DELETE_PATH,
+                rtrim($this->brokerUrl, '/').self::DELETE_PATH,
                 ['json' => $batch]
             );
 
@@ -193,29 +192,6 @@ final readonly class NgsiLdBroker
                 throw new \RuntimeException(\sprintf('Broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
             }
         }
-    }
-
-    /**
-     * Deletes entities by id, in one batch.
-     *
-     * @param list<string> $ids
-     *
-     * @return int the broker's HTTP status code
-     */
-    public function delete(array $ids): int
-    {
-        if ([] === $ids) {
-            return 204;
-        }
-
-        $response = $this->client->request('POST', rtrim($this->brokerUrl, '/').self::DELETE_PATH, ['json' => $ids]);
-
-        $status = $response->getStatusCode();
-        if ($status >= 400) {
-            throw new \RuntimeException(\sprintf('Broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
-        }
-
-        return $status;
     }
 
     /**
