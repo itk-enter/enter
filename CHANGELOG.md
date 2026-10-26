@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-88](https://github.com/itk-enter/enter/pull/88)
+  Added SourceAuthority, an optional conflict-resolution approach
 * [PR-87](https://github.com/itk-enter/enter/pull/87)
   Added the default merge by location for conflation, matching points and areas one-to-one, closest first
 * [PR-86](https://github.com/itk-enter/enter/pull/86)
