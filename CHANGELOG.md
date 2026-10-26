@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-85](https://github.com/itk-enter/enter/pull/85)
+  Consolidated ADR 004.
 * [PR-83](https://github.com/itk-enter/enter/pull/83)
   Grouped the conflation classes into Data, Spatial, Pipeline and Io
 * [PR-82](https://github.com/itk-enter/enter/pull/82)
