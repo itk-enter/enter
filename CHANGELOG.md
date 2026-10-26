@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-81](https://github.com/itk-enter/enter/pull/81)
+  Added the public toilet merge and MajorityWins, an optional conflict-resolution approach
 * [PR-80](https://github.com/itk-enter/enter/pull/80)
   Added creating and publishing merged entities, and app:conflation:run
 * [PR-79](https://github.com/itk-enter/enter/pull/79)
