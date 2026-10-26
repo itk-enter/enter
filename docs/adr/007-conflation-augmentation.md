@@ -11,12 +11,12 @@
 ## Context
 
 Some data sets concern a thing without describing it. For example, an area of asphalt in a data set of ground cover
-gives its surface to every parking space on it, but it is a separate entity from the parking space itself. Such a data
-set cannot take part in the merge in the same way as the data sets that describe the actual thing.
+gives its surface to every parking space on it, but it is not a parking space itself. Such a data set cannot take
+part in the merge in the same way as the data sets that describe the thing itself.
 
-Merge by location joins records one to one, so an area would join at most one of the spaces that it covers, and the
-others would not get their surface. Its records could also give a merged entity its identifier, and
-its values would take part in conflicts about a thing that it does not describe.
+Merge by location (005) joins records one to one, so an area would join at most one of the spaces that it covers,
+and the others would not get their surface. The area could also give a merged entity its identifier, and its values
+would take part in conflicts about a thing that it does not describe.
 
 We could leave this to the consumers, so that each of them looks up the area that a parking space lies in. But then
 every consumer must know which data sets to combine and how, and the merged data set is not the single picture that
@@ -41,7 +41,7 @@ within the radius of the merge. Thus, one augmenting record can reach many merge
 
 Augmentation only fills in details that a merged entity is missing. A value that the records of the thing itself give
 is always kept. When several augmenting records give different values for the same detail, such as two areas that
-overlap, the rules of the merge from 006 settle the conflict, and an unsettled conflict is recorded like any other.
+overlap, the rules from 006 settle the conflict, and an unsettled conflict is recorded like any other.
 The identifiers of the augmenting records that were used are added to the list of records that the merged entity was
 built from.
 
@@ -63,9 +63,9 @@ published.
 ### Negative
 
 - Every merge that uses an augmenting data model must name it, with the details that it gives.
-- A merged entity whose location is a few metres off can take its value from the wrong area, near an edge.
+- A merged entity near the edge of an area can take its value from the wrong area, if its location is a few metres off.
 - A detail that a data set gives under another name, or in other categories, needs a rule of its own to translate it.
 - A data set that describes some things and only concerns others must be split into two data models before it can
   take part in both roles.
-- The test of a location against the full shape of an area is our own code, separate from the single point that merge
-  by location compares.
+- We must maintain our own test of a location against the full shape of an area, because merge by location compares
+  single points only.
