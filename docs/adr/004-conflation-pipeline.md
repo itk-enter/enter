@@ -59,7 +59,7 @@ Its identifier is taken from one of the records by a fixed rule. Entities that a
 - Users can get one entity per real-world thing from the merged data set, or keep reading the data set they trust.
 - The original data sets stay as their publishers made them, so a merged entity can be checked against its records.
 - A wrong merge is fixed by changing a rule and running the merge again, without repairing any data set.
-- Conflation of a new kind of thing mostly needs settings, and code only where the standard way of working does not 
+- Conflation of a new kind of thing mostly needs settings, and code only where the standard way of working does not
   suit it.
 
 ### Negative
