@@ -44,6 +44,11 @@ final readonly class MergedDataSet
             'context_url' => $this->contextUrl,
             'licence' => $this->licence,
             'inputs' => $this->inputs,
+            // A merged data set is a data set of its own, not part of another.
+            'dataset' => [
+                'id' => $this->id,
+                'title' => $this->title,
+            ],
         ];
     }
 }
