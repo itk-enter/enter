@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-90](https://github.com/itk-enter/enter/pull/90)
+  Added conflation diagram svgs and markdown.
 * [PR-94](https://github.com/itk-enter/enter/pull/94)
   Consolidated ADR 007.
 * [PR-93](https://github.com/itk-enter/enter/pull/93)

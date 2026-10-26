@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 724" role="img" aria-label="Four toilet sources become one merged dataset; the originals stay untouched">
+  <style>
+    svg { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; }
+    text { fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 600; }
+    .q { font-size: 11.5px; fill: #59636e; }
+    .c { font-size: 11.5px; fill: #8250df; }
+    .n { font-weight: 600; }
+    .m { text-anchor: middle; }
+    .box { fill: #ffffff; stroke: #8c959f; stroke-width: 1.25; }
+    .main { fill: #0969da; fill-opacity: 0.12; stroke: #0969da; stroke-width: 2; }
+    .line { fill: none; stroke: #8c959f; stroke-width: 1.25; }
+    .head { fill: #8c959f; }
+  </style>
+  <rect x="0" y="0" width="760" height="724" rx="12" fill="#f6f8fa"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="head" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="24" y="34">Four toilet sources become one merged dataset; the originals stay untouched</text>
+  <text class="q" x="24" y="54">Runs automatically after every import. <tspan class="c">Purple lines</tspan> are set in each merge's configuration.</text>
+
+  <!-- Connectors -->
+  <path class="line" d="M104 124V140M280 124V140M456 124V140M632 124V140M104 140H632"/>
+  <path class="line" d="M250 140V164" marker-end="url(#arrow)"/>
+  <path class="line" d="M250 220V244" marker-end="url(#arrow)"/>
+  <path class="line" d="M250 316V340" marker-end="url(#arrow)"/>
+  <path class="line" d="M250 412V436" marker-end="url(#arrow)"/>
+  <path class="line" d="M250 508V532" marker-end="url(#arrow)"/>
+  <path class="line" d="M250 604V628" marker-end="url(#arrow)"/>
+  <path class="line" d="M476 192H508" marker-end="url(#arrow)"/>
+  <path class="line" d="M476 664H508" marker-end="url(#arrow)"/>
+  <path class="line" d="M700 220V636" marker-end="url(#arrow)"/>
+  <text class="q" x="692" y="432" text-anchor="end">listed too</text>
+
+  <!-- Sources -->
+  <rect class="box" x="24" y="72" width="160" height="52" rx="8"/>
+  <text class="n m" x="104" y="94">Kommune</text>
+  <text class="q m" x="104" y="112">City kiosk toilets</text>
+
+  <rect class="box" x="200" y="72" width="160" height="52" rx="8"/>
+  <text class="n m" x="280" y="94">Kommune</text>
+  <text class="q m" x="280" y="112">Other toilets</text>
+
+  <rect class="box" x="376" y="72" width="160" height="52" rx="8"/>
+  <text class="n m" x="456" y="94">OpenStreetMap</text>
+  <text class="q m" x="456" y="112">Volunteer map</text>
+
+  <rect class="box" x="552" y="72" width="160" height="52" rx="8"/>
+  <text class="n m" x="632" y="94">OtherSource</text>
+  <text class="q m" x="632" y="112">Additional provider</text>
+
+  <!-- Steps -->
+  <rect class="box" x="24" y="164" width="452" height="56" rx="8"/>
+  <text class="n" x="40" y="188">1  Import</text>
+  <text x="40" y="206">Each source is converted to a common format and stored</text>
+
+  <rect class="box" x="24" y="244" width="452" height="72" rx="8"/>
+  <text class="n" x="40" y="268">2  Fetch</text>
+  <text x="40" y="286">Records are read from every source that has them</text>
+  <text class="c" x="40" y="304">Which kinds of things to merge, e.g. public toilets</text>
+
+  <rect class="box" x="24" y="340" width="452" height="72" rx="8"/>
+  <text class="n" x="40" y="364">3  Match by location</text>
+  <text x="40" y="382">Nearby records from different sources = one place</text>
+  <text class="c" x="40" y="400">Merge distance, e.g. 5 m, and matching method</text>
+
+  <rect class="box" x="24" y="436" width="452" height="72" rx="8"/>
+  <text class="n" x="40" y="460">4  Resolve disagreements</text>
+  <text x="40" y="478">Agreed values are kept; otherwise the configured rules decide</text>
+  <text class="c" x="40" y="496">Which rules decide, and in what order</text>
+
+  <rect class="box" x="24" y="532" width="452" height="72" rx="8"/>
+  <text class="n" x="40" y="556">5  Augment</text>
+  <text x="40" y="574">Fills missing details from data about the area, e.g. district</text>
+  <text class="c" x="40" y="592">Which datasets add which details</text>
+
+  <rect class="main" x="24" y="628" width="452" height="72" rx="8"/>
+  <text class="n" x="40" y="652">6  Publish</text>
+  <text x="40" y="670">Saved as a new dataset: merged public toilets</text>
+  <text class="c" x="40" y="688">Dataset name, description and licence</text>
+
+  <!-- Side column -->
+  <rect class="box" x="508" y="164" width="228" height="56" rx="8"/>
+  <text class="n" x="524" y="188">Original source datasets</text>
+  <text class="q" x="524" y="206">Stay published, unchanged</text>
+
+  <rect class="box" x="508" y="636" width="228" height="56" rx="8"/>
+  <text class="n" x="524" y="660">Listed on /sources</text>
+  <text class="q" x="524" y="678">Originals and merged together</text>
+</svg>
