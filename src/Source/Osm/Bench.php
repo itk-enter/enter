@@ -12,10 +12,6 @@ use App\Source\Definition;
 
 /**
  * Public benches in Aarhus Municipality.
- *
- * The feed's tagging is open-ended, so a record may carry tags beside the ones
- * mapped here; those are carried as additional information under their own
- * keys.
  */
 #[Definition(
     id: 'osm-bench',
@@ -25,8 +21,6 @@ use App\Source\Definition;
     contact: 'https://community.openstreetmap.org/',
     landingPage: 'https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dbench',
 
-    // The Overpass QL in the URL: within Aarhus Municipality (OSM
-    // relation 1784663), select every element tagged as a bench.
     accessUrl: [
         'url' => 'https://overpass-api.de/api/interpreter',
         'query' => [
@@ -57,11 +51,13 @@ DATA,
         'artwork_type' => 'Describes the artwork a bench is, not the bench; see tourism.',
         'artist_name' => 'Describes the artwork a bench is, not the bench; see tourism.',
     ],
+    dataset: 'osm-bench',
+    datasetTitle: 'Bænke (OpenStreetMap), Aarhus Kommune',
 )]
 final class Bench extends AbstractSource
 {
     /**
-     * Tags this mapping reads.
+     * The tags that this mapping reads.
      */
     private const array MAPPED_TAGS = [
         'name', 'description', 'backrest', 'armrest', 'seats', 'seats:separated', 'material', 'colour',
@@ -70,22 +66,19 @@ final class Bench extends AbstractSource
     ];
 
     /**
-     * Tags left out on purpose, with the reason given in omittedFields: the
-     * key itself, and every key it prefixes with a colon.
+     * The tags that this mapping does not use, with all keys that they prefix.
      */
     private const array OMITTED_TAGS = [
         'amenity', 'access', 'source', 'note', 'fixme', 'not', 'tourism', 'artwork_type', 'artist_name',
     ];
 
     /**
-     * The materials the model has a term for; OSM and the model use the same
-     * words.
+     * The materials that the model has a term for.
      */
     private const array MATERIALS = ['wood', 'metal', 'steel', 'concrete', 'stone', 'granite', 'plastic'];
 
     /**
-     * The 16 compass points OSM allows for direction, in degrees clockwise
-     * from north.
+     * The 16 compass points in degrees clockwise from north.
      */
     private const array COMPASS_POINTS = [
         'N' => 0.0, 'NNE' => 22.5, 'NE' => 45.0, 'ENE' => 67.5,
@@ -95,7 +88,7 @@ final class Bench extends AbstractSource
     ];
 
     /**
-     * Maps one feed record onto an NgsiEntity.
+     * Makes an NgsiEntity from one feed record.
      *
      * @param array<string, mixed> $data Overpass JSON element
      */
@@ -104,8 +97,6 @@ final class Bench extends AbstractSource
         $type = $data['type'] ?? null;
         $id = $data['id'] ?? null;
 
-        // OSM ids are only unique per element type, so both are needed to
-        // address the same object again on the next import.
         if (!\is_string($type) || !\is_int($id)) {
             return null;
         }
@@ -150,17 +141,6 @@ final class Bench extends AbstractSource
             ->setProperty('seeAlso', \sprintf('https://www.openstreetmap.org/%s/%d', $type, $id))
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
-
-            // Facility facts the model has no attribute for, or values that do
-            // not fit the attribute it has, carried as the feed states them.
-            //
-            // material is carried here only when it is not one of the model's
-            // terms, direction and level only when they are not a number or
-            // compass point, and seats only when it is not a whole number. panoramax is the id of a street-level photo;
-            // the model's image wants a URL, and the service's URL for a
-            // photo is not established here. otherTags carries every tag this
-            // mapping neither reads nor omits, under its OSM key, so a tag a
-            // mapper adds later is not silently lost.
             ->additionalInformation([
                 'material' => \in_array($material, self::MATERIALS, true) ? '' : $material,
                 'direction' => null === $direction ? $this->tag($tags, 'direction') : '',
@@ -180,7 +160,7 @@ final class Bench extends AbstractSource
     }
 
     /**
-     * Some tags state several values separated by semicolons.
+     * Splits a semicolon-separated tag value into a list.
      *
      * @return list<string>
      */
@@ -190,8 +170,7 @@ final class Bench extends AbstractSource
     }
 
     /**
-     * Only the tag's plain answers map; any other value states nothing, and
-     * an absent tag is unknown rather than "no".
+     * Changes a "yes" or "no" value to a boolean, or returns null.
      */
     private function yesNo(string $value): ?bool
     {
@@ -203,7 +182,7 @@ final class Bench extends AbstractSource
     }
 
     /**
-     * The model counts seats as a whole number of at least one.
+     * Gets the number of seats as a positive integer.
      */
     private function seats(string $value): ?int
     {
@@ -211,8 +190,7 @@ final class Bench extends AbstractSource
     }
 
     /**
-     * direction is degrees clockwise from north, or one of the 16 compass
-     * points, which the model requires as degrees.
+     * Gets the direction in degrees clockwise from north.
      */
     private function direction(string $value): ?float
     {
@@ -224,9 +202,7 @@ final class Bench extends AbstractSource
     }
 
     /**
-     * A "no" states that there are none, which the list cannot hold; any
-     * value the model has no term for is still a hostile feature, so it maps
-     * to "other".
+     * Gets the hostile architecture features of the bench.
      *
      * @param array<string, mixed> $tags
      *
@@ -251,8 +227,7 @@ final class Bench extends AbstractSource
     }
 
     /**
-     * check_date and survey:date both state when a mapper last saw the bench;
-     * the more recent of the two is the one that holds.
+     * Gets the most recent check date.
      *
      * @param array<string, mixed> $tags
      */
@@ -292,8 +267,7 @@ final class Bench extends AbstractSource
     }
 
     /**
-     * The query requests "out center tags", so a way or relation carries only
-     * a single representative point, never full vertex or bounds geometry.
+     * Gets the location of the element as a GeoJSON point.
      *
      * @param array<string, mixed> $element
      *

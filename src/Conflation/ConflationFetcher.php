@@ -6,7 +6,7 @@ namespace App\Conflation;
 
 use App\Broker\NgsiLdBroker;
 use App\Source\SourceInterface;
-use App\SourceImporter\AbstracSourceImporter;
+use App\SourceImporter\AbstractSourceImporter;
 use App\SourceManager;
 use Psr\Log\LoggerInterface;
 
@@ -59,7 +59,7 @@ final readonly class ConflationFetcher
     public const array LEFT_OUT = [
         'type',
         'location',
-        AbstracSourceImporter::SOURCE_ID_ATTRIBUTE,
+        AbstractSourceImporter::SOURCE_ID_ATTRIBUTE,
         'source',
     ];
 

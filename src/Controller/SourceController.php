@@ -8,7 +8,7 @@ use App\Conflation\ConflationManager;
 use App\Conflation\MergedDataSet;
 use App\Conflation\MergedDataSetFactory;
 use App\Source\SourceInterface;
-use App\SourceImporter\AbstracSourceImporter;
+use App\SourceImporter\AbstractSourceImporter;
 use App\SourceManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,8 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * The data sets published to the broker, as a page and as JSON: every source,
- * then every merged data set.
+ * Shows the sources as a page and as JSON.
  */
 final class SourceController extends AbstractController
 {
@@ -73,8 +72,7 @@ final class SourceController extends AbstractController
     }
 
     /**
-     * Where a data set's entities are read from the broker: everything
-     * stamped with its id, whatever the model.
+     * Gets the broker URL for the entities of a source.
      */
     private function entitiesUrl(string $sourceId): string
     {
