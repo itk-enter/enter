@@ -6,9 +6,10 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * The published list of sources, as JSON and as a page.
+ * Tests the list of sources as JSON and as a page.
  */
 class SourceControllerTest extends WebTestCase
 {
@@ -16,9 +17,36 @@ class SourceControllerTest extends WebTestCase
     {
         $ids = array_column($this->sources(static::createClient()), 'id');
 
-        $this->assertContains('mtm_spatialmaps-handicap-parking', $ids);
-        $this->assertContains('osm-handicap-parking', $ids);
-        $this->assertContains('test:mtm_spatialmaps-handicap-parking', $ids);
+        $this->assertContains('mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('mtm_spatialmaps-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-spot', $ids);
+        $this->assertContains('osm-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-off-street', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-on-street', $ids);
+    }
+
+    /**
+     * A merged data set is listed after the sources, with the data sets it
+     * is merged from, and read from the broker the same way.
+     */
+    public function testItListsEveryMergedDataSetAsJson(): void
+    {
+        $dataSets = array_column($this->sources(static::createClient()), null, 'id');
+
+        $this->assertArrayHasKey('merged-public-toilets', $dataSets);
+        $merged = $dataSets['test:merged-public-toilets'];
+
+        $this->assertSame('PublicToilet', $merged['model']);
+        $this->assertSame($dataSets['test:osm-public-toilet']['context_url'], $merged['context_url']);
+        $this->assertSame([
+            'test:findtoilet-public-toilet',
+            'test:mtm_spatialmaps-toilet-city',
+            'test:mtm_spatialmaps-toilet-other',
+            'test:osm-public-toilet',
+        ], $merged['inputs']);
+        $this->assertStringEndsWith('q=sourceId=="test:merged-public-toilets"', urldecode($merged['entities_url']));
+        $this->assertSame('test:merged-public-toilets', array_key_last($dataSets));
     }
 
     /**
@@ -40,12 +68,32 @@ class SourceControllerTest extends WebTestCase
         }
     }
 
+    /**
+     * Makes sure that the list groups the sources by data set.
+     */
+    public function testItGroupsSourcesByTheirDataSet(): void
+    {
+        $datasets = array_column($this->sources(static::createClient()), 'dataset', 'id');
+
+        $handicapParking = ['id' => 'osm-handicap-parking', 'title' => 'Handicapparkering (OpenStreetMap), Aarhus Kommune'];
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-spot']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-on-street']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-off-street']);
+
+        $register = ['id' => 'mtm_spatialmaps-handicap-parking', 'title' => 'Handicapparkering (MTM), Aarhus Kommune'];
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-spot']);
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-on-street']);
+
+        $this->assertSame('osm-bench', $datasets['osm-bench']['id']);
+        $this->assertNotSame('', $datasets['osm-bench']['title']);
+    }
+
     public function testItListsEverySourceOnAPage(): void
     {
         $client = static::createClient();
         $ids = array_column($this->sources($client), 'id');
 
-        $client->request('GET', '/sources');
+        $client->request(Request::METHOD_GET, '/sources');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'text/html; charset=UTF-8');
@@ -62,7 +110,7 @@ class SourceControllerTest extends WebTestCase
      */
     private function sources(KernelBrowser $client): array
     {
-        $client->request('GET', '/sources.json');
+        $client->request(Request::METHOD_GET, '/sources.json');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/json');

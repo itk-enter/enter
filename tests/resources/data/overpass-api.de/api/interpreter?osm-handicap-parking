@@ -2,8 +2,8 @@
   "version": 0.6,
   "generator": "Overpass API 0.7.62.11 87bfad18",
   "osm3s": {
-    "timestamp_osm_base": "2026-09-15T08:07:27Z",
-    "timestamp_areas_base": "2026-09-14T02:10:25Z",
+    "timestamp_osm_base": "2026-10-07T12:43:36Z",
+    "timestamp_areas_base": "2026-10-06T13:12:56Z",
     "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
   },
   "elements": [
@@ -336,6 +336,7 @@
   "lon": 10.2050798,
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -346,6 +347,7 @@
   "lon": 10.2051616,
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -2272,6 +2274,94 @@
   }
 },
 {
+  "type": "node",
+  "id": 14189639402,
+  "lat": 56.1540852,
+  "lon": 10.1936005,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "node",
+  "id": 14212381269,
+  "lat": 56.1507794,
+  "lon": 10.2060177,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "node",
+  "id": 14212381270,
+  "lat": 56.1507894,
+  "lon": 10.2060896,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "node",
+  "id": 14214719951,
+  "lat": 56.1275451,
+  "lon": 10.1953837,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "node",
+  "id": 14232286830,
+  "lat": 56.1576083,
+  "lon": 10.2101203,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "3",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "node",
+  "id": 14235383289,
+  "lat": 56.1798722,
+  "lon": 10.0970026,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "node",
+  "id": 14235383290,
+  "lat": 56.1798728,
+  "lon": 10.0971266,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "node",
+  "id": 14254181822,
+  "lat": 56.1037541,
+  "lon": 10.1450310,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
   "type": "way",
   "id": 23858719,
   "bounds": {
@@ -2577,6 +2667,38 @@
 },
 {
   "type": "way",
+  "id": 125813022,
+  "bounds": {
+    "minlat": 56.1789005,
+    "minlon": 10.2001053,
+    "maxlat": 56.1793788,
+    "maxlon": 10.2010190
+  },
+  "geometry": [
+    { "lat": 56.1791583, "lon": 10.2001053 },
+    { "lat": 56.1792435, "lon": 10.2005106 },
+    { "lat": 56.1793347, "lon": 10.2004500 },
+    { "lat": 56.1793788, "lon": 10.2006512 },
+    { "lat": 56.1793269, "lon": 10.2010190 },
+    { "lat": 56.1791028, "lon": 10.2009071 },
+    { "lat": 56.1790174, "lon": 10.2009832 },
+    { "lat": 56.1789354, "lon": 10.2005993 },
+    { "lat": 56.1789240, "lon": 10.2005457 },
+    { "lat": 56.1789005, "lon": 10.2004346 },
+    { "lat": 56.1790028, "lon": 10.2003665 },
+    { "lat": 56.1790368, "lon": 10.2005193 },
+    { "lat": 56.1791275, "lon": 10.2004617 },
+    { "lat": 56.1790660, "lon": 10.2001735 },
+    { "lat": 56.1791583, "lon": 10.2001053 }
+  ],
+  "tags": {
+    "amenity": "parking",
+    "capacity:disabled": "1",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
   "id": 160617931,
   "bounds": {
     "minlat": 56.1694669,
@@ -2597,6 +2719,27 @@
     "amenity": "parking",
     "capacity:disabled": "2",
     "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 162080082,
+  "bounds": {
+    "minlat": 56.0366753,
+    "minlon": 10.1938349,
+    "maxlat": 56.0371912,
+    "maxlon": 10.1950563
+  },
+  "geometry": [
+    { "lat": 56.0369070, "lon": 10.1950563 },
+    { "lat": 56.0371912, "lon": 10.1948480 },
+    { "lat": 56.0369595, "lon": 10.1938349 },
+    { "lat": 56.0366753, "lon": 10.1940432 },
+    { "lat": 56.0369070, "lon": 10.1950563 }
+  ],
+  "tags": {
+    "amenity": "parking",
+    "capacity:disabled": "2"
   }
 },
 {
@@ -3453,6 +3596,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -3474,6 +3618,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -3495,6 +3640,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -3516,6 +3662,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -3537,6 +3684,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -3979,6 +4127,7 @@
   "tags": {
     "access": "no",
     "amenity": "parking_space",
+    "capacity": "1",
     "disabled": "designated",
     "parking_space": "disabled"
   }
@@ -4400,6 +4549,67 @@
 },
 {
   "type": "way",
+  "id": 1039396903,
+  "bounds": {
+    "minlat": 56.1838084,
+    "minlon": 10.0952427,
+    "maxlat": 56.1853483,
+    "maxlon": 10.0980502
+  },
+  "geometry": [
+    { "lat": 56.1838084, "lon": 10.0974979 },
+    { "lat": 56.1838899, "lon": 10.0970189 },
+    { "lat": 56.1839332, "lon": 10.0970390 },
+    { "lat": 56.1839534, "lon": 10.0968996 },
+    { "lat": 56.1839116, "lon": 10.0968607 },
+    { "lat": 56.1842027, "lon": 10.0958857 },
+    { "lat": 56.1841870, "lon": 10.0958730 },
+    { "lat": 56.1842523, "lon": 10.0956604 },
+    { "lat": 56.1843068, "lon": 10.0957871 },
+    { "lat": 56.1842739, "lon": 10.0960010 },
+    { "lat": 56.1842329, "lon": 10.0960513 },
+    { "lat": 56.1842273, "lon": 10.0960882 },
+    { "lat": 56.1842808, "lon": 10.0961188 },
+    { "lat": 56.1841438, "lon": 10.0969093 },
+    { "lat": 56.1843192, "lon": 10.0970074 },
+    { "lat": 56.1843091, "lon": 10.0970649 },
+    { "lat": 56.1843957, "lon": 10.0971140 },
+    { "lat": 56.1844883, "lon": 10.0971664 },
+    { "lat": 56.1844986, "lon": 10.0971077 },
+    { "lat": 56.1848551, "lon": 10.0973072 },
+    { "lat": 56.1851229, "lon": 10.0957612 },
+    { "lat": 56.1851369, "lon": 10.0956817 },
+    { "lat": 56.1851849, "lon": 10.0957073 },
+    { "lat": 56.1852442, "lon": 10.0953969 },
+    { "lat": 56.1852442, "lon": 10.0953184 },
+    { "lat": 56.1852272, "lon": 10.0952427 },
+    { "lat": 56.1853342, "lon": 10.0953356 },
+    { "lat": 56.1853065, "lon": 10.0954324 },
+    { "lat": 56.1853483, "lon": 10.0954753 },
+    { "lat": 56.1851315, "lon": 10.0967218 },
+    { "lat": 56.1849005, "lon": 10.0980502 },
+    { "lat": 56.1845184, "lon": 10.0978357 },
+    { "lat": 56.1845562, "lon": 10.0976066 },
+    { "lat": 56.1842963, "lon": 10.0974525 },
+    { "lat": 56.1842897, "lon": 10.0974922 },
+    { "lat": 56.1842806, "lon": 10.0975473 },
+    { "lat": 56.1842719, "lon": 10.0976005 },
+    { "lat": 56.1842636, "lon": 10.0976511 },
+    { "lat": 56.1842564, "lon": 10.0976948 },
+    { "lat": 56.1842477, "lon": 10.0977479 },
+    { "lat": 56.1842043, "lon": 10.0977249 },
+    { "lat": 56.1838084, "lon": 10.0974979 }
+  ],
+  "tags": {
+    "access": "customers",
+    "amenity": "parking",
+    "capacity:disabled": "7",
+    "fee": "no",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
   "id": 1039832836,
   "bounds": {
     "minlat": 56.2086195,
@@ -4650,6 +4860,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -4671,6 +4882,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -4692,6 +4904,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -4713,6 +4926,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -4734,6 +4948,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -4741,20 +4956,21 @@
   "type": "way",
   "id": 1180104385,
   "bounds": {
-    "minlat": 56.1902321,
-    "minlon": 10.1736588,
-    "maxlat": 56.1902943,
-    "maxlon": 10.1737553
+    "minlat": 56.1902680,
+    "minlon": 10.1738258,
+    "maxlat": 56.1903315,
+    "maxlon": 10.1739266
   },
   "geometry": [
-    { "lat": 56.1902810, "lon": 10.1736588 },
-    { "lat": 56.1902943, "lon": 10.1737189 },
-    { "lat": 56.1902453, "lon": 10.1737553 },
-    { "lat": 56.1902321, "lon": 10.1736935 },
-    { "lat": 56.1902810, "lon": 10.1736588 }
+    { "lat": 56.1903171, "lon": 10.1738258 },
+    { "lat": 56.1903315, "lon": 10.1738921 },
+    { "lat": 56.1902824, "lon": 10.1739266 },
+    { "lat": 56.1902680, "lon": 10.1738603 },
+    { "lat": 56.1903171, "lon": 10.1738258 }
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -4762,20 +4978,21 @@
   "type": "way",
   "id": 1180104386,
   "bounds": {
-    "minlat": 56.1902190,
-    "minlon": 10.1735993,
-    "maxlat": 56.1902810,
-    "maxlon": 10.1736935
+    "minlat": 56.1902535,
+    "minlon": 10.1737587,
+    "maxlat": 56.1903171,
+    "maxlon": 10.1738603
   },
   "geometry": [
-    { "lat": 56.1902321, "lon": 10.1736935 },
-    { "lat": 56.1902190, "lon": 10.1736322 },
-    { "lat": 56.1902678, "lon": 10.1735993 },
-    { "lat": 56.1902810, "lon": 10.1736588 },
-    { "lat": 56.1902321, "lon": 10.1736935 }
+    { "lat": 56.1902680, "lon": 10.1738603 },
+    { "lat": 56.1902535, "lon": 10.1737931 },
+    { "lat": 56.1903024, "lon": 10.1737587 },
+    { "lat": 56.1903171, "lon": 10.1738258 },
+    { "lat": 56.1902680, "lon": 10.1738603 }
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -4798,6 +5015,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -5136,6 +5354,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "2",
     "parking_space": "disabled"
   }
 },
@@ -5179,6 +5398,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "2",
     "parking_space": "disabled"
   }
 },
@@ -5322,6 +5542,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -5631,7 +5852,7 @@
   "tags": {
     "amenity": "parking",
     "capacity": "2",
-    "capacity:disabled": "1",
+    "capacity:disabled": "2",
     "orientation": "parallel",
     "parking": "street_side"
   }
@@ -5759,6 +5980,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6218,6 +6440,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6723,6 +6946,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6744,6 +6968,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6765,6 +6990,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6786,6 +7012,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6895,6 +7122,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6916,6 +7144,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -6973,17 +7202,17 @@
   "type": "way",
   "id": 1384128171,
   "bounds": {
-    "minlat": 56.1943113,
-    "minlon": 10.1944455,
-    "maxlat": 56.1943536,
-    "maxlon": 10.1945255
+    "minlat": 56.1942845,
+    "minlon": 10.1944298,
+    "maxlat": 56.1943559,
+    "maxlon": 10.1945537
   },
   "geometry": [
-    { "lat": 56.1943396, "lon": 10.1944455 },
-    { "lat": 56.1943536, "lon": 10.1945034 },
-    { "lat": 56.1943253, "lon": 10.1945255 },
-    { "lat": 56.1943113, "lon": 10.1944676 },
-    { "lat": 56.1943396, "lon": 10.1944455 }
+    { "lat": 56.1943373, "lon": 10.1944298 },
+    { "lat": 56.1943559, "lon": 10.1945057 },
+    { "lat": 56.1943034, "lon": 10.1945537 },
+    { "lat": 56.1942845, "lon": 10.1944782 },
+    { "lat": 56.1943373, "lon": 10.1944298 }
   ],
   "tags": {
     "amenity": "parking_space",
@@ -7782,6 +8011,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "fee": "no",
     "parking_space": "disabled"
   }
@@ -7804,6 +8034,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "fee": "no",
     "parking_space": "disabled"
   }
@@ -12908,6 +13139,7 @@
   ],
   "tags": {
     "amenity": "parking_space",
+    "capacity": "1",
     "parking_space": "disabled"
   }
 },
@@ -19388,6 +19620,537 @@
     "amenity": "parking_space",
     "capacity": "1",
     "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244116,
+  "bounds": {
+    "minlat": 56.0732135,
+    "minlon": 10.1668107,
+    "maxlat": 56.0732715,
+    "maxlon": 10.1668931
+  },
+  "geometry": [
+    { "lat": 56.0732641, "lon": 10.1668931 },
+    { "lat": 56.0732135, "lon": 10.1668738 },
+    { "lat": 56.0732209, "lon": 10.1668107 },
+    { "lat": 56.0732715, "lon": 10.1668300 },
+    { "lat": 56.0732641, "lon": 10.1668931 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244117,
+  "bounds": {
+    "minlat": 56.0731054,
+    "minlon": 10.1668434,
+    "maxlat": 56.0731496,
+    "maxlon": 10.1669358
+  },
+  "geometry": [
+    { "lat": 56.0731407, "lon": 10.1668434 },
+    { "lat": 56.0731054, "lon": 10.1668560 },
+    { "lat": 56.0731143, "lon": 10.1669358 },
+    { "lat": 56.0731496, "lon": 10.1669232 },
+    { "lat": 56.0731407, "lon": 10.1668434 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244118,
+  "bounds": {
+    "minlat": 56.0731143,
+    "minlon": 10.1669232,
+    "maxlat": 56.0731590,
+    "maxlon": 10.1670194
+  },
+  "geometry": [
+    { "lat": 56.0731143, "lon": 10.1669358 },
+    { "lat": 56.0731238, "lon": 10.1670194 },
+    { "lat": 56.0731590, "lon": 10.1670064 },
+    { "lat": 56.0731496, "lon": 10.1669232 },
+    { "lat": 56.0731143, "lon": 10.1669358 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244245,
+  "bounds": {
+    "minlat": 56.0679151,
+    "minlon": 10.1649438,
+    "maxlat": 56.0679692,
+    "maxlon": 10.1650288
+  },
+  "geometry": [
+    { "lat": 56.0679692, "lon": 10.1649828 },
+    { "lat": 56.0679552, "lon": 10.1650288 },
+    { "lat": 56.0679151, "lon": 10.1649898 },
+    { "lat": 56.0679291, "lon": 10.1649438 },
+    { "lat": 56.0679692, "lon": 10.1649828 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244246,
+  "bounds": {
+    "minlat": 56.0678332,
+    "minlon": 10.1641617,
+    "maxlat": 56.0678893,
+    "maxlon": 10.1642480
+  },
+  "geometry": [
+    { "lat": 56.0678332, "lon": 10.1642064 },
+    { "lat": 56.0678474, "lon": 10.1641617 },
+    { "lat": 56.0678893, "lon": 10.1642054 },
+    { "lat": 56.0678762, "lon": 10.1642480 },
+    { "lat": 56.0678332, "lon": 10.1642064 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244247,
+  "bounds": {
+    "minlat": 56.0677112,
+    "minlon": 10.1641251,
+    "maxlat": 56.0677716,
+    "maxlon": 10.1642198
+  },
+  "geometry": [
+    { "lat": 56.0677564, "lon": 10.1642198 },
+    { "lat": 56.0677112, "lon": 10.1641758 },
+    { "lat": 56.0677269, "lon": 10.1641251 },
+    { "lat": 56.0677716, "lon": 10.1641688 },
+    { "lat": 56.0677564, "lon": 10.1642198 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244301,
+  "bounds": {
+    "minlat": 56.0684526,
+    "minlon": 10.1553074,
+    "maxlat": 56.0684939,
+    "maxlon": 10.1553952
+  },
+  "geometry": [
+    { "lat": 56.0684835, "lon": 10.1553952 },
+    { "lat": 56.0684939, "lon": 10.1553214 },
+    { "lat": 56.0684631, "lon": 10.1553074 },
+    { "lat": 56.0684526, "lon": 10.1553812 },
+    { "lat": 56.0684835, "lon": 10.1553952 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559244302,
+  "bounds": {
+    "minlat": 56.0684220,
+    "minlon": 10.1552941,
+    "maxlat": 56.0684631,
+    "maxlon": 10.1553812
+  },
+  "geometry": [
+    { "lat": 56.0684631, "lon": 10.1553074 },
+    { "lat": 56.0684320, "lon": 10.1552941 },
+    { "lat": 56.0684220, "lon": 10.1553666 },
+    { "lat": 56.0684526, "lon": 10.1553812 },
+    { "lat": 56.0684631, "lon": 10.1553074 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559245659,
+  "bounds": {
+    "minlat": 56.0482390,
+    "minlon": 10.1973292,
+    "maxlat": 56.0482716,
+    "maxlon": 10.1974117
+  },
+  "geometry": [
+    { "lat": 56.0482390, "lon": 10.1974108 },
+    { "lat": 56.0482707, "lon": 10.1974117 },
+    { "lat": 56.0482716, "lon": 10.1973305 },
+    { "lat": 56.0482399, "lon": 10.1973292 },
+    { "lat": 56.0482390, "lon": 10.1974108 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559245660,
+  "bounds": {
+    "minlat": 56.0482707,
+    "minlon": 10.1973305,
+    "maxlat": 56.0483021,
+    "maxlon": 10.1974128
+  },
+  "geometry": [
+    { "lat": 56.0482707, "lon": 10.1974117 },
+    { "lat": 56.0483012, "lon": 10.1974128 },
+    { "lat": 56.0483021, "lon": 10.1973316 },
+    { "lat": 56.0482716, "lon": 10.1973305 },
+    { "lat": 56.0482707, "lon": 10.1974117 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559245748,
+  "bounds": {
+    "minlat": 56.0370566,
+    "minlon": 10.1944438,
+    "maxlat": 56.0371082,
+    "maxlon": 10.1945285
+  },
+  "geometry": [
+    { "lat": 56.0371082, "lon": 10.1944988 },
+    { "lat": 56.0370700, "lon": 10.1945285 },
+    { "lat": 56.0370566, "lon": 10.1944736 },
+    { "lat": 56.0370953, "lon": 10.1944438 },
+    { "lat": 56.0371082, "lon": 10.1944988 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559245749,
+  "bounds": {
+    "minlat": 56.0370434,
+    "minlon": 10.1943882,
+    "maxlat": 56.0370953,
+    "maxlon": 10.1944736
+  },
+  "geometry": [
+    { "lat": 56.0370566, "lon": 10.1944736 },
+    { "lat": 56.0370434, "lon": 10.1944182 },
+    { "lat": 56.0370822, "lon": 10.1943882 },
+    { "lat": 56.0370953, "lon": 10.1944438 },
+    { "lat": 56.0370566, "lon": 10.1944736 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559380387,
+  "bounds": {
+    "minlat": 56.1908574,
+    "minlon": 10.2129861,
+    "maxlat": 56.1909017,
+    "maxlon": 10.2130768
+  },
+  "geometry": [
+    { "lat": 56.1908855, "lon": 10.2130768 },
+    { "lat": 56.1909017, "lon": 10.2130071 },
+    { "lat": 56.1908736, "lon": 10.2129861 },
+    { "lat": 56.1908574, "lon": 10.2130558 },
+    { "lat": 56.1908855, "lon": 10.2130768 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559380388,
+  "bounds": {
+    "minlat": 56.1908183,
+    "minlon": 10.2132400,
+    "maxlat": 56.1908825,
+    "maxlon": 10.2133844
+  },
+  "geometry": [
+    { "lat": 56.1908443, "lon": 10.2132400 },
+    { "lat": 56.1908825, "lon": 10.2132667 },
+    { "lat": 56.1908715, "lon": 10.2133116 },
+    { "lat": 56.1908552, "lon": 10.2133844 },
+    { "lat": 56.1908183, "lon": 10.2133584 },
+    { "lat": 56.1908443, "lon": 10.2132400 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559380389,
+  "bounds": {
+    "minlat": 56.1908552,
+    "minlon": 10.2133116,
+    "maxlat": 56.1908994,
+    "maxlon": 10.2134046
+  },
+  "geometry": [
+    { "lat": 56.1908994, "lon": 10.2133318 },
+    { "lat": 56.1908715, "lon": 10.2133116 },
+    { "lat": 56.1908552, "lon": 10.2133844 },
+    { "lat": 56.1908831, "lon": 10.2134046 },
+    { "lat": 56.1908994, "lon": 10.2133318 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1559380390,
+  "bounds": {
+    "minlat": 56.1907533,
+    "minlon": 10.2131938,
+    "maxlat": 56.1908161,
+    "maxlon": 10.2133373
+  },
+  "geometry": [
+    { "lat": 56.1908161, "lon": 10.2132191 },
+    { "lat": 56.1907794, "lon": 10.2131938 },
+    { "lat": 56.1907533, "lon": 10.2133119 },
+    { "lat": 56.1907888, "lon": 10.2133373 },
+    { "lat": 56.1908161, "lon": 10.2132191 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1563247179,
+  "bounds": {
+    "minlat": 56.1842043,
+    "minlon": 10.0976718,
+    "maxlat": 56.1842564,
+    "maxlon": 10.0977479
+  },
+  "geometry": [
+    { "lat": 56.1842043, "lon": 10.0977249 },
+    { "lat": 56.1842130, "lon": 10.0976718 },
+    { "lat": 56.1842564, "lon": 10.0976948 },
+    { "lat": 56.1842477, "lon": 10.0977479 },
+    { "lat": 56.1842043, "lon": 10.0977249 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1563247180,
+  "bounds": {
+    "minlat": 56.1842130,
+    "minlon": 10.0976278,
+    "maxlat": 56.1842636,
+    "maxlon": 10.0976948
+  },
+  "geometry": [
+    { "lat": 56.1842130, "lon": 10.0976718 },
+    { "lat": 56.1842202, "lon": 10.0976278 },
+    { "lat": 56.1842636, "lon": 10.0976511 },
+    { "lat": 56.1842564, "lon": 10.0976948 },
+    { "lat": 56.1842130, "lon": 10.0976718 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1563247181,
+  "bounds": {
+    "minlat": 56.1842202,
+    "minlon": 10.0975773,
+    "maxlat": 56.1842719,
+    "maxlon": 10.0976511
+  },
+  "geometry": [
+    { "lat": 56.1842202, "lon": 10.0976278 },
+    { "lat": 56.1842288, "lon": 10.0975773 },
+    { "lat": 56.1842719, "lon": 10.0976005 },
+    { "lat": 56.1842636, "lon": 10.0976511 },
+    { "lat": 56.1842202, "lon": 10.0976278 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1563247182,
+  "bounds": {
+    "minlat": 56.1842288,
+    "minlon": 10.0975245,
+    "maxlat": 56.1842806,
+    "maxlon": 10.0976005
+  },
+  "geometry": [
+    { "lat": 56.1842288, "lon": 10.0975773 },
+    { "lat": 56.1842377, "lon": 10.0975245 },
+    { "lat": 56.1842806, "lon": 10.0975473 },
+    { "lat": 56.1842719, "lon": 10.0976005 },
+    { "lat": 56.1842288, "lon": 10.0975773 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1563247183,
+  "bounds": {
+    "minlat": 56.1842377,
+    "minlon": 10.0974692,
+    "maxlat": 56.1842897,
+    "maxlon": 10.0975473
+  },
+  "geometry": [
+    { "lat": 56.1842377, "lon": 10.0975245 },
+    { "lat": 56.1842469, "lon": 10.0974692 },
+    { "lat": 56.1842897, "lon": 10.0974922 },
+    { "lat": 56.1842806, "lon": 10.0975473 },
+    { "lat": 56.1842377, "lon": 10.0975245 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1563247184,
+  "bounds": {
+    "minlat": 56.1842469,
+    "minlon": 10.0974162,
+    "maxlat": 56.1842985,
+    "maxlon": 10.0974922
+  },
+  "geometry": [
+    { "lat": 56.1842469, "lon": 10.0974692 },
+    { "lat": 56.1842557, "lon": 10.0974162 },
+    { "lat": 56.1842985, "lon": 10.0974392 },
+    { "lat": 56.1842963, "lon": 10.0974525 },
+    { "lat": 56.1842897, "lon": 10.0974922 },
+    { "lat": 56.1842469, "lon": 10.0974692 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1563247185,
+  "bounds": {
+    "minlat": 56.1842557,
+    "minlon": 10.0973545,
+    "maxlat": 56.1843089,
+    "maxlon": 10.0974392
+  },
+  "geometry": [
+    { "lat": 56.1842557, "lon": 10.0974162 },
+    { "lat": 56.1842659, "lon": 10.0973545 },
+    { "lat": 56.1843089, "lon": 10.0973780 },
+    { "lat": 56.1842985, "lon": 10.0974392 },
+    { "lat": 56.1842557, "lon": 10.0974162 }
+  ],
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 1565377507,
+  "bounds": {
+    "minlat": 56.1037312,
+    "minlon": 10.1449892,
+    "maxlat": 56.1037784,
+    "maxlon": 10.1450717
+  },
+  "geometry": [
+    { "lat": 56.1037312, "lon": 10.1450189 },
+    { "lat": 56.1037464, "lon": 10.1449892 },
+    { "lat": 56.1037784, "lon": 10.1450421 },
+    { "lat": 56.1037631, "lon": 10.1450717 },
+    { "lat": 56.1037312, "lon": 10.1450189 }
+  ],
+  "tags": {
+    "amenity": "parking",
+    "capacity": "1",
+    "capacity:disabled": "1",
+    "parking": "street_side"
   }
 },
 {
