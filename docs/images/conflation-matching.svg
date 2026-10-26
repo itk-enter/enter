@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" role="img" aria-label="One place means records from different sources, within the merge distance">
+  <style>
+    svg { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; }
+    text { fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 600; }
+    .q { font-size: 11.5px; fill: #59636e; }
+    .n { font-weight: 600; }
+    .m { text-anchor: middle; }
+    .good { fill: #1a7f37; }
+    .bad { fill: #cf222e; }
+    .box { fill: #ffffff; stroke: #8c959f; stroke-width: 1.25; }
+    .ring { fill: none; stroke: #8c959f; stroke-width: 1; stroke-dasharray: 3 3; }
+    .line { fill: none; stroke: #8c959f; stroke-width: 1; }
+    .kommune { fill: #0969da; }
+    .osm { fill: #1a7f37; }
+    .other { fill: #bc4c00; }
+  </style>
+  <rect x="0" y="0" width="760" height="360" rx="12" fill="#f6f8fa"/>
+
+  <text class="title" x="24" y="34">One place = records from different sources, within the merge distance</text>
+  <text class="q" x="24" y="54">Closest pairs are matched first. A record with no match is kept as its own record, so nothing is dropped.</text>
+
+  <!-- Panel 1: matched -->
+  <rect class="box" x="24" y="72" width="224" height="236" rx="8"/>
+  <text class="n m" x="136" y="100">Matched</text>
+  <circle class="ring" cx="134" cy="172" r="40"/>
+  <path class="line" d="M134 172L162 200"/>
+  <text class="q" x="166" y="214">5 m</text>
+  <circle class="kommune" cx="128" cy="174" r="6"/>
+  <circle class="other" cx="136" cy="178" r="6"/>
+  <circle class="osm" cx="142" cy="160" r="6"/>
+  <text class="n m good" x="136" y="252">One place, one record</text>
+  <text class="q m" x="136" y="272">All within 5 m of each other,</text>
+  <text class="q m" x="136" y="288">each from a different source</text>
+
+  <!-- Panel 2: too far apart -->
+  <rect class="box" x="264" y="72" width="224" height="236" rx="8"/>
+  <text class="n m" x="376" y="100">Too far apart</text>
+  <circle class="ring" cx="346" cy="172" r="40"/>
+  <path class="line" d="M354 172H402"/>
+  <text class="q" x="392" y="160">8 m</text>
+  <circle class="kommune" cx="346" cy="172" r="6"/>
+  <circle class="osm" cx="410" cy="172" r="6"/>
+  <text class="n m bad" x="376" y="252">Two separate records</text>
+  <text class="q m" x="376" y="272">Further apart than the merge</text>
+  <text class="q m" x="376" y="288">distance: different places</text>
+
+  <!-- Panel 3: same source -->
+  <rect class="box" x="504" y="72" width="224" height="236" rx="8"/>
+  <text class="n m" x="616" y="100">Same source</text>
+  <circle class="ring" cx="604" cy="172" r="40"/>
+  <circle class="osm" cx="604" cy="172" r="6"/>
+  <circle class="osm" cx="630" cy="172" r="6"/>
+  <text class="n m bad" x="616" y="252">Never merged</text>
+  <text class="q m" x="616" y="272">One source never contributes</text>
+  <text class="q m" x="616" y="288">two records to the same place</text>
+
+  <!-- Legend -->
+  <circle class="kommune" cx="30" cy="334" r="6"/>
+  <text class="q" x="42" y="338">Kommune</text>
+  <circle class="osm" cx="118" cy="334" r="6"/>
+  <text class="q" x="130" y="338">OpenStreetMap</text>
+  <circle class="other" cx="236" cy="334" r="6"/>
+  <text class="q" x="248" y="338">OtherSource</text>
+  <text class="q" x="736" y="338" text-anchor="end">Dashed ring = merge distance, here 5 m</text>
+</svg>
