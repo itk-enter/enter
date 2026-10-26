@@ -6,7 +6,6 @@ namespace App\Conflation;
 
 use App\Broker\NgsiLdBroker;
 use App\Source\SourceInterface;
-use App\SourceImporter\AbstracSourceImporter;
 use App\SourceImporter\AbstractSourceImporter;
 use App\SourceManager;
 use Psr\Log\LoggerInterface;
