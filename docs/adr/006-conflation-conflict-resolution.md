@@ -10,7 +10,7 @@
 
 ## Context
 
-Merge by location joins the records that describe the same thing into a group, and each group becomes one merged
+Merge by location (005) joins the records that describe the same thing into a group, and each group becomes one merged
 entity. But the records in a group do not always agree. Data sets are collected at different times, by different
 people and for different purposes, and one of them can be wrong. The merged entity can give only one value for each
 detail.
@@ -29,8 +29,8 @@ wheelchair access are conflicts, because the data sets give different values.
 Which value is correct depends on the kind of thing and on the detail. For wheelchair access, a wrong "yes" sends a
 person to a toilet that they cannot use, but a wrong "no" only sends them to a different toilet.
 
-The simplest rule is to keep the value that most data sets give. But this rule cannot decide between two data sets.
-Therefore, multiple rules are needed in order to solve these kinds of conflicts.
+The simplest rule is to keep the value that most data sets give. But this rule cannot decide when only two data sets
+disagree. Therefore, we need more than one rule to settle conflicts.
 
 This ADR serves to decide how we choose one value when the records in a group give different values.
 
@@ -40,8 +40,8 @@ Conflicts are settled by rules. Each rule looks at the values that the records g
 leaves the conflict undecided. The rules for each kind of thing, and their order, are chosen case by case, and the
 first rule that decides settles the conflict.
 
-A rule can decide in whatever way suits the kind of thing, and new rules can be developed as the need arises. A rule
-developed for one kind can be reused by others, and it may apply to only some details.
+A rule can decide in whatever way suits the kind of thing, and new rules can be added when they are needed. A rule
+made for one kind of thing can be reused by other kinds, and it can apply to only some details.
 
 A trust list and a majority rule are two examples. A trust list ranks data sets by how much we trust them, and keeps
 the value from the highest-ranked data set that gives one. A majority rule keeps the value that more than half of the
@@ -69,7 +69,6 @@ location of the record whose identifier comes first, so every merged entity has 
 - Until a kind of thing has rules, every detail that its data sets disagree on is left out.
 - A new data set can change a result, for example through a majority rule, or create a conflict that leaves a detail
   out.
-- A rule that counts data sets counts two data sets copied from the same source as two.
-- A merged entity can be without a detail that all its records give, due to unsolved conflicts.
+- A merged entity can lack a detail that all its records give, when they give different values and no rule decides.
 - Values that mean the same but are written differently are a conflict, unless a rule makes them the same.
 - The location of a merged entity can change when the record that it was taken from is removed.
