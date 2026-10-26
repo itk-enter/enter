@@ -22,7 +22,9 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 final readonly class NgsiLdBroker
 {
     private const string UPSERT_PATH = '/ngsi-ld/v1/entityOperations/upsert';
-    private const string BATCH_DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
+
+    private const string DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
+
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
@@ -172,7 +174,7 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Deletes entities by ID in batches.
+     * Deletes entities by id in batches.
      *
      * @param list<string> $ids
      */
@@ -181,7 +183,7 @@ final readonly class NgsiLdBroker
         foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
             $response = $this->brokerClient->request(
                 Request::METHOD_POST,
-                self::BATCH_DELETE_PATH,
+                rtrim($this->brokerUrl, '/').self::DELETE_PATH,
                 ['json' => $batch]
             );
 

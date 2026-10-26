@@ -50,6 +50,12 @@ abstract class AbstractMergeByLocation
      * Every record must be in exactly one group, and a group must not hold
      * two records of the same data set, or the run fails.
      *
+     * A merge whose defining models are not all its result model returns its
+     * records restated in the result model: attributes renamed and values
+     * converted, so everything after this step sees the result model only. A
+     * restated record keeps its id, its data set and its location. The default
+     * does not restate records, so such a merge names a subclass of its own.
+     *
      * @param list<Record> $records every record of the merge's defining models
      *
      * @return list<Cluster> the groups, each holding one or more of the given records

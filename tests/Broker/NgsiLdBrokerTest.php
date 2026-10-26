@@ -69,6 +69,24 @@ class NgsiLdBrokerTest extends TestCase
         $this->assertSame([], iterator_to_array(new NgsiLdBroker($client, 'http://broker.example')->features('osm-public-toilet', self::CONTEXT)));
     }
 
+    public function testItDeletesEntitiesInBatches(): void
+    {
+        $sent = [];
+        $client = new MockHttpClient(function (string $method, string $url, array $options) use (&$sent): MockResponse {
+            $sent[] = [$method, $url, json_decode((string) $options['body'], true)];
+
+            return new MockResponse('', ['http_code' => 204]);
+        });
+
+        $broker = new NgsiLdBroker($client, 'http://broker.example');
+
+        $broker->delete([]);
+        $this->assertSame([], $sent);
+
+        $broker->delete(['urn:a', 'urn:b']);
+        $this->assertSame([['POST', 'http://broker.example/ngsi-ld/v1/entityOperations/delete', ['urn:a', 'urn:b']]], $sent);
+    }
+
     public function testItFailsWhenTheBrokerRejectsTheRead(): void
     {
         $client = new MockHttpClient([new MockResponse('{"title":"Bad request"}', ['http_code' => 400])]);
