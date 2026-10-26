@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-79](https://github.com/itk-enter/enter/pull/79)
+  Added the conflation fetch step, reading records from the broker
 * [PR-89](https://github.com/itk-enter/enter/pull/89)
   Added WithinAreaOrRadius, the default augmentation
 * [PR-88](https://github.com/itk-enter/enter/pull/88)
