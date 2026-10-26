@@ -5,7 +5,7 @@ namespace App\SourceImporter;
 use App\Source\DataType;
 use App\Source\SourceInterface;
 
-class FindToiletSourceImporter extends AbstracSourceImporter
+class FindToiletSourceImporter extends AbstractSourceImporter
 {
     public function supports(SourceInterface $source): bool
     {

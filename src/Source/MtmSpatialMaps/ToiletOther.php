@@ -11,14 +11,11 @@ use App\Source\DataType;
 use App\Source\Definition;
 
 /**
- * Public toilets outside the city-kiosk network in Aarhus Municipality:
- * beach, park and forest facilities, seasonal or access-restricted.
- *
- * Geometry is published as MultiPoint throughout this feed.
+ * Public toilets outside the city-kiosk network in Aarhus Municipality.
  */
 #[Definition(
     id: 'mtm_spatialmaps-toilet-other',
-    title: 'Andre toiletter, Aarhus Kommune',
+    title: 'Andre toiletter (MTM), Aarhus Kommune',
     description: 'Public toilets outside the city-kiosk network in Aarhus Municipality, including seasonal and access-restricted facilities.',
     publisher: 'Aarhus Kommune',
     contact: 'ppg@aarhus.dk',
@@ -32,9 +29,6 @@ use App\Source\Definition;
     contextUrl: 'https://raw.githubusercontent.com/itk-enter/data-models/PublicToilet/v0.0.2/dataModel.PointOfInterest/context.jsonld',
     updateFrequency: 'continuous',
 
-    // The portal states no licence for this data set. DCAT-AP requires one, so
-    // it has to be settled with the data owner before the catalogue can be
-    // registered anywhere.
     licence: null,
 
     omittedFields: [
@@ -43,11 +37,13 @@ use App\Source\Definition;
         'rettet_af' => 'Directory username of the municipal employee who last edited the record; personal data, and not a fact about the toilet.',
         'mi_style' => 'MapInfo rendering style.',
     ],
+    dataset: 'mtm_spatialmaps-toilet-other',
+    datasetTitle: 'Andre toiletter (MTM), Aarhus Kommune',
 )]
 final class ToiletOther extends AbstractSource
 {
     /**
-     * Maps one feed record onto an NgsiEntity.
+     * Makes an NgsiEntity from one feed record.
      */
     public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
     {
@@ -58,9 +54,6 @@ final class ToiletOther extends AbstractSource
             return null;
         }
 
-        // mi_prinx is the feed's stable primary key. Without it there is no
-        // way to address the same record again on the next import, and an
-        // upsert would create duplicates instead of updating.
         $key = $row['mi_prinx'] ?? null;
         if (null === $key || '' === $key) {
             return null;
@@ -86,13 +79,6 @@ final class ToiletOther extends AbstractSource
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
 
-            // The season states no hours, so it cannot be restated as the
-            // model's openingHours, and the register's own timestamps have no
-            // counterpart on the model.
-            //
-            // The timestamps are not named createdAt and modifiedAt: NGSI-LD
-            // reserves both for the entity's own system timestamps, and a
-            // broker drops them from a payload without reporting it.
             ->additionalInformation([
                 'season' => trim((string) ($row['saeson'] ?? '')),
                 'registeredAt' => trim((string) ($row['oprettet_dato'] ?? '')),
@@ -101,7 +87,7 @@ final class ToiletOther extends AbstractSource
     }
 
     /**
-     * The feed states only the street address.
+     * Returns the street address of the toilet.
      *
      * @param array<string, mixed> $row
      *
@@ -115,12 +101,10 @@ final class ToiletOther extends AbstractSource
     }
 
     /**
-     * beskrivelse names the kind of facility. Only the values that state
-     * something the model has a term for map; the rest state nothing.
+     * Returns the toilet type that the description states.
      */
     private function toiletType(string $description): ?string
     {
-        // A rented cabin is placed for the season rather than built.
         return 'Indlejet toiletkabine' === $description ? 'portable' : null;
     }
 
@@ -138,8 +122,6 @@ final class ToiletOther extends AbstractSource
 
     private function wheelchairAccessible(string $description): ?string
     {
-        // A record that is not described as a handicap toilet states nothing
-        // about its accessibility, so it is left unknown rather than "no".
         return match ($description) {
             'Handicaptoilet', 'Multi Handicaptoilet' => 'yes',
             default => null,
@@ -147,8 +129,7 @@ final class ToiletOther extends AbstractSource
     }
 
     /**
-     * Only "Fri" states who may use the toilet. The locked variants restrict
-     * when and how it is entered, which the model has no term for.
+     * Returns the access type that the access value states.
      */
     private function accessType(string $access): ?string
     {
@@ -156,8 +137,7 @@ final class ToiletOther extends AbstractSource
     }
 
     /**
-     * Any access value other than "Fri" describes a restriction, and is
-     * carried as the feed states it.
+     * Returns the access restriction, if the record has one.
      */
     private function accessNote(string $access): string
     {

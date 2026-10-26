@@ -18,6 +18,7 @@ readonly class Definition
      *      query: array<string, mixed>
      * } $accessUrl
      * @param array<string, string> $omittedFields
+     * @param string                $dataset       the ID of the data set that contains the source
      */
     public function __construct(
         public string $id,
@@ -35,14 +36,13 @@ readonly class Definition
         public string $updateFrequency,
         public ?string $licence,
         public array $omittedFields,
+        public string $dataset,
+        public string $datasetTitle,
     ) {
     }
 
     /**
-     * The definition a source class declares.
-     *
-     * Reading it takes no instance, so the metadata of every data set is
-     * available without building the sources and their collaborators.
+     * Reads the definition from the attribute of a source class.
      *
      * @param class-string $class
      *
@@ -77,9 +77,6 @@ readonly class Definition
 
     /**
      * The URL to request, with its query parameters, as one URI.
-     *
-     * An entity's source is a single URI, so the array form of the access
-     * URL cannot be published as it is.
      */
     public function accessUrlWithQuery(): string
     {
@@ -109,6 +106,10 @@ readonly class Definition
             'update_frequency' => $this->updateFrequency,
             'licence' => $this->licence,
             'omitted_fields' => $this->omittedFields,
+            'dataset' => [
+                'id' => $this->dataset,
+                'title' => $this->datasetTitle,
+            ],
         ];
     }
 }

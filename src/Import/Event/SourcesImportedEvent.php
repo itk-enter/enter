@@ -42,13 +42,7 @@ final class SourcesImportedEvent extends Event
      */
     public function areAllImported(array $sourceIds): bool
     {
-        foreach ($sourceIds as $sourceId) {
-            if (!$this->isImported($sourceId)) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($sourceIds, fn ($sourceId) => $this->isImported($sourceId));
     }
 
     public function hasFailures(): bool

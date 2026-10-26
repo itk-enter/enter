@@ -12,12 +12,11 @@ use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * Public toilets in Aarhus Municipality listed on findtoilet.dk.
+ * Public toilets in Aarhus Municipality that findtoilet.dk lists.
  */
 #[When('dev')]
 #[When('test')]
 #[TestDefinition(
-    // By convention the ID as a test source must start with `test:`
     id: 'test:findtoilet-public-toilet',
     title: 'Test: Offentlige toiletter (FindToilet), Aarhus Kommune',
     accessUrl: 'http://nginx:8080/test/data/beta.findtoilet.dk/api/v3/toilets?findtoilet-public-toilet',
@@ -32,16 +31,18 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     ],
     dataUrlBase: 'https://beta.findtoilet.dk/api/v3/toilets',
     dataUrlQuery: ['tid' => 8],
+    dataset: 'test:findtoilet-public-toilet',
+    datasetTitle: 'Test: Offentlige toiletter (FindToilet), Aarhus Kommune',
 )]
 final class TestPublicToilet extends AbstractSource
 {
     /**
-     * The site's categories the mapping restates in the model's own terms.
+     * Site categories that the model has properties for.
      */
     private const array MAPPED_CATEGORIES = ['handicap', 'unisex', 'pissoir', 'changingplace'];
 
     /**
-     * Maps one feed record onto an NgsiEntity.
+     * Makes an NgsiEntity from one feed record.
      *
      * @param array<string, mixed> $data findtoilet.dk API v3 toilet record
      */
@@ -85,13 +86,6 @@ final class TestPublicToilet extends AbstractSource
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
 
-            // Facility facts the model has no attribute for.
-            //
-            // A category the mapping above does not recognise is kept, so that
-            // a new value on the site is not silently lost. openingHours is the
-            // site's free text ("Hele året", "Vinterlukket"), not the
-            // opening-hours syntax the model's attribute requires. images has
-            // no counterpart in the model's context.
             ->additionalInformation([
                 'category' => \in_array($category, self::MAPPED_CATEGORIES, true) ? '' : $category,
                 'placement' => $placement,
@@ -112,15 +106,12 @@ final class TestPublicToilet extends AbstractSource
             'streetAddress' => trim((string) ($location['street'] ?? '')),
             'postalCode' => trim((string) ($location['postal_code'] ?? '')),
             'addressLocality' => trim((string) ($location['city'] ?? '')),
-            // The feed states the country in lower case; the model requires
-            // an ISO 3166-1 code, which is upper case.
             'addressCountry' => strtoupper(trim((string) ($location['country'] ?? ''))),
         ], static fn (string $value): bool => '' !== $value);
     }
 
     /**
-     * kontakt is the address to report a fault to; kontakttitle is only the
-     * label the site shows for it.
+     * Returns the contact point for fault reports.
      *
      * @param array<string, mixed> $data
      *
@@ -137,9 +128,7 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
-     * The feed's 0/1 flags. needle_container and changing_table also use 2,
-     * which the site shows as unknown, so like any other value it states
-     * nothing.
+     * Changes a 0/1 flag into a boolean.
      */
     private function flag(mixed $value): ?bool
     {
@@ -151,6 +140,8 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
+     * Returns true if the toilet is free of charge.
+     *
      * @param array<string, mixed> $data
      */
     private function isAccessibleForFree(array $data): ?bool
@@ -163,6 +154,8 @@ final class TestPublicToilet extends AbstractSource
     }
 
     /**
+     * Gets the placement and the opening hours from the HTML description.
+     *
      * @return array{0: string, 1: string} [placement, openingHours]
      */
     private function description(string $html): array
