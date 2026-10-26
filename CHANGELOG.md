@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-85](https://github.com/itk-enter/enter/pull/85)
   Consolidated ADR 004.
+* [PR-83](https://github.com/itk-enter/enter/pull/83)
+  Grouped the conflation classes into Data, Spatial, Pipeline and Io
+* [PR-82](https://github.com/itk-enter/enter/pull/82)
+  Listed the merged data sets on /sources, in sources.json and on the map
+* [PR-81](https://github.com/itk-enter/enter/pull/81)
+  Added the public toilet merge and MajorityWins, an optional conflict-resolution approach
+* [PR-80](https://github.com/itk-enter/enter/pull/80)
+  Added creating and publishing merged entities, and app:conflation:run
 * [PR-79](https://github.com/itk-enter/enter/pull/79)
   Added the conflation fetch step, reading records from the broker
 * [PR-89](https://github.com/itk-enter/enter/pull/89)

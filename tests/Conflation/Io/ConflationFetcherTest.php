@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Io;
 
 use App\Broker\NgsiLdBroker;
 use App\Conflation\Augmentation\AbstractAugmentation;
-use App\Conflation\Cluster;
 use App\Conflation\Conflation;
-use App\Conflation\ConflationFetcher;
-use App\Conflation\ConflictResolver;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\Record;
+use App\Conflation\Io\ConflationFetcher;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\Record;
+use App\Conflation\Pipeline\ConflictResolver;
 use App\Source\FindToilet\PublicToilet as FindToiletPublicToilet;
 use App\Source\Osm\Bench;
 use App\Source\Osm\PublicToilet as OsmPublicToilet;
@@ -70,6 +70,8 @@ class ConflationFetcherTest extends TestCase
     {
         return new Conflation(
             id: $id,
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new OneToOneClosestFirst(radius: 10.0),
@@ -171,6 +173,8 @@ class ConflationFetcherTest extends TestCase
     {
         $conflation = new Conflation(
             id: 'merged-public-toilets',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new OneToOneClosestFirst(radius: 10.0),

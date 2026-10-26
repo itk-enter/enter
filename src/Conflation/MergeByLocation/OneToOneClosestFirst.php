@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Conflation\MergeByLocation;
 
-use App\Conflation\Cluster;
-use App\Conflation\Distance;
-use App\Conflation\GridIndex;
-use App\Conflation\Pair;
-use App\Conflation\Record;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\Record;
+use App\Conflation\Spatial\Distance;
+use App\Conflation\Spatial\GridIndex;
+use App\Conflation\Spatial\Pair;
 
 /**
  * The default merge by location: groups records from several data sets into

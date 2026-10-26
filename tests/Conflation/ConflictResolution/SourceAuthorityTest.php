@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Conflation\ConflictResolution;
 
 use App\Conflation\ConflictResolution\SourceAuthority;
-use App\Conflation\StatedValue;
+use App\Conflation\Data\StatedValue;
 use PHPUnit\Framework\TestCase;
 
 class SourceAuthorityTest extends TestCase

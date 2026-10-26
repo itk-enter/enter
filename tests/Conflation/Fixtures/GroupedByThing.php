@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Conflation\Fixtures;
 
-use App\Conflation\Cluster;
+use App\Conflation\Data\Cluster;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 
 /**

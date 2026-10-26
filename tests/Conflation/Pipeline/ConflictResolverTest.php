@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Pipeline;
 
-use App\Conflation\Cluster;
-use App\Conflation\ConflationLimitException;
 use App\Conflation\ConflictResolution\AbstractConflictResolution;
 use App\Conflation\ConflictResolution\SourceAuthority;
-use App\Conflation\ConflictResolver;
-use App\Conflation\Record;
-use App\Conflation\StatedValue;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\Record;
+use App\Conflation\Data\StatedValue;
+use App\Conflation\Pipeline\ConflationLimitException;
+use App\Conflation\Pipeline\ConflictResolver;
 use App\Tests\Conflation\Fixtures\MostRestrictive;
 use PHPUnit\Framework\TestCase;
 

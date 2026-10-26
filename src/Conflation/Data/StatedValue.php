@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Data;
 
 /**
  * A value one record states for an attribute, with the record and data set

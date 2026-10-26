@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Conflation;
+namespace App\Conflation\Data;
 
 /**
  * One real-world thing as a merge resolves it, before it is built in the

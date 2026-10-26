@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Conflation;
+namespace App\Tests\Conflation\Pipeline;
 
 use App\Conflation\Augmentation\AbstractAugmentation;
 use App\Conflation\Augmentation\WithinAreaOrRadius;
-use App\Conflation\Cluster;
 use App\Conflation\Conflation;
-use App\Conflation\ConflationLimitException;
-use App\Conflation\ConflationPipeline;
 use App\Conflation\ConflictResolution\SourceAuthority;
+use App\Conflation\Data\Cluster;
+use App\Conflation\Data\MergedEntity;
+use App\Conflation\Data\Record;
+use App\Conflation\Data\StatedValue;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Conflation\MergedEntity;
-use App\Conflation\Record;
-use App\Conflation\StatedValue;
+use App\Conflation\Pipeline\ConflationLimitException;
+use App\Conflation\Pipeline\ConflationPipeline;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
 use App\Tests\Conflation\Fixtures\ToiletConflation;
+use App\Tests\Conflation\Spatial\GridIndexTest;
 use PHPUnit\Framework\TestCase;
 
 class ConflationPipelineTest extends TestCase
@@ -94,14 +95,16 @@ class ConflationPipelineTest extends TestCase
         foreach ([1, 2, 3] as $bench) {
             foreach (['A' => 0.0, 'B' => 0.8] as $set => $offset) {
                 $point = GridIndexTest::at($set.'-'.$bench, 'data-set-'.strtolower($set), 2.5 * $bench, $offset);
-                $records[] = new Record($point->id, $point->sourceId, $point->longitude, $point->latitude, 'Model'.$set);
+                $records[] = new Record($point->id, $point->sourceId, $point->longitude, $point->latitude, 'Bench');
             }
         }
 
         $conflation = new Conflation(
             id: 'merged-benches',
-            resultModel: 'ResultModel',
-            defining: ['ModelA', 'ModelB'],
+            title: 'Merged benches',
+            description: 'Benches merged from several data sets.',
+            resultModel: 'Bench',
+            defining: ['Bench'],
             mergeByLocation: new OneToOneClosestFirst(radius: 5.0),
         );
 
@@ -117,6 +120,8 @@ class ConflationPipelineTest extends TestCase
     {
         $conflation = new Conflation(
             id: 'merged-toilets',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'ResultModel',
             defining: ['ModelA', 'ModelB'],
             mergeByLocation: new GroupedByThing(5.0),
@@ -134,6 +139,50 @@ class ConflationPipelineTest extends TestCase
             [new StatedValue('free', 'A-1', 'data-set-a'), new StatedValue('5 kr', 'B-1', 'data-set-b')],
             $entities[0]->conflicts['fee'],
         );
+    }
+
+    public function testAMergeOfOtherModelsRestatesItsRecordsInTheResultModel(): void
+    {
+        // Data set B publishes "Toilet", which calls the fee "price".
+        $merge = new class(5.0) extends AbstractMergeByLocation {
+            public function merge(array $records): array
+            {
+                return array_map(static fn (Cluster $cluster): Cluster => new Cluster(array_map(
+                    static fn (Record $record): Record => 'Toilet' === $record->model
+                        ? new Record($record->id, $record->sourceId, $record->longitude, $record->latitude, 'PublicToilet', ['thing' => $record->attributes['thing'], 'fee' => $record->attributes['price']])
+                        : $record,
+                    $cluster->records,
+                )), new GroupedByThing($this->radius)->merge($records));
+            }
+        };
+
+        $conflation = new Conflation(
+            id: 'merged-toilets',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
+            resultModel: 'PublicToilet',
+            defining: ['PublicToilet', 'Toilet'],
+            mergeByLocation: $merge,
+        );
+
+        $entities = new ConflationPipeline()->run($conflation, [
+            self::record('A-1', 'data-set-a', 'PublicToilet', ['thing' => 't1', 'fee' => 'free']),
+            self::record('B-1', 'data-set-b', 'Toilet', ['thing' => 't1', 'price' => 'free']),
+        ]);
+
+        $this->assertSame(['fee' => 'free', 'thing' => 't1'], $entities[0]->attributes);
+    }
+
+    public function testMergingByLocationMustNotMoveARecord(): void
+    {
+        $this->expectException(ConflationLimitException::class);
+        $this->expectExceptionMessage('changed the data set or the location of record A-1');
+
+        $this->runWithGroups(static fn (array $records): array => [
+            new Cluster([new Record('A-1', 'data-set-a', 10.3, 56.15, 'ModelA')]),
+            new Cluster([$records[1]]),
+            new Cluster([$records[2]]),
+        ]);
     }
 
     public function testItRejectsARecordOfAModelTheMergeDoesNotName(): void
@@ -225,6 +274,8 @@ class ConflationPipelineTest extends TestCase
     ): Conflation {
         return new Conflation(
             id: 'merged-toilets',
+            title: 'Merged toilets',
+            description: 'Toilets merged from several data sets.',
             resultModel: 'ResultModel',
             defining: ['ModelA', 'ModelB'],
             mergeByLocation: $mergeByLocation ?? new GroupedByThing(5.0),
