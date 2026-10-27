@@ -9,9 +9,6 @@ use App\Conflation\Data\Record;
 /**
  * Compares a record's point with a GeoJSON geometry in WGS84: whether the
  * point lies inside it, and how far away it lies.
- *
- * Distances to an edge are measured in a flat projection centred on the
- * point, which is accurate for distances of up to a few hundred metres.
  */
 final class Shape
 {
