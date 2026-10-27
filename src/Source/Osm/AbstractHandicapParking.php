@@ -164,13 +164,13 @@ abstract class AbstractHandicapParking extends AbstractSource
      */
     final protected function isSingleBay(array $tags): bool
     {
-        if (1 !== $this->reservedBays($tags)) {
+        // Rule out anything but a disabled parking space with one reserved bay.
+        if ('disabled' !== ($tags['parking_space'] ?? null) || 1 !== $this->reservedBays($tags)) {
             return false;
         }
 
-        $capacity = $this->tagAsInt($tags, 'capacity');
-
-        return 1 === $capacity || (null === $capacity && 'disabled' === ($tags['parking_space'] ?? null));
+        // A parking space without a capacity is one bay. Anything above is a site.
+        return \in_array($this->tagAsInt($tags, 'capacity'), [1, null], true);
     }
 
     /**
