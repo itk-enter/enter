@@ -44,6 +44,10 @@ final readonly class ConflictResolver
         sort($ids, \SORT_STRING);
         $first = $ids[0] ?? throw new \InvalidArgumentException('A group has no records.');
 
+        // Name each member by the input record it stands for.
+        $provenance = array_values(array_unique(array_map(static fn (Record $record): string => $record->inputId(), $records)));
+        sort($provenance, \SORT_STRING);
+
         // Collect what each member states, attribute by attribute. A member
         // that does not state an attribute takes no part in it.
         /** @var array<string, list<StatedValue>> $stated */
@@ -51,7 +55,7 @@ final readonly class ConflictResolver
         foreach ($records as $record) {
             foreach ($record->attributes as $attribute => $value) {
                 if (null !== $value) {
-                    $stated[$attribute][] = new StatedValue($value, $record->id, $record->sourceId);
+                    $stated[$attribute][] = new StatedValue($value, $record->inputId(), $record->sourceId);
                 }
             }
         }
@@ -70,16 +74,16 @@ final readonly class ConflictResolver
 
         // The location is settled like any other attribute, and falls back
         // to the first-sorting member's, so every merged entity has one.
-        $locations = array_map(static fn (Record $record): StatedValue => new StatedValue($record->location(), $record->id, $record->sourceId), $records);
+        $locations = array_map(static fn (Record $record): StatedValue => new StatedValue($record->location(), $record->inputId(), $record->sourceId), $records);
         [$settled, $location] = $this->settle(self::LOCATION, $locations);
         if (!$settled) {
-            $location = $locations[array_search($first, array_column($locations, 'recordId'), true)]->value;
+            $location = $locations[array_search($first, array_column($records, 'id'), true)]->value;
         }
         if (!\is_array($location) || !isset($location['type'])) {
             throw new ConflationLimitException(\sprintf('The location of %s was settled as %s, not as a GeoJSON geometry.', $first, get_debug_type($location)));
         }
 
-        return new MergedEntity($first, $location, $attributes, $ids, $conflicts);
+        return new MergedEntity($first, $location, $attributes, $provenance, $conflicts);
     }
 
     /**

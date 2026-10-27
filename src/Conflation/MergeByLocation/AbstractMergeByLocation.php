@@ -15,8 +15,9 @@ use App\Conflation\Data\Record;
  * extends it by calling it and adjusting its groups.
  *
  * Whatever the rules, the pipeline checks the groups returned: every record
- * in exactly one group, and at most one record per data set in a group. A run
- * whose groups break that fails without publishing.
+ * in exactly one group, itself or through the records restated from it, and
+ * at most one record per data set in a group. A run whose groups break that
+ * fails without publishing.
  */
 abstract class AbstractMergeByLocation
 {
@@ -32,29 +33,16 @@ abstract class AbstractMergeByLocation
     }
 
     /**
-     * Decides which records describe the same thing.
+     * Sorts the records into groups. Each group is one real-world thing.
      *
-     * The pipeline calls this once per run with the records of every
-     * defining model, from every data set, in no particular order. Each
-     * record has an id, the data set it comes from, the point it is compared
-     * by (a point's own position, or the centroid of an area), and its full
-     * geometry where it has one.
+     * Put each record in one group. A group must not hold two records from
+     * the same data set.
      *
-     * Return the records sorted into groups, one group per real-world thing.
-     * A record that matches nothing is a group of its own. For example, with
-     * a radius of 5 m, toilet A-17 from data set A and toilet B-903 from data
-     * set B lying 3 m apart, and toilet A-18 with nothing near it:
+     * A record can also go into the groups as new records in the result
+     * model. Set restatedFrom to its id, keep its data set, and keep each new
+     * record within the radius of it.
      *
-     *     [new Cluster([A-17, B-903]), new Cluster([A-18])]
-     *
-     * Every record must be in exactly one group, and a group must not hold
-     * two records of the same data set, or the run fails.
-     *
-     * A merge whose defining models are not all its result model returns its
-     * records restated in the result model: attributes renamed and values
-     * converted, so everything after this step sees the result model only. A
-     * restated record keeps its id, its data set and its location. The default
-     * does not restate records, so such a merge names a subclass of its own.
+     * If the groups break these rules, the run stops.
      *
      * @param list<Record> $records every record of the merge's defining models
      *
