@@ -6,7 +6,7 @@ services:
     mariadb: !reset
 
     phpfpm:
-        image: !reset
+        image: enter-fpm:latest
         # We want to use GEOS in PHP, cf. https://geophp.net/geos.html.
         build:
             # Notice: $ must be quoted (doubled) when used inside dockerfile_inline
