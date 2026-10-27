@@ -172,6 +172,7 @@ Do not refer to project history in code. Do not write:
 - ADR numbers (`ADR 004`, `see docs/adr/...`).
 - Issue, ticket or PR numbers.
 - Follow-up work, milestones or sprints.
+- Examples.
 
 Put this context in the PR description, the commit message or the CHANGELOG.
 
