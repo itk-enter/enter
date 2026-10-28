@@ -182,15 +182,17 @@ an issue number. Do not write a `@todo` for a new feature or an idea. Do not rem
  * @todo Calculate the correct centroid without the GEOS extension.
 ```
 
-Do not write examples in a docblock or a comment. The exception is a class or method that other code extends.
+You can write an example in the docblock of a class. Do not write an example in the docblock of a method or a
+function, or in a comment in the code.
 
 A class or method that other code extends needs more than `@param` lines. Examples are the abstract steps in
-`src/Conflation/` and `AbstractSource`. The docblock tells:
+`src/Conflation/` and `AbstractSource`. The docblock of the method tells:
 
 - When the code calls the method.
 - What each parameter holds.
 - What the method must return.
-- A small, concrete example.
+
+Put a small, concrete example of the method in the docblock of its class.
 
 Give `@param` and `@return` when they tell more than the signature, for example an array shape or a `list<…>`.
 
