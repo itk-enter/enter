@@ -172,7 +172,6 @@ Do not refer to project history in code. Do not write:
 - ADR numbers (`ADR 004`, `see docs/adr/...`).
 - Issue, ticket or PR numbers.
 - Follow-up work, milestones or sprints.
-- Examples.
 
 Put this context in the PR description, the commit message or the CHANGELOG.
 
@@ -182,6 +181,8 @@ an issue number. Do not write a `@todo` for a new feature or an idea. Do not rem
 ```php
  * @todo Calculate the correct centroid without the GEOS extension.
 ```
+
+Do not write examples in a docblock or a comment. The exception is a class or method that other code extends.
 
 A class or method that other code extends needs more than `@param` lines. Examples are the abstract steps in
 `src/Conflation/` and `AbstractSource`. The docblock tells:
