@@ -16,12 +16,6 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
  * Runs and publishes every merge whose data sets an import run has just
  * brought up to date.
  *
- * A merge runs only when every data set it reads imported successfully in
- * the run. One that reads none of the run's data sets, such as a published
- * merge after a run over the test data sets, is left alone. One that reads
- * some of them, or one that failed, is skipped with a warning rather than
- * merged from data sets of different ages. A failing merge is logged and
- * does not stop the others.
  */
 #[AsEventListener]
 final readonly class RunConflationsListener
