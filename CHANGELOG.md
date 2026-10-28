@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-99](https://github.com/itk-enter/enter/pull/99)
   * Added event listener for SourcesImportedEvent
+* [PR-98](https://github.com/itk-enter/enter/pull/98)
+  Fixed merged data sets breaking the /test map
+* [PR-90](https://github.com/itk-enter/enter/pull/90)
+  Added conflation diagram svgs and markdown.
+* [PR-94](https://github.com/itk-enter/enter/pull/94)
+  Consolidated ADR 007.
+* [PR-93](https://github.com/itk-enter/enter/pull/93)
+  Consolidated ADR 006.
+* [PR-91](https://github.com/itk-enter/enter/pull/91)
+  Consolidated ADR 005.
+* [PR-85](https://github.com/itk-enter/enter/pull/85)
+  Consolidated ADR 004.
 * [PR-83](https://github.com/itk-enter/enter/pull/83)
   Grouped the conflation classes into Data, Spatial, Pipeline and Io
 * [PR-82](https://github.com/itk-enter/enter/pull/82)
