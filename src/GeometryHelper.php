@@ -82,6 +82,8 @@ final class GeometryHelper
      * 133 m for a 2 m square. geoPHP also ignores the holes of a polygon. For
      * a line or a multipolygon, it gives the centre of the bounding box.
      *
+     * @todo Calculate the correct centroid without the GEOS extension.
+     *
      * @param Geometry $geometry
      */
     public function getCentroid(array $geometry): Point
