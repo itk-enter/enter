@@ -15,7 +15,6 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 /**
  * Runs and publishes every merge whose data sets an import run has just
  * brought up to date.
- *
  */
 #[AsEventListener]
 final readonly class RunConflationsListener
