@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-99](https://github.com/itk-enter/enter/pull/99)
-  * Changed merged data set structure
   * Added event listener for SourcesImportedEvent
 * [PR-83](https://github.com/itk-enter/enter/pull/83)
   Grouped the conflation classes into Data, Spatial, Pipeline and Io
