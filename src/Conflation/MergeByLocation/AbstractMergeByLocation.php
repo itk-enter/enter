@@ -19,6 +19,12 @@ use App\Conflation\Data\Record;
  * Each record must be in exactly one group, and a group must hold at
  * most one record from each data set. If the groups break these limits, the
  * run fails and publishes nothing.
+ *
+ * For example, the radius is 5 m. Toilet A-17 from data set A and toilet
+ * B-903 from data set B are 3 m apart. Toilet A-18 has nothing near it. Then
+ * merge() returns:
+ *
+ *     [new Cluster([A-17, B-903]), new Cluster([A-18])]
  */
 abstract class AbstractMergeByLocation
 {
@@ -43,11 +49,7 @@ abstract class AbstractMergeByLocation
      * an area. If the record has a full geometry, the record also holds it.
      *
      * Return the records sorted into groups, one group per real-world thing.
-     * A record that matches nothing is a group of its own. For example, the
-     * radius is 5 m. Toilet A-17 from data set A and toilet B-903 from data
-     * set B are 3 m apart. Toilet A-18 has nothing near it. The result is:
-     *
-     *     [new Cluster([A-17, B-903]), new Cluster([A-18])]
+     * A record that matches nothing is a group of its own.
      *
      * Put every record in exactly one group. Do not put two records of the
      * same data set in one group. If you do, the run fails.

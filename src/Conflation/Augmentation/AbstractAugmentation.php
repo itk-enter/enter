@@ -19,6 +19,12 @@ use App\Conflation\Data\StatedValue;
  * Each value must also come from the augmenting records that the pipeline
  * gave. If several records supply different values for one attribute, the
  * conflict-resolution approaches of the merge settle it.
+ *
+ * For example, a merge has augmenting: ['ModelC' => ['surface']]. The merged
+ * bench A-1 stands inside the ground-cover area C-5, which states the
+ * surface "grass". Then augment() returns:
+ *
+ *     ['A-1' => ['surface' => [StatedValue('grass', 'C-5', 'data-set-c')]]]
  */
 abstract class AbstractAugmentation
 {
@@ -45,12 +51,6 @@ abstract class AbstractAugmentation
      * the attributes that their model supplies and that the entity does not
      * have.
      *
-     * For example, with augmenting: ['ModelC' => ['surface']], a merged
-     * bench A-1 that stands inside the ground-cover area C-5, which states
-     * the surface "grass", gets:
-     *
-     *     ['A-1' => ['surface' => [StatedValue('grass', 'C-5', 'data-set-c')]]]
-     *
      * List every record that supplies an attribute to an entity. If the
      * records state different values, the conflict-resolution approaches of
      * the merge settle them. Leave out the entities that get nothing.
@@ -60,8 +60,7 @@ abstract class AbstractAugmentation
      * @param list<Record>                $records           every record of the merge's augmenting models, from every
      *                                                       data set
      * @param array<string, list<string>> $attributesByModel the merge's augmenting key: for each augmenting model, the
-     *                                                       attributes it may supply, such as
-     *                                                       ['ModelC' => ['surface']]
+     *                                                       attributes it may supply
      *
      * @return array<string, array<string, list<StatedValue>>> values to add, by entity id, then attribute name
      */

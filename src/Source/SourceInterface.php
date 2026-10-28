@@ -14,6 +14,11 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  * An implementation knows the origin of its feed, the field names, the
  * special cases and the Smart Data Model. The broker and the import do not
  * know these things. Thus, one class adds one data set.
+ *
+ * For example, createNgsiEntity() gets a GeoJSON feature with the properties
+ * {"mi_prinx": 7, "navn": "Mølleparken"}. It returns an entity with the ID
+ * urn:ngsi-ld:PublicToilet:aarhus-toilet-city-7 and the name "Mølleparken".
+ * For a feature without "mi_prinx", it returns null.
  */
 #[AutoconfigureTag('app.source')]
 interface SourceInterface extends \Stringable, \JsonSerializable
@@ -30,17 +35,12 @@ interface SourceInterface extends \Stringable, \JsonSerializable
      * entity into the broker.
      *
      * If the method returns null, the importer skips the record and does not
-     * log it. Return null for a record that is not applicable, for example a
-     * record without an ID or without a geometry. If the method throws an
+     * log it. Return null for a record that has no ID, no geometry or no
+     * other necessary value. If the method throws an
      * exception, the importer logs an error and skips the record.
      *
      * The entity must have the model of the #[Definition] as its type. Use
      * $transformer to change the geometry from the CRS of the feed to WGS84.
-     *
-     * For example, a GeoJSON feature with the properties {"mi_prinx": 7,
-     * "navn": "Mølleparken"} gives an entity with the ID
-     * urn:ngsi-ld:PublicToilet:aarhus-toilet-city-7 and the name
-     * "Mølleparken".
      *
      * @param array<string, mixed> $data one record, as the importer gets it
      *                                   from the feed: a GeoJSON feature or

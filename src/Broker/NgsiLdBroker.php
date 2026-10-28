@@ -199,15 +199,15 @@ final readonly class NgsiLdBroker
      *
      * The method finds the entities of all models by the source id that the
      * importer adds to each entity. The broker gives them in the simplified
-     * format. The properties of each feature hold only the values, such as
-     * "name": "Park toilet", and not {"type": "Property", "value": …}.
+     * format. The properties of each feature hold only the values, not the
+     * NGSI-LD objects with a type and a value.
      * The Link header holds the context of the data set. Thus the broker
      * gives the attribute names that the source declared. The method reads
      * the next page until the broker gives no next page.
      *
      * The map sends the same request to show a data set.
      *
-     * @param string $sourceId   the source id of the data set, such as "osm-public-toilet"
+     * @param string $sourceId   the source id of the data set
      * @param string $contextUrl the JSON-LD context of the data set
      *
      * @return \Generator<int, array<string, mixed>> GeoJSON features, each with an id, a geometry and properties

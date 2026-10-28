@@ -21,6 +21,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * The import reads the feed, gets the records with extractItems() and makes
  * one entity from each record. Then it upserts the entities into the broker
  * and deletes the entities of the source that the feed no longer gives.
+ *
+ * For example, the importer for GeoJSON feeds returns true from supports()
+ * for DataType::GeoJSON. Its extractItems() returns the list in "features".
  */
 abstract class AbstractSourceImporter implements SourceImporterInterface
 {
@@ -51,8 +54,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
      *
      * SourceImporterFactory calls this method on each importer and uses the
      * first importer that returns true. Compare the dataType of the
-     * #[Definition] of the source. For example, return true for
-     * DataType::GeoJSON.
+     * #[Definition] of the source.
      */
     abstract public function supports(SourceInterface $source): bool;
 
@@ -63,9 +65,6 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
      * the feed. Return the list of records. The import gives each record to
      * the createNgsiEntity() method of the source. Throw an exception if the
      * feed does not have the expected structure.
-     *
-     * For example, a GeoJSON feed gives the list in "features", and an
-     * Overpass feed gives the list in "elements".
      *
      * @param iterable<mixed> $data the decoded JSON of the feed
      *

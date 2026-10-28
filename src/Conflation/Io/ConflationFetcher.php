@@ -167,11 +167,8 @@ final readonly class ConflationFetcher
      * If the data sets agree on a key, or only one data set states it, the key
      * has no conflict. If two data sets state different values for a key, the
      * approaches of the merge settle it, or the pipeline records a conflict.
-     * For example,
-     * {"additionalInformation": {"check_date": "2025-06-01", "operator": "Aarhus Kommune"}}
-     * becomes the attributes "additionalInformation.check_date" and
-     * "additionalInformation.operator". The method keeps a value without keys,
-     * such as a list, as one value.
+     * Each key becomes an attribute with the name "additionalInformation.<key>".
+     * The method keeps a list as one value.
      *
      * @param array<array-key, mixed> $attributes
      *

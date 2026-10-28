@@ -157,9 +157,9 @@ final class ConflationPipeline
                 continue;
             }
 
-            // Several records can supply one attribute, for example areas
-            // that overlap. The approaches of the merge settle them as any
-            // other conflict.
+            // Several records can supply one attribute if their areas
+            // overlap. The approaches of the merge settle them as any other
+            // conflict.
             usort($values, static fn (StatedValue $x, StatedValue $y): int => [$x->sourceId, $x->recordId] <=> [$y->sourceId, $y->recordId]);
             [$settled, $value] = $resolver->settle($attribute, $values);
             if ($settled) {

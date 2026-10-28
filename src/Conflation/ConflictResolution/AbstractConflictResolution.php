@@ -15,6 +15,14 @@ use App\Conflation\Data\StatedValue;
  * of thing needs rules of its own, the merge adds a subclass to the list. The
  * subclass can apply to all the attributes or only to some, and leaves the
  * rest to the next approach.
+ *
+ * For example, data set A states the wheelchair attribute as "yes" and data
+ * set B states "no". The pipeline calls:
+ *
+ *     resolve('wheelchair', [StatedValue('yes', 'A-17', 'data-set-a'), StatedValue('no', 'B-903', 'data-set-b')])
+ *
+ * An approach that trusts data set B returns "no". An approach that applies
+ * only to opening hours returns null.
  */
 abstract class AbstractConflictResolution
 {
@@ -31,13 +39,7 @@ abstract class AbstractConflictResolution
      * Return the value to keep, or null to leave the attribute to the next
      * approach in the list of the merge. If no approach settles it, the
      * pipeline leaves the attribute out of the merged entity and records its
-     * values as a conflict. For example, if data set A states the wheelchair
-     * attribute as "yes" and data set B states "no":
-     *
-     *     resolve('wheelchair', [StatedValue('yes', 'A-17', 'data-set-a'), StatedValue('no', 'B-903', 'data-set-b')])
-     *
-     * an approach that trusts data set B returns "no". An approach that
-     * applies only to opening hours returns null.
+     * values as a conflict.
      *
      * The pipeline settles the location in the same way, under the attribute
      * name ConflictResolver::LOCATION, with GeoJSON geometries as values.
