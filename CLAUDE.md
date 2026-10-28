@@ -176,6 +176,13 @@ Do not refer to project history in code. Do not write:
 
 Put this context in the PR description, the commit message or the CHANGELOG.
 
+You can write a `@todo` for a known defect that the code does not fix yet. The `@todo` tells what to correct, without
+an issue number. Do not write a `@todo` for a new feature or an idea. Do not remove a `@todo` while the defect exists.
+
+```php
+ * @todo Calculate the correct centroid without the GEOS extension.
+```
+
 A class or method that other code extends needs more than `@param` lines. Examples are the abstract steps in
 `src/Conflation/` and `AbstractSource`. The docblock tells:
 
