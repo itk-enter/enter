@@ -22,7 +22,6 @@ final class SourceReader implements SourceReaderInterface
 
     public function read(SourceInterface $source): iterable
     {
-        // @todo Add some proper exception handling/logging.
         $definition = $source->definition;
 
         return $this->client->request(Request::METHOD_GET, $definition->accessUrlBase(), [
