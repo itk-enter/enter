@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Conflation\Data;
 
 /**
- * A value one record states for an attribute, with the record and data set
- * that state it, so a conflict can be settled by who said what.
+ * A value that one record states for an attribute, with the record and data
+ * set that state it. Thus an approach can settle a conflict by the origin of
+ * each value.
  */
 final readonly class StatedValue
 {
@@ -18,8 +19,8 @@ final readonly class StatedValue
     }
 
     /**
-     * Whether two values are the same, comparing arrays by content and order
-     * rather than by identity.
+     * Whether two values are the same. It compares arrays by content and
+     * order, not by identity.
      */
     public function sameValueAs(self $other): bool
     {

@@ -8,11 +8,12 @@ use App\Import\ImportResult;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Dispatched once a run over several sources has finished, whatever its
- * outcome, so work that depends on a complete set of imports, such as
- * conflation, can start from it.
+ * The importer dispatches this event when a run of several sources is
+ * complete, also if a source failed. Work that needs a complete set of
+ * imports, such as conflation, can start from this event.
  *
- * Every source the run attempted is either imported or failed, never both.
+ * Each source that the run tried to import is in imported or in failed. A
+ * source is never in both.
  */
 final class SourcesImportedEvent extends Event
 {
@@ -27,7 +28,7 @@ final class SourcesImportedEvent extends Event
     }
 
     /**
-     * Whether a source was part of the run and imported successfully.
+     * Tells if the source was part of the run and if its import was successful.
      */
     public function isImported(string $sourceId): bool
     {
@@ -35,8 +36,9 @@ final class SourcesImportedEvent extends Event
     }
 
     /**
-     * Whether every one of the given sources imported successfully in this
-     * run. A source the run did not attempt counts as not imported.
+     * Tells if the import of each given source was successful in this run.
+     * If the run did not try to import a source, the source counts as not
+     * imported.
      *
      * @param list<string> $sourceIds
      */

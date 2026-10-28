@@ -11,23 +11,27 @@ use App\Ngsi\NgsiEntity;
 use App\SourceImporter\AbstractSourceImporter;
 
 /**
- * Builds the entity a merged entity is published as: the create step.
+ * Builds the entity that the runner publishes for a merged entity: the
+ * create step.
  *
- * Every merged entity is built in the merge's result model, with the
- * attributes its members settled on, plus what every merged entity carries:
+ * The factory builds every merged entity in the result model of the merge.
+ * The entity gets the attributes that its members settled on, and these
+ * properties, which every merged entity has:
  *
  * - id: urn:ngsi-ld:<result model>:<merge id>-<local id of the member that
  *   sorts first>. It stays the same from run to run while that member does,
  *   and never equals the id of an input entity.
  * - sourceId: the merge's id, as the importer stamps a source's id.
- * - seeAlso: the ids of every input entity it was built from, its provenance.
- * - additionalInformation: put back together from the keys the fetch step
- *   split it into, with the attributes no approach settled under "conflicts".
+ * - seeAlso: the ids of every input entity that the merge built it from,
+ *   which is its provenance.
+ * - additionalInformation: the keys that the fetch step split it into, put
+ *   together again. The attributes that no approach settled are under
+ *   "conflicts".
  *
- * For example, a toilet stated by the municipal register as
- * urn:ngsi-ld:PublicToilet:aarhus-toilet-city-123 and by OSM as
- * urn:ngsi-ld:PublicToilet:aarhus-toilet-osm-node-17, disagreeing on its
- * opening hours, becomes
+ * For example, the municipal register states a toilet as
+ * urn:ngsi-ld:PublicToilet:aarhus-toilet-city-123, and OSM states it as
+ * urn:ngsi-ld:PublicToilet:aarhus-toilet-osm-node-17. The two records
+ * disagree on the opening hours. The toilet becomes
  *
  *     {"id": "urn:ngsi-ld:PublicToilet:merged-public-toilets-aarhus-toilet-city-123", "type": "PublicToilet",
  *      "name": …, "location": …, "sourceId": "merged-public-toilets",
@@ -45,8 +49,8 @@ final readonly class MergedEntityFactory
     public const string CONFLICTS = 'conflicts';
 
     /**
-     * The model attribute provenance is published as: a list of URIs, here
-     * the ids of the input entities.
+     * The model attribute that holds the provenance: a list of URIs, here the
+     * ids of the input entities.
      */
     public const string PROVENANCE = 'seeAlso';
 
@@ -86,8 +90,8 @@ final readonly class MergedEntityFactory
     }
 
     /**
-     * The id a merged entity is published under, from the id of its member
-     * that sorts first.
+     * The id that the runner publishes a merged entity under. It comes from
+     * the id of the member that sorts first.
      */
     public static function id(Conflation $conflation, string $memberId): string
     {

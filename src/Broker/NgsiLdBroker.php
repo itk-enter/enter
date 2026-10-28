@@ -14,10 +14,10 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 /**
  * Reads and writes entities in an NGSI-LD context broker.
  *
- * Writing uses the batch upsert operation so a re-import updates the entities
- * it already created instead of failing on 409 Conflict. That makes the whole
- * import idempotent, which matters because the entity ids are derived from
- * the source's own primary key.
+ * The class writes entities with the batch upsert operation. Thus a new
+ * import updates the entities that it created before, and it does not fail on
+ * 409 Conflict. This makes the import idempotent. This is important because
+ * the importer makes the entity ids from the primary key of the source.
  */
 final readonly class NgsiLdBroker
 {
@@ -28,7 +28,7 @@ final readonly class NgsiLdBroker
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
 
     /**
-     * Entities asked for per request when reading.
+     * The number of entities in each read request.
      */
     private const int PAGE_SIZE = 1000;
 
@@ -69,7 +69,7 @@ final readonly class NgsiLdBroker
             $batchStatus = $response->getStatusCode();
 
             if ($batchStatus >= Response::HTTP_BAD_REQUEST) {
-                throw new \RuntimeException(\sprintf('Broker rejected the upsert with HTTP %d: %s', $batchStatus, $response->getContent(false)));
+                throw new \RuntimeException(\sprintf('The broker rejected the upsert with HTTP %d: %s', $batchStatus, $response->getContent(false)));
             }
 
             if (Response::HTTP_MULTI_STATUS === $batchStatus) {
@@ -159,7 +159,7 @@ final readonly class NgsiLdBroker
 
             $status = $response->getStatusCode();
             if ($status >= Response::HTTP_BAD_REQUEST) {
-                throw new \RuntimeException(\sprintf('Broker refused to list %s entities with HTTP %d: %s', $type, $status, $response->getContent(false)));
+                throw new \RuntimeException(\sprintf('The broker refused to list %s entities with HTTP %d: %s', $type, $status, $response->getContent(false)));
             }
 
             $page = $response->toArray();
@@ -189,26 +189,26 @@ final readonly class NgsiLdBroker
 
             $status = $response->getStatusCode();
             if ($status >= Response::HTTP_BAD_REQUEST) {
-                throw new \RuntimeException(\sprintf('Broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
+                throw new \RuntimeException(\sprintf('The broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
             }
         }
     }
 
     /**
-     * Reads every entity a data set has published, as GeoJSON features.
+     * Reads all the entities that a data set published, as GeoJSON features.
      *
-     * The entities are found by the source id the importer stamps on each of
-     * them, whatever their model, and come in the simplified format: each
-     * feature's properties hold bare values, such as "name": "Park toilet",
-     * rather than NGSI-LD's {"type": "Property", "value": …}. The data set's
-     * context goes in the Link header, so the broker answers with the
-     * attribute names the source declared. The pages are followed until the
-     * broker gives no next one.
+     * The method finds the entities of all models by the source id that the
+     * importer adds to each entity. The broker gives them in the simplified
+     * format. The properties of each feature hold only the values, such as
+     * "name": "Park toilet", and not {"type": "Property", "value": …}.
+     * The Link header holds the context of the data set. Thus the broker
+     * gives the attribute names that the source declared. The method reads
+     * the next page until the broker gives no next page.
      *
-     * This is the request the map makes to show a data set.
+     * The map sends the same request to show a data set.
      *
-     * @param string $sourceId   the data set's source id, such as "osm-public-toilet"
-     * @param string $contextUrl the data set's JSON-LD context
+     * @param string $sourceId   the source id of the data set, such as "osm-public-toilet"
+     * @param string $contextUrl the JSON-LD context of the data set
      *
      * @return \Generator<int, array<string, mixed>> GeoJSON features, each with an id, a geometry and properties
      */
@@ -231,7 +231,7 @@ final readonly class NgsiLdBroker
 
             $status = $response->getStatusCode();
             if ($status >= 400) {
-                throw new \RuntimeException(\sprintf('Broker rejected reading %s with HTTP %d: %s', $sourceId, $status, $response->getContent(false)));
+                throw new \RuntimeException(\sprintf('The broker rejected the read of %s with HTTP %d: %s', $sourceId, $status, $response->getContent(false)));
             }
 
             $collection = $response->toArray();
@@ -246,11 +246,11 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * The query of the next page, from the Link header the broker sends with
-     * a page that has one.
+     * Gets the query of the next page from the Link header. The broker sends
+     * this header with a page that has a next page.
      *
-     * Only the query is taken: the broker links with the address it knows
-     * itself by, which need not be the one it is reached at from here.
+     * The method uses only the query. The broker links to its own address, and
+     * this app can use a different address to reach the broker.
      *
      * @param list<string> $links
      *
