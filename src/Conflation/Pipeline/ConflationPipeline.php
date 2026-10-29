@@ -99,6 +99,7 @@ final class ConflationPipeline
             }
         }
 
+        // Make sure that no input record was lost or used twice.
         $restatedInputs = array_flip($restated);
         foreach ($expected as $id => $count) {
             if (isset($restatedInputs[$id])) {
