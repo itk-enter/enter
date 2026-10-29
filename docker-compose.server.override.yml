@@ -21,7 +21,7 @@ services:
         platform: "linux/amd64"
 
     scorpio-db:
-        image: postgis/postgis
+        image: postgis/postgis:18-3.6
         restart: unless-stopped
         environment:
             - POSTGRES_USER=ngb
@@ -36,4 +36,4 @@ services:
         networks:
             - scorpio
         volumes:
-            - ./.docker/data/scorpio-db:/var/lib/postgresql/data
+            - ./.docker/data/postgresql:/var/lib/postgresql
