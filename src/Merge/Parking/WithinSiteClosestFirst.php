@@ -15,16 +15,6 @@ use App\Conflation\Spatial\Shape;
 /**
  * Merges parking bays and the OnStreetParking sites that hold them into
  * ParkingSpots.
- *
- * Each site becomes one bay record for each of its bays, and then all
- * records are matched one to one, closest first. A bay record from a site
- * with an area or a line is measured from the site's shape: 0 to a record
- * inside the area, otherwise the distance to the nearest edge.
- *
- * A bay record that matches no mapped bay moves to the mean point of the
- * mapped bays that matched other bays of its site, if that point lies
- * within the radius of the site. If its site has more than one bay, it gets
- * the attribute GENERATED.
  */
 final class WithinSiteClosestFirst extends OneToOneClosestFirst
 {
@@ -47,6 +37,9 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
      */
     private array $bayCounts = [];
 
+    /**
+     * Restates each site as bay records and matches all records one to one.
+     */
     public function merge(array $records): array
     {
         $restater = new OnStreetParkingIntoSpots();
@@ -69,6 +62,9 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
         return $this->placeUnmatched(parent::merge($spots));
     }
 
+    /**
+     * The pairs within the radius, measured from the site's shape where there is one.
+     */
     protected function pairs(array $records): array
     {
         $pairs = [];
@@ -85,6 +81,8 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
             }
         }
 
+        // Pair each bay of a site with each record of another source within the radius of the site's shape.
+        // The box around the shape, widened by the radius, skips the records that are far away.
         foreach ($bySite as $siteId => $bays) {
             $shape = (array) $this->siteShape($bays[0]);
             [$west, $south, $east, $north] = Shape::bounds($shape);
@@ -116,6 +114,9 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
         return array_values($pairs);
     }
 
+    /**
+     * The distance between two records, measured from a site's shape where there is one.
+     */
     protected function distance(Record $a, Record $b): float
     {
         $shapeA = $this->siteShape($a);
@@ -137,8 +138,7 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     }
 
     /**
-     * The area or line of the site that a bay record comes from, or null for
-     * any other record.
+     * The area or line of the site of a bay record, or null.
      *
      * @return array<string, mixed>|null
      */
@@ -151,8 +151,7 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     }
 
     /**
-     * The clusters, with each bay record that matched no mapped bay moved
-     * next to the mapped bays of its site and marked as generated.
+     * The clusters, with the unmatched bay records placed and marked.
      *
      * @param list<Cluster> $clusters
      *
@@ -187,9 +186,7 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     }
 
     /**
-     * A bay record that matched no mapped bay: at the mean point of the
-     * mapped bays of its site where that lies within the radius of the site,
-     * and with GENERATED set when the bay is generated.
+     * The bay record, moved to the mean point of the mapped bays and marked GENERATED if generated.
      *
      * @param list<Record> $mapped the mapped bays that matched other bays of its site
      */
