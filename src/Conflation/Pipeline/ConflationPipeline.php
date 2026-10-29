@@ -66,17 +66,12 @@ final class ConflationPipeline
     }
 
     /**
-     * Every defining record in exactly one group, either itself or through
-     * the records restated from it, nothing else in any group, and at most
-     * one record per data set in a group.
+     * Compares records before and after a merge-by-location run, ensuring
+     * that every defining record is in exactly one group, unchanged or
+     * restated, and that no group holds two records of one data set.
      *
-     * A record given to the step keeps its data set and its location. A
-     * restated record has an id of its own, the data set of its input
-     * record, the result model, and a point within the radius of its input
-     * record's location.
-     *
-     * @param list<Record>  $records
-     * @param list<Cluster> $clusters
+     * @param list<Record>  $records  the defining records, before
+     * @param list<Cluster> $clusters the groups, after
      */
     private function checkGroups(Conflation $conflation, array $records, array $clusters): void
     {
@@ -104,6 +99,7 @@ final class ConflationPipeline
             }
         }
 
+        // Make sure that no input record was lost or used twice.
         $restatedInputs = array_flip($restated);
         foreach ($expected as $id => $count) {
             if (isset($restatedInputs[$id])) {
@@ -120,6 +116,9 @@ final class ConflationPipeline
     }
 
     /**
+     * Ensures that an unchanged record is a defining record, with the same
+     * data set and location.
+     *
      * @param array<string, Record> $given the defining records, by id
      */
     private function checkGivenRecord(Conflation $conflation, Record $record, array $given): void
@@ -134,6 +133,9 @@ final class ConflationPipeline
     }
 
     /**
+     * Ensures that a restated record has a new id, the result model and the
+     * data set of its defining record, and lies within the radius of it.
+     *
      * @param array<string, Record> $given    the defining records, by id
      * @param array<string, string> $restated the restated records found so far, by id
      */
