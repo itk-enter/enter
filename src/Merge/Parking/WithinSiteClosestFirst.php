@@ -38,7 +38,8 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     private array $bayCounts = [];
 
     /**
-     * Restates each site as bay records and matches all records one to one.
+     * Restates each site as bay records, and then groups all records closest
+     * first, with at most one record from each data set in a group.
      */
     public function merge(array $records): array
     {
