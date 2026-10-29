@@ -254,6 +254,14 @@ tasks:
         vars:
           TASK_ARGS: install --no-dev --classmap-authoritative
 
+  ping:scorpio:
+    desc: Ping Scorpio by making an API request to check that the PHP container can talk to Scorpio
+    cmd:
+      for:
+        - /q/health
+        - /ngsi-ld/v1/types
+      cmd: docker compose --project-name enter exec phpfpm curl http://scorpio:9090/{{.ITEM}}
+
   console:
     internal: true
     cmd:

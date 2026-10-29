@@ -1,14 +1,17 @@
+networks:
+  scorpio:
+
 include:
-    - docker-compose.scorpio.yml
+  - ./scorpio/docker-compose.yml
 
 services:
-    # We don't (yet?) need a database.
-    mariadb: !reset
+  # We don't (yet?) need a database.
+  mariadb: !reset
 
-    phpfpm:
-        image: itkdev/php8.5-fpm:latest
-        depends_on: !reset
+  phpfpm:
+    image: itkdev/php8.5-fpm:latest
+    depends_on: !reset
 
-    nginx:
-        volumes:
-            - ./.docker/nginx.htpasswd:/etc/nginx/auth/.htpasswd
+  nginx:
+    volumes:
+      - ./.docker/nginx.htpasswd:/etc/nginx/auth/.htpasswd
