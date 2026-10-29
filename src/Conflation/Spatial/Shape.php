@@ -13,8 +13,9 @@ use App\Conflation\Data\Record;
 final class Shape
 {
     /**
-     * How far, in degrees, a point may lie from an area's edge and still count
-     * as on it: about 0.1 mm, to absorb rounding in the coordinates.
+     * How far a point may lie from an area's edge and still count as on it,
+     * to absorb rounding in the coordinates. It is in degrees, like the
+     * coordinates: 1e-9 degrees is about 0.1 mm on the ground.
      */
     private const float EDGE_TOLERANCE = 1e-9;
 
