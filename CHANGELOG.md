@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-114](https://github.com/itk-enter/enter/pull/114)
+  Cleaned up Scorpio docker compose setup
 * [PR-111](https://github.com/itk-enter/enter/pull/111)
   Upgraded the Scorpio database to PostGIS 18 and added the Woodpecker deploy to staging
 * [PR-98](https://github.com/itk-enter/enter/pull/98)
