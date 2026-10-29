@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-106](https://github.com/itk-enter/enter/pull/103)
+* [PR-106](https://github.com/itk-enter/enter/pull/106)
   Loosen rules set by merge-by-location and introduce restated records.
 * [PR-103](https://github.com/itk-enter/enter/pull/103)
   Typed a one-bay OSM parking area as OnStreetParking or OffStreetParking, not ParkingSpot
