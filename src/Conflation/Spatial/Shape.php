@@ -89,6 +89,21 @@ final class Shape
     }
 
     /**
+     * The centroid of a geometry: the centre of mass of an area, a line or
+     * the points.
+     *
+     * @param array<string, mixed> $geometry
+     *
+     * @return array{float, float} the longitude and latitude
+     */
+    public static function centroid(array $geometry): array
+    {
+        $centroid = self::load($geometry)->centroid();
+
+        return [(float) $centroid->getX(), (float) $centroid->getY()];
+    }
+
+    /**
      * Positions for a number of things spread evenly in a LineString, a
      * Polygon or a MultiPolygon.
      *
