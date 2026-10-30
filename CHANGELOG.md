@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-113](https://github.com/itk-enter/enter/pull/113)
+  Hid the test data sets without entities on the /test map
 * [PR-111](https://github.com/itk-enter/enter/pull/111)
   Upgraded the Scorpio database to PostGIS 18 and added the Woodpecker deploy to staging
 * [PR-98](https://github.com/itk-enter/enter/pull/98)
