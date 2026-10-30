@@ -27,8 +27,8 @@ tasks:
           and specify username and password.
 
     cmds:
-      - docker compose pull
-      - docker compose up --detach --wait
+      - docker compose pull --ignore-buildable
+      - docker compose up --detach --wait --build
       - task: composer:install
       - task: console
         vars:
@@ -270,3 +270,24 @@ tasks:
     cmds:
       - task --list-all
     silent: true
+
+  image:phpfpm:build:
+    desc: Build custom PHP docker images with GEOS extension
+    env:
+      COMPOSE_SERVER_DOMAIN: test
+    cmds:
+      - for:
+          - [docker-compose.yml, docker-compose.override.yml]
+          - [docker-compose.server.yml, docker-compose.server.override.yml]
+        cmd: docker compose {{range .ITEM}}--file {{ . }} {{end}} build --no-cache
+      - docker image ls enter-fpm
+
+  image:phpfpm:test:
+    desc: Test GEOS extension in built PHP docker images
+    env:
+      COMPOSE_SERVER_DOMAIN: test
+    cmds:
+      - for:
+          - [docker-compose.yml, docker-compose.override.yml]
+          - [docker-compose.server.yml, docker-compose.server.override.yml]
+        cmd: docker compose {{range .ITEM}}--file {{ . }} {{end}} run --quiet --rm phpfpm php vendor/bin/phpunit tests/Unit/GeosTest.php

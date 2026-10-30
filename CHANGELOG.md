@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-108](https://github.com/itk-enter/enter/pull/108)
+  Added Geos extension to PHP
 * [PR-110](https://github.com/itk-enter/enter/pull/110)
   Added the merge of disabled parking bays and on-street sites into ParkingSpots
 * [PR-106](https://github.com/itk-enter/enter/pull/106)
