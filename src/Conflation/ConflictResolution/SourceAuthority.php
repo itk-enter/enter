@@ -9,18 +9,20 @@ use App\Conflation\Data\StatedValue;
 /**
  * A conflict-resolution approach: named data sets decide, in priority order.
  *
- * A merge lists the data sets it trusts, most trusted first. For an attribute
- * in conflict, the value of the earliest listed data set that states one is
- * kept. Values from data sets that are not listed never settle a conflict, so
- * a data set added to a model changes nothing until someone lists it.
+ * A merge lists the data sets that it trusts, most trusted first. For an
+ * attribute in conflict, the approach keeps the value of the first listed
+ * data set that states a value. Values from data sets that are not in the
+ * list never settle a conflict. Thus a new data set of a model changes
+ * nothing until the merge lists it.
  *
- * For example, with new SourceAuthority(['data-set-a', 'data-set-c']), a
- * toilet stated as "08–20" by data set A and "06–22" by data set B gets
- * "08–20". A toilet stated only by data sets B and D is left to the next
- * approach, or recorded as a conflict if there is none.
+ * For example, a merge uses new SourceAuthority(['data-set-a', 'data-set-c']).
+ * Data set A states "08–20" for a toilet, and data set B states "06–22". The
+ * toilet gets "08–20". If only data sets B and D state a value for a toilet,
+ * the approach leaves it to the next approach. If there is no next approach,
+ * the pipeline records a conflict.
  *
  * Like every approach, it is optional: a merge that lists no approach leaves
- * every conflict unsettled and recorded.
+ * every conflict unsettled and records it.
  */
 class SourceAuthority extends AbstractConflictResolution
 {

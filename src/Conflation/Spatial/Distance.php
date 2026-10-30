@@ -9,9 +9,9 @@ use App\Conflation\Data\Record;
 /**
  * Distance on the earth's surface, in metres.
  *
- * geoPHP's LineString::greatCircleLength() gives the same result when given
- * the same radius, but it builds a line and two points per call, which makes
- * it about four times slower here, where it runs once per candidate pair.
+ * geoPHP's LineString::greatCircleLength() gives the same result with the
+ * same radius. But it builds a line and two points per call. This makes it
+ * about four times slower here, because it runs once per candidate pair.
  * proj4php transforms coordinates and has no distance function.
  */
 final class Distance
@@ -19,8 +19,8 @@ final class Distance
     /**
      * The mean earth radius (IUGG), in metres: the usual choice for a sphere
      * used anywhere on earth. Any radius between the polar and the equatorial
-     * one changes a distance of a few metres by centimetres at most, well
-     * within the precision of the positions compared.
+     * one changes a distance of a few metres by centimetres at most. This is
+     * well within the precision of the positions.
      */
     public const float EARTH_RADIUS = 6371008.8;
 
@@ -32,7 +32,7 @@ final class Distance
     /**
      * The haversine distance between two records' points. A sphere is within
      * a fraction of a percent of the ellipsoid, far below the precision of
-     * the positions being compared.
+     * the positions that it compares.
      */
     public static function between(Record $a, Record $b): float
     {

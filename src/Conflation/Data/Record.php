@@ -8,11 +8,11 @@ use App\GeometryHelper;
 
 /**
  * One input record as conflation sees it: which entity, from which data set,
- * the point it is compared by, and what it states.
+ * the point that the merge compares it by, and what it states.
  *
- * Matching works on a single representative point, so an area or a multi
- * point is reduced to one before it gets here. The full geometry is kept
- * beside it for steps that compare shapes.
+ * The match uses one representative point. Thus fromGeometry() reduces an
+ * area or a multi point to one point. The record also keeps the full
+ * geometry for the steps that compare shapes.
  */
 final readonly class Record
 {
@@ -43,9 +43,9 @@ final readonly class Record
      * representative point: a point's own position, or the centroid of any
      * other geometry.
      *
-     * The centroid comes from GeometryHelper::getCentroid(), which is not yet
-     * reliable for small areas (https://github.com/itk-enter/enter/issues/74),
-     * so for now only points are matched reliably.
+     * The centroid comes from GeometryHelper::getCentroid(). Without the GEOS
+     * extension, geoPHP calculates the centroid of a small area with less
+     * precision. Thus only points match reliably.
      *
      * @param array<string, mixed> $geometry
      * @param array<string, mixed> $attributes
