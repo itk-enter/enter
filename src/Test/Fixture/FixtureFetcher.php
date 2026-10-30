@@ -8,6 +8,7 @@ use App\Source\DataType;
 use App\Source\SourceInterface;
 use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -15,6 +16,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Updates the fixture of a test source from the live feed.
  */
+#[When('dev')]
+#[When('test')]
 final readonly class FixtureFetcher
 {
     public function __construct(

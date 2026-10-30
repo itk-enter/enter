@@ -6,9 +6,7 @@ use App\Source\SourceInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 /**
- * Get an importer for a source.
- *
- * @todo Support more importers.
+ * Gets the importer for a source.
  */
 final readonly class SourceImporterFactory
 {
@@ -29,7 +27,6 @@ final readonly class SourceImporterFactory
             }
         }
 
-        // @todo
-        throw new \RuntimeException('Cannot get importer for source');
+        throw new \RuntimeException(sprintf('No importer can import the source %s.', $source->definition->id));
     }
 }

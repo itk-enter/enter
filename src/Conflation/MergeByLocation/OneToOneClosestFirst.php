@@ -14,24 +14,25 @@ use App\Conflation\Spatial\Pair;
  * The default merge by location: groups records from several data sets into
  * clusters, one per real-world thing.
  *
- * Distinct things of one kind can stand closer together than two records of
- * the same thing from different data sets, so no radius alone separates
- * them. Matching is therefore one-to-one and closest first: the pairs within
- * the radius are taken in order of distance, and a pair joins two clusters
- * only while
+ * Two different things of one kind can be nearer to each other than two
+ * records of one thing from different data sets. Thus a radius alone cannot
+ * separate them. The match is one-to-one and closest first. The class takes
+ * the pairs within the radius in order of distance. A pair joins two
+ * clusters only if
  *
  * - the result holds at most one record from each data set, and
  * - every record in it is within the radius of every other.
  *
- * The first rule keeps two neighbouring things from both claiming the same
- * record; the second keeps a chain of matches from drifting further than the
- * radius allows. A record that matches nothing is a cluster of one, so the
- * clusters cover every input record.
+ * The first rule makes sure that two neighbouring things do not both take
+ * the same record. The second rule makes sure that a chain of matches does
+ * not go further than the radius. A record that matches nothing is a cluster
+ * of one, so the clusters cover every input record.
  *
- * Every record is compared by its representative point, so points and areas
- * are matched alike: an area by its centroid (see Record::fromGeometry()).
- * The class is open, so a customization can extend it, such as to match a
- * point against the area it lies in and leave the rest to this rule.
+ * The class compares every record by its representative point, so it
+ * matches points and areas in the same way. For an area, it uses the
+ * centroid (see Record::fromGeometry()). The class is open, so a
+ * customization can extend it. For example, a subclass can match a point
+ * against the area that it is in, and leave the rest to this rule.
  */
 class OneToOneClosestFirst extends AbstractMergeByLocation
 {
@@ -44,7 +45,7 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
 
         $pairs = new GridIndex($records, $this->radius)->pairs();
 
-        // Order the pairs closest first, ties broken by id so a run is
+        // Order the pairs closest first. Break ties by id, so that a run is
         // repeatable.
         usort($pairs, static fn (Pair $x, Pair $y): int => [$x->distance, $x->a->id, $x->b->id] <=> [$y->distance, $y->a->id, $y->b->id]);
 
@@ -52,7 +53,7 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
         $root = [];
         /** @var array<string, list<Record>> $members cluster members by root */
         $members = [];
-        // Start every record off as a cluster of its own.
+        // At the start, make every record a cluster of its own.
         foreach ($records as $record) {
             $root[$record->id] = $record->id;
             $members[$record->id] = [$record];
@@ -106,7 +107,7 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
 
         // Refuse if any record of A lies beyond the radius of any record of B.
         // Clusters hold one record per data set, so this compares only a
-        // handful of records.
+        // small number of records.
         foreach ($a as $x) {
             foreach ($b as $y) {
                 if (Distance::between($x, $y) > $radius) {

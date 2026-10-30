@@ -30,8 +30,9 @@ final readonly class MergedDataSet
 
     /**
      * The merged data set as the list of data sets gives it, under the keys
-     * a source's definition uses, plus the data sets it is merged from. It is
-     * a data set of its own, so it is also the data set that contains it.
+     * that a source's definition uses. It also gives the data sets that the
+     * merge reads. It is a data set of its own, so it is also the data set
+     * that contains it.
      *
      * @return array<string, mixed>
      */

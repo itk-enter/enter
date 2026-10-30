@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Conflation\Data;
 
 /**
- * One real-world thing as a merge resolves it, before it is built in the
- * merge's result model.
+ * One real-world thing as a merge resolves it, before the create step builds
+ * it in the result model of the merge.
  *
- * Only the pipeline creates merged entities. The steps a merge customizes
- * receive them, and return groups or values rather than entities, so they
- * cannot add, remove or move one.
+ * Only the pipeline creates merged entities. The steps that a merge
+ * customizes receive them and return groups or values, not entities. Thus
+ * these steps cannot add, remove or move a merged entity.
  */
 final readonly class MergedEntity
 {
@@ -18,7 +18,8 @@ final readonly class MergedEntity
      * @param string                           $id         the identifier of the member that sorts first
      * @param array<string, mixed>             $location   GeoJSON geometry
      * @param array<string, mixed>             $attributes settled values, by attribute name
-     * @param list<string>                     $provenance identifiers of every input record it was built from, sorted
+     * @param list<string>                     $provenance the sorted identifiers of every input record that the merge
+     *                                                     built it from
      * @param array<string, list<StatedValue>> $conflicts  the values of attributes no approach settled, by attribute name
      */
     public function __construct(
@@ -36,7 +37,7 @@ final readonly class MergedEntity
     }
 
     /**
-     * The entity with attributes added by augmenting.
+     * The entity with the attributes that the augmentation added.
      *
      * @param array<string, mixed>             $attributes
      * @param array<string, list<StatedValue>> $conflicts

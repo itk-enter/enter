@@ -52,7 +52,6 @@ tasks:
       # - task: test:unit
       - task: test:broker
       - task: test:conflation
-      - task: test:broker
       - task: test:controller
       - task: test:geo
       - task: test:source
@@ -72,7 +71,6 @@ tasks:
 
   test:broker: *test_task
   test:conflation: *test_task
-  test:broker: *test_task
   test:controller: *test_task
   test:geo: *test_task
   test:source: *test_task

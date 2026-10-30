@@ -11,14 +11,16 @@ use proj4php\Proj4php;
 /**
  * Reprojects coordinates from any registered CRS to WGS84.
  *
- * GeoJSON fixes its coordinates as WGS84 and NGSI-LD inherits that, so every
- * geometry passes through here on its way to an entity and nowhere else.
+ * GeoJSON uses WGS84 coordinates, and NGSI-LD uses the same rule. Thus each
+ * geometry goes through this class, and only this class, before it goes into an
+ * entity.
  *
- * The ETRS89 grids are transformed with a null datum shift, so what is
- * published is ETRS89 labelled WGS84. The two coincided in 1989 and separate by
- * some 2.5 cm a year — ordinary practice in web GIS, and the largest error
- * introduced here. Nothing is rounded on the way: the round trip is exact only
- * at full precision.
+ * This class transforms the ETRS89 grids with a null datum shift. Thus the
+ * published coordinates are ETRS89 coordinates with the label WGS84. The two
+ * systems were the same in 1989, and they move apart by approximately 2.5 cm
+ * each year. Web GIS usually accepts this difference. It is the largest error
+ * that this class adds. This class does not round the coordinates: the round
+ * trip is exact only at full precision.
  */
 final class Wgs84Transformer
 {
@@ -34,7 +36,7 @@ final class Wgs84Transformer
         'EPSG:25832' => '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
         // ETRS89 / UTM zone 33N — Bornholm and eastwards.
         'EPSG:25833' => '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
-        // Web Mercator, in case an input arrives as tile coordinates.
+        // Web Mercator, if an input comes as tile coordinates.
         'EPSG:3857' => '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +no_defs',
         self::TARGET_SRID => '+proj=longlat +datum=WGS84 +no_defs',
     ];
@@ -61,7 +63,7 @@ final class Wgs84Transformer
     }
 
     /**
-     * Coordinates are not rounded.
+     * This method does not round the coordinates.
      *
      * @param string $srid source CRS
      *
@@ -98,11 +100,12 @@ final class Wgs84Transformer
      * Reprojects a whole GeoJSON geometry, whatever its type.
      *
      * Handles Point, LineString, Polygon, MultiPoint, MultiLineString and
-     * MultiPolygon — every type an NGSI-LD GeoProperty accepts. GeometryCollection
-     * is not supported, because it carries `geometries` rather than `coordinates`.
+     * MultiPolygon — each type that an NGSI-LD GeoProperty accepts. This method
+     * does not support GeometryCollection, because it has `geometries` and not
+     * `coordinates`.
      *
-     * A third ordinate (elevation) is dropped: the inputs are two-dimensional,
-     * and vertical datums are a separate concern this class does not model.
+     * This method removes a third ordinate (elevation). The inputs are
+     * two-dimensional, and this class does not model vertical datums.
      *
      * @param string               $srid     source CRS
      * @param array<string, mixed> $geometry GeoJSON geometry object
@@ -126,8 +129,9 @@ final class Wgs84Transformer
     /**
      * GeoJSON nests coordinates to a depth that depends on the geometry type:
      * a bare position for Point, an array of positions for LineString, an array
-     * of those for Polygon, and so on. Recursing until the first element is
-     * numeric handles every depth without enumerating the types.
+     * of those for Polygon, and so on. The method calls itself until the first
+     * element is a number. Thus it handles each depth, and it does not list the
+     * types.
      *
      * @param array<array-key, mixed> $coordinates
      *

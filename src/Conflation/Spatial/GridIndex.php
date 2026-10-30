@@ -7,23 +7,23 @@ namespace App\Conflation\Spatial;
 use App\Conflation\Data\Record;
 
 /**
- * Finds the pairs of records within a radius of each other without
- * comparing every record with every other.
+ * Finds the pairs of records within a radius of each other. It does not
+ * compare every record with every other record.
  *
- * Records are bucketed into cells at least the radius wide, so any record
- * within the radius of another lies in the same cell or one of the eight
- * around it. Only occupied cells exist, so nothing is laid out over the
- * area in advance, and the cost grows with the number of records rather
- * than with its square.
+ * The index puts the records into cells that are at least the radius wide.
+ * Thus a record within the radius of another record is in the same cell or
+ * in one of the eight cells around it. Only the cells that hold records
+ * exist, so the index does not lay out a grid over the area in advance. The
+ * cost increases with the number of records, not with its square.
  *
- * Comparing every record with every other grows with the square of their
- * number, which is too slow for larger data sets: five data sets of 50,000
- * records each would take some 3 × 10¹⁰ comparisons. The grid compares each
- * record only with the few in its neighbourhood.
+ * To compare every record with every other record costs the square of the
+ * number of records. This is too slow for large data sets: five data sets of
+ * 50,000 records each need approximately 3 × 10¹⁰ comparisons. The grid
+ * compares each record only with the few records near it.
  *
- * Neither geoPHP nor proj4php has a spatial index. Cells are sized in
- * degrees rather than in a projected CRS, so records need no transform and
- * the grid works wherever they are, not only within one projection's zone.
+ * Neither geoPHP nor proj4php has a spatial index. The index sizes the cells
+ * in degrees, not in a projected CRS. Thus the records need no transform, and
+ * the grid works at all locations, not only in the zone of one projection.
  */
 final class GridIndex
 {
@@ -46,8 +46,8 @@ final class GridIndex
         }
 
         // Size the cells for the record furthest from the equator. A degree
-        // of longitude shrinks towards the poles, so sizing the cells where
-        // it is shortest keeps every cell at least the radius wide across
+        // of longitude becomes shorter towards the poles. If the cells fit
+        // where it is shortest, every cell is at least the radius wide across
         // the whole set.
         $maxLatitude = array_reduce($records, static fn (float $max, Record $record): float => max($max, abs($record->latitude)), 0.0);
         $this->cellLatitude = $radius / Distance::METRES_PER_DEGREE;
@@ -80,15 +80,16 @@ final class GridIndex
                     // Keep each record there from another data set within the radius.
                     foreach ($this->cells[$column + $dColumn][$row + $dRow] ?? [] as $other) {
                         // Records of one data set describe different things,
-                        // and a pair is reported from its lower-indexed record.
+                        // and the index reports a pair from its lower-indexed
+                        // record.
                         if ($other <= $index || $this->records[$other]->sourceId === $record->sourceId) {
                             continue;
                         }
 
                         $distance = Distance::between($record, $this->records[$other]);
                         if ($distance <= $this->radius) {
-                            // Ordered by id, so a pair reads the same whatever
-                            // order the records came in.
+                            // Order the pair by id, so that it is the same in
+                            // any order of the records.
                             [$a, $b] = $record->id < $this->records[$other]->id
                                 ? [$record, $this->records[$other]]
                                 : [$this->records[$other], $record];

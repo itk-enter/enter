@@ -26,12 +26,12 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     contextUrl: 'https://raw.githubusercontent.com/smart-data-models/dataModel.Parking/master/context.jsonld',
 
     omittedFields: [
-        'amenity' => 'Selector distinguishing a parking space from a parking area; what a record holds decides its model, so the tag adds nothing.',
+        'amenity' => 'Selector that tells a parking space from a parking area; what a record holds decides its model, so the tag adds nothing.',
         'capacity' => 'Decides whether a record is a single bay; for one it is the one bay, and the model counts none.',
         'capacity:disabled' => 'Decides whether a record is a single bay; for one it is the one bay, and the model counts none.',
         'orientation' => 'How the bay lies relative to the road; the model has no counterpart.',
         'disabled' => 'Access restriction on street-side parking; every record in this data set is a reserved bay.',
-        'access' => 'Who may enter; mapping it onto permit attributes needs an interpretation the tag values do not support.',
+        'access' => 'Who may enter; to map it onto permit attributes needs an interpretation the tag values do not support.',
         'fee:conditional' => 'Time-qualified refinement of fee, which is carried as the feed states it.',
         'capacity:charging' => 'Bays with charging points; a different subset than the reserved bays this data set publishes.',
         'operator' => 'Who runs the facility; a fact about the business rather than its reserved bays.',
@@ -85,7 +85,7 @@ final class TestParkingSpot extends AbstractTestHandicapParking
     }
 
     /**
-     * Gets the category of the bay from the siting of its site.
+     * Gets the category of the bay from the location of its site, on or off the street.
      *
      * @param array<string, mixed> $tags
      *
