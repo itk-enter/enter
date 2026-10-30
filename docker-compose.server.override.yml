@@ -1,0 +1,75 @@
+networks:
+    scorpio:
+
+services:
+    phpfpm:
+        image: enter-fpm:alpine
+        # We want to use GEOS in PHP, cf. https://geophp.net/geos.html.
+        build:
+            # Notice: $ must be quoted (doubled) when used inside dockerfile_inline
+            dockerfile_inline: |
+                # Lifted from https://github.com/farmOS/farmOS/blob/4.x/docker/Dockerfile
+                FROM itkdev/php8.5-fpm:alpine
+
+                USER root
+
+                # Build and install the GEOS PHP extension.
+                # https://github.com/libgeos/php-geos/blob/master/README.md#building
+                # See https://git.osgeo.org/gitea/geos/php-geos
+                # See https://github.com/libgeos/php-geos
+
+                # https://github.com/libgeos/php-geos/commit/1a1c6a95697359892886a2050570007754ce575e
+                ARG PHP_GEOS_VERSION=1a1c6a95697359892886a2050570007754ce575e
+
+                ADD https://github.com/libgeos/php-geos/archive/$${PHP_GEOS_VERSION}.tar.gz /opt/php-geos.tar.gz
+                RUN apk update && apk add build-base geos-dev autoconf \
+                  && ( tar xzf /opt/php-geos.tar.gz -C /opt/ \
+                    && cd /opt/php-geos-$${PHP_GEOS_VERSION} \
+                    && ./autogen.sh \
+                    && ./configure \
+                    && make \
+                    && make install \
+                    )
+
+                RUN cat > /usr/local/etc/php/conf.d/docker-php-ext-geos.ini <<'EOF'
+                ; configuration for php common module
+                ; priority=20
+                extension=geos
+                EOF
+
+                # RUN phpenmod -s ALL geos
+
+                USER deploy
+
+    scorpio:
+        image: scorpiobroker/all-in-one-runner:java-latest
+        restart: unless-stopped
+        ports:
+            - "9090"
+        environment:
+            - DBHOST=scorpio-db
+        depends_on:
+            - "scorpio-db"
+        networks:
+            app:
+                aliases: [scorpio.local]
+            scorpio:
+        platform: "linux/amd64"
+
+    scorpio-db:
+        image: postgis/postgis:18-3.6
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=ngb
+            - POSTGRES_PASSWORD=ngb
+            - POSTGRES_DB=ngb
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready --username=ngb --dbname=ngb"]
+            start_period: 10s
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        networks:
+            - scorpio
+        volumes:
+            - ./.docker/data/postgresql:/var/lib/postgresql
