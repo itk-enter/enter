@@ -5,19 +5,36 @@ declare(strict_types=1);
 namespace App\Conflation\Spatial;
 
 use App\Conflation\Data\Record;
+use App\Geo\Wgs84Transformer;
 
 /**
  * Compares a record's point with a GeoJSON geometry in WGS84: whether the
  * point lies inside it, and how far away it lies.
+ *
+ * GEOS does the calculations through geoPHP. GEOS calculates on a plane, so
+ * distance() first projects the geometry to a CRS in metres. Without the GEOS
+ * extension, geoPHP uses less precise calculations of its own. Thus the class
+ * throws an exception if the extension is not loaded.
  */
 final class Shape
 {
     /**
-     * How far a point may lie from an area's edge and still count as on it,
-     * to absorb rounding in the coordinates. It is in degrees, like the
-     * coordinates: 1e-9 degrees is about 0.1 mm on the ground.
+     * The CRS that distance() measures in: ETRS89 / UTM zone 32N, in metres.
+     * It covers most of Denmark.
      */
-    private const float EDGE_TOLERANCE = 1e-9;
+    private const string METRIC_SRID = 'EPSG:25832';
+
+    /**
+     * The maximum number of geometries that the class keeps loaded. The
+     * callers compare the same geometry with many points, so the class loads
+     * each geometry into GEOS only once.
+     */
+    private const int CACHE_SIZE = 1000;
+
+    /** @var array<string, \Geometry> the loaded geometries, by CRS and content */
+    private static array $geometries = [];
+
+    private static ?Wgs84Transformer $transformer = null;
 
     /**
      * Whether a point lies inside a Polygon or a MultiPolygon: on its edge
@@ -27,14 +44,12 @@ final class Shape
      */
     public static function contains(array $geometry, float $longitude, float $latitude): bool
     {
-        $polygons = match ($geometry['type'] ?? null) {
-            'Polygon' => [$geometry['coordinates']],
-            'MultiPolygon' => $geometry['coordinates'],
-            default => [],
-        };
+        if (!\in_array($geometry['type'] ?? null, ['Polygon', 'MultiPolygon'], true)) {
+            return false;
+        }
 
-        /* @var list<list<list<array{0: float|int, 1: float|int}>>> $polygons */
-        return array_any($polygons, static fn (array $rings): bool => self::inPolygon($longitude, $latitude, $rings));
+        // covers() includes the edge. contains() excludes it.
+        return true === self::load($geometry)->covers(new \Point($longitude, $latitude));
     }
 
     /**
@@ -46,28 +61,9 @@ final class Shape
      */
     public static function distance(Record $point, array $geometry): float
     {
-        if (self::contains($geometry, $point->longitude, $point->latitude)) {
-            return 0.0;
-        }
+        [$x, $y] = self::transformer()->fromWgs84(self::METRIC_SRID, $point->longitude, $point->latitude);
 
-        $lines = self::lines($geometry);
-        if ([] === $lines) {
-            throw new \InvalidArgumentException(\sprintf('Cannot measure the distance from %s to a geometry of type %s.', $point->id, get_debug_type($geometry['type'] ?? null)));
-        }
-
-        $nearest = INF;
-        foreach ($lines as $line) {
-            if (1 === \count($line)) {
-                $nearest = min($nearest, Distance::between($point, new Record('', '', (float) $line[0][0], (float) $line[0][1])));
-                continue;
-            }
-
-            for ($i = 1, $count = \count($line); $i < $count; ++$i) {
-                $nearest = min($nearest, self::toSegment($point, $line[$i - 1], $line[$i]));
-            }
-        }
-
-        return $nearest;
+        return (float) self::load($geometry, self::METRIC_SRID)->distance(new \Point($x, $y));
     }
 
     /**
@@ -79,113 +75,53 @@ final class Shape
      */
     public static function bounds(array $geometry): array
     {
-        $positions = array_merge(...self::lines($geometry));
-        if ([] === $positions) {
-            throw new \InvalidArgumentException(\sprintf('Cannot find the bounds of a geometry of type %s.', get_debug_type($geometry['type'] ?? null)));
-        }
+        $box = self::load($geometry)->getBBox();
 
-        $longitudes = array_map(static fn (array $position): float => (float) $position[0], $positions);
-        $latitudes = array_map(static fn (array $position): float => (float) $position[1], $positions);
-
-        return [min($longitudes), min($latitudes), max($longitudes), max($latitudes)];
+        return [(float) $box['minx'], (float) $box['miny'], (float) $box['maxx'], (float) $box['maxy']];
     }
 
     /**
-     * The positions of a geometry as lines: each ring, line string or point
-     * on its own, a point as a line of one position.
+     * Loads a GeoJSON geometry in WGS84 into geoPHP, projected to the CRS.
      *
      * @param array<string, mixed> $geometry
-     *
-     * @return list<list<array{0: float|int, 1: float|int}>>
      */
-    private static function lines(array $geometry): array
+    private static function load(array $geometry, string $srid = Wgs84Transformer::TARGET_SRID): \Geometry
     {
-        $coordinates = $geometry['coordinates'] ?? null;
-        if (!\is_array($coordinates)) {
-            return [];
+        if (!\geoPHP::geosInstalled()) {
+            throw new \LogicException('Shape needs the GEOS PHP extension.');
         }
 
-        /* @var list<list<array{0: float|int, 1: float|int}>> */
-        return match ($geometry['type'] ?? null) {
-            'Point' => [[$coordinates]],
-            'MultiPoint' => array_map(static fn (array $position): array => [$position], $coordinates),
-            'LineString' => [$coordinates],
-            'MultiLineString', 'Polygon' => $coordinates,
-            'MultiPolygon' => array_merge(...$coordinates),
-            default => [],
-        };
-    }
-
-    /**
-     * The distance, in metres, from a point to a line segment.
-     *
-     * @param array{0: float|int, 1: float|int} $a
-     * @param array{0: float|int, 1: float|int} $b
-     */
-    private static function toSegment(Record $point, array $a, array $b): float
-    {
-        // Project the segment onto a plane in metres, with the point at the
-        // origin.
-        $metresPerLongitude = Distance::METRES_PER_DEGREE * cos(deg2rad($point->latitude));
-        $ax = ((float) $a[0] - $point->longitude) * $metresPerLongitude;
-        $ay = ((float) $a[1] - $point->latitude) * Distance::METRES_PER_DEGREE;
-        $bx = ((float) $b[0] - $point->longitude) * $metresPerLongitude;
-        $by = ((float) $b[1] - $point->latitude) * Distance::METRES_PER_DEGREE;
-
-        // Find the position on the segment nearest to the origin.
-        $dx = $bx - $ax;
-        $dy = $by - $ay;
-        $lengthSquared = $dx ** 2 + $dy ** 2;
-        $t = 0.0 === $lengthSquared ? 0.0 : max(0.0, min(1.0, -($ax * $dx + $ay * $dy) / $lengthSquared));
-
-        return hypot($ax + $t * $dx, $ay + $t * $dy);
-    }
-
-    /**
-     * Whether a position lies inside a polygon or on its edge: inside or on
-     * its outer ring, and not strictly inside any of its holes.
-     *
-     * @param list<list<array{0: float|int, 1: float|int}>> $rings the outer ring, then the holes
-     */
-    private static function inPolygon(float $longitude, float $latitude, array $rings): bool
-    {
-        foreach ($rings as $i => $ring) {
-            $side = self::sideOfRing($longitude, $latitude, $ring);
-            if (0 === $i ? $side < 0 : $side > 0) {
-                return false;
-            }
+        $key = $srid.' '.hash('xxh128', serialize($geometry));
+        if (isset(self::$geometries[$key])) {
+            return self::$geometries[$key];
         }
 
-        return [] !== $rings;
-    }
-
-    /**
-     * Where a position lies relative to a closed ring, by counting the edges
-     * a ray from it crosses: 1 inside, 0 on an edge, -1 outside.
-     *
-     * @param list<array{0: float|int, 1: float|int}> $ring
-     */
-    private static function sideOfRing(float $x, float $y, array $ring): int
-    {
-        $inside = false;
-        $count = \count($ring);
-        for ($i = 0, $j = $count - 1; $i < $count; $j = $i++) {
-            [$xi, $yi] = [(float) $ring[$i][0], (float) $ring[$i][1]];
-            [$xj, $yj] = [(float) $ring[$j][0], (float) $ring[$j][1]];
-
-            // On the edge: on the line through it, and within its bounding box.
-            $cross = ($xj - $xi) * ($y - $yi) - ($yj - $yi) * ($x - $xi);
-            if (abs($cross) <= self::EDGE_TOLERANCE * hypot($xj - $xi, $yj - $yi)
-                && $x >= min($xi, $xj) - self::EDGE_TOLERANCE && $x <= max($xi, $xj) + self::EDGE_TOLERANCE
-                && $y >= min($yi, $yj) - self::EDGE_TOLERANCE && $y <= max($yi, $yj) + self::EDGE_TOLERANCE) {
-                return 0;
-            }
-
-            if (($yi > $y) !== ($yj > $y) && $x < ($xj - $xi) * ($y - $yi) / ($yj - $yi) + $xi) {
-                $inside = !$inside;
-            }
+        $type = $geometry['type'] ?? null;
+        if (Wgs84Transformer::TARGET_SRID !== $srid) {
+            $geometry = self::transformer()->geometryFromWgs84($srid, $geometry);
         }
 
-        return $inside ? 1 : -1;
+        $message = \sprintf('Cannot use a geometry of type %s.', \is_string($type) ? $type : get_debug_type($type));
+        try {
+            $loaded = \geoPHP::load(json_encode($geometry, \JSON_THROW_ON_ERROR), 'json');
+        } catch (\Exception $exception) {
+            // geoPHP throws a plain exception for GeoJSON that it cannot read.
+            throw new \InvalidArgumentException($message, previous: $exception);
+        }
+
+        if (!$loaded instanceof \Geometry || $loaded->isEmpty()) {
+            throw new \InvalidArgumentException($message);
+        }
+
+        if (\count(self::$geometries) >= self::CACHE_SIZE) {
+            self::$geometries = [];
+        }
+
+        return self::$geometries[$key] = $loaded;
+    }
+
+    private static function transformer(): Wgs84Transformer
+    {
+        return self::$transformer ??= new Wgs84Transformer();
     }
 }
