@@ -20,7 +20,7 @@ framework:
             skraafoto.client:
                 scope: '^https://api\.dataforsyningen\.dk/rest/skraafoto_'
                 headers:
-                    token: '%env(APP_SKRAAFOTO_TOKEN)%'
+                    token: '%env(DATAFORSYNINGEN_TOKEN)%'
 
             # Fetches the live feeds for the test fixtures.
             test_fixture.client:

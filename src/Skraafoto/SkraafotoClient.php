@@ -18,7 +18,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * The STAC API gives the photos as GeoJSON features. The footprint of a
  * photo is the area on the ground that it shows. The cogtiler makes a JPEG
  * thumbnail of a photo. Each request must have a Dataforsyningen token. The
- * scoped client "skraafoto.client" adds the token from APP_SKRAAFOTO_TOKEN.
+ * scoped client "skraafoto.client" adds the token from DATAFORSYNINGEN_TOKEN.
  *
  * @see https://github.com/Klimadatastyrelsen/skraafoto_stac_public/blob/main/dokumentation.md
  */
@@ -146,7 +146,7 @@ final readonly class SkraafotoClient
 
         return match ($status) {
             Response::HTTP_NOT_FOUND => new SkraafotoNotFoundException(\sprintf('The Skråfoto API has no %s.', $url), previous: $exception),
-            Response::HTTP_UNAUTHORIZED, Response::HTTP_FORBIDDEN => new \RuntimeException(\sprintf('The Skråfoto API refused the token with HTTP %d. Set APP_SKRAAFOTO_TOKEN to a valid Dataforsyningen token.', $status), previous: $exception),
+            Response::HTTP_UNAUTHORIZED, Response::HTTP_FORBIDDEN => new \RuntimeException(\sprintf('The Skråfoto API refused the token with HTTP %d. Set DATAFORSYNINGEN_TOKEN to a valid Dataforsyningen token.', $status), previous: $exception),
             default => new \RuntimeException(\sprintf('The Skråfoto API refused %s with HTTP %d.', $url, $status), previous: $exception),
         };
     }

@@ -80,7 +80,7 @@ class SkraafotoClientTest extends TestCase
     {
         $client = $this->client([new MockResponse('Unauthorized', ['http_code' => 401])]);
 
-        $this->expectExceptionMessage('APP_SKRAAFOTO_TOKEN');
+        $this->expectExceptionMessage('DATAFORSYNINGEN_TOKEN');
 
         $client->newestCollection();
     }
