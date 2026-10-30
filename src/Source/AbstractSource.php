@@ -3,12 +3,17 @@
 namespace App\Source;
 
 /**
- * Abstract source.
+ * The base class of a source.
+ *
+ * The class reads the #[Definition] attribute of the concrete source. It
+ * gives the key, the string and the JSON of the source from that attribute.
+ * A concrete source adds the #[Definition] attribute and implements
+ * createNgsiEntity().
  */
 abstract class AbstractSource implements SourceInterface
 {
     /**
-     * Read from the #[Definition] attribute on the concrete source.
+     * The #[Definition] attribute of the concrete source.
      */
     public Definition $definition {
         /**

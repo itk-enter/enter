@@ -13,13 +13,14 @@ use App\Source\SourceInterface;
  * The title and description are the merge's own. The context and the licence
  * follow from the data sets it reads, unless the merge names them:
  *
- * - Context: the one the input data sets of the result model declare. All
- *   four toilet data sets declare the same PublicToilet context, so a toilet
- *   merge needs to name none. Where they declare different contexts, such as
- *   two versions of the model, the merge has to name one.
- * - Licence: the one every input data set states. Where an input states none,
- *   or the inputs state different ones, it is unsettled (null) until the
- *   merge names one, as with a source that states no licence.
+ * - Context: the one that the input data sets of the result model declare.
+ *   All four toilet data sets declare the same PublicToilet context, so a
+ *   toilet merge does not have to name one. If they declare different
+ *   contexts, for example two versions of the model, the merge must name one.
+ * - Licence: the one that every input data set states. If an input data set
+ *   states no licence, or the input data sets state different licences, the
+ *   licence is unsettled (null). It stays unsettled until the merge names
+ *   one, as with a source that states no licence.
  */
 final readonly class MergedDataSetFactory
 {
@@ -54,7 +55,7 @@ final readonly class MergedDataSetFactory
         )));
 
         if (1 !== \count($contextUrls)) {
-            throw new \LogicException(\sprintf('Merge %s reads %d data sets of %s declaring %d contexts, so it has to name its contextUrl.', $conflation->id, \count($inputs), $conflation->resultModel, \count($contextUrls)));
+            throw new \LogicException(\sprintf('Merge %s reads %d data sets of %s that declare %d contexts, so it has to name its contextUrl.', $conflation->id, \count($inputs), $conflation->resultModel, \count($contextUrls)));
         }
 
         return $contextUrls[0];

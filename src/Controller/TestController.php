@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
+use App\Test\Fixture\FixtureFiles;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -11,6 +14,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 
+/**
+ * Shows the developer map and serves the fixture files of the test sources.
+ */
 #[When('dev')]
 #[When('test')]
 #[Route('/test', name: 'test_')]
@@ -23,8 +29,8 @@ final class TestController extends AbstractController
     private const string APPLICATION_JSON = 'application/json';
 
     /**
-     * The developer map. The page fetches the data sets and draws each as
-     * it is switched on.
+     * Shows the developer map. The page fetches the data sets and draws a
+     * data set when the user switches it on.
      */
     #[Route('', name: 'default', methods: [Request::METHOD_GET])]
     public function index(): Response
@@ -32,6 +38,10 @@ final class TestController extends AbstractController
         return $this->render('test/index.html.twig');
     }
 
+    /**
+     * Serves the fixture file of a test source. The query of the URL is a
+     * part of the file name.
+     */
     #[Route(
         path: '/data/{path}.{_format}',
         methods: [Request::METHOD_GET],
@@ -42,13 +52,11 @@ final class TestController extends AbstractController
         defaults: ['_format' => self::FORMAT_JSON],
         priority: -98,
     )]
-    public function data(Request $request, string $path, string $_format): Response
+    public function data(Request $request, string $_format, FixtureFiles $fixtures): Response
     {
-        // Remove "/test/"
-        $path = substr($request->getRequestUri(), 6);
-        $path = realpath(__DIR__.'/../../tests/resources/'.$path);
-        if (!file_exists($path)) {
-            throw new NotFoundHttpException($path);
+        $file = $fixtures->find(substr($request->getRequestUri(), \strlen('/test/')));
+        if (null === $file) {
+            throw new NotFoundHttpException();
         }
 
         $contentType = match ($_format) {
@@ -56,7 +64,7 @@ final class TestController extends AbstractController
             default => self::APPLICATION_JSON,
         };
 
-        return new BinaryFileResponse($path, headers: [
+        return new BinaryFileResponse($file, headers: [
             'content-type' => $contentType,
         ]);
     }
