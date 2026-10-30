@@ -102,9 +102,10 @@ class HandicapParkingTest extends TestCase
         $this->assertSame('ParkingSpot', $this->entities[6]['type']);
     }
 
-    public function testItTypesAParkingAreaOfOneReservedBayAsABay(): void
+    public function testItTypesAParkingAreaOfOneReservedBayAsASite(): void
     {
-        $this->assertSame('ParkingSpot', $this->entities[7]['type']);
+        $this->assertSame('OnStreetParking', $this->entities[7]['type']);
+        $this->assertSame(1, $this->entities[7]['totalSpotNumber']['value']);
     }
 
     public function testItTypesAFacilityOfUnknownSizeAsASite(): void
@@ -149,24 +150,23 @@ class HandicapParkingTest extends TestCase
 
     public function testItSitesABayWhenTheRecordSaysWhereItIs(): void
     {
-        $this->assertSame(['onStreet'], $this->entities[7]['category']['value']);
+        $this->assertSame(['onStreet'], $this->entities[2]['category']['value']);
     }
 
     public function testItLeavesABayUnsitedWhenTheRecordDoesNotSay(): void
     {
-        $this->assertArrayNotHasKey('category', $this->entities[2]);
         $this->assertArrayNotHasKey('category', $this->entities[6]);
     }
 
     public function testItPublishesNoBayCountForABay(): void
     {
         $this->assertArrayNotHasKey('totalSpotNumber', $this->entities[2]);
-        $this->assertArrayNotHasKey('totalSpotNumber', $this->entities[7]);
+        $this->assertArrayNotHasKey('totalSpotNumber', $this->entities[6]);
     }
 
     public function testItMarksEverySiteAsDisabledParking(): void
     {
-        foreach ([0, 1, 3, 4, 5, 8, 9] as $site) {
+        foreach ([0, 1, 3, 4, 5, 7, 8, 9] as $site) {
             $this->assertContains('forDisabled', $this->entities[$site]['category']['value']);
         }
     }
@@ -340,6 +340,7 @@ class HandicapParkingTest extends TestCase
                 'tags' => [
                     'amenity' => 'parking_space',
                     'capacity' => '1',
+                    'parking' => 'street_side',
                     'parking_space' => 'disabled',
                 ],
             ],
