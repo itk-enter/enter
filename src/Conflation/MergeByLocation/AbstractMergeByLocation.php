@@ -16,9 +16,9 @@ use App\Conflation\Data\Record;
  * adjusts its groups.
  *
  * For each implementation, the pipeline checks the groups that it returns.
- * Each record must be in exactly one group, itself or through the records
- * restated from it. A group must hold at most one record from each data set.
- * If the groups break these limits, the run fails and publishes nothing.
+ * Each record must be in exactly one group, and a group must hold at
+ * most one record from each data set. If the groups break these limits, the
+ * run fails and publishes nothing.
  *
  * For example, the radius is 5 m. Toilet A-17 from data set A and toilet
  * B-903 from data set B are 3 m apart. Toilet A-18 has nothing near it. Then
@@ -40,7 +40,7 @@ abstract class AbstractMergeByLocation
     }
 
     /**
-     * Sorts the records into groups. Each group is one real-world thing.
+     * Decides which records describe the same thing.
      *
      * The pipeline calls this once per run with the records of every
      * defining model, from every data set, in no particular order. Each
@@ -54,9 +54,13 @@ abstract class AbstractMergeByLocation
      * Put every record in exactly one group. Do not put two records of the
      * same data set in one group. If you do, the run fails.
      *
-     * A record can also go into the groups as new records in the result
-     * model. Set restatedFrom to its id, keep its data set, and keep each new
-     * record within the radius of it.
+     * Some defining models of a merge can be different from its result model.
+     * Then the implementation returns the records restated in the result
+     * model: it renames the attributes and converts the values. Thus all the
+     * steps after this step see only the result model. A restated record
+     * keeps the data set of its record and stays within the radius of it.
+     * Its restatedFrom holds the id of that record. The default does not
+     * restate records, so such a merge names a subclass of its own.
      *
      * @param list<Record> $records every record of the merge's defining models
      *
