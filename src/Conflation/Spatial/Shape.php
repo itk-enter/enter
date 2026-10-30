@@ -25,6 +25,13 @@ final class Shape
     private const string METRIC_SRID = 'EPSG:25832';
 
     /**
+     * How far a point may lie from an area and still count as inside it, in
+     * degrees: about 0.1 mm. A point from one source is almost never exactly
+     * on an edge from another source, because the coordinates are rounded.
+     */
+    private const float EDGE_TOLERANCE = 1e-9;
+
+    /**
      * The maximum number of geometries that the class keeps loaded. The
      * callers compare the same geometry with many points, so the class loads
      * each geometry into GEOS only once.
@@ -38,7 +45,8 @@ final class Shape
 
     /**
      * Whether a point lies inside a Polygon or a MultiPolygon: on its edge
-     * included, in its holes excluded. Any other geometry contains no point.
+     * or within EDGE_TOLERANCE of it included, in its holes excluded. Any
+     * other geometry contains no point.
      *
      * @param array<string, mixed> $geometry
      */
@@ -48,8 +56,8 @@ final class Shape
             return false;
         }
 
-        // covers() includes the edge. contains() excludes it.
-        return true === self::load($geometry)->covers(new \Point($longitude, $latitude));
+        // The distance to an area is 0 inside it and on its edge.
+        return self::load($geometry)->distance(new \Point($longitude, $latitude)) <= self::EDGE_TOLERANCE;
     }
 
     /**
