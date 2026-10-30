@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Merge\Parking;
 
 use App\Conflation\Data\Record;
+use App\Conflation\Spatial\Shape;
 use App\Merge\Parking\OnStreetParkingIntoSpots;
 use PHPUnit\Framework\TestCase;
 
@@ -83,6 +84,19 @@ class OnStreetParkingIntoSpotsTest extends TestCase
         $this->assertSame('no', $restate(['category' => ['free']]));
         $this->assertSame('no', $restate(['category' => ['feeCharged'], 'additionalInformation.fee' => 'no']));
         $this->assertNull($restate(['category' => ['forDisabled']]));
+    }
+
+    public function testTheSpotsOfAnAreaSiteAreSpreadInsideIt(): void
+    {
+        $area = ['type' => 'Polygon', 'coordinates' => [[[10.2100, 56.1500], [10.2104, 56.1500], [10.2104, 56.15004], [10.2100, 56.15004], [10.2100, 56.1500]]]];
+
+        $spots = new OnStreetParkingIntoSpots()->restate(self::site(['totalSpotNumber' => 3], $area));
+
+        $positions = array_map(static fn (Record $spot): array => [$spot->longitude, $spot->latitude], $spots);
+        $this->assertCount(3, array_unique(array_map(serialize(...), $positions)));
+        foreach ($positions as [$longitude, $latitude]) {
+            $this->assertTrue(Shape::contains($area, $longitude, $latitude));
+        }
     }
 
     public function testASiteWithoutAUrnKeepsItsWholeIdInTheSpotId(): void

@@ -104,6 +104,74 @@ final class Shape
     }
 
     /**
+     * Positions for a number of things spread evenly in a LineString, a
+     * Polygon or a MultiPolygon.
+     *
+     * Along a line, each position lies at the middle of one of the equal
+     * parts of the line. In an area, the positions lie in the same way along
+     * the long centre line of the area. If that line is not in one piece in
+     * the area, all the positions are the same point inside the area.
+     *
+     * @param array<string, mixed> $geometry
+     *
+     * @return list<array{float, float}> the longitude and latitude of each position
+     */
+    public static function spread(array $geometry, int $count): array
+    {
+        if ($count < 1) {
+            throw new \InvalidArgumentException(\sprintf('The number of positions must be positive, got %d.', $count));
+        }
+
+        $type = $geometry['type'] ?? null;
+        if (!\in_array($type, ['LineString', 'Polygon', 'MultiPolygon'], true)) {
+            throw new \InvalidArgumentException(\sprintf('Cannot spread positions in a geometry of type %s.', \is_string($type) ? $type : get_debug_type($type)));
+        }
+
+        $shape = self::load($geometry, self::METRIC_SRID)->geos();
+        $line = 'LineString' === $type ? $shape : self::centreLine($shape);
+
+        $positions = [];
+        for ($number = 1; $number <= $count; ++$number) {
+            $point = null === $line ? $shape->pointOnSurface() : $line->interpolate(($number - 0.5) / $count, true);
+            $positions[] = self::transformer()->toWgs84(self::METRIC_SRID, (float) $point->getX(), (float) $point->getY());
+        }
+
+        return $positions;
+    }
+
+    /**
+     * The long centre line of an area, cut to the area, or null if the cut is
+     * not one line. The line joins the middles of the short sides of the
+     * smallest rectangle around the area.
+     *
+     * @param mixed $area a GEOSGeometry
+     *
+     * @return mixed a GEOSGeometry, or null
+     */
+    private static function centreLine(mixed $area): mixed
+    {
+        $rectangle = $area->minimumRotatedRectangle();
+        if ('Polygon' !== $rectangle->typeName()) {
+            return null;
+        }
+
+        $ring = $rectangle->exteriorRing();
+        [$a, $b, $c, $d] = array_map(static fn (int $n): \Point => new \Point($ring->pointN($n)->getX(), $ring->pointN($n)->getY()), [0, 1, 2, 3]);
+
+        $ends = $a->distance($b) >= $b->distance($c)
+            ? [self::middle($d, $a), self::middle($b, $c)]
+            : [self::middle($a, $b), self::middle($c, $d)];
+        $cut = $area->intersection(new \LineString($ends)->geos());
+
+        return 'LineString' === $cut->typeName() && $cut->length() > 0 ? $cut : null;
+    }
+
+    private static function middle(\Point $a, \Point $b): \Point
+    {
+        return new \Point(($a->getX() + $b->getX()) / 2, ($a->getY() + $b->getY()) / 2);
+    }
+
+    /**
      * Loads a GeoJSON geometry in WGS84 into geoPHP, projected to the CRS.
      *
      * @param array<string, mixed> $geometry
