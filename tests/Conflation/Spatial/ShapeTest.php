@@ -127,6 +127,13 @@ class ShapeTest extends TestCase
         $this->assertSame([min($longitudes), min($latitudes), max($longitudes), max($latitudes)], Shape::bounds($strip));
     }
 
+    public function testTheCentroidOfASmallAreaIsItsCentre(): void
+    {
+        $square = ['type' => 'Polygon', 'coordinates' => [[self::at(0, 0), self::at(2, 0), self::at(2, 2), self::at(0, 2), self::at(0, 0)]]];
+
+        $this->assertEqualsWithDelta(self::at(1, 1), Shape::centroid($square), 1e-9);
+    }
+
     public function testTheSameAreaGivesTheSameAnswersInEitherOrder(): void
     {
         // An area that no other test uses, so that neither call finds it loaded.
