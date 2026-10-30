@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-118](https://github.com/itk-enter/enter/pull/118)
+  Spread the bays of a parking site along it with GEOS
 * [PR-116](https://github.com/itk-enter/enter/pull/116)
   Replaced the home-made geometry in Shape with GEOS
 * [PR-108](https://github.com/itk-enter/enter/pull/108)
