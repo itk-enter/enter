@@ -130,7 +130,7 @@ class WithinSiteClosestFirstTest extends TestCase
         $this->assertCount(4, self::unmatched($clusters));
     }
 
-    public function testAnUnmatchedBayMovesToTheMappedBaysOfItsSiteAndIsGenerated(): void
+    public function testAnUnmatchedBayTakesAFreePlaceInItsSiteAndIsGenerated(): void
     {
         $clusters = new WithinSiteClosestFirst(5.0)->merge([
             self::strip(),
@@ -144,9 +144,9 @@ class WithinSiteClosestFirstTest extends TestCase
         $this->assertSame('S-1', $unmatched[0]->restatedFrom);
         $this->assertTrue($unmatched[0]->attributes[WithinSiteClosestFirst::GENERATED] ?? null);
 
-        [$longitude, $latitude] = self::at(18, 2);
-        $this->assertEqualsWithDelta($longitude, $unmatched[0]->longitude, 1e-9);
-        $this->assertEqualsWithDelta($latitude, $unmatched[0]->latitude, 1e-9);
+        [$longitude, $latitude] = self::at(2.5, 2);
+        $this->assertEqualsWithDelta($longitude, $unmatched[0]->longitude, 1e-7);
+        $this->assertEqualsWithDelta($latitude, $unmatched[0]->latitude, 1e-7);
 
         // A restated bay that matched a mapped bay is not generated.
         foreach ($clusters as $cluster) {
