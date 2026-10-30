@@ -4,7 +4,7 @@ namespace App\GeometryHelper;
 
 enum Crs: string
 {
-    // The one used by GeoJSON.
+    // GeoJSON uses this CRS.
     case EPSG_4326 = 'EPSG:4326';
     case EPSG_25832 = 'EPSG:25832';
 

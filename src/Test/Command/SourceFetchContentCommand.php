@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 #[AsCommand(
     name: 'test:source:fetch-content',
-    description: 'Fetch content for all test sources',
+    description: 'Fetch the content for all the test sources',
 )]
 #[When('dev')]
 class SourceFetchContentCommand
@@ -34,7 +34,7 @@ class SourceFetchContentCommand
             try {
                 $fetch = $fetcher->fetch($source);
                 $io->success(\sprintf(
-                    'Content fetched from %s written to file %s',
+                    'Wrote the content of %s to the file %s',
                     $fetch->url,
                     realpath($fetch->filename),
                 ));
@@ -46,7 +46,7 @@ class SourceFetchContentCommand
 
         if ([] !== $failed) {
             $io->warning(\sprintf(
-                'Failed: %s. The old files of these sources are kept.',
+                'Failed: %s. The old files of these sources did not change.',
                 implode(', ', $failed),
             ));
 

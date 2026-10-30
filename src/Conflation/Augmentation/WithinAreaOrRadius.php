@@ -14,26 +14,28 @@ use App\GeometryHelper;
  * The default augmentation: an augmenting record reaches the merged entities
  * inside its area, or within the radius of its point.
  *
- * A record given as a Polygon or MultiPolygon supplies its attributes to every
- * merged entity whose location lies inside the area, on its edge included and
- * in its holes excluded. Any other record is reached through its point, and
- * supplies its attributes to every merged entity within the radius of it.
+ * A record with a Polygon or MultiPolygon geometry supplies its attributes to
+ * every merged entity whose location is inside the area. The area includes
+ * its edge and excludes its holes. Any other record supplies its attributes
+ * to every merged entity within the radius of its point.
  *
- * For example, a ground-cover area C-5 stating surface "asphalt" gives
- * "asphalt" to every parking space inside it that does not state a surface of
- * its own. A space on the edge between C-5 and a gravel area C-6 gets both
- * values, and the merge's conflict-resolution approaches settle them.
+ * For example, the ground-cover area C-5 states the surface "asphalt". It
+ * gives "asphalt" to every parking space inside it that does not state a
+ * surface of its own. A space on the edge between C-5 and the gravel area C-6
+ * gets both values, and the conflict-resolution approaches of the merge
+ * settle them.
  *
- * A merged entity is compared by a single point: its own position, or the
- * centroid of its area. That centroid comes from GeometryHelper::getCentroid(),
- * which is not yet reliable for small areas
- * (https://github.com/itk-enter/enter/issues/74).
+ * The augmentation compares a merged entity by one point: its own position,
+ * or the centroid of its area. That centroid comes from
+ * GeometryHelper::getCentroid(). Without the GEOS extension, geoPHP
+ * calculates the centroid of a small area with less precision.
  */
 class WithinAreaOrRadius extends AbstractAugmentation
 {
     /**
-     * How far, in degrees, a point may lie from an area's edge and still count
-     * as on it: about 0.1 mm, to absorb rounding in the coordinates.
+     * The maximum distance, in degrees, between a point and the edge of an
+     * area for the point to count as on the edge. It is about 0.1 mm, to
+     * absorb the round-off error in the coordinates.
      */
     private const float EDGE_TOLERANCE = 1e-9;
 
@@ -112,8 +114,9 @@ class WithinAreaOrRadius extends AbstractAugmentation
     }
 
     /**
-     * Where a position lies relative to a closed ring, by counting the edges
-     * a ray from it crosses: 1 inside, 0 on an edge, -1 outside.
+     * Where a position is relative to a closed ring: 1 inside, 0 on an edge,
+     * -1 outside. The method counts the edges that a ray from the position
+     * crosses.
      *
      * @param list<array{0: float|int, 1: float|int}> $ring
      */
@@ -142,8 +145,8 @@ class WithinAreaOrRadius extends AbstractAugmentation
     }
 
     /**
-     * The point a merged entity is compared by: its own position, or the
-     * centroid of its area.
+     * The point that the augmentation compares a merged entity by: its own
+     * position, or the centroid of its area.
      */
     private static function pointOf(MergedEntity $entity): Record
     {

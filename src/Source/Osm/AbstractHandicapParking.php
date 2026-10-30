@@ -93,7 +93,7 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
-     * Gets the siting, on or off the street, from the tags.
+     * Gets the location of the site, on or off the street, from the tags.
      *
      * @param array<string, mixed> $tags
      */

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-109](https://github.com/itk-enter/enter/pull/109)
+  Applied the coding practices and the ASD-STE100 rules in CLAUDE.md to the code
 * [PR-99](https://github.com/itk-enter/enter/pull/99)
   * Added event listener for SourcesImportedEvent
 * [PR-113](https://github.com/itk-enter/enter/pull/113)

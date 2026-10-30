@@ -14,14 +14,17 @@ use App\Conflation\Data\StatedValue;
  * Runs the customizable steps of a merge on its records, and checks that
  * what each step returns stays within the step's limits.
  *
- * Merging by location groups the records of defining models, resolving
- * conflicts turns each group into one merged entity, and augmenting adds
- * attributes from the records of augmenting models. A step that breaks its
- * limits fails the run with a ConflationLimitException, so nothing is
- * published.
+ * The steps are:
  *
- * Fetching the records and creating the result in the broker are not
- * customizable and happen around this.
+ * - Merge by location: groups the records of the defining models.
+ * - Conflict resolution: turns each group into one merged entity.
+ * - Augmentation: adds attributes from the records of the augmenting models.
+ *
+ * If a step breaks its limits, it fails the run with a
+ * ConflationLimitException. Then the runner publishes nothing.
+ *
+ * The fetch of the records before these steps, and the creation of the
+ * result in the broker after them, are not customizable.
  */
 final class ConflationPipeline
 {
@@ -106,8 +109,8 @@ final class ConflationPipeline
 
     /**
      * Values only for entities that exist, from the augmenting records
-     * given, for attributes the merge names for the record's model, and for
-     * attributes the entity lacks.
+     * given, for attributes that the merge names for the record's model, and
+     * for attributes that the entity does not have.
      *
      * @param list<MergedEntity>                              $entities
      * @param list<Record>                                    $records
@@ -154,8 +157,9 @@ final class ConflationPipeline
                 continue;
             }
 
-            // Several records can supply one attribute, such as overlapping
-            // areas; the merge's approaches settle them as any other conflict.
+            // Several records can supply one attribute if their areas
+            // overlap. The approaches of the merge settle them as any other
+            // conflict.
             usort($values, static fn (StatedValue $x, StatedValue $y): int => [$x->sourceId, $x->recordId] <=> [$y->sourceId, $y->recordId]);
             [$settled, $value] = $resolver->settle($attribute, $values);
             if ($settled) {

@@ -20,7 +20,7 @@ class OverpassSourceImporter extends AbstractSourceImporter
 
         $items = $data['elements'] ?? null;
         if (!is_array($items) || !array_is_list($items)) {
-            throw new \RuntimeException('Invalid or missing elements in data');
+            throw new \RuntimeException('The elements in the data are missing or not valid');
         }
 
         return $items;
