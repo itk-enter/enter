@@ -58,7 +58,8 @@ abstract class AbstractMergeByLocation
      * Then the implementation returns the records restated in the result
      * model: it renames the attributes and converts the values. Thus all the
      * steps after this step see only the result model. A restated record
-     * keeps its id, its data set and its location. The default does not
+     * keeps the data set of its record and stays within the radius of it.
+     * Its restatedFrom holds the id of that record. The default does not
      * restate records, so such a merge names a subclass of its own.
      *
      * @param list<Record> $records every record of the merge's defining models

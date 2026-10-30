@@ -8,6 +8,7 @@ use App\Conflation\Data\MergedEntity;
 use App\Conflation\Data\Record;
 use App\Conflation\Data\StatedValue;
 use App\Conflation\Spatial\Distance;
+use App\Conflation\Spatial\Shape;
 use App\GeometryHelper;
 
 /**
@@ -32,13 +33,6 @@ use App\GeometryHelper;
  */
 class WithinAreaOrRadius extends AbstractAugmentation
 {
-    /**
-     * The maximum distance, in degrees, between a point and the edge of an
-     * area for the point to count as on the edge. It is about 0.1 mm, to
-     * absorb the round-off error in the coordinates.
-     */
-    private const float EDGE_TOLERANCE = 1e-9;
-
     public function augment(array $entities, array $records, array $attributesByModel): array
     {
         $points = array_map(self::pointOf(...), $entities);
@@ -78,70 +72,13 @@ class WithinAreaOrRadius extends AbstractAugmentation
      */
     protected function reach(Record $record): \Closure
     {
-        $polygons = match ($record->geometry['type'] ?? null) {
-            'Polygon' => [$record->geometry['coordinates']],
-            'MultiPolygon' => $record->geometry['coordinates'],
-            default => null,
-        };
-
-        if (null === $polygons) {
+        $geometry = $record->geometry;
+        if (!\in_array($geometry['type'] ?? null, ['Polygon', 'MultiPolygon'], true)) {
             return fn (Record $point): bool => Distance::between($record, $point) <= $this->radius;
         }
 
-        /* @var list<list<list<array{0: float|int, 1: float|int}>>> $polygons */
-        return static fn (Record $point): bool => array_any(
-            $polygons,
-            static fn (array $rings): bool => self::inPolygon($point->longitude, $point->latitude, $rings),
-        );
-    }
-
-    /**
-     * Whether a position lies inside a polygon or on its edge: inside or on
-     * its outer ring, and not strictly inside any of its holes.
-     *
-     * @param list<list<array{0: float|int, 1: float|int}>> $rings the outer ring, then the holes
-     */
-    private static function inPolygon(float $longitude, float $latitude, array $rings): bool
-    {
-        foreach ($rings as $i => $ring) {
-            $side = self::sideOfRing($longitude, $latitude, $ring);
-            if (0 === $i ? $side < 0 : $side > 0) {
-                return false;
-            }
-        }
-
-        return [] !== $rings;
-    }
-
-    /**
-     * Where a position is relative to a closed ring: 1 inside, 0 on an edge,
-     * -1 outside. The method counts the edges that a ray from the position
-     * crosses.
-     *
-     * @param list<array{0: float|int, 1: float|int}> $ring
-     */
-    private static function sideOfRing(float $x, float $y, array $ring): int
-    {
-        $inside = false;
-        $count = \count($ring);
-        for ($i = 0, $j = $count - 1; $i < $count; $j = $i++) {
-            [$xi, $yi] = [(float) $ring[$i][0], (float) $ring[$i][1]];
-            [$xj, $yj] = [(float) $ring[$j][0], (float) $ring[$j][1]];
-
-            // On the edge: on the line through it, and within its bounding box.
-            $cross = ($xj - $xi) * ($y - $yi) - ($yj - $yi) * ($x - $xi);
-            if (abs($cross) <= self::EDGE_TOLERANCE * hypot($xj - $xi, $yj - $yi)
-                && $x >= min($xi, $xj) - self::EDGE_TOLERANCE && $x <= max($xi, $xj) + self::EDGE_TOLERANCE
-                && $y >= min($yi, $yj) - self::EDGE_TOLERANCE && $y <= max($yi, $yj) + self::EDGE_TOLERANCE) {
-                return 0;
-            }
-
-            if (($yi > $y) !== ($yj > $y) && $x < ($xj - $xi) * ($y - $yi) / ($yj - $yi) + $xi) {
-                $inside = !$inside;
-            }
-        }
-
-        return $inside ? 1 : -1;
+        /* @var array<string, mixed> $geometry */
+        return static fn (Record $point): bool => Shape::contains($geometry, $point->longitude, $point->latitude);
     }
 
     /**

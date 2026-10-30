@@ -17,9 +17,11 @@ use App\GeometryHelper;
 final readonly class Record
 {
     /**
-     * @param array<string, mixed>      $attributes the values the record states, by attribute name; a value it does
-     *                                              not state is absent, never null
-     * @param array<string, mixed>|null $geometry   the full GeoJSON geometry, where it is more than the point
+     * @param array<string, mixed>      $attributes   the values the record states, by attribute name; a value it does
+     *                                                not state is absent, never null
+     * @param array<string, mixed>|null $geometry     the full GeoJSON geometry, where it is more than the point
+     * @param string|null               $restatedFrom the id of the input record that a merge by location restated
+     *                                                this record from; null for an input record
      */
     public function __construct(
         public string $id,
@@ -29,6 +31,7 @@ final readonly class Record
         public string $model = '',
         public array $attributes = [],
         public ?array $geometry = null,
+        public ?string $restatedFrom = null,
     ) {
         if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
             throw new \InvalidArgumentException(\sprintf('Record %s is not a WGS84 position: (%F, %F).', $id, $longitude, $latitude));
@@ -61,6 +64,15 @@ final readonly class Record
         [$longitude, $latitude] = new GeometryHelper()->getCentroid($geometry)->toArray();
 
         return new self($id, $sourceId, (float) $longitude, (float) $latitude, $model, $attributes, $geometry);
+    }
+
+    /**
+     * The id of the input record this record stands for: the record it is
+     * restated from, or its own id.
+     */
+    public function inputId(): string
+    {
+        return $this->restatedFrom ?? $this->id;
     }
 
     /**
