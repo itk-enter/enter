@@ -45,6 +45,7 @@ class SourceControllerTest extends WebTestCase
             'test:mtm_spatialmaps-toilet-other',
             'test:osm-public-toilet',
         ], $merged['inputs']);
+        $this->assertSame(['id' => 'test:merged-public-toilets', 'title' => $merged['title']], $merged['dataset']);
         $this->assertStringEndsWith('q=sourceId=="test:merged-public-toilets"', urldecode($merged['entities_url']));
         $this->assertSame('test:merged-public-toilets', array_key_last($dataSets));
     }
