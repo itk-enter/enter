@@ -12,9 +12,3 @@ parameters:
         - tests/bootstrap.php
 
     treatPhpDocTypesAsCertain: false
-
-    ignoreErrors:
-        - messages:
-              - "#contains generic class RecursiveArrayIterator but does not specify its types#"
-              - '#Call to an undefined method RecursiveIterator::getArrayCopy\(\).#'
-          path: src/GeometryHelper.php
