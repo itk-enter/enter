@@ -27,10 +27,12 @@ use App\Conflation\Data\StatedValue;
 class SourceAuthority extends AbstractConflictResolution
 {
     /**
-     * @param list<string> $sourceIds the trusted data sets, by source identifier, most trusted first
+     * @param list<string>      $sourceIds  the trusted data sets, by source identifier, most trusted first
+     * @param list<string>|null $attributes the attributes it settles; null for every attribute
      */
     public function __construct(
         public readonly array $sourceIds,
+        public readonly ?array $attributes = null,
     ) {
         if ([] === $sourceIds) {
             throw new \InvalidArgumentException('Source authority needs at least one data set.');
@@ -43,6 +45,10 @@ class SourceAuthority extends AbstractConflictResolution
 
     public function resolve(string $attribute, array $values): mixed
     {
+        if (null !== $this->attributes && !\in_array($attribute, $this->attributes, true)) {
+            return null;
+        }
+
         foreach ($this->sourceIds as $sourceId) {
             $value = array_find($values, static fn (StatedValue $value): bool => $value->sourceId === $sourceId);
             if (null !== $value) {

@@ -71,6 +71,26 @@ final class Shape
     }
 
     /**
+     * The bounding box of a geometry, in degrees.
+     *
+     * @param array<string, mixed> $geometry
+     *
+     * @return array{float, float, float, float} the smallest longitude and latitude, then the largest
+     */
+    public static function bounds(array $geometry): array
+    {
+        $positions = array_merge(...self::lines($geometry));
+        if ([] === $positions) {
+            throw new \InvalidArgumentException(\sprintf('Cannot find the bounds of a geometry of type %s.', get_debug_type($geometry['type'] ?? null)));
+        }
+
+        $longitudes = array_map(static fn (array $position): float => (float) $position[0], $positions);
+        $latitudes = array_map(static fn (array $position): float => (float) $position[1], $positions);
+
+        return [min($longitudes), min($latitudes), max($longitudes), max($latitudes)];
+    }
+
+    /**
      * The positions of a geometry as lines: each ring, line string or point
      * on its own, a point as a line of one position.
      *

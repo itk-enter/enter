@@ -43,7 +43,7 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
     {
         $this->assertUniqueIds($records);
 
-        $pairs = new GridIndex($records, $this->radius)->pairs();
+        $pairs = $this->pairs($records);
 
         // Order the pairs closest first. Break ties by id, so that a run is
         // repeatable.
@@ -91,6 +91,27 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
     }
 
     /**
+     * The pairs of records from different data sets within the radius of
+     * each other.
+     *
+     * @param list<Record> $records
+     *
+     * @return list<Pair>
+     */
+    protected function pairs(array $records): array
+    {
+        return new GridIndex($records, $this->radius)->pairs();
+    }
+
+    /**
+     * The distance, in metres, between two records.
+     */
+    protected function distance(Record $a, Record $b): float
+    {
+        return Distance::between($a, $b);
+    }
+
+    /**
      * @param list<Record> $a
      * @param list<Record> $b
      */
@@ -110,7 +131,7 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
         // small number of records.
         foreach ($a as $x) {
             foreach ($b as $y) {
-                if (Distance::between($x, $y) > $radius) {
+                if ($this->distance($x, $y) > $radius) {
                     return false;
                 }
             }

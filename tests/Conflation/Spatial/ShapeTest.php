@@ -92,6 +92,18 @@ class ShapeTest extends TestCase
         $this->assertSame(0.0, Shape::distance(self::point(43, 1), $two));
     }
 
+    public function testTheBoundsOfAnAreaAreItsSmallestAndLargestPositions(): void
+    {
+        $this->assertSame([...self::at(0, 0), ...self::at(20, 4)], Shape::bounds(self::strip()));
+    }
+
+    public function testItRejectsAGeometryWithoutBounds(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        Shape::bounds(['type' => 'GeometryCollection', 'geometries' => []]);
+    }
+
     public function testItRejectsAGeometryItCannotMeasure(): void
     {
         $this->expectException(\InvalidArgumentException::class);
