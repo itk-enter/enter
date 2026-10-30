@@ -73,23 +73,4 @@ final class GeometryHelper
 
         return $arrayIterator->getArrayCopy();
     }
-
-    /**
-     * Gets the centroid of a GeoJSON geometry.
-     *
-     * Without the GEOS extension, geoPHP calculates the centroid with less
-     * precision for a small area. The error is 3 m for a 20 m square and
-     * 133 m for a 2 m square. geoPHP also ignores the holes of a polygon. For
-     * a line or a multipolygon, it gives the centre of the bounding box.
-     *
-     * @todo Calculate the correct centroid without the GEOS extension.
-     *
-     * @param Geometry $geometry
-     */
-    public function getCentroid(array $geometry): Point
-    {
-        $centroid = \geoPHP::load(json_encode($geometry), 'geojson')->getCentroid();
-
-        return new Point($centroid->getX(), $centroid->getY());
-    }
 }
