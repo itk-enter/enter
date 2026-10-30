@@ -22,7 +22,7 @@ services:
             - "traefik.http.routers.scorpio_${COMPOSE_PROJECT_NAME:?}.rule=Host(`scorpio.${COMPOSE_DOMAIN:?}`)"
 
     scorpio-db:
-        image: postgis/postgis
+        image: postgis/postgis:18-3.6
         environment:
             - POSTGRES_USER=ngb
             - POSTGRES_PASSWORD=ngb
