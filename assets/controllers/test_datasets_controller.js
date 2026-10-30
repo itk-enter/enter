@@ -22,15 +22,16 @@ const COLOURS = [
 
 /*
  * Tells if the broker has entities of a source. The broker gives the number
- * of entities in the NGSILD-Results-Count header. If the request fails or
- * the header is missing, the function returns true. Then the map shows the
- * error when the user switches the source on.
+ * of entities in the NGSILD-Results-Count header. The request asks for one
+ * entity, because Scorpio gives a count of 0 if the limit is 0. If the
+ * request fails or the header is missing, the function returns true. Then the
+ * map shows the error when the user switches the source on.
  */
 async function hasEntities(source) {
     const url = new URL(source.entities_url, window.location.href);
     url.searchParams.set("type", source.model);
     url.searchParams.set("count", "true");
-    url.searchParams.set("limit", "0");
+    url.searchParams.set("limit", "1");
 
     try {
         const response = await fetch(url, {
