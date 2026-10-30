@@ -110,4 +110,39 @@ class ShapeTest extends TestCase
 
         Shape::distance(self::point(0, 0), ['type' => 'GeometryCollection', 'geometries' => []]);
     }
+
+    public function testAPointOnADiagonalEdgeOfAnAreaIsInsideIt(): void
+    {
+        [$a, $b] = [self::at(20, 0), self::at(0, 20)];
+        $triangle = ['type' => 'Polygon', 'coordinates' => [[self::at(0, 0), $a, $b, self::at(0, 0)]]];
+
+        $this->assertTrue(Shape::contains($triangle, ($a[0] + $b[0]) / 2, ($a[1] + $b[1]) / 2));
+    }
+
+    public function testAPointOnACornerOfAnAreaIsInsideIt(): void
+    {
+        $this->assertTrue(Shape::contains(self::strip(), ...self::at(20, 4)));
+    }
+
+    public function testTheSameAreaGivesTheSameAnswersInEitherOrder(): void
+    {
+        // An area that no other test uses, so that neither call finds it loaded.
+        $area = ['type' => 'Polygon', 'coordinates' => [[self::at(100, 0), self::at(120, 0), self::at(120, 4), self::at(100, 4), self::at(100, 0)]]];
+
+        $this->assertEqualsWithDelta(3.0, Shape::distance(self::point(110, 7), $area), 0.01);
+        $this->assertTrue(Shape::contains($area, ...self::at(118, 2)));
+        $this->assertEqualsWithDelta(3.0, Shape::distance(self::point(110, 7), $area), 0.01);
+    }
+
+    public function testItNeedsTheGeosExtension(): void
+    {
+        $this->expectException(\LogicException::class);
+
+        \geoPHP::geosInstalled(false);
+        try {
+            Shape::contains(self::strip(), ...self::at(18, 2));
+        } finally {
+            \geoPHP::geosInstalled(class_exists('GEOSGeometry'));
+        }
+    }
 }
