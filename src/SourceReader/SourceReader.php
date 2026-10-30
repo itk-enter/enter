@@ -5,10 +5,12 @@ namespace App\SourceReader;
 use App\Source\SourceInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerTrait;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+#[AsAlias(SourceReaderInterface::class)]
 final class SourceReader implements SourceReaderInterface
 {
     use LoggerAwareTrait;

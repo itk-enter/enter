@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Merge;
 
+use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\Conflation;
 use App\Conflation\ConflationInterface;
 use App\Conflation\ConflictResolution\MajorityWins;
@@ -19,6 +20,10 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
  * the same toilet. Where they disagree, the value more than half of them state
  * wins; without a majority, the municipality's city toilets decide, then its
  * other toilets. A conflict neither of them states a value in is recorded.
+ *
+ * Each merged toilet gets the attribute "image" from the oblique photo at its
+ * location. The photo has the same location as the toilet, so the radius of
+ * the augmentation is 1 metre.
  */
 #[Conflation(
     id: 'merged-public-toilets',
@@ -31,6 +36,8 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
         new MajorityWins(),
         new SourceAuthority(['mtm_spatialmaps-toilet-city', 'mtm_spatialmaps-toilet-other']),
     ],
+    augmenting: ['ObliquePhoto' => ['image']],
+    augmentation: new WithinAreaOrRadius(radius: 1.0),
 )]
 final class PublicToiletConflation implements ConflationInterface
 {

@@ -50,6 +50,7 @@ class PublicToiletConflationTest extends KernelTestCase
     public function testItReadsEveryPublishedToiletDataSet(): void
     {
         $this->assertSame([
+            'dataforsyningen-skraafoto',
             'findtoilet-public-toilet',
             'mtm_spatialmaps-toilet-city',
             'mtm_spatialmaps-toilet-other',

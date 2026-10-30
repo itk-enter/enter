@@ -16,6 +16,12 @@ framework:
             broker.client:
                 base_uri: '%env(APP_BROKER_BASE_URI)%'
 
+            # Reads the Skråfoto API of Dataforsyningen, and sends the token.
+            skraafoto.client:
+                scope: '^https://api\.dataforsyningen\.dk/rest/skraafoto_'
+                headers:
+                    token: '%env(APP_SKRAAFOTO_TOKEN)%'
+
             # Fetches the live feeds for the test fixtures.
             test_fixture.client:
                 scope: '^https?://'
