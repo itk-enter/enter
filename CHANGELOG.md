@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Spread the bays of a parking site along it with GEOS
 * [PR-116](https://github.com/itk-enter/enter/pull/116)
   Replaced the home-made geometry in Shape with GEOS
+* [PR-121](https://github.com/itk-enter/enter/pull/121)
+  Fixed the /test map, which hid every test data set
 * [PR-108](https://github.com/itk-enter/enter/pull/108)
   Added Geos extension to PHP
 * [PR-110](https://github.com/itk-enter/enter/pull/110)
