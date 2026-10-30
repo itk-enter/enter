@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * Shows a toggle for each test source and sends toggle events to the map.
+ * Shows a toggle for each test source that has entities in the broker, and
+ * sends toggle events to the map.
  */
 
 /* The prefix of a test source id. */
@@ -19,7 +20,34 @@ const COLOURS = [
     "#6d4c41",
 ];
 
-/* Gets the test sources and groups them by model. */
+/*
+ * Tells if the broker has entities of a source. The broker gives the number
+ * of entities in the NGSILD-Results-Count header. If the request fails or
+ * the header is missing, the function returns true. Then the map shows the
+ * error when the user switches the source on.
+ */
+async function hasEntities(source) {
+    const url = new URL(source.entities_url, window.location.href);
+    url.searchParams.set("type", source.model);
+    url.searchParams.set("count", "true");
+    url.searchParams.set("limit", "0");
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                accept: "application/json",
+                link: `<${source.context_url}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`,
+            },
+        });
+        const count = response.headers.get("ngsild-results-count");
+
+        return !response.ok || count === null || Number(count) !== 0;
+    } catch {
+        return true;
+    }
+}
+
+/* Gets the test sources that have entities, and groups them by model. */
 async function loadSources(url) {
     const response = await fetch(url, {
         headers: { accept: "application/json" },
@@ -29,9 +57,14 @@ async function loadSources(url) {
         throw new Error(`${url} answered ${response.status}`);
     }
 
+    const tests = (await response.json()).filter((source) =>
+        source.id.startsWith(TEST_PREFIX),
+    );
+    const found = await Promise.all(tests.map(hasEntities));
+
     const colours = new Map();
-    const sources = (await response.json())
-        .filter((source) => source.id.startsWith(TEST_PREFIX))
+    const sources = tests
+        .filter((source, index) => found[index])
         .map((source, index) => {
             if (!colours.has(source.dataset.id)) {
                 colours.set(
@@ -132,6 +165,12 @@ export default class extends Controller {
         this.sources = sources;
 
         this.dispatch("loaded", { detail: { sources } });
+
+        if (models.length === 0) {
+            this.formTarget.append(
+                "Ingen testdatasæt har data. Kør test:source:import-all.",
+            );
+        }
 
         renderToggles(this.formTarget, models);
     }
