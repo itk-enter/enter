@@ -6,6 +6,7 @@ namespace App\Merge;
 
 use App\Conflation\Conflation;
 use App\Conflation\ConflationInterface;
+use App\Conflation\ConflictResolution\CoveringArea;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\Pipeline\ConflictResolver;
@@ -30,6 +31,7 @@ use App\Merge\Parking\WithinSiteClosestFirst;
     defining: ['ParkingSpot', 'OnStreetParking'],
     mergeByLocation: new WithinSiteClosestFirst(radius: 5.0),
     conflictResolution: [
+        new CoveringArea(margin: 3.0, sourceIds: ['osm-handicap-parking-spot']),
         new SourceAuthority(['osm-handicap-parking-spot', 'mtm_spatialmaps-handicap-parking-spot'], attributes: [ConflictResolver::LOCATION]),
         new MajorityWins(),
         new SourceAuthority(['mtm_spatialmaps-handicap-parking-spot', 'osm-handicap-parking-spot', 'mtm_spatialmaps-handicap-parking-on-street', 'osm-handicap-parking-on-street']),
