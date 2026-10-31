@@ -24,6 +24,12 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     public const string GENERATED = ConflationFetcher::ADDITIONAL_INFORMATION.ConflationFetcher::KEY_SEPARATOR.'generated';
 
     /**
+     * How far apart, in metres, two point sites of one data set may lie and
+     * still be bays of one address.
+     */
+    private const float BAY_SPACING = 5.0;
+
+    /**
      * The sites of the current run, by id.
      *
      * @var array<string, Record>
@@ -56,6 +62,8 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
         $this->bayCounts = [];
         $this->positions = [];
 
+        $oneBayEach = self::sitesOfOneBayEach($records);
+
         $spots = [];
         foreach ($records as $record) {
             if (OnStreetParkingIntoSpots::SITE_MODEL !== $record->model) {
@@ -63,7 +71,7 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
                 continue;
             }
 
-            $bays = $restater->restate($record);
+            $bays = $restater->restate(isset($oneBayEach[$record->id]) ? self::withOneBay($record) : $record);
             $this->sites[$record->id] = $record;
             $this->bayCounts[$record->id] = \count($bays);
             if (\count($bays) > 1 && null !== $this->siteShape($bays[0])) {
@@ -303,4 +311,71 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
         return new Record($id, '', array_sum(array_column($records, 'longitude')) / \count($records), array_sum(array_column($records, 'latitude')) / \count($records));
     }
 
+    /**
+     * The point sites that each state one bay of an address, by id.
+     *
+     * A register can state each bay of an address as a site of its own, with
+     * the number of bays at the whole address. For example, two sites 3 m
+     * apart that each state 2 bays are the 2 bays. Point sites of one data
+     * set with the same number N of bays, each within BAY_SPACING of the
+     * next, are such bays if there are 2 to N of them.
+     *
+     * @param list<Record> $records
+     *
+     * @return array<string, true>
+     */
+    private static function sitesOfOneBayEach(array $records): array
+    {
+        $sites = array_values(array_filter(
+            $records,
+            static fn (Record $record): bool => OnStreetParkingIntoSpots::SITE_MODEL === $record->model
+                && null === $record->geometry
+                && \is_int($record->attributes['totalSpotNumber'] ?? null)
+                && $record->attributes['totalSpotNumber'] > 1,
+        ));
+
+        // Link the sites of one data set with the same number of bays that lie near each other.
+        $root = array_keys($sites);
+        $find = static function (int $i) use (&$root): int {
+            while ($root[$i] !== $i) {
+                $i = $root[$i];
+            }
+
+            return $i;
+        };
+        foreach ($sites as $i => $a) {
+            foreach (\array_slice($sites, $i + 1, null, true) as $j => $b) {
+                if ($a->sourceId === $b->sourceId
+                    && $a->attributes['totalSpotNumber'] === $b->attributes['totalSpotNumber']
+                    && Distance::between($a, $b) <= self::BAY_SPACING) {
+                    $root[$find($j)] = $find($i);
+                }
+            }
+        }
+
+        $groups = [];
+        foreach ($sites as $i => $site) {
+            $groups[$find($i)][] = $site;
+        }
+
+        $oneBayEach = [];
+        foreach ($groups as $group) {
+            $count = \count($group);
+            if ($count >= 2 && $count <= $group[0]->attributes['totalSpotNumber']) {
+                foreach ($group as $site) {
+                    $oneBayEach[$site->id] = true;
+                }
+            }
+        }
+
+        return $oneBayEach;
+    }
+
+    /**
+     * The site, as a site of one bay.
+     */
+    private static function withOneBay(Record $site): Record
+    {
+        return new Record($site->id, $site->sourceId, $site->longitude, $site->latitude, $site->model, ['totalSpotNumber' => 1] + $site->attributes, $site->geometry, $site->restatedFrom);
+    }
 }

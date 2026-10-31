@@ -235,4 +235,18 @@ class WithinSiteClosestFirstTest extends TestCase
         $this->assertSame(['B-1' => ['S-1']], self::matched($clusters));
     }
 
+    public function testPointSitesOfOneAddressAreOneBayEach(): void
+    {
+        // Two sites 3 m apart that each state the 2 bays of their address.
+        $unmatched = self::unmatched(new WithinSiteClosestFirst(5.0)->merge([
+            self::site('S-1', 2, 0, 0),
+            self::site('S-2', 2, 3, 0),
+        ]));
+
+        $this->assertSame(['S-1', 'S-2'], array_map(static fn (Record $record): string => $record->inputId(), $unmatched));
+        $this->assertSame([self::at(0, 0), self::at(3, 0)], array_map(static fn (Record $record): array => [$record->longitude, $record->latitude], $unmatched));
+        foreach ($unmatched as $bay) {
+            $this->assertArrayNotHasKey(WithinSiteClosestFirst::GENERATED, $bay->attributes);
+        }
+    }
 }
