@@ -45,9 +45,8 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
 
         $pairs = $this->pairs($records);
 
-        // Order the pairs closest first. Break ties by id, so that a run is
-        // repeatable.
-        usort($pairs, static fn (Pair $x, Pair $y): int => [$x->distance, $x->a->id, $x->b->id] <=> [$y->distance, $y->a->id, $y->b->id]);
+        // Order the pairs by their rank: by default closest first.
+        usort($pairs, fn (Pair $x, Pair $y): int => $this->rank($x) <=> $this->rank($y));
 
         /** @var array<string, string> $root cluster root by record id */
         $root = [];
@@ -109,6 +108,21 @@ class OneToOneClosestFirst extends AbstractMergeByLocation
     protected function distance(Record $a, Record $b): float
     {
         return Distance::between($a, $b);
+    }
+
+    /**
+     * The rank of a pair. merge() joins the pairs in the order of their rank,
+     * the lowest first, and compares the ranks as arrays.
+     *
+     * The default rank is the distance of the pair, then the ids of its
+     * records. The ids break ties, so that a run is repeatable. A subclass can
+     * put a value before the distance to take some pairs before others.
+     *
+     * @return list<float|int|string>
+     */
+    protected function rank(Pair $pair): array
+    {
+        return [$pair->distance, $pair->a->id, $pair->b->id];
     }
 
     /**
