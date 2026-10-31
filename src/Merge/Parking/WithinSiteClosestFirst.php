@@ -128,6 +128,19 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     }
 
     /**
+     * The pairs without a bay of a site with a line or an area first, closest
+     * first. Such a bay is 0 m from every record inside its site. Thus, if it
+     * came first, it would join the records in the order of their ids, not of
+     * their distances.
+     */
+    protected function rank(Pair $pair): array
+    {
+        $site = null !== $this->siteShape($pair->a) || null !== $this->siteShape($pair->b);
+
+        return [$site ? 1 : 0, ...parent::rank($pair)];
+    }
+
+    /**
      * The distance between two records, measured from a site's shape where there is one.
      */
     protected function distance(Record $a, Record $b): float

@@ -201,4 +201,25 @@ class WithinSiteClosestFirstTest extends TestCase
         $this->assertSame(['B-1' => ['S-2']], self::matched($clusters));
         $this->assertSame(['S-1'], array_map(static fn (Record $record): string => $record->inputId(), self::unmatched($clusters)));
     }
+
+    public function testTwoMappedBaysInsideASitePairByTheirDistanceBeforeTheSiteJoins(): void
+    {
+        // Two bays of data set "polygons" side by side in the strip, each 3 m wide.
+        $polygon = static fn (string $id, float $west): Record => Record::fromGeometry($id, 'polygons', [
+            'type' => 'Polygon',
+            'coordinates' => [[self::at($west, 0), self::at($west + 3, 0), self::at($west + 3, 4), self::at($west, 4), self::at($west, 0)]],
+        ], 'ParkingSpot');
+
+        // M-1 lies inside P-2, and M-2 lies inside P-1. Every record is 0 m
+        // from the strip, so only the distances between the bays can pair them.
+        $clusters = new WithinSiteClosestFirst(5.0)->merge([
+            self::strip(),
+            $polygon('P-1', 4),
+            $polygon('P-2', 7),
+            self::bay('M-1', 9, 2),
+            self::bay('M-2', 5, 2),
+        ]);
+
+        $this->assertSame(['M-1' => ['P-2', 'S-1'], 'M-2' => ['P-1', 'S-1']], self::matched($clusters));
+    }
 }
