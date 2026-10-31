@@ -222,4 +222,17 @@ class WithinSiteClosestFirstTest extends TestCase
 
         $this->assertSame(['M-1' => ['P-2', 'S-1'], 'M-2' => ['P-1', 'S-1']], self::matched($clusters));
     }
+
+    public function testASiteWithAnAreaTakesAMappedBayBeforeASiteAtAPointInIt(): void
+    {
+        // S-2 is the same place mapped again, as a point of two bays inside the strip S-1.
+        $clusters = new WithinSiteClosestFirst(5.0)->merge([
+            self::strip(),
+            self::site('S-2', 2, 10, 2),
+            self::bay('B-1', 11, 2),
+        ]);
+
+        $this->assertSame(['B-1' => ['S-1']], self::matched($clusters));
+    }
+
 }
