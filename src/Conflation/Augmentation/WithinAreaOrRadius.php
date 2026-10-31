@@ -9,7 +9,6 @@ use App\Conflation\Data\Record;
 use App\Conflation\Data\StatedValue;
 use App\Conflation\Spatial\Distance;
 use App\Conflation\Spatial\Shape;
-use App\GeometryHelper;
 
 /**
  * The default augmentation: an augmenting record reaches the merged entities
@@ -27,9 +26,7 @@ use App\GeometryHelper;
  * settle them.
  *
  * The augmentation compares a merged entity by one point: its own position,
- * or the centroid of its area. That centroid comes from
- * GeometryHelper::getCentroid(). Without the GEOS extension, geoPHP
- * calculates the centroid of a small area with less precision.
+ * or the centroid of its area. That centroid comes from Shape::centroid().
  */
 class WithinAreaOrRadius extends AbstractAugmentation
 {
@@ -91,7 +88,7 @@ class WithinAreaOrRadius extends AbstractAugmentation
         if ('Point' === $location['type'] && \is_array($location['coordinates'] ?? null)) {
             [$longitude, $latitude] = $location['coordinates'];
         } else {
-            [$longitude, $latitude] = new GeometryHelper()->getCentroid($location)->toArray();
+            [$longitude, $latitude] = Shape::centroid($location);
         }
 
         return new Record($entity->id, '', (float) $longitude, (float) $latitude);
