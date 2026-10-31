@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
     description: 'Disabled parking bays merged from the test data sets.',
     resultModel: 'ParkingSpot',
     defining: ['ParkingSpot', 'OnStreetParking'],
-    mergeByLocation: new WithinSiteClosestFirst(radius: 5.0),
+    mergeByLocation: new WithinSiteClosestFirst(radius: 8.0),
     conflictResolution: [
         new CoveringArea(margin: 3.0, sourceIds: ['test:osm-handicap-parking-spot']),
         new SourceAuthority(['test:osm-handicap-parking-spot', 'test:mtm_spatialmaps-handicap-parking-spot'], attributes: [ConflictResolver::LOCATION]),
