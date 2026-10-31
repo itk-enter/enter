@@ -96,16 +96,13 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
 
         // Pair each bay of a site with each record of another source within the radius of the site's shape.
         // The box around the shape, widened by the radius, skips the records that are far away.
-        foreach ($bySite as $siteId => $bays) {
-            $shape = (array) $this->siteShape($bays[0]);
-            [$west, $south, $east, $north] = Shape::bounds($shape);
-            $latitudeMargin = $this->radius / Distance::METRES_PER_DEGREE;
-            $longitudeMargin = $latitudeMargin / max(0.01, cos(deg2rad(($south + $north) / 2)));
+        foreach ($bySite as $bays) {
+            [$west, $south, $east, $north] = Shape::bounds((array) $this->siteShape($bays[0]), $this->radius);
 
             foreach ($records as $other) {
                 if ($other->sourceId === $bays[0]->sourceId
-                    || $other->longitude < $west - $longitudeMargin || $other->longitude > $east + $longitudeMargin
-                    || $other->latitude < $south - $latitudeMargin || $other->latitude > $north + $latitudeMargin) {
+                    || $other->longitude < $west || $other->longitude > $east
+                    || $other->latitude < $south || $other->latitude > $north) {
                     continue;
                 }
 
