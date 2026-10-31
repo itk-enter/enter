@@ -75,17 +75,31 @@ final class Shape
     }
 
     /**
-     * The bounding box of a geometry, in degrees.
+     * The bounding box of a geometry, in degrees, widened by a margin in
+     * metres on each side. Each point within the margin of the geometry lies
+     * in the box.
      *
      * @param array<string, mixed> $geometry
      *
      * @return array{float, float, float, float} the smallest longitude and latitude, then the largest
      */
-    public static function bounds(array $geometry): array
+    public static function bounds(array $geometry, float $margin = 0.0): array
     {
-        $box = self::load($geometry)->getBBox();
+        if (0.0 === $margin) {
+            $box = self::load($geometry)->getBBox();
 
-        return [(float) $box['minx'], (float) $box['miny'], (float) $box['maxx'], (float) $box['maxy']];
+            return [(float) $box['minx'], (float) $box['miny'], (float) $box['maxx'], (float) $box['maxy']];
+        }
+
+        // Widen the box in metres, and then take the box around its corners in degrees.
+        $box = self::load($geometry, self::METRIC_SRID)->getBBox();
+        [$west, $south, $east, $north] = [(float) $box['minx'] - $margin, (float) $box['miny'] - $margin, (float) $box['maxx'] + $margin, (float) $box['maxy'] + $margin];
+        $corners = array_map(
+            static fn (array $corner): array => self::transformer()->toWgs84(self::METRIC_SRID, ...$corner),
+            [[$west, $south], [$east, $south], [$east, $north], [$west, $north]],
+        );
+
+        return [min(array_column($corners, 0)), min(array_column($corners, 1)), max(array_column($corners, 0)), max(array_column($corners, 1))];
     }
 
     /**

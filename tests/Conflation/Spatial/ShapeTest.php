@@ -127,6 +127,19 @@ class ShapeTest extends TestCase
         $this->assertSame([min($longitudes), min($latitudes), max($longitudes), max($latitudes)], Shape::bounds($strip));
     }
 
+    public function testTheBoundsWithAMarginHoldEveryPointWithinTheMargin(): void
+    {
+        [$west, $south, $east, $north] = Shape::bounds(self::strip(), 5.0);
+        $inBox = static fn (array $position): bool => $position[0] >= $west && $position[0] <= $east && $position[1] >= $south && $position[1] <= $north;
+
+        $this->assertTrue($inBox(self::at(-4.9, 2)));
+        $this->assertTrue($inBox(self::at(24.9, 2)));
+        $this->assertTrue($inBox(self::at(10, -4.9)));
+        $this->assertTrue($inBox(self::at(10, 8.9)));
+        $this->assertFalse($inBox(self::at(-6, 2)));
+        $this->assertFalse($inBox(self::at(10, 10)));
+    }
+
     public function testPositionsSpreadAlongALineLieAtTheMiddleOfEqualParts(): void
     {
         $line = ['type' => 'LineString', 'coordinates' => [self::at(0, 0), self::at(30, 0)]];
