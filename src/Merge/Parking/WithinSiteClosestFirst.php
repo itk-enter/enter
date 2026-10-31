@@ -125,14 +125,16 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     }
 
     /**
-     * The pairs without a bay of a site with a line or an area first, closest
-     * first. Such a bay is 0 m from every record inside its site. Thus, if it
-     * came first, it would join the records in the order of their ids, not of
-     * their distances.
+     * The pairs of mapped records first, closest first, and then the pairs
+     * with a bay of a site. A bay of a site with a line or an area is 0 m from
+     * every record inside its site. Thus, if it came first, it would join the
+     * records in the order of their ids, not of their distances. A bay of a
+     * site at a point also comes last. Otherwise it could take a mapped bay
+     * before a bay of a site with an area at the same place.
      */
     protected function rank(Pair $pair): array
     {
-        $site = null !== $this->siteShape($pair->a) || null !== $this->siteShape($pair->b);
+        $site = null !== $pair->a->restatedFrom || null !== $pair->b->restatedFrom;
 
         return [$site ? 1 : 0, ...parent::rank($pair)];
     }
@@ -300,4 +302,5 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     {
         return new Record($id, '', array_sum(array_column($records, 'longitude')) / \count($records), array_sum(array_column($records, 'latitude')) / \count($records));
     }
+
 }
