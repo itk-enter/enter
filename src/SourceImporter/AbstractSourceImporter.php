@@ -24,6 +24,11 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  *
  * For example, the importer for GeoJSON feeds returns true from supports()
  * for DataType::GeoJSON. Its extractItems() returns the list in "features".
+ *
+ * A test source and its published source make entities from the same records.
+ * Thus the import gives each entity of a test source an id of its own, with
+ * "test:" before the local part. Then the test data sets and the published
+ * data sets can be in one broker at the same time.
  */
 abstract class AbstractSourceImporter implements SourceImporterInterface
 {
@@ -34,6 +39,12 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
      * The attribute that holds the source ID on each entity.
      */
     public const string SOURCE_ID_ATTRIBUTE = 'sourceId';
+
+    /**
+     * The start of the id of a test source, and of the local part of the id
+     * of each entity that a test source gives.
+     */
+    private const string TEST_PREFIX = 'test:';
 
     /**
      * @param list<string> $contextUrls
@@ -84,6 +95,10 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                 throw new \LogicException(sprintf('Source %s mapped %s onto model %s, but declares %s.', $source->definition->id, $entity->id(), $entity->type(), $source->definition->model));
             }
 
+            if (str_starts_with($source->definition->id, self::TEST_PREFIX)) {
+                $entity = $entity->withId(self::testId($entity->id()));
+            }
+
             $this->info('The import adds {entity} to the payload', ['entity' => $entity->id()]);
             $ids[] = $entity->id();
             $payload[] = $entity
@@ -114,6 +129,15 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         }
 
         return new ImportResult(\count($payload), $deleted, $upsert->status, $this->broker->brokerUrl(), $upsert->rejected);
+    }
+
+    /**
+     * The id of an entity of a test source: "test:" before the local part,
+     * for example urn:ngsi-ld:ParkingSpot:test:aarhus-handicap-179.
+     */
+    private static function testId(string $id): string
+    {
+        return 1 === preg_match('/^(urn:ngsi-ld:[^:]+:)(.+)$/', $id, $match) ? $match[1].self::TEST_PREFIX.$match[2] : self::TEST_PREFIX.$id;
     }
 
     /**

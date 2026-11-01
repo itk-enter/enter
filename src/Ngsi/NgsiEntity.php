@@ -31,6 +31,17 @@ final class NgsiEntity
     }
 
     /**
+     * A copy of the entity with another id, and the same type and attributes.
+     */
+    public function withId(string $id): self
+    {
+        $copy = new self($id, $this->type);
+        $copy->attributes = $this->attributes;
+
+        return $copy;
+    }
+
+    /**
      * Sets a property, and ignores an empty value.
      */
     public function setProperty(string $name, mixed $value, ?string $observedAt = null): self
