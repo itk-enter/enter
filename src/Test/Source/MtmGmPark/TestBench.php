@@ -30,6 +30,11 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 )]
 final class TestBench extends AbstractBench
 {
+    protected function kind(): string
+    {
+        return 'bench';
+    }
+
     protected function twoSided(): ?bool
     {
         return null;

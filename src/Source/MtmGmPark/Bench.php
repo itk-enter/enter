@@ -34,6 +34,11 @@ use App\Source\Definition;
 )]
 final class Bench extends AbstractBench
 {
+    protected function kind(): string
+    {
+        return 'bench';
+    }
+
     protected function twoSided(): ?bool
     {
         return null;

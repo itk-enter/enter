@@ -31,6 +31,11 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 )]
 final class TestPicnicTable extends AbstractBench
 {
+    protected function kind(): string
+    {
+        return 'picnicTable';
+    }
+
     protected function twoSided(): ?bool
     {
         return true;

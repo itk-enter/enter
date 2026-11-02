@@ -35,6 +35,11 @@ use App\Source\Definition;
 )]
 final class PicnicTable extends AbstractBench
 {
+    protected function kind(): string
+    {
+        return 'picnicTable';
+    }
+
     protected function twoSided(): ?bool
     {
         return true;

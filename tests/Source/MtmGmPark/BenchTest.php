@@ -65,6 +65,7 @@ class BenchTest extends TestCase
     public function testItKeepsTheRegisterDetailsAsAdditionalInformation(): void
     {
         $this->assertSame([
+            'kind' => 'bench',
             'elementName' => 'UD4-00001',
             'registeredAt' => '2017-01-23 14:35:28.170462',
             'updatedAt' => '2021-10-06 10:49:44.82',

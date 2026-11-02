@@ -24,5 +24,6 @@ class PicnicTableTest extends TestCase
         $payload = $entity?->toPayload([]);
         $this->assertSame('urn:ngsi-ld:Bench:aarhus-bench-gmpark-4eecc79a-e5ea-4503-ab6b-0f13a2a12ae1', $payload['id'] ?? null);
         $this->assertSame(['type' => 'Property', 'value' => true], $payload['twoSided'] ?? null);
+        $this->assertSame('picnicTable', $payload['additionalInformation']['value']['kind'] ?? null);
     }
 }
