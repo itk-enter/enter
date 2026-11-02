@@ -118,6 +118,7 @@ abstract class AbstractBench extends AbstractSource
             ->setProperty('source', $this->definition->accessUrlWithQuery())
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry))
             ->additionalInformation([
+                'kind' => $this->kind(),
                 'material' => \in_array($material, self::MATERIALS, true) ? '' : $material,
                 'direction' => null === $direction ? $this->tag($tags, 'direction') : '',
                 'level' => is_numeric($level) ? '' : $level,
@@ -126,6 +127,14 @@ abstract class AbstractBench extends AbstractSource
                 'otherTags' => $this->otherTags($tags) ?: null,
             ]);
     }
+
+    /**
+     * Gets the kind of the benches of the source: "bench" or "picnicTable".
+     * The source states it as additionalInformation.kind, so that users can
+     * tell a picnic table from a bench. twoSided can't, because a bench
+     * without a table can be two-sided too.
+     */
+    abstract protected function kind(): string;
 
     /**
      * Gets the tag that selects the records of the source, for example

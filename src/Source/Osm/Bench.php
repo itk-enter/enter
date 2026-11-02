@@ -46,6 +46,11 @@ DATA,
 )]
 final class Bench extends AbstractBench
 {
+    protected function kind(): string
+    {
+        return 'bench';
+    }
+
     protected function selectorTag(): string
     {
         return 'amenity';

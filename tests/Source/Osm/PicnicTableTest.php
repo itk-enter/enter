@@ -34,6 +34,7 @@ class PicnicTableTest extends TestCase
 
         $this->assertSame('urn:ngsi-ld:Bench:aarhus-bench-osm-node-1234', $payload['id'] ?? null);
         $this->assertSame(['type' => 'Property', 'value' => true], $payload['twoSided'] ?? null);
+        $this->assertSame('picnicTable', $payload['additionalInformation']['value']['kind'] ?? null);
     }
 
     public function testTheTwoSidedTagWinsOverTheDefault(): void
