@@ -35,11 +35,15 @@ The merged entity stores the time of each check in a property of the service. Th
 update of the details of the service and this property, and never writes the full entity. The run keeps these values
 from the entity that it published before, if the entity has the same identifier and location.
 
+When the run sends a message, it marks the check as requested in the same property. The run does not send the check
+again while the mark is younger than the request timeout of the service. Thus a long queue gets no second message for
+one check. The answer of the worker removes the mark.
+
 The rules of 007 apply. A service only fills details that the records of the thing do not give. A service also never
 removes a value, because an empty answer can come from a service that is down.
 
 If a request fails after the retries, the worker logs the failure on the log channel of the service. The application
-does not store the failed message. The worker writes nothing, so the check stays due and the next run sends it again.
+does not store the failed message. The worker writes nothing, so the run sends the check again when the mark expires.
 
 For example, a merge of toilets takes an aerial photo from a service. The service checks again after 7 days when it
 has no photo, and after 90 days when it has one:
@@ -68,5 +72,6 @@ If the check of T-1 on 2027-01-31 gives no answer, T-1 keeps its photo.
 - If many checks are due at one time, the queue takes a long time to empty, because of the request limit.
 - A value can be up to the longer period old. A value that the service removes stays on the merged entity.
 - A merged entity that gets a new identifier or moves gets new answers, because the answers are on the entity.
-- A failed check waits for the next run, and somebody must read the log channel of the service to find it.
+- A failed check waits until its mark expires, and somebody must read the log channel of the service to find it.
 - The worker changes the merged entities outside of the merge run.
+- Each merged entity gets one property for each service, which the data model does not define.
