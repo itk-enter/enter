@@ -12,7 +12,8 @@ place, such as benches or parking spaces, each with a configuration of its own.
 ![Four toilet sources become one merged dataset; the originals stay untouched](images/conflation-overview.svg)
 
 Because the sources stay published next to the merged dataset, every merged value can be traced back to where it came
-from, and a bad merge is fixed by running conflation again.
+from. A value from a remote service tells which service gave it, and when. To correct a bad merge, run conflation
+again. A run keeps the values from remote services, so such a value changes only at its next check.
 
 ## What each merge configures
 
@@ -64,7 +65,7 @@ This data never becomes a place of its own, and it never overrides what the sour
 ## Adding details from remote services
 
 Some details come from a remote service that answers a question about one point, for example "the nearest address".
-A merge names these services, the lookups, and the details that it takes from each.
+A merge names these services, the lookups, and the details that it takes from each. This is step 7 in the overview.
 
 The run does not ask the services. After it publishes, it sends a message for each place that is due for a check.
 RabbitMQ keeps the messages, and a worker asks the service later. The worker writes only the details of the service,
