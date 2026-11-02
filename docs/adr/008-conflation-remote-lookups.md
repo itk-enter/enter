@@ -46,6 +46,7 @@ service is slow, limited or unavailable.
 - A slow or unavailable service does not stop or slow down the merge run.
 - A failed request is retried, and a request that fails after all retries is logged for the service.
 - The solution adds no database next to the broker. It uses the message broker that is the default in our projects.
+- A process outside the merge run changes only the attributes that it owns, and never the full merged entity.
 
 ### Options Considered
 
@@ -105,7 +106,7 @@ final class NearestAerialPhoto implements LocationLookupInterface { /* … */ }
 ### The merge run
 
 The run does all the steps of 004 without a request to a service. Before it publishes, it copies the details from
-services, and the time of each check, from the entity that it published before. It copies them only if the entity has
+services, and the check property of each service, from the entity that it published before. It copies them only if the entity has
 the same identifier and the same location. Thus, a run does not remove a value that a service gave.
 
 After the run publishes, it sends a message for each merged entity and service that is due for a check:
@@ -121,11 +122,27 @@ After the run publishes, it sends a message for each merged entity and service t
 A service supplies only the details that the records of the thing do not give. If the records give a detail, the run
 sends no message for it. This keeps the rule of 007 that augmentation never overwrites a value of the records.
 
+### The check property
+
+Each service has a property of its own on the merged entity, for example `lookupAerialPhotos`. Its value tells the
+result of the last check, and its NGSI-LD `observedAt` tells the time of the check. The property exists also when the
+service has no value for the entity, so the run knows that the check was done.
+
+The details from the service also get an `observedAt`, with the time of the check that gave the value. Thus, consumers
+can see how old each value is.
+
+The check times are not kept in `additionalInformation`. That property holds one JSON value, which the run also
+writes. A worker can only replace the full value, so it must read the property, change it and write it again. Two
+writes at the same time can then lose a change.
+
 ### The worker
 
-Each service has a queue of its own in the message broker. A worker takes a message, asks the service and updates
-only the details of that service, and the time of the check, on the merged entity in the broker. If the entity does
-not exist any more, or it has moved, the worker ignores the message.
+Each service has a queue of its own in the message broker. A worker takes a message, asks the service and writes the
+result to the merged entity in the broker.
+
+The worker always makes a partial update. The request names only the details of the service and its check property.
+The worker never reads the full entity, and it never writes the full entity. Before the update, the worker reads only
+the location of the entity. If the entity does not exist any more, or it has moved, the worker ignores the message.
 
 A service can give one of three results:
 
@@ -134,21 +151,24 @@ A service can give one of three results:
   check. If the entity has values from the service, it keeps them, and the run sends a new message after
   `refreshAfter`. If not, the run sends a new message after `recheckEmptyAfter`.
 - **A failure.** For example, the service is unavailable. The queue retries the message after a delay. If all the
-  retries fail, the worker logs the failure on the log channel of the service and drops the message. The entity keeps
-  its values and the time of the last good check, so the next run sends a new message.
+  retries fail, the worker logs the failure on the log channel of the service and drops the message. The worker
+  writes nothing, so the entity keeps its values and the time of the last good check.
 
 A service adds or replaces values, but it never removes a value. A service that gives no answer can be down, or it
 can have a defect for a long period, so an empty answer is not proof that the value is wrong.
 
+The application does not store a failed message. The check property on the entity tells which checks are due. A
+failure does not change it, so the check stays due and the next run sends a new message.
+
 The rate limiter of the service controls how fast the worker takes messages from the queue. Thus, a long queue is
 slow, but it obeys the limit of the service.
 
-The merged entity stores the source and the time of each check. For example, one photo exists and one does not:
+For example, one photo exists and one does not. The names and values are illustrative:
 
-| Merged entity | image               | imageDate  | Service         | Time of the check    |
-|---------------|---------------------|------------|-----------------|----------------------|
-| T-1           | `…/photos/P-41.jpg` | 2023-04-20 | `aerial-photos` | 2026-11-02T10:15:00Z |
-| T-2           |                     |            | `aerial-photos` | 2026-11-02T10:15:04Z |
+| Merged entity | image               | imageDate  | lookupAerialPhotos | observedAt of the check property |
+|---------------|---------------------|------------|--------------------|----------------------------------|
+| T-1           | `…/photos/P-41.jpg` | 2023-04-20 | `found`            | 2026-11-02T10:15:00Z             |
+| T-2           |                     |            | `none`             | 2026-11-02T10:15:04Z             |
 
 On 2026-11-09, the run sends a message for T-2 again. It sends a message for T-1 on 2027-01-31. If that check gives
 no answer, T-1 keeps its photo, and the next check is 90 days later.
@@ -160,6 +180,8 @@ The rationale is:
 - Two periods for each service keep values current, and find new values, without a request on each run.
 - A service needs no data model, no source and no import.
 - The broker already holds the merged entities, so the answers and the times of the checks need no database.
+- The check property and the partial update let the worker change the entity without a risk to the values of the run.
+- The check property already tells which checks are due, so a failed message needs no storage.
 - A failure or an empty answer of a service removes no published value.
 - The limits belong to the service, so they apply to all the merges that use it.
 - A log channel for each service makes it easy to find the failures of one service.
@@ -191,5 +213,7 @@ The rationale is:
 - A value can be up to `refreshAfter` old, so a change at the service reaches the merged entity late.
 - A value that the service removes stays on the merged entity, until the service gives a new value for the location.
 - A failure after all the retries is only logged. Somebody must read the log channel of the service to find it.
+- A failed check waits for the next run. A person cannot retry a failed message by hand.
+- Each merged entity gets one more property for each service that the merge uses.
 - The worker writes to the merged entities outside of the merge run, so the run is not the only process that changes
   them. The worker changes only the details that the merge names for the service.
