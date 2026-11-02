@@ -73,6 +73,8 @@ and the time of the check, to the merged record.
 
 - A detail without a value is checked again after a short period, for example 7 days.
 - A detail with a value is checked again after a long period, for example 90 days.
+- A place has one message at a time in the queue for each service. The run marks the check as requested, and does
+  not send it again until the worker answers or the request times out, for example after 1 day.
 - A service only fills details that the sources do not give.
 - A service never removes a value. If the service has no answer, the place keeps its value.
 
