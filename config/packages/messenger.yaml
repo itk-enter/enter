@@ -1,0 +1,18 @@
+framework:
+    messenger:
+        # A message that fails after all the retries is logged and dropped.
+        # There is no failure transport, because the application has no
+        # database to keep failed messages in.
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+
+        routing:
+            # Route your messages to the transports
+            # 'App\Message\YourMessage': async
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'in-memory://'

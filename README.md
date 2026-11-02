@@ -131,4 +131,17 @@ accessed on <http://scorpio.enter.local.itkdev.dk/>, e.g.
 curl --silent http://scorpio.enter.local.itkdev.dk/ngsi-ld/v1/types | jq
 ```
 
+## Message queue
+
+The app sends messages with [Symfony Messenger](https://symfony.com/doc/current/messenger.html). RabbitMQ (the
+`rabbit` service) holds the messages until a worker handles them. On the server, the `supervisor` service runs the
+worker. In development, run the worker yourself:
+
+``` shell
+task messenger:consume
+```
+
+The RabbitMQ management interface shows the queues. To find its port, run `docker compose port rabbit 15672`. The
+user is `user` and the password is `password`.
+
 [ITK-dev docker setup]: https://github.com/itk-dev/devops_itkdev-docker/
