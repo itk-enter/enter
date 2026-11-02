@@ -25,6 +25,7 @@
         "symfony/monolog-bundle": "^4.1",
         "symfony/property-access": "~8.1.10",
         "symfony/property-info": "~8.1.10",
+        "symfony/rate-limiter": "~8.1.0",
         "symfony/runtime": "~8.1.10",
         "symfony/serializer": "~8.1.10",
         "symfony/stimulus-bundle": "^3.6",

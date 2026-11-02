@@ -23,6 +23,12 @@ final readonly class AsLocationLookup
     public const string CHECK_PROPERTY_PREFIX = 'lookup';
 
     /**
+     * The Messenger transport of the lookups that do not declare one of
+     * their own.
+     */
+    public const string DEFAULT_TRANSPORT = 'lookups';
+
+    /**
      * @param string       $id                the lookup's identifier, in lower case with hyphens, for example
      *                                        "aerial-photos"
      * @param list<string> $attributes        the attributes that the service can supply, named as in the result
@@ -31,12 +37,16 @@ final readonly class AsLocationLookup
      *                                        merged entity has no value from the service
      * @param string       $refreshAfter      an ISO 8601 duration: the time to wait before the next check when the
      *                                        merged entity has a value from the service
+     * @param string       $transport         the Messenger transport, that is the queue, that holds the messages of
+     *                                        the lookup; the transport sets the request limit and the retries of the
+     *                                        service in config/packages/messenger.yaml
      */
     public function __construct(
         public string $id,
         public array $attributes,
         public string $recheckEmptyAfter,
         public string $refreshAfter,
+        public string $transport = self::DEFAULT_TRANSPORT,
     ) {
         if (1 !== preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $id)) {
             throw new \InvalidArgumentException(\sprintf('Lookup id "%s" must be in lower case with hyphens.', $id));

@@ -97,7 +97,7 @@ tasks:
     cmd:
       task: console
       vars:
-        TASK_ARGS: messenger:consume async -vv
+        TASK_ARGS: messenger:consume --all -vv
 
   coding-standards:apply:
     desc: 'Apply coding standards'

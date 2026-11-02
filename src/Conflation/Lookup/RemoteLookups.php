@@ -10,6 +10,7 @@ use App\Conflation\Io\MergedDataSet;
 use App\Ngsi\NgsiEntity;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 
 /**
  * Keeps the answers of the lookups of a merge on its merged entities, and
@@ -23,8 +24,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * and the same location. A merged entity that moves gets new answers.
  *
  * After the runner publishes, this class sends a LookupMessage for each
- * merged entity and lookup that is due for a check. A worker handles the
- * message later, with LookupHandler.
+ * merged entity and lookup that is due for a check, to the transport of the
+ * lookup. A worker handles the message later, with LookupHandler.
  *
  * A lookup supplies only the attributes that the records of the thing do not
  * give. A value of the records always stays.
@@ -113,7 +114,10 @@ final readonly class RemoteLookups
                     continue;
                 }
 
-                $this->bus->dispatch(new LookupMessage($entity->id(), $dataSet->contextUrl, $class, $attributes, $location, $checkedAt));
+                $this->bus->dispatch(
+                    new LookupMessage($entity->id(), $dataSet->contextUrl, $class, $attributes, $location, $checkedAt),
+                    [new TransportNamesStamp([$lookup->transport])],
+                );
                 ++$sent;
             }
         }
