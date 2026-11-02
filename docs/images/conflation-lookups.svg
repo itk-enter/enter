@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 364" role="img" aria-label="Remote services fill in details after the run; a value is never removed">
+  <style>
+    svg { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; }
+    text { fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 600; }
+    .q { font-size: 11.5px; fill: #59636e; }
+    .c { font-size: 11.5px; fill: #8250df; }
+    .s { font-size: 11.5px; }
+    .n { font-weight: 600; }
+    .m { text-anchor: middle; }
+    .box { fill: #ffffff; stroke: #8c959f; stroke-width: 1.25; }
+    .main { fill: #0969da; fill-opacity: 0.12; stroke: #0969da; stroke-width: 2; }
+    .line { fill: none; stroke: #8c959f; stroke-width: 1.25; }
+    .head { fill: #8c959f; }
+  </style>
+  <rect x="0" y="0" width="760" height="364" rx="12" fill="#f6f8fa"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="head" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="24" y="34">Remote services fill in details after the run; a value is never removed</text>
+  <text class="q" x="24" y="54">Example: the newest aerial photo of each merged toilet, from the Skråfoto API of Dataforsyningen</text>
+
+  <!-- Left panel: from the run to the merged record -->
+  <rect class="box" x="24" y="72" width="412" height="268" rx="8"/>
+
+  <path class="line" d="M144 116H164" marker-end="url(#arrow)"/>
+  <path class="line" d="M276 116H296" marker-end="url(#arrow)"/>
+  <path class="line" d="M358 140V176" marker-end="url(#arrow)"/>
+  <path class="line" d="M358 224V248" marker-end="url(#arrow)"/>
+  <path class="line" d="M92 140V248" marker-end="url(#arrow)"/>
+  <text class="q" x="366" y="162">asks</text>
+  <text class="q" x="350" y="240" text-anchor="end">writes the answer</text>
+  <text class="q" x="100" y="196">publishes,</text>
+  <text class="q" x="100" y="212">with a mark</text>
+
+  <rect class="box" x="40" y="92" width="104" height="48" rx="8"/>
+  <text class="n m" x="92" y="112">Merge run</text>
+  <text class="q m" x="92" y="129">marks due checks</text>
+
+  <rect class="box" x="164" y="92" width="112" height="48" rx="8"/>
+  <text class="n m" x="220" y="112">RabbitMQ</text>
+  <text class="q m" x="220" y="129">one queue a service</text>
+
+  <rect class="box" x="296" y="92" width="124" height="48" rx="8"/>
+  <text class="n m" x="358" y="112">Worker</text>
+  <text class="q m" x="358" y="129">5 requests a second</text>
+
+  <rect class="box" x="296" y="176" width="124" height="48" rx="8"/>
+  <text class="n m" x="358" y="196">Skråfoto API</text>
+  <text class="q m" x="358" y="213">newest photo</text>
+
+  <rect class="main" x="40" y="248" width="380" height="80" rx="8"/>
+  <text class="n" x="56" y="268">Merged toilet T-1</text>
+  <text class="s" x="56" y="286">image: https://…/skraafoto/skraafotos2023/…_3478.jpg</text>
+  <text class="s" x="56" y="302">imageDate: 2023-04-20</text>
+  <text class="q" x="56" y="318">lookupAerialPhotos: found, checked 2026-11-02</text>
+
+  <!-- Right panel: the rules -->
+  <rect class="box" x="452" y="72" width="284" height="268" rx="8"/>
+  <text class="n" x="468" y="100">When a place is checked</text>
+  <text x="468" y="128">New place: right after the run</text>
+  <text x="468" y="152">No photo: again after 30 days</text>
+  <text x="468" y="176">A photo: again after 180 days</text>
+  <text x="468" y="200">Queued: not sent again for 1 day</text>
+  <text x="468" y="224">No answer: the photo stays</text>
+  <text x="468" y="248">A source states it: never asked</text>
+  <text class="c" x="468" y="296">Configured: which services add which</text>
+  <text class="c" x="468" y="312">details, the periods and the limit</text>
+</svg>

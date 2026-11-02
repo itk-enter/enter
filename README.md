@@ -152,6 +152,19 @@ has a request limit of its own, give it a transport of its own:
 
 In prod, each lookup logs to stdout on the channel `lookup.<lookup id>`.
 
+To find out if the remote services are available, run:
+
+``` shell
+docker compose exec phpfpm bin/console app:lookup:check
+```
+
+The command asks each service about one point, with the configuration of the worker, for example the token. If a
+service fails, the command shows the error and exits with an error code. Use `--longitude` and `--latitude` to ask
+about another point.
+
+The aerial photos come from the Skråfoto API of Dataforsyningen. Put a token from <https://dataforsyningen.dk/> in
+`DATAFORSYNINGEN_TOKEN` in `.env.local`.
+
 The RabbitMQ management interface shows the queues. To find its port, run `docker compose port rabbit 15672`. The
 user is `user` and the password is `password`.
 

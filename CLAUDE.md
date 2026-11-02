@@ -46,21 +46,24 @@ config/               Symfony configuration (packages, routes, services)
 public/               Web root
 src/
   Broker/             NgsiLdBroker: upsert, delete and read entities in the broker
-  Command/            app:* console commands (source import and list, conflation run, broker delete)
+  Command/            app:* console commands (source import and list, conflation run, lookup check, broker delete)
   Conflation/         The merge engine: Conflation attribute, pipeline, steps, fetch and publish
     Augmentation/     Adds attributes from records of augmenting models
     ConflictResolution/  Approaches that settle attributes the records disagree on
     Data/             Record, Cluster, StatedValue, MergedEntity
     EventListener/    Runs the merges after an import run
     Io/               Reads records from the broker and makes the merged entities
+    Lookup/           Remote lookups: the messages, the worker, the request marks and the check of the services
     MergeByLocation/  Groups the records that describe the same thing
     Pipeline/         Runs the steps and checks their limits
     Spatial/          Distances and the grid index
   Controller/         Pages and JSON endpoints
   Geo/, GeometryHelper/  Reprojection and geometry functions
   Import/             SourcesImporter and SourcesImportedEvent
+  Lookup/             The remote services that the merges use, one class per service
   Merge/              The merges that the app publishes
   Ngsi/               NgsiEntity, one entity in normalized NGSI-LD
+  Skraafoto/          The client of the Skråfoto API of Dataforsyningen
   Source/             One class per source, with its #[Definition]
   SourceImporter/     Reads a feed and imports it, one importer per feed type
   SourceReader/       Reads the feeds over HTTP and keeps them in a cache
