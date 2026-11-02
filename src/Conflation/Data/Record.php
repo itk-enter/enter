@@ -43,9 +43,7 @@ final readonly class Record
      * representative point: a point's own position, or the centroid of any
      * other geometry.
      *
-     * The centroid comes from GeometryHelper::getCentroid(). Without the GEOS
-     * extension, geoPHP calculates the centroid of a small area with less
-     * precision. Thus only points match reliably.
+     * The centroid comes from GeometryHelper::getCentroid().
      *
      * @param array<string, mixed> $geometry
      * @param array<string, mixed> $attributes

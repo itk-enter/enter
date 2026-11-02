@@ -77,19 +77,84 @@ final class GeometryHelper
     /**
      * Gets the centroid of a GeoJSON geometry.
      *
-     * Without the GEOS extension, geoPHP calculates the centroid with less
-     * precision for a small area. The error is 3 m for a 20 m square and
-     * 133 m for a 2 m square. geoPHP also ignores the holes of a polygon. For
-     * a line or a multipolygon, it gives the centre of the bounding box.
+     * For a Polygon or a MultiPolygon, the method calculates the area-weighted
+     * centroid, without the holes. It calculates relative to the first point
+     * of the geometry. Coordinates near 56° and 10° lose precision in the
+     * products of the area formula, and a small area then gets a wrong
+     * centroid. geoPHP has this problem without the GEOS extension.
      *
-     * @todo Calculate the correct centroid without the GEOS extension.
+     * For any other geometry, geoPHP calculates the centroid. For a line, it
+     * gives the centre of the bounding box.
+     *
+     * @todo Calculate the length-weighted centroid of a line.
      *
      * @param Geometry $geometry
      */
     public function getCentroid(array $geometry): Point
     {
+        $polygons = match ($geometry['type'] ?? null) {
+            'Polygon' => [$geometry['coordinates']],
+            'MultiPolygon' => $geometry['coordinates'],
+            default => [],
+        };
+
+        /** @var list<list<list<array{0: float|int, 1: float|int}>>> $polygons */
+        $centroid = self::polygonsCentroid($polygons);
+        if (null !== $centroid) {
+            return $centroid;
+        }
+
         $centroid = \geoPHP::load(json_encode($geometry), 'geojson')->getCentroid();
 
         return new Point($centroid->getX(), $centroid->getY());
+    }
+
+    /**
+     * The area-weighted centroid of polygons, or null if they have no area.
+     * The first ring of a polygon adds its area. Each other ring is a hole and
+     * removes its area.
+     *
+     * @param list<list<list<array{0: float|int, 1: float|int}>>> $polygons
+     */
+    private static function polygonsCentroid(array $polygons): ?Point
+    {
+        $origin = $polygons[0][0][0] ?? null;
+        if (null === $origin) {
+            return null;
+        }
+        [$x0, $y0] = $origin;
+
+        $area = $sumX = $sumY = 0.0;
+        foreach ($polygons as $rings) {
+            foreach ($rings as $index => $ring) {
+                $ringArea = $ringX = $ringY = 0.0;
+                $count = \count($ring);
+                for ($i = 0; $i < $count; ++$i) {
+                    $ax = $ring[$i][0] - $x0;
+                    $ay = $ring[$i][1] - $y0;
+                    $bx = $ring[($i + 1) % $count][0] - $x0;
+                    $by = $ring[($i + 1) % $count][1] - $y0;
+                    $cross = $ax * $by - $bx * $ay;
+                    $ringArea += $cross;
+                    $ringX += ($ax + $bx) * $cross;
+                    $ringY += ($ay + $by) * $cross;
+                }
+                if (0.0 === $ringArea) {
+                    continue;
+                }
+                // The orientation of a ring sets the sign of its area. Thus
+                // the sign comes from the role of the ring: area or hole.
+                $sign = (0 === $index ? 1 : -1) * ($ringArea > 0 ? 1 : -1);
+                $area += $sign * $ringArea / 2;
+                $sumX += $sign * $ringX / 6;
+                $sumY += $sign * $ringY / 6;
+            }
+        }
+
+        if (0.0 === $area) {
+            return null;
+        }
+
+        return new Point($x0 + $sumX / $area, $y0 + $sumY / $area);
     }
 }
