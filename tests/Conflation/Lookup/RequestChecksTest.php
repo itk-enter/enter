@@ -72,7 +72,7 @@ class RequestChecksTest extends TestCase
 
         $wanted = $lookups->keepAnswers($conflation, $dataSet, [$entity]);
 
-        $count = $lookups->requestChecks($dataSet, [$entity], $wanted);
+        $count = $lookups->requestChecks($dataSet, [$entity], $lookups->markDueChecks([$entity], $wanted));
         $this->sent = $bus->sent;
 
         return $count;

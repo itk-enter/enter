@@ -52,7 +52,7 @@ class RequestChecksTransportTest extends TestCase
         $dataSet = new MergedDataSet('merged-toilets', 'Merged toilets', '', 'PublicToilet', 'https://context.example/toilet.jsonld', null, []);
         $entity = new NgsiEntity('urn:ngsi-ld:PublicToilet:merged-toilets-t-1', 'PublicToilet')->geoProperty('location', ['type' => 'Point', 'coordinates' => [10.21, 56.15]]);
 
-        $lookups->requestChecks($dataSet, [$entity], $lookups->keepAnswers($conflation, $dataSet, [$entity]));
+        $lookups->requestChecks($dataSet, [$entity], $lookups->markDueChecks([$entity], $lookups->keepAnswers($conflation, $dataSet, [$entity])));
 
         $this->assertCount(1, $bus->sent);
         $this->assertSame(['lookups'], $bus->sent[0]->last(TransportNamesStamp::class)?->getTransportNames());
