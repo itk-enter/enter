@@ -92,13 +92,6 @@ tasks:
       vars:
         TASK_ARGS: app:source:import-all
 
-  messenger:consume:
-    desc: 'Run the Messenger worker, which handles the messages in RabbitMQ. Stop it with Ctrl+C'
-    cmd:
-      task: console
-      vars:
-        TASK_ARGS: messenger:consume async -vv
-
   coding-standards:apply:
     desc: 'Apply coding standards'
     cmds:
