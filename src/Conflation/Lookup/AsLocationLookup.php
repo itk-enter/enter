@@ -71,6 +71,32 @@ final readonly class AsLocationLookup
     }
 
     /**
+     * Tests if a merged entity is due for a check.
+     *
+     * An entity that the lookup never checked is due. Otherwise, the entity is
+     * due when refreshAfter has passed since the last check, if it has a
+     * value from the lookup. If not, it is due when recheckEmptyAfter has
+     * passed.
+     *
+     * @param string|null $checkedAt the observedAt of the check property, or null if there is none
+     * @param bool        $hasValue  true if the entity has one or more values from the lookup
+     */
+    public function isDue(?string $checkedAt, bool $hasValue, \DateTimeImmutable $now): bool
+    {
+        if (null === $checkedAt) {
+            return true;
+        }
+
+        try {
+            $next = new \DateTimeImmutable($checkedAt)->add(new \DateInterval($hasValue ? $this->refreshAfter : $this->recheckEmptyAfter));
+        } catch (\Exception) {
+            return true;
+        }
+
+        return $next <= $now;
+    }
+
+    /**
      * The name of the check property, for example "lookupAerialPhotos" for
      * the id "aerial-photos".
      */

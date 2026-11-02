@@ -8,9 +8,12 @@ use App\Broker\NgsiLdBroker;
 use App\Conflation\Conflation;
 use App\Conflation\Io\MergedDataSet;
 use App\Ngsi\NgsiEntity;
+use Psr\Clock\ClockInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
- * Keeps the answers of the lookups of a merge on its merged entities.
+ * Keeps the answers of the lookups of a merge on its merged entities, and
+ * requests the checks that are due.
  *
  * A run builds each merged entity again from the records. The answers of the
  * lookups are not in the records, so the run would publish the entity
@@ -19,19 +22,19 @@ use App\Ngsi\NgsiEntity;
  * merge published before. It copies them only if the entity has the same id
  * and the same location. A merged entity that moves gets new answers.
  *
+ * After the runner publishes, this class sends a LookupMessage for each
+ * merged entity and lookup that is due for a check. A worker handles the
+ * message later, with LookupHandler.
+ *
  * A lookup supplies only the attributes that the records of the thing do not
  * give. A value of the records always stays.
  */
 final readonly class RemoteLookups
 {
-    /**
-     * The decimal places of a coordinate that the location test compares.
-     * The broker can give a coordinate back with a different last digit.
-     */
-    private const int PRECISION = 9;
-
     public function __construct(
         private NgsiLdBroker $broker,
+        private MessageBusInterface $bus,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -67,7 +70,7 @@ final readonly class RemoteLookups
         $previous = iterator_to_array($this->broker->entities($dataSet->id, $dataSet->contextUrl, self::attributes($conflation)));
         foreach ($entities as $entity) {
             $before = $previous[$entity->id()] ?? null;
-            if (null === $before || !self::sameLocation($entity->attribute('location'), $before['location'] ?? null)) {
+            if (null === $before || !Location::same($entity->attribute('location')['value'] ?? null, $before['location']['value'] ?? null)) {
                 continue;
             }
 
@@ -79,6 +82,43 @@ final readonly class RemoteLookups
         }
 
         return $wanted;
+    }
+
+    /**
+     * Sends a message for each merged entity and lookup that is due for a
+     * check.
+     *
+     * The runner calls the method after it publishes the merged entities.
+     *
+     * @param list<NgsiEntity>                                 $entities the merged entities, with the answers that
+     *                                                                   keepAnswers() copied
+     * @param array<string, array<class-string, list<string>>> $wanted   what keepAnswers() returned
+     *
+     * @return int the number of messages sent
+     */
+    public function requestChecks(MergedDataSet $dataSet, array $entities, array $wanted): int
+    {
+        $now = $this->clock->now();
+        $sent = 0;
+        foreach ($entities as $entity) {
+            foreach ($wanted[$entity->id()] ?? [] as $class => $attributes) {
+                $lookup = AsLocationLookup::of($class);
+                $checkedAt = $entity->attribute($lookup->checkProperty())['observedAt'] ?? null;
+                $checkedAt = \is_string($checkedAt) ? $checkedAt : null;
+                $hasValue = array_any($attributes, $entity->has(...));
+
+                /** @var array<string, mixed> $location */
+                $location = $entity->attribute('location')['value'] ?? [];
+                if ([] === $location || !$lookup->isDue($checkedAt, $hasValue, $now)) {
+                    continue;
+                }
+
+                $this->bus->dispatch(new LookupMessage($entity->id(), $dataSet->contextUrl, $class, $attributes, $location, $checkedAt));
+                ++$sent;
+            }
+        }
+
+        return $sent;
     }
 
     /**
@@ -105,33 +145,5 @@ final readonly class RemoteLookups
 
         $observedAt = $attribute['observedAt'] ?? null;
         $entity->setProperty($name, $attribute['value'], \is_string($observedAt) ? $observedAt : null);
-    }
-
-    /**
-     * Tests if two GeoProperties hold the same geometry.
-     */
-    private static function sameLocation(mixed $location, mixed $other): bool
-    {
-        if (!\is_array($location) || !\is_array($other)) {
-            return false;
-        }
-
-        return self::rounded($location['value'] ?? null) === self::rounded($other['value'] ?? null);
-    }
-
-    /**
-     * The geometry with each coordinate rounded to PRECISION.
-     */
-    private static function rounded(mixed $value): mixed
-    {
-        if (\is_int($value) || \is_float($value)) {
-            return round((float) $value, self::PRECISION);
-        }
-
-        if (\is_array($value)) {
-            return array_map(self::rounded(...), $value);
-        }
-
-        return $value;
     }
 }

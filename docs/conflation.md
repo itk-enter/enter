@@ -27,6 +27,7 @@ stricter distance or another order of trusted sources is a change of configurati
 | Conflict rules      | Which rules settle a disagreement, and in what order                   | Trusted sources: Kommune city toilets first, then Kommune other toilets |
 | Augmenting data     | Which datasets about the surroundings add which details                | District areas add the district                                         |
 | Augmentation method | How data about the surroundings reaches places                         | An area reaches every place inside it; a point, places nearby           |
+| Remote lookups      | Which remote services add which details, after the run                 | None yet                                                                |
 | Dataset details     | The merged dataset's name, description and licence                     | "Offentlige toiletter (samlet), Aarhus Kommune"                         |
 
 ## How records are matched
@@ -60,6 +61,20 @@ toilet inside it its district; an area of asphalt gives every parking space on i
 
 This data never becomes a place of its own, and it never overrides what the sources themselves state.
 
+## Adding details from remote services
+
+Some details come from a remote service that answers a question about one point, for example "the nearest address".
+A merge names these services, the lookups, and the details that it takes from each.
+
+The run does not ask the services. After it publishes, it sends a message for each place that is due for a check.
+RabbitMQ keeps the messages, and a worker asks the service later. The worker writes only the details of the service,
+and the time of the check, to the merged record.
+
+- A detail without a value is checked again after a short period, for example 7 days.
+- A detail with a value is checked again after a long period, for example 90 days.
+- A service only fills details that the sources do not give.
+- A service never removes a value. If the service has no answer, the place keeps its value.
+
 ## Worked example: the toilet at Ørnereden
 
 ![One toilet, three sources, one merged record](images/conflation-example.svg)
@@ -76,3 +91,4 @@ The design is described in these architecture decision records:
 - [ADR 005: Merge by location](adr/005-conflation-merge-by-location.md)
 - [ADR 006: Conflict resolution](adr/006-conflation-conflict-resolution.md)
 - [ADR 007: Augmentation](adr/007-conflation-augmentation.md)
+- [ADR 008: Remote lookups through a message queue](adr/008-conflation-remote-lookups.md)

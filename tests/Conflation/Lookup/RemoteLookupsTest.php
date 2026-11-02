@@ -12,8 +12,10 @@ use App\Ngsi\NgsiEntity;
 use App\Tests\Conflation\Fixtures\AerialPhotos;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Messenger\MessageBus;
 
 class RemoteLookupsTest extends TestCase
 {
@@ -41,7 +43,7 @@ class RemoteLookupsTest extends TestCase
             return new MockResponse(json_encode($published, \JSON_THROW_ON_ERROR));
         });
 
-        return new RemoteLookups(new NgsiLdBroker($client, 'http://broker.example'));
+        return new RemoteLookups(new NgsiLdBroker($client, 'http://broker.example'), new MessageBus(), new MockClock());
     }
 
     /**
