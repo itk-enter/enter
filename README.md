@@ -138,7 +138,7 @@ The app sends messages with [Symfony Messenger](https://symfony.com/doc/current/
 worker. In development, run the worker yourself:
 
 ``` shell
-task messenger:consume
+docker compose exec phpfpm bin/console messenger:consume async -vv
 ```
 
 The RabbitMQ management interface shows the queues. To find its port, run `docker compose port rabbit 15672`. The
