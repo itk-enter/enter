@@ -31,3 +31,5 @@ steps:
               - itkdev-docker-compose-server exec phpfpm composer install -o --no-dev --classmap-authoritative
               - itkdev-docker-compose-server exec phpfpm bin/console asset-map:compile
               - itkdev-docker-compose-server exec phpfpm bin/console cache:clear --no-debug
+              # The supervisor starts the worker again, with the new code.
+              - itkdev-docker-compose-server exec phpfpm bin/console messenger:stop-workers
