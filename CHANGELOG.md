@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-114](https://github.com/itk-enter/enter/pull/114)
+  Cleaned up Scorpio docker compose setup
 * [PR-108](https://github.com/itk-enter/enter/pull/108)
   Added Geos extension to PHP
 * [PR-110](https://github.com/itk-enter/enter/pull/110)

@@ -8,7 +8,7 @@
 
 ```shell
 docker compose exec phpfpm curl --verbose --header 'accept: application/geo+json' --get \
-    'http://scorpio.local:9090/ngsi-ld/v1/entities' \
+    'http://scorpio:9090/ngsi-ld/v1/entities' \
     --data 'georel=near;maxDistance==2000' \
     --data 'geometry=Point' \
     --data 'coordinates=[10.198712,56.1551091]'

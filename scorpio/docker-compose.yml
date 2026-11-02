@@ -1,0 +1,15 @@
+services:
+  scorpio:
+    # https://docs.docker.com/reference/compose-file/services/#extends
+    extends:
+      file: ./docker-compose.scorpio.yml
+      service: scorpio
+    networks:
+      app:
+
+  scorpio-db:
+    extends:
+      file: ./docker-compose.scorpio.yml
+      service: scorpio-db
+    # Uncomment and restart to log all statements (cf. https://stackoverflow.com/a/58806511)
+    # command: ["postgres", "-c", "log_statement=all"]

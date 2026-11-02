@@ -1,0 +1,18 @@
+services:
+  scorpio:
+    # https://docs.docker.com/reference/compose-file/services/#extends
+    extends:
+      file: ./docker-compose.scorpio.yml
+      service: scorpio
+    networks:
+      app:
+    restart: unless-stopped
+
+  scorpio-db:
+    extends:
+      file: ./docker-compose.scorpio.yml
+      service: scorpio-db
+    restart: unless-stopped
+    volumes:
+      # https://github.com/docker-library/postgres/issues/37
+      - ../.docker/data/scorpio/db:/var/lib/postgresql
