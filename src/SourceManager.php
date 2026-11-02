@@ -21,7 +21,7 @@ final class SourceManager
             }
             $id = $source->definition->id;
             if (isset($indexed[$id])) {
-                throw new \RuntimeException(sprintf('Duplicate source: %s (ID already used by %s)', $id, $indexed[$id]::class));
+                throw new \RuntimeException(sprintf('Duplicate source: %s (%s already uses the ID)', $id, $indexed[$id]::class));
             }
             $indexed[$id] = $source;
         }
@@ -29,7 +29,7 @@ final class SourceManager
     }
 
     /**
-     * Get sources indexed by ID.
+     * Gets the sources, indexed by ID.
      *
      * @return array<string, SourceInterface>
      */
@@ -42,7 +42,7 @@ final class SourceManager
     {
         $sources = $this->getSources();
         if (!array_key_exists($name, $sources)) {
-            throw new \InvalidArgumentException(sprintf('Source "%s" does not exist.', $name));
+            throw new \InvalidArgumentException(sprintf('The source "%s" does not exist.', $name));
         }
 
         return $sources[$name];

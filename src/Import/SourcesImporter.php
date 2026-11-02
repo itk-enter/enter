@@ -10,13 +10,14 @@ use App\SourceImporter\SourceImporterFactory;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Imports several sources in one run, then announces the run's outcome.
+ * Imports several sources in one run, and then dispatches the result of the
+ * run.
  *
- * A failing source does not stop the run: each source is imported on its
- * own, and the event says which succeeded and which did not, so a listener
- * can decide for itself whether the run is complete enough for its purpose.
- * Failures are returned rather than logged; reporting them is the caller's
- * job.
+ * If a source fails, the run does not stop. The importer imports each source
+ * separately. The event tells which sources the importer imported and which
+ * sources failed. Thus a listener can decide if the run is sufficiently
+ * complete for its purpose. The importer returns the failures and does not
+ * log them. The caller reports them.
  */
 final readonly class SourcesImporter
 {

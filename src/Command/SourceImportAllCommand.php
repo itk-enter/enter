@@ -14,10 +14,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Imports every source, then dispatches the run's outcome.
+ * Imports all sources, and then dispatches the result of the run.
  *
- * Test sources are left to test:source:import-all; they exist only in dev
- * and test, and read local copies of the feeds.
+ * This command does not import the test sources. test:source:import-all
+ * imports them. The test sources exist only in dev and test, and read local
+ * copies of the feeds.
  */
 #[AsCommand(
     name: 'app:source:import-all',

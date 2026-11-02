@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Conflation\Data;
 
 /**
- * The records judged to describe one real-world thing: at most one from
- * each data set.
+ * The records that the merge by location finds to describe one real-world
+ * thing: at most one from each data set.
  */
 final readonly class Cluster
 {

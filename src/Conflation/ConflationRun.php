@@ -13,10 +13,12 @@ use App\Conflation\Io\MergedDataSet;
 final readonly class ConflationRun
 {
     /**
-     * @param int                $records  the records read
-     * @param list<MergedEntity> $entities the merged entities produced
-     * @param int|null           $upserted the entities published, null when nothing was published
-     * @param int|null           $deleted  the stale entities deleted, null when nothing was published
+     * @param int                $records  the number of records that the run read
+     * @param list<MergedEntity> $entities the merged entities that the run produced
+     * @param int|null           $upserted the number of entities that the run published, or null if it published
+     *                                     nothing
+     * @param int|null           $deleted  the number of stale entities that the run deleted, or null if it published
+     *                                     nothing
      */
     public function __construct(
         public MergedDataSet $dataSet,
@@ -33,7 +35,8 @@ final readonly class ConflationRun
     }
 
     /**
-     * The merged entities with at least one attribute no approach settled.
+     * The merged entities with at least one attribute that no approach
+     * settled.
      *
      * @return list<MergedEntity>
      */

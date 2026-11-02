@@ -4,9 +4,9 @@
 
 {% block content %}
     <p>
-        The data sets published to the broker: the sources, and the merged data sets built from them. Every entity
-        carries a <code>sourceId</code> attribute holding the id of the data set it belongs to, and each data set
-        below links to its entities in the broker.
+        The data sets in the broker: the sources, and the merged data sets that the merges make from them. Each
+        entity has a <code>sourceId</code> attribute with the id of its data set. Each data set below links to its
+        entities in the broker.
         This list is also available as <a href="{{ path('app_sources', {_format: 'json'}) }}">JSON</a>.
     </p>
 

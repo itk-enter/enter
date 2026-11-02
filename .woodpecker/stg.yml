@@ -27,7 +27,7 @@ steps:
               - git fetch origin ${CI_COMMIT_BRANCH}
               - git checkout ${CI_COMMIT_BRANCH}
               - git pull
-              - itkdev-docker-compose-server up -d --force-recreate
+              - itkdev-docker-compose-server up -d --force-recreate --remove-orphans
               - itkdev-docker-compose-server exec phpfpm composer install -o --no-dev --classmap-authoritative
               - itkdev-docker-compose-server exec phpfpm bin/console asset-map:compile
               - itkdev-docker-compose-server exec phpfpm bin/console cache:clear --no-debug

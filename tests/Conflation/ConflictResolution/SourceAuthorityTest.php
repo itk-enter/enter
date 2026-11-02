@@ -40,6 +40,14 @@ class SourceAuthorityTest extends TestCase
         $this->assertNull(new SourceAuthority(['data-set-x'])->resolve('openingHours', self::openingHours()));
     }
 
+    public function testWithAListOfAttributesItSettlesOnlyThose(): void
+    {
+        $authority = new SourceAuthority(['data-set-a'], attributes: ['openingHours']);
+
+        $this->assertSame('08–20', $authority->resolve('openingHours', self::openingHours()));
+        $this->assertNull($authority->resolve('name', self::openingHours()));
+    }
+
     public function testItNeedsADataSet(): void
     {
         $this->expectException(\InvalidArgumentException::class);

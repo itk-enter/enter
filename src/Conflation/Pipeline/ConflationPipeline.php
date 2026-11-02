@@ -9,19 +9,23 @@ use App\Conflation\Data\Cluster;
 use App\Conflation\Data\MergedEntity;
 use App\Conflation\Data\Record;
 use App\Conflation\Data\StatedValue;
+use App\Conflation\Spatial\Shape;
 
 /**
  * Runs the customizable steps of a merge on its records, and checks that
  * what each step returns stays within the step's limits.
  *
- * Merging by location groups the records of defining models, resolving
- * conflicts turns each group into one merged entity, and augmenting adds
- * attributes from the records of augmenting models. A step that breaks its
- * limits fails the run with a ConflationLimitException, so nothing is
- * published.
+ * The steps are:
  *
- * Fetching the records and creating the result in the broker are not
- * customizable and happen around this.
+ * - Merge by location: groups the records of the defining models.
+ * - Conflict resolution: turns each group into one merged entity.
+ * - Augmentation: adds attributes from the records of the augmenting models.
+ *
+ * If a step breaks its limits, it fails the run with a
+ * ConflationLimitException. Then the runner publishes nothing.
+ *
+ * The fetch of the records before these steps, and the creation of the
+ * result in the broker after them, are not customizable.
  */
 final class ConflationPipeline
 {
@@ -65,29 +69,30 @@ final class ConflationPipeline
     }
 
     /**
-     * Every defining record in exactly one group, nothing else in any, and
-     * at most one record per data set in a group.
+     * Compares records before and after a merge-by-location run, ensuring
+     * that every defining record is in exactly one group, unchanged or
+     * restated, and that no group holds two records of one data set.
      *
-     * @param list<Record>  $records
-     * @param list<Cluster> $clusters
+     * @param list<Record>  $records  the defining records, before
+     * @param list<Cluster> $clusters the groups, after
      */
     private function checkGroups(Conflation $conflation, array $records, array $clusters): void
     {
         $expected = array_fill_keys(array_map(static fn (Record $record): string => $record->id, $records), 0);
         $given = array_column($records, null, 'id');
+        /** @var array<string, string> $restated input record id by restated record id */
+        $restated = [];
 
         // Count the groups each record is in, and the data sets each group holds.
         foreach ($clusters as $cluster) {
             $sourceIds = [];
             foreach ($cluster->records as $record) {
-                if (!isset($expected[$record->id])) {
-                    throw new ConflationLimitException(\sprintf('Merge %s grouped record %s, which is not a record of its defining models.', $conflation->id, $record->id));
-                }
-                ++$expected[$record->id];
-
-                $original = $given[$record->id];
-                if ($record->sourceId !== $original->sourceId || $record->location() !== $original->location()) {
-                    throw new ConflationLimitException(\sprintf('Merge %s changed the data set or the location of record %s.', $conflation->id, $record->id));
+                if (null === $record->restatedFrom) {
+                    $this->checkGivenRecord($conflation, $record, $given);
+                    ++$expected[$record->id];
+                } else {
+                    $this->checkRestatedRecord($conflation, $record, $given, $restated);
+                    $restated[$record->id] = $record->restatedFrom;
                 }
 
                 if (isset($sourceIds[$record->sourceId])) {
@@ -97,7 +102,16 @@ final class ConflationPipeline
             }
         }
 
+        // Make sure that no input record was lost or used twice.
+        $restatedInputs = array_flip($restated);
         foreach ($expected as $id => $count) {
+            if (isset($restatedInputs[$id])) {
+                if (0 !== $count) {
+                    throw new ConflationLimitException(\sprintf('Merge %s grouped record %s both as itself and restated.', $conflation->id, $id));
+                }
+                continue;
+            }
+
             if (1 !== $count) {
                 throw new ConflationLimitException(\sprintf('Merge %s put record %s in %d groups, not one.', $conflation->id, $id, $count));
             }
@@ -105,9 +119,59 @@ final class ConflationPipeline
     }
 
     /**
+     * Ensures that an unchanged record is a defining record, with the same
+     * data set and location.
+     *
+     * @param array<string, Record> $given the defining records, by id
+     */
+    private function checkGivenRecord(Conflation $conflation, Record $record, array $given): void
+    {
+        // The record must be a defining record.
+        $original = $given[$record->id] ?? throw new ConflationLimitException(\sprintf('Merge %s grouped record %s, which is not a record of its defining models.', $conflation->id, $record->id));
+
+        // The record must keep its data set and its location.
+        if ($record->sourceId !== $original->sourceId || $record->location() !== $original->location()) {
+            throw new ConflationLimitException(\sprintf('Merge %s changed the data set or the location of record %s.', $conflation->id, $record->id));
+        }
+    }
+
+    /**
+     * Ensures that a restated record has a new id, the result model and the
+     * data set of its defining record, and lies within the radius of it.
+     *
+     * @param array<string, Record> $given    the defining records, by id
+     * @param array<string, string> $restated the restated records found so far, by id
+     */
+    private function checkRestatedRecord(Conflation $conflation, Record $record, array $given, array $restated): void
+    {
+        // The record it is restated from must be a defining record.
+        $original = $given[(string) $record->restatedFrom] ?? throw new ConflationLimitException(\sprintf('Merge %s grouped record %s, restated from %s, which is not a record of its defining models.', $conflation->id, $record->id, $record->restatedFrom));
+
+        // The record must not be the id of a defining record or of another restated record.
+        if (isset($given[$record->id]) || isset($restated[$record->id])) {
+            throw new ConflationLimitException(\sprintf('Merge %s restated record %s under the id %s, which another record already has.', $conflation->id, $record->restatedFrom, $record->id));
+        }
+
+        // The record must be in the result model.
+        if ($record->model !== $conflation->resultModel) {
+            throw new ConflationLimitException(\sprintf('Merge %s restated record %s in model %s, not in its result model %s.', $conflation->id, $record->id, $record->model, $conflation->resultModel));
+        }
+
+        // The record must keep the data set of the record it is restated from.
+        if ($record->sourceId !== $original->sourceId) {
+            throw new ConflationLimitException(\sprintf('Merge %s changed the data set of record %s, restated from %s.', $conflation->id, $record->id, $original->id));
+        }
+
+        // The record must lie within the radius of the record it is restated from.
+        if (Shape::distance($record, $original->location()) > $conflation->mergeByLocation->radius) {
+            throw new ConflationLimitException(\sprintf('Merge %s put record %s further than %s m from %s, which it is restated from.', $conflation->id, $record->id, $conflation->mergeByLocation->radius, $original->id));
+        }
+    }
+
+    /**
      * Values only for entities that exist, from the augmenting records
-     * given, for attributes the merge names for the record's model, and for
-     * attributes the entity lacks.
+     * given, for attributes that the merge names for the record's model, and
+     * for attributes that the entity does not have.
      *
      * @param list<MergedEntity>                              $entities
      * @param list<Record>                                    $records
@@ -154,8 +218,9 @@ final class ConflationPipeline
                 continue;
             }
 
-            // Several records can supply one attribute, such as overlapping
-            // areas; the merge's approaches settle them as any other conflict.
+            // Several records can supply one attribute if their areas
+            // overlap. The approaches of the merge settle them as any other
+            // conflict.
             usort($values, static fn (StatedValue $x, StatedValue $y): int => [$x->sourceId, $x->recordId] <=> [$y->sourceId, $y->recordId]);
             [$settled, $value] = $resolver->settle($attribute, $values);
             if ($settled) {

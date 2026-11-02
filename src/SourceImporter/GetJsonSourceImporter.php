@@ -16,7 +16,7 @@ class GetJsonSourceImporter extends AbstractSourceImporter
     {
         $items = $data['features'] ?? null;
         if (!is_array($items) || !array_is_list($items)) {
-            throw new \RuntimeException('Invalid or missing features in data');
+            throw new \RuntimeException('The features in the data are missing or not valid');
         }
 
         return $items;

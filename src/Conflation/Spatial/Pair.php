@@ -7,7 +7,8 @@ namespace App\Conflation\Spatial;
 use App\Conflation\Data\Record;
 
 /**
- * Two records from different data sets within matching range of each other.
+ * Two records from different data sets within the match radius of each
+ * other.
  */
 final readonly class Pair
 {

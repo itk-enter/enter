@@ -33,7 +33,7 @@ class BrokerEntityDelete
             $entityTypes = $data['typeList'] ?? [];
         } else {
             if (0 === count($entityTypes)) {
-                throw new RuntimeException('Missing entity types');
+                throw new RuntimeException('The entity types are missing');
             }
         }
 
@@ -57,8 +57,8 @@ class BrokerEntityDelete
                 $count = count($entities);
                 if ($count > 0) {
                     $io->writeln(match ($count) {
-                        1 => sprintf('Deleting one %s entity …', $entityType),
-                        default => sprintf('Deleting %d %s entities …', $count, $entityType),
+                        1 => sprintf('The command deletes one %s entity …', $entityType),
+                        default => sprintf('The command deletes %d %s entities …', $count, $entityType),
                     });
                     $io->progressStart($count);
                     foreach ($entities as $entity) {
