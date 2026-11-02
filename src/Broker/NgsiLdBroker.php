@@ -246,6 +246,54 @@ final readonly class NgsiLdBroker
     }
 
     /**
+     * Reads some attributes of all the entities that a data set published, in
+     * normalized form.
+     *
+     * The normalized form keeps the metadata of each attribute, for example
+     * its observedAt. The broker gives only the entities that have one or
+     * more of the attributes.
+     *
+     * @param string       $sourceId   the source id of the data set
+     * @param string       $contextUrl the JSON-LD context of the data set
+     * @param list<string> $attributes the attributes to read
+     *
+     * @return \Generator<string, array<string, mixed>> the entities in normalized form, by id
+     */
+    public function entities(string $sourceId, string $contextUrl, array $attributes): \Generator
+    {
+        for ($offset = 0;; $offset += self::PAGE_SIZE) {
+            $response = $this->brokerClient->request(Request::METHOD_GET, rtrim($this->brokerUrl, '/').self::ENTITIES_PATH, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
+                ],
+                'query' => [
+                    'q' => \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId),
+                    'attrs' => implode(',', $attributes),
+                    'limit' => self::PAGE_SIZE,
+                    'offset' => $offset,
+                ],
+            ]);
+
+            $status = $response->getStatusCode();
+            if ($status >= Response::HTTP_BAD_REQUEST) {
+                throw new \RuntimeException(\sprintf('The broker rejected the read of %s with HTTP %d: %s', $sourceId, $status, $response->getContent(false)));
+            }
+
+            $page = $response->toArray();
+            foreach ($page as $entity) {
+                if (\is_array($entity) && \is_string($entity['id'] ?? null)) {
+                    yield $entity['id'] => $entity;
+                }
+            }
+
+            if (\count($page) < self::PAGE_SIZE) {
+                return;
+            }
+        }
+    }
+
+    /**
      * Gets the query of the next page from the Link header. The broker sends
      * this header with a page that has a next page.
      *

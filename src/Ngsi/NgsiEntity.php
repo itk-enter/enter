@@ -30,6 +30,22 @@ final class NgsiEntity
         return $this->type;
     }
 
+    public function has(string $name): bool
+    {
+        return isset($this->attributes[$name]);
+    }
+
+    /**
+     * The attribute in normalized form, or null if the entity does not have
+     * it.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function attribute(string $name): ?array
+    {
+        return $this->attributes[$name] ?? null;
+    }
+
     /**
      * Sets a property, and ignores an empty value.
      */
