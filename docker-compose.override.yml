@@ -44,7 +44,29 @@ services:
 
                 USER deploy
 
-        depends_on: !reset
+        depends_on: !override
+            rabbit:
+                condition: service_healthy
+
+    # The message broker of Symfony Messenger.
+    rabbit:
+        image: rabbitmq:4-management-alpine
+        networks:
+            - app
+            - frontend
+        ports:
+            - "15672"
+        environment:
+            - RABBITMQ_DEFAULT_USER=user
+            - RABBITMQ_DEFAULT_PASS=password
+            - RABBITMQ_ERLANG_COOKIE='local-dev-cookie-not-a-secret'
+        healthcheck:
+            test: ["CMD", "nc", "-z", "-w", "2", "127.0.0.1", "5672"]
+            interval: 10s
+            timeout: 3s
+            retries: 3
+            start_period: 60s
+            start_interval: 1s
 
     nginx:
         volumes:
