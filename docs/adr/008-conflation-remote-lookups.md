@@ -37,7 +37,7 @@ service is slow, limited or unavailable.
 - One service can give more than one detail from one request.
 - A detail without a value is checked again after a period, because the service can get a value later.
 - A detail with a value is checked again after a longer period, so that the value stays current.
-- A merged entity keeps the value that it had, when the service is unavailable.
+- A merged entity keeps a value from a service until the service gives a new value.
 - Each value tells where it came from and when it was checked.
 
 #### Non-functional
@@ -130,11 +130,15 @@ not exist any more, or it has moved, the worker ignores the message.
 A service can give one of three results:
 
 - **Values.** The worker writes the values and the time of the check.
-- **No answer for the location.** For example, no photo shows the point. The worker removes the details of the service
-  from the entity and writes the time of the check. The run sends a new message after `recheckEmptyAfter`.
+- **No answer for the location.** For example, no photo shows the point. The worker writes only the time of the
+  check. If the entity has values from the service, it keeps them, and the run sends a new message after
+  `refreshAfter`. If not, the run sends a new message after `recheckEmptyAfter`.
 - **A failure.** For example, the service is unavailable. The queue retries the message after a delay. If all the
   retries fail, the worker logs the failure on the log channel of the service and drops the message. The entity keeps
   its values and the time of the last good check, so the next run sends a new message.
+
+A service adds or replaces values, but it never removes a value. A service that gives no answer can be down, or it
+can have a defect for a long period, so an empty answer is not proof that the value is wrong.
 
 The rate limiter of the service controls how fast the worker takes messages from the queue. Thus, a long queue is
 slow, but it obeys the limit of the service.
@@ -146,7 +150,8 @@ The merged entity stores the source and the time of each check. For example, one
 | T-1           | `…/photos/P-41.jpg` | 2023-04-20 | `aerial-photos` | 2026-11-02T10:15:00Z |
 | T-2           |                     |            | `aerial-photos` | 2026-11-02T10:15:04Z |
 
-On 2026-11-09, the run sends a message for T-2 again. It sends a message for T-1 on 2027-01-31.
+On 2026-11-09, the run sends a message for T-2 again. It sends a message for T-1 on 2027-01-31. If that check gives
+no answer, T-1 keeps its photo, and the next check is 90 days later.
 
 The rationale is:
 
@@ -155,7 +160,7 @@ The rationale is:
 - Two periods for each service keep values current, and find new values, without a request on each run.
 - A service needs no data model, no source and no import.
 - The broker already holds the merged entities, so the answers and the times of the checks need no database.
-- A failure of a service changes no published value.
+- A failure or an empty answer of a service removes no published value.
 - The limits belong to the service, so they apply to all the merges that use it.
 - A log channel for each service makes it easy to find the failures of one service.
 
@@ -167,7 +172,8 @@ The rationale is:
 - A new merged entity gets its values from a service soon after the run, not on the next run.
 - The time of a merge run does not depend on the services.
 - A run sends messages only for checks that are due. Most runs send few messages.
-- A failure of a service does not stop the run, and it does not remove values that the entities had.
+- A failure or an empty answer of a service does not remove values that the entities had.
+- A failure of a service does not stop the run.
 - Consumers can see the source of each value from a service, and when it was checked.
 
 ### Negative / Trade-offs
@@ -183,6 +189,7 @@ The rationale is:
 - Two merges that ask about the same location each make a request, because each merged entity stores its own answers.
 - If the broker loses the merged entities, all the answers are requested again.
 - A value can be up to `refreshAfter` old, so a change at the service reaches the merged entity late.
+- A value that the service removes stays on the merged entity, until the service gives a new value for the location.
 - A failure after all the retries is only logged. Somebody must read the log channel of the service to find it.
 - The worker writes to the merged entities outside of the merge run, so the run is not the only process that changes
   them. The worker changes only the details that the merge names for the service.
