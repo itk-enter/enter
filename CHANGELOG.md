@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-130](https://github.com/itk-enter/enter/pull/130)
+  Added the lookup messages and the handler that updates the merged entities
 * [PR-128](https://github.com/itk-enter/enter/pull/128)
   Added the lookup interface and the `lookups` option of a merge
 * [PR-127](https://github.com/itk-enter/enter/pull/127)
