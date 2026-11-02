@@ -28,8 +28,7 @@ a detail without a value, and a longer one to check again a detail with a value.
 
 After the run publishes, it sends a message for each merged entity and service that is due for a check. A worker takes
 the message, asks the service and writes the result to the merged entity in the broker. Each service has a queue of
-its own, and its request limit controls how fast the worker takes messages. The message broker is RabbitMQ, which is
-the default in our projects.
+its own in RabbitMQ, and its request limit controls how fast the worker takes messages.
 
 The merged entity stores the time of each check in a property of the service. The worker always makes a partial
 update of the details of the service and this property, and never writes the full entity. The run keeps these values
