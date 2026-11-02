@@ -25,8 +25,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * limits, the run fails before it publishes anything.
  *
  * Before it publishes, the runner keeps the answers of the lookups of the
- * merge from the entities that it published before. After it publishes, it
- * requests the checks of the lookups that are due.
+ * merge from the entities that it published before, and marks the checks of
+ * the lookups that are due. After it publishes, it requests these checks.
  */
 final readonly class ConflationRunner
 {
@@ -63,6 +63,7 @@ final readonly class ConflationRunner
         }
 
         $wanted = $this->lookups->keepAnswers($conflation, $dataSet, $entities);
+        $due = $this->lookups->markDueChecks($entities, $wanted);
 
         $contextUrls = array_merge([$dataSet->contextUrl], $this->contextUrls);
         $this->broker->upsert(array_map(static fn (NgsiEntity $entity): array => $entity->toPayload($contextUrls), $entities));
@@ -71,7 +72,7 @@ final readonly class ConflationRunner
         $stale = array_values(array_diff(array_filter($published, \is_string(...)), array_map(static fn (NgsiEntity $entity): string => $entity->id(), $entities)));
         $this->broker->delete($stale);
 
-        $checks = $this->lookups->requestChecks($dataSet, $entities, $wanted);
+        $checks = $this->lookups->requestChecks($dataSet, $entities, $due);
 
         $this->logger->info('Merge {merge} published {count} entities, deleted {stale} and requested {checks} lookups.', ['merge' => $conflation->id, 'count' => \count($entities), 'stale' => \count($stale), 'checks' => $checks]);
 

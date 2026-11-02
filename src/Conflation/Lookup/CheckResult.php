@@ -19,4 +19,10 @@ enum CheckResult: string
      * values that it had.
      */
     case None = 'none';
+
+    /**
+     * The lookup never checked the entity, and the run requested the first
+     * check.
+     */
+    case Pending = 'pending';
 }

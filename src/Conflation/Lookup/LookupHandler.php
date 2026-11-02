@@ -17,7 +17,8 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  *
  * The handler writes only the attributes of the lookup and its check
  * property, with a partial update. It never writes the full entity, so it
- * does not change values that the merge run writes.
+ * does not change values that the merge run writes. The new check property
+ * replaces the old one, so it removes the request mark of the run.
  *
  * The handler ignores a message, and writes nothing, if:
  *
@@ -73,7 +74,7 @@ final readonly class LookupHandler
         [$longitude, $latitude] = $this->location->point($message->location);
         $answer = $lookup->lookup($longitude, $latitude) ?? [];
 
-        $now = $this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d\TH:i:s\Z');
+        $now = $this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format(AsLocationLookup::TIME_FORMAT);
         $attributes = [];
         foreach ($message->attributes as $name) {
             $value = $answer[$name] ?? null;

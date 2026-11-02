@@ -12,6 +12,11 @@ namespace App\Conflation\Lookup;
  * property is the time of the check. The property exists also when the
  * service had no answer. Thus the run knows when to ask again.
  *
+ * When the run sends a message, it adds the sub-property requestedAt to the
+ * check property. While this mark is younger than requestTimeout, the run
+ * does not send the check again. The answer of the worker replaces the check
+ * property, and so removes the mark.
+ *
  * @see LocationLookupInterface
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
@@ -23,6 +28,16 @@ final readonly class AsLocationLookup
     public const string CHECK_PROPERTY_PREFIX = 'lookup';
 
     /**
+     * The sub-property of the check property that marks a requested check.
+     */
+    public const string REQUESTED_AT = 'requestedAt';
+
+    /**
+     * The format of the times in the check property: UTC, ISO 8601.
+     */
+    public const string TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
+
+    /**
      * @param string       $id                the lookup's identifier, in lower case with hyphens, for example
      *                                        "aerial-photos"
      * @param list<string> $attributes        the attributes that the service can supply, named as in the result
@@ -31,12 +46,16 @@ final readonly class AsLocationLookup
      *                                        merged entity has no value from the service
      * @param string       $refreshAfter      an ISO 8601 duration: the time to wait before the next check when the
      *                                        merged entity has a value from the service
+     * @param string       $requestTimeout    an ISO 8601 duration: the time that a requested check can wait in the
+     *                                        queue before the run sends it again; it must be longer than the time
+     *                                        that the queue of the service takes to empty
      */
     public function __construct(
         public string $id,
         public array $attributes,
         public string $recheckEmptyAfter,
         public string $refreshAfter,
+        public string $requestTimeout = 'P1D',
     ) {
         if (1 !== preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $id)) {
             throw new \InvalidArgumentException(\sprintf('Lookup id "%s" must be in lower case with hyphens.', $id));
@@ -46,7 +65,7 @@ final readonly class AsLocationLookup
             throw new \InvalidArgumentException(\sprintf('Lookup %s declares no attributes.', $id));
         }
 
-        foreach (['recheckEmptyAfter' => $recheckEmptyAfter, 'refreshAfter' => $refreshAfter] as $name => $duration) {
+        foreach (['recheckEmptyAfter' => $recheckEmptyAfter, 'refreshAfter' => $refreshAfter, 'requestTimeout' => $requestTimeout] as $name => $duration) {
             try {
                 new \DateInterval($duration);
             } catch (\Exception) {
@@ -73,27 +92,40 @@ final readonly class AsLocationLookup
     /**
      * Tests if a merged entity is due for a check.
      *
-     * An entity that the lookup never checked is due. Otherwise, the entity is
-     * due when refreshAfter has passed since the last check, if it has a
-     * value from the lookup. If not, it is due when recheckEmptyAfter has
-     * passed.
+     * A check that the run requested less than requestTimeout ago is not due,
+     * because its message waits in the queue. Otherwise, an entity that the
+     * lookup never checked is due. An entity with a value from the lookup is
+     * due when refreshAfter has passed since the last check. An entity without
+     * a value is due when recheckEmptyAfter has passed.
      *
-     * @param string|null $checkedAt the observedAt of the check property, or null if there is none
-     * @param bool        $hasValue  true if the entity has one or more values from the lookup
+     * @param string|null $checkedAt   the observedAt of the check property, or null if there is none
+     * @param bool        $hasValue    true if the entity has one or more values from the lookup
+     * @param string|null $requestedAt the requestedAt of the check property, or null if there is none
      */
-    public function isDue(?string $checkedAt, bool $hasValue, \DateTimeImmutable $now): bool
+    public function isDue(?string $checkedAt, bool $hasValue, \DateTimeImmutable $now, ?string $requestedAt = null): bool
     {
+        if (null !== $requestedAt && !self::hasPassed($requestedAt, $this->requestTimeout, $now)) {
+            return false;
+        }
+
         if (null === $checkedAt) {
             return true;
         }
 
+        return self::hasPassed($checkedAt, $hasValue ? $this->refreshAfter : $this->recheckEmptyAfter, $now);
+    }
+
+    /**
+     * Tests if a period has passed since a time. A time that is not valid has
+     * always passed, so that a defect in the data does not stop the checks.
+     */
+    private static function hasPassed(string $since, string $period, \DateTimeImmutable $now): bool
+    {
         try {
-            $next = new \DateTimeImmutable($checkedAt)->add(new \DateInterval($hasValue ? $this->refreshAfter : $this->recheckEmptyAfter));
+            return new \DateTimeImmutable($since)->add(new \DateInterval($period)) <= $now;
         } catch (\Exception) {
             return true;
         }
-
-        return $next <= $now;
     }
 
     /**

@@ -47,6 +47,18 @@ final class NgsiEntity
     }
 
     /**
+     * Sets an attribute in normalized form, with all its sub-attributes.
+     *
+     * @param array<string, mixed> $attribute
+     */
+    public function setAttribute(string $name, array $attribute): self
+    {
+        $this->attributes[$name] = $attribute;
+
+        return $this;
+    }
+
+    /**
      * Sets a property, and ignores an empty value.
      */
     public function setProperty(string $name, mixed $value, ?string $observedAt = null): self
