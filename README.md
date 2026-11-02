@@ -138,7 +138,7 @@ The app sends messages with [Symfony Messenger](https://symfony.com/doc/current/
 worker. In development, run the worker yourself:
 
 ``` shell
-task messenger:consume
+docker compose exec phpfpm bin/console messenger:consume --all -vv
 ```
 
 The worker handles the messages of all the transports. The remote lookups use the `lookups` transport. If a service
