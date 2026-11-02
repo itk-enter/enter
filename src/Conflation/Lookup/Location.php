@@ -13,8 +13,15 @@ use App\GeometryHelper;
 final readonly class Location
 {
     /**
-     * The decimal places of a coordinate that the comparison uses. The broker
-     * can give a coordinate back with a different last digit.
+     * The decimal places of a coordinate that the comparison uses.
+     *
+     * The run and the worker compare a location with the location that the
+     * broker gives back as JSON. The two can be different in the format of
+     * the number, for example 10 and 10.0, or in the last digits of a long
+     * decimal. Without the rounding, the comparison can find that an entity
+     * moved when it did not. Then the entity loses its answers, and the
+     * lookup is asked again on each run. 9 decimal places of a degree is
+     * approximately 0.1 mm. This is much less than the radius of a merge.
      */
     private const int PRECISION = 9;
 
