@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Skraafoto\SkraafotoClient;
-use App\Skraafoto\SkraafotoNotFoundException;
+use App\Lookup\Dataforsyningen\SkraafotoClient;
+use App\Lookup\Dataforsyningen\SkraafotoNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Skraafoto;
+namespace App\Lookup\Dataforsyningen;
 
 use App\SourceReader\FixedLifetimeCachingHttpClient;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;

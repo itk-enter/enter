@@ -9,7 +9,7 @@ use App\Conflation\ConflationInterface;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
-use App\Lookup\NewestAerialPhoto;
+use App\Lookup\Dataforsyningen\NewestAerialPhoto;
 
 /**
  * Public toilets in Aarhus Municipality, merged from every data set that

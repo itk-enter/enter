@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Skraafoto;
+namespace App\Tests\Lookup\Dataforsyningen;
 
-use App\Skraafoto\SkraafotoClient;
-use App\Skraafoto\SkraafotoNotFoundException;
+use App\Lookup\Dataforsyningen\SkraafotoClient;
+use App\Lookup\Dataforsyningen\SkraafotoNotFoundException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpClient\MockHttpClient;

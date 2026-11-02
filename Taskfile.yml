@@ -58,7 +58,6 @@ tasks:
       - task: test:lookup
       - task: test:source
       - task: test:sourceImporter
-      - task: test:skraafoto
       - task: test:sourceReader
       - task: test:test
 
@@ -80,7 +79,6 @@ tasks:
   test:lookup: *test_task
   test:source: *test_task
   test:sourceImporter: *test_task
-  test:skraafoto: *test_task
   test:sourceReader: *test_task
   test:test: *test_task
 

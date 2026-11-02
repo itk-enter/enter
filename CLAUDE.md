@@ -60,10 +60,9 @@ src/
   Controller/         Pages and JSON endpoints
   Geo/, GeometryHelper/  Reprojection and geometry functions
   Import/             SourcesImporter and SourcesImportedEvent
-  Lookup/             The remote services that the merges use, one class per service
+  Lookup/             The remote services that the merges use, one folder per provider, e.g. Dataforsyningen/
   Merge/              The merges that the app publishes
   Ngsi/               NgsiEntity, one entity in normalized NGSI-LD
-  Skraafoto/          The client of the Skråfoto API of Dataforsyningen
   Source/             One class per source, with its #[Definition]
   SourceImporter/     Reads a feed and imports it, one importer per feed type
   SourceReader/       Reads the feeds over HTTP and keeps them in a cache

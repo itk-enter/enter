@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Lookup;
+namespace App\Tests\Lookup\Dataforsyningen;
 
-use App\Lookup\NewestAerialPhoto;
-use App\Skraafoto\SkraafotoClient;
+use App\Lookup\Dataforsyningen\NewestAerialPhoto;
+use App\Lookup\Dataforsyningen\SkraafotoClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpClient\MockHttpClient;

@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Lookup;
+namespace App\Lookup\Dataforsyningen;
 
 use App\Conflation\Lookup\AsLocationLookup;
 use App\Conflation\Lookup\LocationLookupInterface;
-use App\Skraafoto\SkraafotoClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
