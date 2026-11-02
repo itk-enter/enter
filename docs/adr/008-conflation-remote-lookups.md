@@ -106,8 +106,8 @@ final class NearestAerialPhoto implements LocationLookupInterface { /* … */ }
 ### The merge run
 
 The run does all the steps of 004 without a request to a service. Before it publishes, it copies the details from
-services, and the check property of each service, from the entity that it published before. It copies them only if the entity has
-the same identifier and the same location. Thus, a run does not remove a value that a service gave.
+services, and the check property of each service, from the entity that it published before. It copies them only if
+the entity has the same identifier and the same location. Thus, a run does not remove a value that a service gave.
 
 After the run publishes, it sends a message for each merged entity and service that is due for a check:
 
