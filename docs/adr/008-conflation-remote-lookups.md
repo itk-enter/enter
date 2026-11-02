@@ -1,4 +1,4 @@
-# 008: Conflation - remote lookups through a message queue
+# 008: Conflation - remote lookups in the augmentation step
 
 | Field              | Value                                                  |
 |--------------------|--------------------------------------------------------|
@@ -11,68 +11,134 @@
 ## Context
 
 Augmentation (007) adds details to merged entities from other data sets in the broker. Some details come from remote
-services that answer a question about one coordinate, for example "the nearest address" or "the newest aerial photo
-of this point". These services give one answer for each request, not a data set to import.
+services that answer a question about one coordinate. Examples are "the nearest address" and "the newest aerial photo
+of this point". These services do not give a data set to import. They give one answer for each request.
 
-A service can allow only a number of requests in a period, it can be unavailable for some time, and each request takes
-time. If the merge run asks the services, a run on many entities is slow, and a failure of a service makes it slower.
-The answers can also change, so a value must be checked again after some time.
+Remote services have limits that data sets in the broker do not have:
 
-This ADR serves to decide how details from remote services reach merged entities and stay current.
+- A service can allow only a number of requests in a period, and each service has a different limit.
+- A service can be unavailable for some time.
+- Each request takes time, so a run that asks about many entities can be slow.
+
+A merge publishes each merged entity complete, and it deletes the entities that the run does not make (004). Thus, if
+a service is unavailable during a run and the run publishes no value, the value that the entity had before is lost.
+
+This ADR serves to decide how details from remote services reach merged entities, and how the merge behaves when a
+service is slow, limited or unavailable.
+
+### Drivers
+
+#### Functional
+
+- A merge can add some details from a service, without a data model for all of the data of the service.
+- One service can give more than one detail from one request.
+- A merged entity keeps the value that it had, when the service is unavailable.
+- Each value tells where it came from, as the values from other data sets do (007).
+
+#### Non-functional
+
+- The merge obeys the request limit of each service. Two merges that use one service share its limit.
+- A failure of a service does not stop the run.
+- The solution adds no database next to the broker.
+
+### Options Considered
+
+**Lookups in the augmentation step.** The merge names the services and the details that it takes from each. After
+the records augment the entities, the pipeline asks the services about the location of each merged entity. The values
+go through the same limits and conflict rules as other augmenting values. The merge stays the only place that decides
+which details a merged entity gets. Each service needs code that controls the rate of requests, and that stores the
+answers, so the merge does not ask again on each run.
+
+**A data set for each service.** A separate process asks the service about the location of each merged entity, and
+imports the answers as a data set of their own. The merge then reads that data set as an augmenting data model, with
+no change to augmentation. But each service needs a data model, a source and an import. The answers are about merged
+entities, so the process must run between two runs of the merge, and a new entity gets its value only on the second
+run. The broker also holds a copy of each answer as an entity of its own.
+
+**Lookups at import, in each source.** Each source asks the services about each of its records during the import.
+This needs no change to conflation. But a merged thing that several data sets describe causes a request for each
+record. The request limits then apply to each import, and each source must know about the services.
+
+**Leave it to the consumers.** Each consumer asks the services itself. This needs no work here, but each consumer must
+know which services to use, and the merged data set is not the single picture that 003 aims for.
 
 ## Decision
 
-Remote services supply details through a message queue, after the merge run. A merge names the services that it uses
-and the details that it takes from each. Each service declares its request limit and two periods: one to check again
-a detail without a value, and a longer one to check again a detail with a value.
+Remote services supply details in the augmentation step. A service is a class that answers a question about one
+coordinate. It declares what it can supply and how often it can be asked. A merge names the services that it uses, and
+the details that it takes from each.
 
-After the run publishes, it sends a message for each merged entity and service that is due for a check. A worker takes
-the message, asks the service and writes the result to the merged entity in the broker. Each service has a queue of
-its own in RabbitMQ, and its request limit controls how fast the worker takes messages. A lookup that makes no slow or
-limited request, for example one that builds a link from the location, does not use the queue. The run asks it before
-it publishes.
+For example, a service gives an aerial photo and the date of the photo. A merge of toilets takes both details. The
+configuration below is illustrative. The implementation settles its shape.
 
-The merged entity stores the time of each check in a property of the service. The worker always makes a partial
-update of the details of the service and this property, and never writes the full entity. The run keeps these values
-from the entity that it published before, if the entity has the same identifier and location.
+```php
+// The service declares its id, its details and its limits.
+#[AsLocationLookup(
+    id: 'aerial-photos',
+    attributes: ['image', 'imageDate'],
+    limiter: 'photo_service',   // a rate limiter that the services of one account share
+    maxCallsPerRun: 500,        // the other entities get their value on a later run
+    maxAge: 'P90D',             // a stored answer is used for 90 days
+)]
+final class NearestAerialPhoto implements LocationLookupInterface { /* … */ }
 
-When the run sends a message, it marks the check as requested in the same property. The run does not send the check
-again while the mark is younger than the request timeout of the service. Thus a long queue gets no second message for
-one check. The answer of the worker removes the mark.
+// The merge takes the details that it needs.
+#[Conflation(
+    id: 'merged-toilets',
+    // …
+    lookups: [NearestAerialPhoto::class => ['image', 'imageDate']],
+)]
+```
 
-The rules of 007 apply. A service only fills details that the records of the thing do not give. A service also never
-removes a value, because an empty answer can come from a service that is down.
+The rules of 007 apply to the values from a service:
 
-If a request fails after the retries, the worker logs the failure on the log channel of the service. The application
-does not store the failed message. The worker writes nothing, so the run sends the check again when the mark expires.
+- A service adds only the details that the merge names, and only to merged entities that do not have them.
+- When a data set and a service give different values for one detail, the rules from 006 settle the conflict.
+- The address of the answer at the service is added to the list of records that the merged entity was built from.
 
-For example, a merge of toilets takes an aerial photo from a service. The service checks again after 7 days when it
-has no photo, and after 90 days when it has one:
+The merged entity stores the time of each answer, for example:
 
-| Merged entity | image               | Result of the check | Time of the check    | Next check |
-|---------------|---------------------|---------------------|----------------------|------------|
-| T-1           | `…/photos/P-41.jpg` | found               | 2026-11-02T10:15:00Z | 2027-01-31 |
-| T-2           |                     | none                | 2026-11-02T10:15:04Z | 2026-11-09 |
+| Merged entity | image                  | imageDate  | Answer from     | Time of the answer   |
+|---------------|------------------------|------------|-----------------|----------------------|
+| T-1           | `…/photos/P-41.jpg`    | 2023-04-20 | `aerial-photos` | 2026-11-02T10:15:00Z |
 
-If the check of T-1 on 2027-01-31 gives no answer, T-1 keeps its photo.
+On the next run, the merge reads the entities that it published before. It uses an answer again if the answer is
+younger than the `maxAge` of the service, and if the entity has the same location. Otherwise, it asks the service.
+
+A service can give one of three results:
+
+- **Values.** The merge uses and stores them.
+- **No answer for the location.** For example, no photo shows the point. The merge stores this result too, and asks
+  again only after `maxAge`.
+- **A failure.** For example, the service is unavailable, or the limit stops the request. The merge keeps the stored
+  answer. If there is no stored answer, the entity does not get the detail in this run. The merge logs a warning and
+  continues.
+
+The rationale is:
+
+- The merge stays the only place that decides the details of a merged entity, and the limits of 007 apply to all of
+  them.
+- A service needs no data model, no source and no import.
+- The broker already holds the merged entities, so the stored answers need no database.
+- A failure of a service changes no published value, because the merge keeps the stored answer.
+- The limits belong to the service, so they apply to all the merges that use it.
 
 ## Consequences
 
 ### Positive
 
-- A merge can take details from a service, without a data model, a source or an import for the service.
-- The time of a merge run does not depend on the services, and a failure of a service does not stop the run.
-- A failure or an empty answer of a service does not remove a published value.
-- The answers and the times of the checks are on the merged entities, so they need no database.
-- Consumers can see the source of each value from a service, and when it was checked.
+- A merge can take some details from a service, without a data model for the service.
+- A run makes requests only for answers that are missing or too old. Most runs make few requests.
+- A failure of a service does not stop the run, and it does not remove values that the entities had.
+- Consumers can see the age and the origin of each value from a service.
 
 ### Negative / Trade-offs
 
-- The application needs RabbitMQ and a worker process, in development and on the server.
-- A new merged entity gets its values from a service after the run, when the worker answers the message.
-- If many checks are due at one time, the queue takes a long time to empty, because of the request limit.
-- A value can be up to the longer period old. A value that the service removes stays on the merged entity.
-- A merged entity that gets a new identifier or moves gets new answers, because the answers are on the entity.
-- A failed check waits until its mark expires, and somebody must read the log channel of the service to find it.
-- The worker changes the merged entities outside of the merge run.
-- Each merged entity gets one property for each service, which the data model does not define.
+- The first run on many entities can take several runs to give all the values, because of `maxCallsPerRun`.
+- A merged entity that gets a new identifier, or that moves, gets new answers, because the stored answers are on the
+  entity.
+- Two merges that ask about the same location each make a request, because each merged entity stores its own answers.
+- If the broker loses the merged entities, all the answers are requested again.
+- An answer can be up to `maxAge` old, so a change at the service reaches the merged entity late.
+- The rate limiter adds a dependency, and it keeps its state in the cache of the application.
+- Augmentation now has two kinds of input, data sets in the broker and services. Both must obey the limits of 007.
