@@ -40,7 +40,7 @@ class LookupCheckCommand
             ['Service', 'Transport', 'Result', 'Time', 'Answer or error'],
             array_map(static fn (ProbeResult $result): array => [
                 $result->id,
-                $result->transport,
+                $result->transport ?? 'none, in the run',
                 $result->isAvailable() ? 'available' : 'failed',
                 \sprintf('%d ms', $result->milliseconds),
                 $result->error ?? self::answer($result->answer),

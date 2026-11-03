@@ -12,7 +12,9 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
  * The probe calls the lookup directly, not through the queue, so it does not
  * wait for the rate limiter. It uses the same configuration as the worker, for
  * example the token of the service. A service that gives no answer for the
- * point is available. A service that throws an exception is not.
+ * point is available. A service that throws an exception is not. If the
+ * lookup implements ServiceCheckInterface, the probe also calls
+ * checkService().
  */
 final readonly class LookupProbe
 {
@@ -43,6 +45,9 @@ final readonly class LookupProbe
             $start = hrtime(true);
             try {
                 $answer = $lookup->lookup($longitude, $latitude);
+                if ($lookup instanceof ServiceCheckInterface) {
+                    $lookup->checkService($longitude, $latitude);
+                }
                 $error = null;
             } catch (\Throwable $exception) {
                 $answer = null;

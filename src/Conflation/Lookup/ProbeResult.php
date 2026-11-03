@@ -11,7 +11,8 @@ final readonly class ProbeResult
 {
     /**
      * @param string                    $id           the id of the lookup
-     * @param string                    $transport    the Messenger transport of the lookup
+     * @param string|null               $transport    the Messenger transport of the lookup, or null if the run asks
+     *                                                the lookup without the queue
      * @param array<string, mixed>|null $answer       the values that the service gave, or null if it gave no answer or
      *                                                failed
      * @param string|null               $error        the message of the exception, or null if the service is available
@@ -19,7 +20,7 @@ final readonly class ProbeResult
      */
     public function __construct(
         public string $id,
-        public string $transport,
+        public ?string $transport,
         public ?array $answer,
         public ?string $error,
         public float $milliseconds,

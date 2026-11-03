@@ -7,8 +7,15 @@ namespace App\Conflation\Lookup;
 use App\Broker\NgsiLdBroker;
 use App\Conflation\Conflation;
 use App\Conflation\Io\MergedDataSet;
+use App\GeometryHelper;
 use App\Ngsi\NgsiEntity;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Clock\ClockInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 
@@ -30,15 +37,29 @@ use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
  * timeout of the lookup, a later run does not send the check again. Thus a
  * long queue gets no second message for one check.
  *
+ * A lookup without a transport does not use the queue. Before the runner
+ * publishes, this class asks it for each merged entity, and adds the values
+ * at once.
+ *
  * A lookup supplies only the attributes that the records of the thing do not
  * give. A value of the records always stays.
  */
+#[WithMonologChannel(LookupLog::CHANNEL)]
 final readonly class RemoteLookups
 {
+    /**
+     * @param ContainerInterface $lookups  the lookup services by class; the run asks the lookups without a transport
+     *                                     from it
+     * @param Location           $location gives the point of a merged entity to a lookup without a transport
+     */
     public function __construct(
         private NgsiLdBroker $broker,
         private MessageBusInterface $bus,
         private ClockInterface $clock,
+        #[AutowireLocator('app.location_lookup')]
+        private ContainerInterface $lookups = new ServiceLocator([]),
+        private Location $location = new Location(new GeometryHelper()),
+        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -89,6 +110,48 @@ final readonly class RemoteLookups
     }
 
     /**
+     * Asks each lookup without a transport, and adds its values to the merged
+     * entities.
+     *
+     * The runner calls the method after keepAnswers(), and before it
+     * publishes. A lookup without a transport makes no slow or limited
+     * request, so the run asks it on each run. If the lookup fails or has no
+     * answer, the entity keeps the value that keepAnswers() copied.
+     *
+     * @param list<NgsiEntity>                                 $entities the merged entities; the method adds the
+     *                                                                   values to them
+     * @param array<string, array<class-string, list<string>>> $wanted   what keepAnswers() returned
+     */
+    public function answerInline(array $entities, array $wanted): void
+    {
+        $now = $this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format(AsLocationLookup::TIME_FORMAT);
+        foreach ($entities as $entity) {
+            /** @var array<string, mixed>|null $geometry */
+            $geometry = $entity->attribute('location')['value'] ?? null;
+            foreach ($wanted[$entity->id()] ?? [] as $class => $attributes) {
+                $config = AsLocationLookup::of($class);
+                if (!$config->isInline() || null === $geometry) {
+                    continue;
+                }
+
+                try {
+                    /** @var LocationLookupInterface $lookup */
+                    $lookup = $this->lookups->get($class);
+                    [$longitude, $latitude] = $this->location->point($geometry);
+                    $answer = $lookup->lookup($longitude, $latitude) ?? [];
+                } catch (\Throwable $exception) {
+                    LookupLog::for($this->logger, $config->id)->warning('Lookup {lookup} failed for {entity}: {message}', ['lookup' => $config->id, 'entity' => $entity->id(), 'message' => $exception->getMessage(), 'exception' => $exception]);
+                    continue;
+                }
+
+                foreach ($attributes as $name) {
+                    $entity->setProperty($name, $answer[$name] ?? null, $now);
+                }
+            }
+        }
+    }
+
+    /**
      * Marks each check that is due as requested.
      *
      * The runner calls the method after keepAnswers(), and before it publishes
@@ -112,6 +175,10 @@ final readonly class RemoteLookups
         foreach ($entities as $entity) {
             foreach ($wanted[$entity->id()] ?? [] as $class => $attributes) {
                 $lookup = AsLocationLookup::of($class);
+                if ($lookup->isInline()) {
+                    continue;
+                }
+
                 $check = $entity->attribute($lookup->checkProperty()) ?? ['type' => 'Property', 'value' => CheckResult::Pending->value];
                 $checkedAt = \is_string($check['observedAt'] ?? null) ? $check['observedAt'] : null;
                 $pending = $check[AsLocationLookup::REQUESTED_AT]['value'] ?? null;

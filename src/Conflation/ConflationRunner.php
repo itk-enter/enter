@@ -25,8 +25,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * limits, the run fails before it publishes anything.
  *
  * Before it publishes, the runner keeps the answers of the lookups of the
- * merge from the entities that it published before, and marks the checks of
- * the lookups that are due. After it publishes, it requests these checks.
+ * merge from the entities that it published before. It asks the lookups
+ * without a transport, and marks the checks of the other lookups that are
+ * due. After it publishes, it requests these checks.
  */
 final readonly class ConflationRunner
 {
@@ -63,6 +64,7 @@ final readonly class ConflationRunner
         }
 
         $wanted = $this->lookups->keepAnswers($conflation, $dataSet, $entities);
+        $this->lookups->answerInline($entities, $wanted);
         $due = $this->lookups->markDueChecks($entities, $wanted);
 
         $contextUrls = array_merge([$dataSet->contextUrl], $this->contextUrls);

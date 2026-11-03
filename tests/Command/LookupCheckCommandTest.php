@@ -38,7 +38,7 @@ class LookupCheckCommandTest extends TestCase
 
     public function testItFailsIfAServiceFails(): void
     {
-        $down = new #[AsLocationLookup(id: 'addresses', attributes: ['address'], recheckEmptyAfter: 'P7D', refreshAfter: 'P90D')] class implements LocationLookupInterface {
+        $down = new #[AsLocationLookup(id: 'parking-zones', attributes: ['parkingZone'])] class implements LocationLookupInterface {
             public function lookup(float $longitude, float $latitude): ?array
             {
                 throw new \RuntimeException('The service is down.');

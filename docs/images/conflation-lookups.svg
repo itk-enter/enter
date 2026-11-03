@@ -21,7 +21,7 @@
   </defs>
 
   <text class="title" x="24" y="34">Remote services fill in details after the run; a value is never removed</text>
-  <text class="q" x="24" y="54">Example: the newest aerial photo of each merged toilet, from the Skråfoto API of Dataforsyningen</text>
+  <text class="q" x="24" y="54">Example: a remote service gives the nearest address of each merged toilet, through the queue</text>
 
   <!-- Left panel: from the run to the merged record -->
   <rect class="box" x="24" y="72" width="412" height="268" rx="8"/>
@@ -46,26 +46,26 @@
 
   <rect class="box" x="296" y="92" width="124" height="48" rx="8"/>
   <text class="n m" x="358" y="112">Worker</text>
-  <text class="q m" x="358" y="129">5 requests a second</text>
+  <text class="q m" x="358" y="129">at the service limit</text>
 
   <rect class="box" x="296" y="176" width="124" height="48" rx="8"/>
-  <text class="n m" x="358" y="196">Skråfoto API</text>
-  <text class="q m" x="358" y="213">newest photo</text>
+  <text class="n m" x="358" y="196">Address service</text>
+  <text class="q m" x="358" y="213">nearest address</text>
 
   <rect class="main" x="40" y="248" width="380" height="80" rx="8"/>
   <text class="n" x="56" y="268">Merged toilet T-1</text>
-  <text class="s" x="56" y="286">image: https://…/skraafoto/skraafotos2023/…_3478.jpg</text>
-  <text class="s" x="56" y="302">imageDate: 2023-04-20</text>
-  <text class="q" x="56" y="318">lookupAerialPhotos: found, checked 2026-11-02</text>
+  <text class="s" x="56" y="286">address: Rådhuspladsen 2</text>
+  <text class="s" x="56" y="302">postalCode: 8000</text>
+  <text class="q" x="56" y="318">lookupAddresses: found, checked 2026-11-02</text>
 
   <!-- Right panel: the rules -->
   <rect class="box" x="452" y="72" width="284" height="268" rx="8"/>
   <text class="n" x="468" y="100">When a place is checked</text>
   <text x="468" y="128">New place: right after the run</text>
-  <text x="468" y="152">No photo: again after 30 days</text>
-  <text x="468" y="176">A photo: again after 180 days</text>
+  <text x="468" y="152">No address: again after 7 days</text>
+  <text x="468" y="176">An address: again after 90 days</text>
   <text x="468" y="200">Queued: not sent again for 1 day</text>
-  <text x="468" y="224">No answer: the photo stays</text>
+  <text x="468" y="224">No answer: the address stays</text>
   <text x="468" y="248">A source states it: never asked</text>
   <text class="c" x="468" y="296">Configured: which services add which</text>
   <text class="c" x="468" y="312">details, the periods and the limit</text>

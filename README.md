@@ -141,8 +141,10 @@ worker. In development, run the worker yourself:
 docker compose exec phpfpm bin/console messenger:consume --all -vv
 ```
 
-The worker handles the messages of all the transports. The remote lookups use the `lookups` transport. If a service
-has a request limit of its own, give it a transport of its own:
+The worker handles the messages of all the transports. A lookup without a transport in `#[AsLocationLookup]` does not
+use the queue: the merge run asks it. Give a lookup a transport only if it makes slow or limited requests. The
+`lookups` transport is a shared queue for such lookups. If a service has a request limit of its own, give it a
+transport of its own:
 
 1. In `config/packages/rate_limiter.yaml`, add a limiter with the request limit of the service.
 2. In `config/packages/messenger.yaml`, copy the `lookups` transport. Change the names of the exchange, the queue and
@@ -162,7 +164,8 @@ The command asks each service about one point, with the configuration of the wor
 service fails, the command shows the error and exits with an error code. Use `--longitude` and `--latitude` to ask
 about another point.
 
-The aerial photos come from the Skråfoto API of Dataforsyningen. Put a token from <https://dataforsyningen.dk/> in
+The merged public toilets get the address of an orthophoto, `/orthophoto/{x},{y}.jpg`, as `image`. The route gets
+the image from the orthophoto WMS of Dataforsyningen. Put a token from <https://dataforsyningen.dk/> in
 `DATAFORSYNINGEN_TOKEN` in `.env.local`.
 
 The RabbitMQ management interface shows the queues. To find its port, run `docker compose port rabbit 15672`. The

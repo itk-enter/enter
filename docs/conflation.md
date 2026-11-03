@@ -28,7 +28,7 @@ stricter distance or another order of trusted sources is a change of configurati
 | Conflict rules      | Which rules settle a disagreement, and in what order                   | Trusted sources: Kommune city toilets first, then Kommune other toilets |
 | Augmenting data     | Which datasets about the surroundings add which details                | District areas add the district                                         |
 | Augmentation method | How data about the surroundings reaches places                         | An area reaches every place inside it; a point, places nearby           |
-| Remote lookups      | Which remote services add which details, after the run                 | The newest aerial photo and its date                                    |
+| Remote lookups      | Which remote services add which details                                | The address of an orthophoto of the place                               |
 | Dataset details     | The merged dataset's name, description and licence                     | "Offentlige toiletter (samlet), Aarhus Kommune"                         |
 
 ## How records are matched
@@ -80,8 +80,10 @@ and the time of the check, to the merged record.
 - A service only fills details that the sources do not give.
 - A service never removes a value. If the service has no answer, the place keeps its value.
 
-The merged public toilets get the newest oblique aerial photo of their location from the Skråfoto API of
-Dataforsyningen. To find out if the remote services are available, run `bin/console app:lookup:check`.
+A lookup that makes no slow or limited request does not use the queue. The run asks it for each place, before it
+publishes. For example, the merged public toilets get the address of an orthophoto of their location as `image`. The
+app makes the address from the location, and a route of the app gets the image from Dataforsyningen when a page shows
+it. To find out if the remote services are available, run `bin/console app:lookup:check`.
 
 ## Worked example: the toilet at Ørnereden
 
@@ -89,8 +91,8 @@ Dataforsyningen. To find out if the remote services are available, run `bin/cons
 
 The three records lie within 1.8 m of each other and come from three different sources, so they form one group. Most
 details agree or are stated by only one source. The names disagree, so the trusted source order decides: the Kommune
-name wins. Then the district area the toilet lies in adds its district. After the run, a worker adds the newest
-aerial photo of the toilet and the date of the photo.
+name wins. Then the district area the toilet lies in adds its district. Last, the run adds the address of an
+orthophoto of the toilet.
 
 ## Background
 

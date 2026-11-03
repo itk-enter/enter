@@ -7,10 +7,11 @@ framework:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             async: '%env(MESSENGER_TRANSPORT_DSN)%'
 
-            # The queue of the lookups that do not declare a transport of their
-            # own. A service with a request limit of its own gets a transport
-            # like this one, with its own queue and rate limiter, and declares
-            # it in #[AsLocationLookup(transport: …)].
+            # A shared queue for the lookups that need the queue, but no request
+            # limit of their own. A service with a request limit of its own gets
+            # a transport like this one, with its own queue and rate limiter. A
+            # lookup names its transport in #[AsLocationLookup(transport: …)].
+            # A lookup without a transport does not use the queue.
             lookups:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
@@ -28,21 +29,6 @@ framework:
                     multiplier: 5
                     max_delay: 3600000
 
-            # The aerial photos of Dataforsyningen (NewestAerialPhoto).
-            lookup_aerial_photos:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-                options:
-                    exchange:
-                        name: lookup_aerial_photos
-                    queues:
-                        lookup_aerial_photos: ~
-                rate_limiter: lookup_aerial_photos
-                retry_strategy:
-                    max_retries: 3
-                    delay: 60000
-                    multiplier: 5
-                    max_delay: 3600000
-
         routing:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
@@ -53,4 +39,3 @@ when@test:
             transports:
                 async: 'in-memory://'
                 lookups: 'in-memory://'
-                lookup_aerial_photos: 'in-memory://'
