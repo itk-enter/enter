@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Gives each lookup a log channel of its own, for example
- * "lookup.aerial-photos".
+ * "lookup.addresses".
  *
  * The channels share the handlers of the "lookup" channel. In prod, a
  * handler writes them to stdout. Thus, to find the failures of one service,

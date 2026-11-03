@@ -45,7 +45,7 @@ final readonly class AsLocationLookup
 
     /**
      * @param string       $id                the lookup's identifier, in lower case with hyphens, for example
-     *                                        "aerial-photos"
+     *                                        "addresses"
      * @param list<string> $attributes        the attributes that the service can supply, named as in the result
      *                                        models of the merges
      * @param string       $recheckEmptyAfter an ISO 8601 duration: the time to wait before the next check when the
@@ -139,8 +139,8 @@ final readonly class AsLocationLookup
     }
 
     /**
-     * The name of the check property, for example "lookupAerialPhotos" for
-     * the id "aerial-photos".
+     * The name of the check property, for example "lookupAddresses" for the
+     * id "addresses".
      */
     public function checkProperty(): string
     {

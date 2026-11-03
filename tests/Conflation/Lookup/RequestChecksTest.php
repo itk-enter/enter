@@ -10,8 +10,8 @@ use App\Conflation\Io\MergedDataSet;
 use App\Conflation\Lookup\LookupMessage;
 use App\Conflation\Lookup\RemoteLookups;
 use App\Ngsi\NgsiEntity;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
@@ -22,7 +22,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * RemoteLookups::requestChecks(), which sends a message for each check that
- * is due. AerialPhotos checks again after 7 days without a value, and after
+ * is due. NearestAddress checks again after 7 days without a value, and after
  * 90 days with a value.
  */
 class RequestChecksTest extends TestCase
@@ -66,7 +66,7 @@ class RequestChecksTest extends TestCase
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new GroupedByThing(5.0),
-            lookups: [AerialPhotos::class => ['image', 'imageDate']],
+            lookups: [NearestAddress::class => ['address', 'postalCode']],
         );
         $dataSet = new MergedDataSet('merged-toilets', 'Merged toilets', '', 'PublicToilet', 'https://context.example/toilet.jsonld', null, []);
 
@@ -92,10 +92,10 @@ class RequestChecksTest extends TestCase
             'id' => self::T1,
             'type' => 'PublicToilet',
             'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [10.21, 56.15]]],
-            'lookupAerialPhotos' => ['type' => 'Property', 'value' => $result, 'observedAt' => $checkedAt],
+            'lookupAddresses' => ['type' => 'Property', 'value' => $result, 'observedAt' => $checkedAt],
         ];
         if ('found' === $result) {
-            $entity['image'] = ['type' => 'Property', 'value' => 'https://photos.example/p-41.jpg', 'observedAt' => $checkedAt];
+            $entity['address'] = ['type' => 'Property', 'value' => 'Rådhuspladsen 2', 'observedAt' => $checkedAt];
         }
 
         return $entity;
@@ -108,8 +108,8 @@ class RequestChecksTest extends TestCase
         $this->assertEquals([new LookupMessage(
             self::T1,
             'https://context.example/toilet.jsonld',
-            AerialPhotos::class,
-            ['image', 'imageDate'],
+            NearestAddress::class,
+            ['address', 'postalCode'],
             ['type' => 'Point', 'coordinates' => [10.21, 56.15]],
             null,
         )], $this->sent);
@@ -139,7 +139,7 @@ class RequestChecksTest extends TestCase
 
     public function testThereIsNoCheckIfTheRecordsGiveAllTheAttributes(): void
     {
-        $entity = self::entity()->setProperty('image', 'https://register.example/t-1.jpg')->setProperty('imageDate', '2020-01-01');
+        $entity = self::entity()->setProperty('address', 'Park Allé 1')->setProperty('postalCode', '8100');
 
         $this->assertSame(0, $this->requestChecks($entity, null));
         $this->assertSame([], $this->sent);
@@ -147,9 +147,9 @@ class RequestChecksTest extends TestCase
 
     public function testTheMessageAsksOnlyForTheAttributesThatTheRecordsDoNotGive(): void
     {
-        $this->requestChecks(self::entity()->setProperty('image', 'https://register.example/t-1.jpg'), null);
+        $this->requestChecks(self::entity()->setProperty('address', 'Park Allé 1'), null);
 
         $this->assertInstanceOf(LookupMessage::class, $this->sent[0]);
-        $this->assertSame(['imageDate'], $this->sent[0]->attributes);
+        $this->assertSame(['postalCode'], $this->sent[0]->attributes);
     }
 }

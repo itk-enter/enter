@@ -9,8 +9,8 @@ use App\Conflation\Conflation;
 use App\Conflation\Io\MergedDataSet;
 use App\Conflation\Lookup\RemoteLookups;
 use App\Ngsi\NgsiEntity;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -47,7 +47,7 @@ class RequestChecksTransportTest extends TestCase
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new GroupedByThing(5.0),
-            lookups: [AerialPhotos::class => ['image']],
+            lookups: [NearestAddress::class => ['address']],
         );
         $dataSet = new MergedDataSet('merged-toilets', 'Merged toilets', '', 'PublicToilet', 'https://context.example/toilet.jsonld', null, []);
         $entity = new NgsiEntity('urn:ngsi-ld:PublicToilet:merged-toilets-t-1', 'PublicToilet')->geoProperty('location', ['type' => 'Point', 'coordinates' => [10.21, 56.15]]);
