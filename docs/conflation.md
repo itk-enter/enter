@@ -83,7 +83,7 @@ and the time of the check, to the merged record.
 A lookup that makes no slow or limited request does not use the queue. The run asks it for each place, before it
 publishes. For example, the merged public toilets get the address of an orthophoto of their location as `image`. The
 app makes the address from the location, and a route of the app gets the image from Dataforsyningen when a page shows
-it.
+it. To find out if the remote services are available, run `bin/console app:lookup:check`.
 
 ## Worked example: the toilet at Ørnereden
 

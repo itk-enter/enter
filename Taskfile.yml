@@ -51,6 +51,7 @@ tasks:
     cmds:
       # - task: test:unit
       - task: test:broker
+      - task: test:command
       - task: test:conflation
       - task: test:controller
       - task: test:geo
@@ -71,6 +72,7 @@ tasks:
         TASK_ARGS: bin/phpunit tests/{{.TASK | replace "test:" "" | title }}
 
   test:broker: *test_task
+  test:command: *test_task
   test:conflation: *test_task
   test:controller: *test_task
   test:geo: *test_task

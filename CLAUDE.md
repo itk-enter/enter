@@ -46,14 +46,14 @@ config/               Symfony configuration (packages, routes, services)
 public/               Web root
 src/
   Broker/             NgsiLdBroker: upsert, delete and read entities in the broker
-  Command/            app:* console commands (source import and list, conflation run, broker delete)
+  Command/            app:* console commands (source import and list, conflation run, lookup check, broker delete)
   Conflation/         The merge engine: Conflation attribute, pipeline, steps, fetch and publish
     Augmentation/     Adds attributes from records of augmenting models
     ConflictResolution/  Approaches that settle attributes the records disagree on
     Data/             Record, Cluster, StatedValue, MergedEntity
     EventListener/    Runs the merges after an import run
     Io/               Reads records from the broker and makes the merged entities
-    Lookup/           Remote lookups: the run, the messages, the worker and the request marks
+    Lookup/           Remote lookups: the run, the messages, the worker, the request marks and the service check
     MergeByLocation/  Groups the records that describe the same thing
     Pipeline/         Runs the steps and checks their limits
     Spatial/          Distances and the grid index
