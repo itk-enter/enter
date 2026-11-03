@@ -47,7 +47,9 @@ final readonly class Orthophoto implements LocationLookupInterface, Availability
     public function checkAvailability(float $longitude, float $latitude): void
     {
         [$x, $y] = $this->utm($longitude, $latitude);
-        $this->client->image($x, $y);
+        if (null === $this->client->image($x, $y)) {
+            throw new \RuntimeException('The orthophoto WMS gave no image of the point.');
+        }
     }
 
     /**
