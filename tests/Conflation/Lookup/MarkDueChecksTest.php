@@ -10,8 +10,8 @@ use App\Conflation\Io\MergedDataSet;
 use App\Conflation\Lookup\AsLocationLookup;
 use App\Conflation\Lookup\RemoteLookups;
 use App\Ngsi\NgsiEntity;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
@@ -22,7 +22,7 @@ use Symfony\Component\Messenger\MessageBus;
 /**
  * RemoteLookups::markDueChecks(), which marks a check as requested, so that
  * a later run does not send it again while it waits in the queue. The request
- * timeout of AerialPhotos is the default, 1 day.
+ * timeout of NearestAddress is the default, 1 day.
  */
 class MarkDueChecksTest extends TestCase
 {
@@ -44,7 +44,7 @@ class MarkDueChecksTest extends TestCase
             'id' => self::T1,
             'type' => 'PublicToilet',
             'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [10.21, 56.15]]],
-            'lookupAerialPhotos' => $check,
+            'lookupAddresses' => $check,
         ]];
         $client = new MockHttpClient(static fn (): MockResponse => new MockResponse(json_encode($published, \JSON_THROW_ON_ERROR)));
         $lookups = new RemoteLookups(new NgsiLdBroker($client, 'http://broker.example'), new MessageBus(), new MockClock(self::NOW));
@@ -55,7 +55,7 @@ class MarkDueChecksTest extends TestCase
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new GroupedByThing(5.0),
-            lookups: [AerialPhotos::class => ['image', 'imageDate']],
+            lookups: [NearestAddress::class => ['address', 'postalCode']],
         );
         $dataSet = new MergedDataSet('merged-toilets', 'Merged toilets', '', 'PublicToilet', 'https://context.example/toilet.jsonld', null, []);
 
@@ -73,12 +73,12 @@ class MarkDueChecksTest extends TestCase
 
         $due = self::mark($entity, null);
 
-        $this->assertSame([self::T1 => [AerialPhotos::class => ['image', 'imageDate']]], $due);
+        $this->assertSame([self::T1 => [NearestAddress::class => ['address', 'postalCode']]], $due);
         $this->assertSame([
             'type' => 'Property',
             'value' => 'pending',
             'requestedAt' => ['type' => 'Property', 'value' => self::NOW],
-        ], $entity->attribute('lookupAerialPhotos'));
+        ], $entity->attribute('lookupAddresses'));
     }
 
     public function testTheMarkKeepsTheResultAndTheTimeOfTheLastCheck(): void
@@ -92,7 +92,7 @@ class MarkDueChecksTest extends TestCase
             'value' => 'none',
             'observedAt' => '2026-11-01T12:00:00Z',
             'requestedAt' => ['type' => 'Property', 'value' => self::NOW],
-        ], $entity->attribute('lookupAerialPhotos'));
+        ], $entity->attribute('lookupAddresses'));
     }
 
     #[DataProvider('marks')]
@@ -106,8 +106,8 @@ class MarkDueChecksTest extends TestCase
             'requestedAt' => ['type' => 'Property', 'value' => $requestedAt],
         ];
 
-        $this->assertSame($due ? [self::T1 => [AerialPhotos::class => ['image', 'imageDate']]] : [], self::mark($entity, $check));
-        $this->assertSame($due ? self::NOW : $requestedAt, $entity->attribute('lookupAerialPhotos')['requestedAt']['value'] ?? null);
+        $this->assertSame($due ? [self::T1 => [NearestAddress::class => ['address', 'postalCode']]] : [], self::mark($entity, $check));
+        $this->assertSame($due ? self::NOW : $requestedAt, $entity->attribute('lookupAddresses')['requestedAt']['value'] ?? null);
     }
 
     /**
@@ -125,16 +125,16 @@ class MarkDueChecksTest extends TestCase
         $check = ['type' => 'Property', 'value' => 'none', 'observedAt' => '2026-11-19T12:00:00Z'];
 
         $this->assertSame([], self::mark($entity, $check));
-        $this->assertSame($check, $entity->attribute('lookupAerialPhotos'));
+        $this->assertSame($check, $entity->attribute('lookupAddresses'));
     }
 
     public function testTheRequestTimeoutIsADuration(): void
     {
-        $this->assertSame('P1D', AsLocationLookup::of(AerialPhotos::class)->requestTimeout);
+        $this->assertSame('P1D', AsLocationLookup::of(NearestAddress::class)->requestTimeout);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('gives "a day" as requestTimeout');
 
-        new AsLocationLookup(id: 'photos', attributes: ['image'], recheckEmptyAfter: 'P7D', refreshAfter: 'P90D', requestTimeout: 'a day');
+        new AsLocationLookup(id: 'addresses', attributes: ['address'], recheckEmptyAfter: 'P7D', refreshAfter: 'P90D', requestTimeout: 'a day');
     }
 }

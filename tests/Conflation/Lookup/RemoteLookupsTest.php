@@ -9,8 +9,8 @@ use App\Conflation\Conflation;
 use App\Conflation\Io\MergedDataSet;
 use App\Conflation\Lookup\RemoteLookups;
 use App\Ngsi\NgsiEntity;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
 use App\Tests\Conflation\Fixtures\GroupedByThing;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -49,7 +49,7 @@ class RemoteLookupsTest extends TestCase
     /**
      * @param array<class-string, list<string>> $lookups
      */
-    private static function conflation(array $lookups = [AerialPhotos::class => ['image', 'imageDate']]): Conflation
+    private static function conflation(array $lookups = [NearestAddress::class => ['address', 'postalCode']]): Conflation
     {
         return new Conflation(
             id: 'merged-toilets',
@@ -73,7 +73,7 @@ class RemoteLookupsTest extends TestCase
     }
 
     /**
-     * T-1 as the merge published it before, with a photo from the lookup.
+     * T-1 as the merge published it before, with an address from the lookup.
      *
      * @return array<string, mixed>
      */
@@ -83,9 +83,9 @@ class RemoteLookupsTest extends TestCase
             'id' => self::T1,
             'type' => 'PublicToilet',
             'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [$longitude, 56.15]]],
-            'image' => ['type' => 'Property', 'value' => 'https://photos.example/p-41.jpg', 'observedAt' => '2026-11-02T10:15:00.000Z'],
-            'imageDate' => ['type' => 'Property', 'value' => '2023-04-20', 'observedAt' => '2026-11-02T10:15:00.000Z'],
-            'lookupAerialPhotos' => ['type' => 'Property', 'value' => 'found', 'observedAt' => '2026-11-02T10:15:00.000Z'],
+            'address' => ['type' => 'Property', 'value' => 'Rådhuspladsen 2', 'observedAt' => '2026-11-02T10:15:00.000Z'],
+            'postalCode' => ['type' => 'Property', 'value' => '8000', 'observedAt' => '2026-11-02T10:15:00.000Z'],
+            'lookupAddresses' => ['type' => 'Property', 'value' => 'found', 'observedAt' => '2026-11-02T10:15:00.000Z'],
         ];
     }
 
@@ -95,14 +95,14 @@ class RemoteLookupsTest extends TestCase
 
         $wanted = $this->lookups([self::published()])->keepAnswers(self::conflation(), self::dataSet(), [$entity]);
 
-        $this->assertSame([self::T1 => [AerialPhotos::class => ['image', 'imageDate']]], $wanted);
-        $this->assertSame(['type' => 'Property', 'value' => 'https://photos.example/p-41.jpg', 'observedAt' => '2026-11-02T10:15:00.000Z'], $entity->attribute('image'));
-        $this->assertSame('2023-04-20', $entity->attribute('imageDate')['value'] ?? null);
-        $this->assertSame(['type' => 'Property', 'value' => 'found', 'observedAt' => '2026-11-02T10:15:00.000Z'], $entity->attribute('lookupAerialPhotos'));
+        $this->assertSame([self::T1 => [NearestAddress::class => ['address', 'postalCode']]], $wanted);
+        $this->assertSame(['type' => 'Property', 'value' => 'Rådhuspladsen 2', 'observedAt' => '2026-11-02T10:15:00.000Z'], $entity->attribute('address'));
+        $this->assertSame('8000', $entity->attribute('postalCode')['value'] ?? null);
+        $this->assertSame(['type' => 'Property', 'value' => 'found', 'observedAt' => '2026-11-02T10:15:00.000Z'], $entity->attribute('lookupAddresses'));
 
         $this->assertCount(1, $this->queries);
         $this->assertSame('sourceId=="merged-toilets"', $this->queries[0]['q']);
-        $this->assertSame('location,image,imageDate,lookupAerialPhotos', $this->queries[0]['attrs']);
+        $this->assertSame('location,address,postalCode,lookupAddresses', $this->queries[0]['attrs']);
     }
 
     public function testAnEntityThatMovedGetsNewAnswers(): void
@@ -111,8 +111,8 @@ class RemoteLookupsTest extends TestCase
 
         $this->lookups([self::published()])->keepAnswers(self::conflation(), self::dataSet(), [$entity]);
 
-        $this->assertFalse($entity->has('image'));
-        $this->assertFalse($entity->has('lookupAerialPhotos'));
+        $this->assertFalse($entity->has('address'));
+        $this->assertFalse($entity->has('lookupAddresses'));
     }
 
     public function testASmallDifferenceInTheLastDigitIsTheSameLocation(): void
@@ -121,24 +121,24 @@ class RemoteLookupsTest extends TestCase
 
         $this->lookups([self::published(10.2100000000001)])->keepAnswers(self::conflation(), self::dataSet(), [$entity]);
 
-        $this->assertTrue($entity->has('image'));
+        $this->assertTrue($entity->has('address'));
     }
 
     public function testAValueOfTheRecordsStays(): void
     {
-        $entity = self::entity()->setProperty('image', 'https://register.example/t-1.jpg');
+        $entity = self::entity()->setProperty('address', 'Park Allé 1');
 
         $wanted = $this->lookups([self::published()])->keepAnswers(self::conflation(), self::dataSet(), [$entity]);
 
-        $this->assertSame([self::T1 => [AerialPhotos::class => ['imageDate']]], $wanted);
-        $this->assertSame('https://register.example/t-1.jpg', $entity->attribute('image')['value'] ?? null);
-        $this->assertArrayNotHasKey('observedAt', $entity->attribute('image') ?? []);
-        $this->assertSame('2023-04-20', $entity->attribute('imageDate')['value'] ?? null);
+        $this->assertSame([self::T1 => [NearestAddress::class => ['postalCode']]], $wanted);
+        $this->assertSame('Park Allé 1', $entity->attribute('address')['value'] ?? null);
+        $this->assertArrayNotHasKey('observedAt', $entity->attribute('address') ?? []);
+        $this->assertSame('8000', $entity->attribute('postalCode')['value'] ?? null);
     }
 
     public function testItDoesNotReadTheBrokerIfTheRecordsGiveAllTheAttributes(): void
     {
-        $entity = self::entity()->setProperty('image', 'https://register.example/t-1.jpg')->setProperty('imageDate', '2020-01-01');
+        $entity = self::entity()->setProperty('address', 'Park Allé 1')->setProperty('postalCode', '8100');
 
         $this->assertSame([], $this->lookups([self::published()])->keepAnswers(self::conflation(), self::dataSet(), [$entity]));
         $this->assertSame([], $this->queries);
@@ -156,7 +156,7 @@ class RemoteLookupsTest extends TestCase
 
         $wanted = $this->lookups([])->keepAnswers(self::conflation(), self::dataSet(), [$entity]);
 
-        $this->assertSame([self::T1 => [AerialPhotos::class => ['image', 'imageDate']]], $wanted);
-        $this->assertFalse($entity->has('image'));
+        $this->assertSame([self::T1 => [NearestAddress::class => ['address', 'postalCode']]], $wanted);
+        $this->assertFalse($entity->has('address'));
     }
 }

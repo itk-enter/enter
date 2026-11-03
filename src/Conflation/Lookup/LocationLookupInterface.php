@@ -14,17 +14,17 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  * "lookups" option of its #[Conflation] attribute. A worker asks the lookup
  * after the merge run, and writes the answer to the merged entity.
  *
- * For example, a service gives the newest aerial photo of a point:
+ * For example, a service gives the nearest address of a point:
  *
- *     #[AsLocationLookup(id: 'aerial-photos', attributes: ['image', 'imageDate'],
+ *     #[AsLocationLookup(id: 'addresses', attributes: ['address', 'postalCode'],
  *         recheckEmptyAfter: 'P7D', refreshAfter: 'P90D')]
- *     final readonly class NearestAerialPhoto implements LocationLookupInterface
+ *     final readonly class NearestAddress implements LocationLookupInterface
  *     {
  *         public function lookup(float $longitude, float $latitude): ?array
  *         {
- *             $photo = $this->client->newestPhoto($longitude, $latitude);
+ *             $address = $this->client->nearestAddress($longitude, $latitude);
  *
- *             return null === $photo ? null : ['image' => $photo->url, 'imageDate' => $photo->date];
+ *             return null === $address ? null : ['address' => $address->text, 'postalCode' => $address->postalCode];
  *         }
  *     }
  *

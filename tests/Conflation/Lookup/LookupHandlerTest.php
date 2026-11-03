@@ -9,7 +9,7 @@ use App\Conflation\Lookup\Location;
 use App\Conflation\Lookup\LookupHandler;
 use App\Conflation\Lookup\LookupMessage;
 use App\GeometryHelper;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\Clock\MockClock;
@@ -49,7 +49,7 @@ class LookupHandlerTest extends TestCase
         });
 
         return new LookupHandler(
-            new ServiceLocator([AerialPhotos::class => static fn (): AerialPhotos => new AerialPhotos()]),
+            new ServiceLocator([NearestAddress::class => static fn (): NearestAddress => new NearestAddress()]),
             new NgsiLdBroker($client, 'http://broker.example'),
             new Location(new GeometryHelper()),
             new MockClock('2026-11-20T12:00:00Z'),
@@ -68,7 +68,7 @@ class LookupHandlerTest extends TestCase
             'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [$longitude, 56.15]]],
         ];
         if (null !== $checkedAt) {
-            $entity['lookupAerialPhotos'] = ['type' => 'Property', 'value' => 'none', 'observedAt' => $checkedAt];
+            $entity['lookupAddresses'] = ['type' => 'Property', 'value' => 'none', 'observedAt' => $checkedAt];
         }
 
         return $entity;
@@ -79,8 +79,8 @@ class LookupHandlerTest extends TestCase
         return new LookupMessage(
             self::T1,
             'https://context.example/toilet.jsonld',
-            AerialPhotos::class,
-            ['image', 'imageDate'],
+            NearestAddress::class,
+            ['address', 'postalCode'],
             ['type' => 'Point', 'coordinates' => [$longitude, 56.15]],
             $checkedAt,
         );
@@ -93,29 +93,29 @@ class LookupHandlerTest extends TestCase
         $this->assertSame([[
             '/ngsi-ld/v1/entities/'.self::T1.'/attrs',
             [
-                'image' => ['type' => 'Property', 'value' => 'https://photos.example/10.210000,56.150000.jpg', 'observedAt' => '2026-11-20T12:00:00Z'],
-                'imageDate' => ['type' => 'Property', 'value' => '2023-04-20', 'observedAt' => '2026-11-20T12:00:00Z'],
-                'lookupAerialPhotos' => ['type' => 'Property', 'value' => 'found', 'observedAt' => '2026-11-20T12:00:00Z'],
+                'address' => ['type' => 'Property', 'value' => 'Nearest address to 10.210000,56.150000', 'observedAt' => '2026-11-20T12:00:00Z'],
+                'postalCode' => ['type' => 'Property', 'value' => '8000', 'observedAt' => '2026-11-20T12:00:00Z'],
+                'lookupAddresses' => ['type' => 'Property', 'value' => 'found', 'observedAt' => '2026-11-20T12:00:00Z'],
             ],
         ]], $this->updates);
     }
 
     public function testItWritesOnlyTheAttributesThatTheMessageAsksFor(): void
     {
-        $message = new LookupMessage(self::T1, 'https://context.example/toilet.jsonld', AerialPhotos::class, ['imageDate'], ['type' => 'Point', 'coordinates' => [10.21, 56.15]], null);
+        $message = new LookupMessage(self::T1, 'https://context.example/toilet.jsonld', NearestAddress::class, ['postalCode'], ['type' => 'Point', 'coordinates' => [10.21, 56.15]], null);
 
         ($this->handler(self::entity(10.21)))($message);
 
-        $this->assertSame(['imageDate', 'lookupAerialPhotos'], array_keys($this->updates[0][1]));
+        $this->assertSame(['postalCode', 'lookupAddresses'], array_keys($this->updates[0][1]));
     }
 
     public function testWithNoAnswerItWritesOnlyTheCheckProperty(): void
     {
-        // AerialPhotos has no photo west of longitude 10.
+        // NearestAddress has no address west of longitude 10.
         ($this->handler(self::entity(9.5)))(self::message(9.5));
 
         $this->assertSame([
-            'lookupAerialPhotos' => ['type' => 'Property', 'value' => 'none', 'observedAt' => '2026-11-20T12:00:00Z'],
+            'lookupAddresses' => ['type' => 'Property', 'value' => 'none', 'observedAt' => '2026-11-20T12:00:00Z'],
         ], $this->updates[0][1]);
     }
 
