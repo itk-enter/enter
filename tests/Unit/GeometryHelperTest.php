@@ -17,8 +17,8 @@ class GeometryHelperTest extends TestCase
         $expected = [
             10.236808, 56.101227,
         ];
-        $actual = $helper->transformCoordinates($input[0], $input[1], GeometryHelper\Crs::geoJson(), GeometryHelper\Crs::EPSG_25832);
-        $this->assertEquals($expected, $actual);
+        $actual = $helper->transformCoordinates($input[0], $input[1], GeometryHelper\Crs::EPSG_25832, GeometryHelper\Crs::geoJson());
+        $this->assertEqualsWithDelta($expected, $actual, 1e-6);
     }
 
     public function testTransformPoint(): void
@@ -27,11 +27,11 @@ class GeometryHelperTest extends TestCase
         $input = new Point(
             576933.0181395365, 6218035.22691216,
         );
-        $expected = new Point(
+        $expected = [
             10.236808, 56.101227,
-        );
-        $actual = $helper->transformPoint($input, GeometryHelper\Crs::geoJson(), GeometryHelper\Crs::EPSG_25832);
-        $this->assertEquals($expected, $actual);
+        ];
+        $actual = $helper->transformPoint($input, GeometryHelper\Crs::EPSG_25832, GeometryHelper\Crs::geoJson());
+        $this->assertEqualsWithDelta($expected, array_slice($actual->toArray(), 0, 2), 1e-6);
     }
 
     public function testTransformGeoJsonGeometry(): void
@@ -56,6 +56,6 @@ class GeometryHelperTest extends TestCase
             ],
         ];
         $actual = $helper->transformGeoJsonGeometry($input, from: GeometryHelper\Crs::EPSG_25832, to: GeometryHelper\Crs::EPSG_4326);
-        $this->assertSame($expected, $actual);
+        $this->assertEqualsWithDelta($expected, $actual, 1e-6);
     }
 }

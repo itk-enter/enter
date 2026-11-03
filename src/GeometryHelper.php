@@ -21,7 +21,7 @@ final class GeometryHelper
     public function transformCoordinates(float $x, float $y, Crs|string $from, string|Crs|null $to = Crs::EPSG_4326): array
     {
         $point = new Point($x, $y);
-        $transformed = $this->transformPoint($point, $to, $from);
+        $transformed = $this->transformPoint($point, $from, $to ?? Crs::EPSG_4326);
 
         return array_slice($transformed->toArray(), 0, 2);
     }
@@ -58,7 +58,7 @@ final class GeometryHelper
         $iterator = new \RecursiveIteratorIterator($arrayIterator, \RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($iterator as $value) {
             if (is_array($value) && array_is_list($value) && 2 === count($value) && is_float($value[0]) && is_float($value[1])) {
-                $transformed = $this->transformCoordinates($value[0], $value[1], $to, $from);
+                $transformed = $this->transformCoordinates($value[0], $value[1], $from, $to);
                 // A sub-iterator holds a copy of its array. Thus, write the
                 // new value into each parent, from the deepest level up.
                 // https://stackoverflow.com/a/40483953
