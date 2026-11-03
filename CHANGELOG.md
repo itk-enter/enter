@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-141](https://github.com/itk-enter/enter/pull/141)
+  Removed the GEOS image build and calculated the centroid in PHP
 * [PR-139](https://github.com/itk-enter/enter/pull/139)
   Added the test:ci task that runs all the tests in CI
 * [PR-110](https://github.com/itk-enter/enter/pull/110)
