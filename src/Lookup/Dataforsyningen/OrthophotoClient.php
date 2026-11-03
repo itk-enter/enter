@@ -30,12 +30,6 @@ final readonly class OrthophotoClient
     public const int HEIGHT = 300;
 
     /**
-     * The metres on the ground for each pixel. 400 × 300 pixels show 80 × 60
-     * metres around the point.
-     */
-    private const float METRES_PER_PIXEL = 0.2;
-
-    /**
      * The box around Denmark in UTM 32 (EPSG:25832), Bornholm included:
      * west, south, east, north.
      */
@@ -64,10 +58,10 @@ final readonly class OrthophotoClient
      *
      * @throws \RuntimeException if the WMS does not give a JPEG image
      */
-    public function image(int $x, int $y): string
+    public function image(int $x, int $y, OrthophotoZoom $zoom = OrthophotoZoom::Default): string
     {
-        $halfWidth = self::WIDTH * self::METRES_PER_PIXEL / 2;
-        $halfHeight = self::HEIGHT * self::METRES_PER_PIXEL / 2;
+        $halfWidth = self::WIDTH * $zoom->metresPerPixel() / 2;
+        $halfHeight = self::HEIGHT * $zoom->metresPerPixel() / 2;
         $response = $this->dataforsyningenClient->request(Request::METHOD_GET, self::WMS_URL, ['query' => [
             'service' => 'WMS',
             'version' => '1.3.0',
