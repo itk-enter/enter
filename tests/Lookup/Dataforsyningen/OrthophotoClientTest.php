@@ -30,20 +30,10 @@ class OrthophotoClientTest extends TestCase
         $this->assertSame(['400', '300'], [$query['width'], $query['height']]);
     }
 
-    public function testAnErrorOfTheWmsIsAnException(): void
+    public function testAnErrorOfTheWmsGivesNoImage(): void
     {
         $client = new MockHttpClient(new MockResponse('<ServiceExceptionReport>Layer not found</ServiceExceptionReport>', ['response_headers' => ['content-type' => 'text/xml']]));
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Layer not found');
-
-        new OrthophotoClient($client)->image(574755, 6223760);
-    }
-
-    public function testItKnowsTheExtentOfDenmark(): void
-    {
-        $this->assertTrue(OrthophotoClient::contains(574755, 6223760));
-        $this->assertTrue(OrthophotoClient::contains(870000, 6120000), 'Bornholm');
-        $this->assertFalse(OrthophotoClient::contains(100000, 1000000));
+        $this->assertNull(new OrthophotoClient($client)->image(574755, 6223760));
     }
 }

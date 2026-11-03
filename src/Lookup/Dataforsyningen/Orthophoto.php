@@ -20,7 +20,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * address is absolute and starts with DEFAULT_URI.
  *
  * The lookup makes no request, so it has no transport, and the run asks it
- * for each merged entity. A point outside Denmark gets no image.
+ * for each merged entity. The route accepts a point only with 6 digits for
+ * x and 7 digits for y, as in Denmark. A point with other coordinates gets
+ * no image.
  */
 #[AsLocationLookup(id: 'orthophotos', attributes: ['image'])]
 final readonly class Orthophoto implements LocationLookupInterface, AvailabilityCheckInterface
@@ -35,7 +37,7 @@ final readonly class Orthophoto implements LocationLookupInterface, Availability
     public function lookup(float $longitude, float $latitude): ?array
     {
         [$x, $y] = $this->utm($longitude, $latitude);
-        if (!OrthophotoClient::contains($x, $y)) {
+        if (1 !== preg_match('/^\d{6}$/', (string) $x) || 1 !== preg_match('/^\d{7}$/', (string) $y)) {
             return null;
         }
 

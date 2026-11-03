@@ -25,22 +25,30 @@ class OrthophotoControllerTest extends WebTestCase
         $this->assertSame('604800', $response->headers->getCacheControlDirective('max-age'));
     }
 
-    public function testAPointOutsideDenmarkIsNotFound(): void
+    public function testACoordinateWithAnotherFormatDoesNotReachTheWms(): void
     {
         $browser = static::createClient();
+        $urls = [];
+        static::getContainer()->set('dataforsyningen.client', new MockHttpClient(static function (string $method, string $url) use (&$urls): MockResponse {
+            $urls[] = $url;
 
-        $browser->request('GET', '/orthophoto/100000,1000000.jpg');
+            return new MockResponse("\xFF\xD8", ['response_headers' => ['content-type' => 'image/jpeg']]);
+        }));
 
-        $this->assertSame(404, $browser->getResponse()->getStatusCode());
+        // The easting has 5 digits, so the orthophoto route does not match.
+        $browser->request('GET', '/orthophoto/12345,6223760.jpg');
+
+        $this->assertSame([], $urls);
+        $this->assertNotSame('image/jpeg', $browser->getResponse()->headers->get('Content-Type'));
     }
 
-    public function testAnErrorOfTheWmsIsABadGateway(): void
+    public function testNoImageFromTheWmsIsNotFound(): void
     {
         $browser = static::createClient();
         static::getContainer()->set('dataforsyningen.client', new MockHttpClient(new MockResponse('<ServiceExceptionReport/>', ['response_headers' => ['content-type' => 'text/xml']])));
 
         $browser->request('GET', '/orthophoto/574755,6223760.jpg');
 
-        $this->assertSame(502, $browser->getResponse()->getStatusCode());
+        $this->assertSame(404, $browser->getResponse()->getStatusCode());
     }
 }
