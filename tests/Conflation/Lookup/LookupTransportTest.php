@@ -6,7 +6,7 @@ namespace App\Tests\Conflation\Lookup;
 
 use App\Conflation\Lookup\AsLocationLookup;
 use App\Conflation\Lookup\LookupMessage;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
@@ -20,13 +20,13 @@ class LookupTransportTest extends KernelTestCase
 {
     public function testALookupWithoutATransportOfItsOwnUsesTheLookupsTransport(): void
     {
-        $this->assertSame(AsLocationLookup::DEFAULT_TRANSPORT, AsLocationLookup::of(AerialPhotos::class)->transport);
+        $this->assertSame(AsLocationLookup::DEFAULT_TRANSPORT, AsLocationLookup::of(NearestAddress::class)->transport);
     }
 
     public function testTheStampSendsTheMessageToTheTransportOfTheLookup(): void
     {
         $container = self::getContainer();
-        $message = new LookupMessage('urn:ngsi-ld:PublicToilet:t-1', 'https://context.example/toilet.jsonld', AerialPhotos::class, ['image'], ['type' => 'Point', 'coordinates' => [10.21, 56.15]], null);
+        $message = new LookupMessage('urn:ngsi-ld:PublicToilet:t-1', 'https://context.example/toilet.jsonld', NearestAddress::class, ['address'], ['type' => 'Point', 'coordinates' => [10.21, 56.15]], null);
 
         $container->get(MessageBusInterface::class)->dispatch($message, [new TransportNamesStamp(['lookups'])]);
 

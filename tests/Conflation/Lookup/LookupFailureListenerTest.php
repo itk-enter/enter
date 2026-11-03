@@ -6,7 +6,7 @@ namespace App\Tests\Conflation\Lookup;
 
 use App\Conflation\Lookup\LookupFailureListener;
 use App\Conflation\Lookup\LookupMessage;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use Monolog\Handler\TestHandler;
 use Monolog\Level;
 use Monolog\Logger;
@@ -33,7 +33,7 @@ class LookupFailureListenerTest extends TestCase
 
     private static function message(): LookupMessage
     {
-        return new LookupMessage('urn:ngsi-ld:PublicToilet:t-1', 'https://context.example/toilet.jsonld', AerialPhotos::class, ['image'], ['type' => 'Point', 'coordinates' => [10.21, 56.15]], null);
+        return new LookupMessage('urn:ngsi-ld:PublicToilet:t-1', 'https://context.example/toilet.jsonld', NearestAddress::class, ['address'], ['type' => 'Point', 'coordinates' => [10.21, 56.15]], null);
     }
 
     public function testAFailureBeforeTheLastRetryIsAWarningOnTheChannelOfTheLookup(): void
@@ -42,7 +42,7 @@ class LookupFailureListenerTest extends TestCase
 
         $records = $this->log->getRecords();
         $this->assertCount(1, $records);
-        $this->assertSame('lookup.aerial-photos', $records[0]->channel);
+        $this->assertSame('lookup.addresses', $records[0]->channel);
         $this->assertSame(Level::Warning, $records[0]->level);
         $this->assertSame('The service is down.', $records[0]->context['message']);
     }
@@ -52,7 +52,7 @@ class LookupFailureListenerTest extends TestCase
         $this->listen(self::message(), false);
 
         $this->assertTrue($this->log->hasErrorThatContains('after all the retries'));
-        $this->assertSame('lookup.aerial-photos', $this->log->getRecords()[0]->channel);
+        $this->assertSame('lookup.addresses', $this->log->getRecords()[0]->channel);
     }
 
     public function testItIgnoresOtherMessages(): void
