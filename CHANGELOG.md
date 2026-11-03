@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-133](https://github.com/itk-enter/enter/pull/133)
-  Added the newest aerial photo to the merged public toilets, and the command `app:lookup:check`
+  Added an orthophoto to the merged public toilets, and the command `app:lookup:check`
 * [PR-131](https://github.com/itk-enter/enter/pull/131)
   Added a transport, a rate limiter and a log channel for the lookups
 * [PR-130](https://github.com/itk-enter/enter/pull/130)
