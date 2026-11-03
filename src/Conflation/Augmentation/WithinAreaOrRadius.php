@@ -28,8 +28,7 @@ use App\GeometryHelper;
  *
  * The augmentation compares a merged entity by one point: its own position,
  * or the centroid of its area. That centroid comes from
- * GeometryHelper::getCentroid(). Without the GEOS extension, geoPHP
- * calculates the centroid of a small area with less precision.
+ * GeometryHelper::getCentroid().
  */
 class WithinAreaOrRadius extends AbstractAugmentation
 {
