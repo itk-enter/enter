@@ -98,6 +98,19 @@ function escapeHtml(value) {
         .replaceAll('"', "&quot;");
 }
 
+/* Shows the image of a feature as a picture, and other values as text. */
+function valueHtml(key, value) {
+    if (
+        key === "image" &&
+        typeof value === "string" &&
+        /^https?:\/\//.test(value)
+    ) {
+        return `<a href="${escapeHtml(value)}" target="_blank" rel="noopener"><img class="test-map-image" src="${escapeHtml(value)}" alt="" loading="lazy"></a>`;
+    }
+
+    return escapeHtml(rejoinList(value));
+}
+
 /* Changes a JSON list to a comma-separated text. */
 function rejoinList(value) {
     if (typeof value === "string" && /^[[{]/.test(value)) {
@@ -128,7 +141,7 @@ function popupHtml(sections) {
                 )
                 .map(
                     (key) =>
-                        `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(rejoinList(properties[key]))}</dd>`,
+                        `<dt>${escapeHtml(key)}</dt><dd>${valueHtml(key, properties[key])}</dd>`,
                 )
                 .join("");
 
