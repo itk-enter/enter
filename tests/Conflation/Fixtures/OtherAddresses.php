@@ -8,10 +8,10 @@ use App\Conflation\Lookup\AsLocationLookup;
 use App\Conflation\Lookup\LocationLookupInterface;
 
 /**
- * A lookup that supplies an attribute that AerialPhotos also supplies.
+ * A lookup that supplies an attribute that NearestAddress also supplies.
  */
-#[AsLocationLookup(id: 'street-photos', attributes: ['image'], recheckEmptyAfter: 'P1D', refreshAfter: 'P30D')]
-final class StreetPhotos implements LocationLookupInterface
+#[AsLocationLookup(id: 'other-addresses', attributes: ['address'], recheckEmptyAfter: 'P1D', refreshAfter: 'P30D')]
+final class OtherAddresses implements LocationLookupInterface
 {
     public function lookup(float $longitude, float $latitude): ?array
     {
