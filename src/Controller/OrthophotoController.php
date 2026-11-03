@@ -8,12 +8,11 @@ use App\Lookup\Dataforsyningen\OrthophotoClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Sends an orthophoto of a point in Denmark, with the token kept on the server.
+ * Sends an orthophoto of a point, with the token kept on the server.
  */
 final class OrthophotoController extends AbstractController
 {
@@ -34,9 +33,8 @@ final class OrthophotoController extends AbstractController
      * The point is in UTM 32 (EPSG:25832), in whole metres. In Denmark, the
      * easting x has 6 digits and the northing y has 7 digits, so the route
      * accepts only these formats. Other values, for example letters, decimals
-     * or negative numbers, do not match the route, and the router gives 404.
-     * The format does not make sure that the point is in Denmark, so the
-     * method also tests the point against the box around Denmark.
+     * or negative numbers, do not match this route, so the WMS gets no request
+     * for them. If the WMS gives no image, the method gives 404.
      */
     #[Route(
         path: '/orthophoto/{x},{y}.jpg',
@@ -46,14 +44,9 @@ final class OrthophotoController extends AbstractController
     )]
     public function image(OrthophotoClient $client, int $x, int $y): Response
     {
-        if (!OrthophotoClient::contains($x, $y)) {
-            throw new NotFoundHttpException('The point is not in Denmark.');
-        }
-
-        try {
-            $jpeg = $client->image($x, $y);
-        } catch (\RuntimeException $exception) {
-            throw new HttpException(Response::HTTP_BAD_GATEWAY, $exception->getMessage(), $exception);
+        $jpeg = $client->image($x, $y);
+        if (null === $jpeg) {
+            throw new NotFoundHttpException('The WMS gave no image of the point.');
         }
 
         return new Response($jpeg, Response::HTTP_OK, ['Content-Type' => 'image/jpeg'])

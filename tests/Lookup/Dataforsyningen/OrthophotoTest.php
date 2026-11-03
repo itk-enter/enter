@@ -29,8 +29,9 @@ class OrthophotoTest extends TestCase
         $this->assertSame(['image' => 'https://enter.example/orthophoto/574755,6223760.jpg'], $this->lookup()->lookup(10.2034, 56.1530));
     }
 
-    public function testAPointOutsideDenmarkGetsNoImage(): void
+    public function testAPointThatTheRouteDoesNotAcceptGetsNoImage(): void
     {
+        // Paris is far west of UTM zone 32, so its easting has 5 digits.
         $this->assertNull($this->lookup()->lookup(2.35, 48.85));
     }
 

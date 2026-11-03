@@ -35,25 +35,9 @@ final readonly class OrthophotoClient
      */
     private const float METRES_PER_PIXEL = 0.2;
 
-    /**
-     * The box around Denmark in UTM 32 (EPSG:25832), Bornholm included:
-     * west, south, east, north.
-     */
-    private const array DENMARK = [400000, 6040000, 900000, 6410000];
-
     public function __construct(
         private HttpClientInterface $dataforsyningenClient,
     ) {
-    }
-
-    /**
-     * Tests if a point in UTM 32 is in Denmark.
-     */
-    public static function contains(int $x, int $y): bool
-    {
-        [$west, $south, $east, $north] = self::DENMARK;
-
-        return $x >= $west && $x <= $east && $y >= $south && $y <= $north;
     }
 
     /**
@@ -62,9 +46,9 @@ final readonly class OrthophotoClient
      * @param int $x the easting of the point in UTM 32, in metres
      * @param int $y the northing of the point in UTM 32, in metres
      *
-     * @throws \RuntimeException if the WMS does not give a JPEG image
+     * @return string|null the JPEG image, or null if the WMS gives no image
      */
-    public function image(int $x, int $y): string
+    public function image(int $x, int $y): ?string
     {
         $halfWidth = self::WIDTH * self::METRES_PER_PIXEL / 2;
         $halfHeight = self::HEIGHT * self::METRES_PER_PIXEL / 2;
@@ -82,10 +66,9 @@ final readonly class OrthophotoClient
         ]]);
 
         // A WMS reports an error as XML, often with HTTP 200.
-        $status = $response->getStatusCode();
         $type = $response->getHeaders(false)['content-type'][0] ?? '';
-        if (200 !== $status || !str_starts_with($type, 'image/jpeg')) {
-            throw new \RuntimeException(\sprintf('The orthophoto WMS gave HTTP %d (%s) and no image: %s', $status, $type, substr($response->getContent(false), 0, 300)));
+        if (200 !== $response->getStatusCode() || !str_starts_with($type, 'image/jpeg')) {
+            return null;
         }
 
         return $response->getContent();
