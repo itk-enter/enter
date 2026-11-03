@@ -59,6 +59,16 @@ tasks:
       - task: test:sourceReader
       - task: test:test
 
+  test:ci:
+    desc: Run all tests in one PHPUnit run. CI uses this task
+    env:
+      APP_ENV: test
+    deps: [test:start]
+    cmd:
+      task: php
+      vars:
+        TASK_ARGS: bin/phpunit
+
   test:unit: &test_task
     env:
       APP_ENV: test

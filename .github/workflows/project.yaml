@@ -25,4 +25,4 @@ jobs:
               run: task code-analysis
 
             - name: Run tests
-              run: task test
+              run: task test:ci
