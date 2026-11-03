@@ -17,7 +17,7 @@ use App\Source\Definition;
     description: 'Picnic tables with benches in the parks, forests and streets of Aarhus Municipality.',
     publisher: 'Aarhus Kommune',
     contact: 'ppg@aarhus.dk',
-    landingPage: 'https://www.opendata.dk/city-of-aarhus',
+    landingPage: '',
 
     accessUrl: 'https://wfs-ext.gmpark.dk/geoserver/ws_2b1b3726-07ea-4872-bda9-6982d717dc2c/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ws_2b1b3726-07ea-4872-bda9-6982d717dc2c:ud14&outputFormat=application/json',
     dataType: DataType::GeoJSON,
