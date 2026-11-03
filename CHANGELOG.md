@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-145](https://github.com/itk-enter/enter/pull/145)
+  Pointed the landing page of the MTM toilet sources to their data set on opendata.dk
 * [PR-108](https://github.com/itk-enter/enter/pull/108)
   Added Geos extension to PHP
 * [PR-110](https://github.com/itk-enter/enter/pull/110)
