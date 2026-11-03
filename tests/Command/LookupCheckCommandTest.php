@@ -7,7 +7,7 @@ namespace App\Tests\Command;
 use App\Command\LookupCheckCommand;
 use App\Conflation\Lookup\AsLocationLookup;
 use App\Conflation\Lookup\LocationLookupInterface;
-use App\Conflation\Lookup\LookupProbe;
+use App\Conflation\Lookup\LookupAvailabilityChecker;
 use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -22,7 +22,7 @@ class LookupCheckCommandTest extends TestCase
     private static function tester(array $lookups): CommandTester
     {
         $application = new Application();
-        $application->addCommand(new LookupCheckCommand(new LookupProbe($lookups)));
+        $application->addCommand(new LookupCheckCommand(new LookupAvailabilityChecker($lookups)));
 
         return new CommandTester($application->find('app:lookup:check'));
     }

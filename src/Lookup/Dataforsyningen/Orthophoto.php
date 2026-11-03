@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Lookup\Dataforsyningen;
 
 use App\Conflation\Lookup\AsLocationLookup;
+use App\Conflation\Lookup\AvailabilityCheckInterface;
 use App\Conflation\Lookup\LocationLookupInterface;
-use App\Conflation\Lookup\ServiceCheckInterface;
 use App\GeometryHelper;
 use App\GeometryHelper\Crs;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * for each merged entity. A point outside Denmark gets no image.
  */
 #[AsLocationLookup(id: 'orthophotos', attributes: ['image'])]
-final readonly class Orthophoto implements LocationLookupInterface, ServiceCheckInterface
+final readonly class Orthophoto implements LocationLookupInterface, AvailabilityCheckInterface
 {
     public function __construct(
         private OrthophotoClient $client,
@@ -42,7 +42,7 @@ final readonly class Orthophoto implements LocationLookupInterface, ServiceCheck
         return ['image' => $this->urls->generate('app_orthophoto', ['x' => $x, 'y' => $y], UrlGeneratorInterface::ABSOLUTE_URL)];
     }
 
-    public function checkService(float $longitude, float $latitude): void
+    public function checkAvailability(float $longitude, float $latitude): void
     {
         [$x, $y] = $this->utm($longitude, $latitude);
         $this->client->image($x, $y);

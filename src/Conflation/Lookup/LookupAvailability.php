@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Conflation\Lookup;
 
 /**
- * The result of LookupProbe for one lookup.
+ * Tells if the remote service of one lookup is available, as
+ * LookupAvailabilityChecker found it.
  */
-final readonly class ProbeResult
+final readonly class LookupAvailability
 {
     /**
      * @param string                    $id           the id of the lookup

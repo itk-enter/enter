@@ -6,12 +6,12 @@ namespace App\Tests\Conflation\Lookup;
 
 use App\Conflation\Lookup\AsLocationLookup;
 use App\Conflation\Lookup\LocationLookupInterface;
-use App\Conflation\Lookup\LookupProbe;
-use App\Conflation\Lookup\ProbeResult;
+use App\Conflation\Lookup\LookupAvailability;
+use App\Conflation\Lookup\LookupAvailabilityChecker;
 use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
 
-class LookupProbeTest extends TestCase
+class LookupAvailabilityCheckerTest extends TestCase
 {
     public function testItAsksEachLookupAndTellsWhichFailed(): void
     {
@@ -22,9 +22,9 @@ class LookupProbeTest extends TestCase
             }
         };
 
-        $results = new LookupProbe([$down, new NearestAddress()])->probeAll(10.21, 56.15);
+        $results = new LookupAvailabilityChecker([$down, new NearestAddress()])->checkAll(10.21, 56.15);
 
-        $this->assertSame(['addresses', 'parking-zones'], array_map(static fn (ProbeResult $result): string => $result->id, $results));
+        $this->assertSame(['addresses', 'parking-zones'], array_map(static fn (LookupAvailability $result): string => $result->id, $results));
 
         $this->assertTrue($results[0]->isAvailable());
         $this->assertSame('lookups', $results[0]->transport);
@@ -37,7 +37,7 @@ class LookupProbeTest extends TestCase
     public function testAServiceWithoutAnAnswerForThePointIsAvailable(): void
     {
         // NearestAddress has no address west of longitude 10.
-        $results = new LookupProbe([new NearestAddress()])->probeAll(9.5, 56.15);
+        $results = new LookupAvailabilityChecker([new NearestAddress()])->checkAll(9.5, 56.15);
 
         $this->assertTrue($results[0]->isAvailable());
         $this->assertNull($results[0]->answer);

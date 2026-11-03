@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Conflation\Lookup\LookupProbe;
-use App\Conflation\Lookup\ProbeResult;
+use App\Conflation\Lookup\LookupAvailability;
+use App\Conflation\Lookup\LookupAvailabilityChecker;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
@@ -18,18 +18,18 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class LookupCheckCommand
 {
     public function __construct(
-        private readonly LookupProbe $probe,
+        private readonly LookupAvailabilityChecker $checker,
     ) {
     }
 
     public function __invoke(
         SymfonyStyle $io,
         #[Option(description: 'The longitude of the point, in WGS 84. The default is the city hall of Aarhus')]
-        float $longitude = LookupProbe::DEFAULT_POINT[0],
+        float $longitude = LookupAvailabilityChecker::DEFAULT_POINT[0],
         #[Option(description: 'The latitude of the point, in WGS 84. The default is the city hall of Aarhus')]
-        float $latitude = LookupProbe::DEFAULT_POINT[1],
+        float $latitude = LookupAvailabilityChecker::DEFAULT_POINT[1],
     ): int {
-        $results = $this->probe->probeAll($longitude, $latitude);
+        $results = $this->checker->checkAll($longitude, $latitude);
         if ([] === $results) {
             $io->warning('No remote service is declared.');
 
@@ -38,7 +38,7 @@ class LookupCheckCommand
 
         $io->table(
             ['Service', 'Transport', 'Result', 'Time', 'Answer or error'],
-            array_map(static fn (ProbeResult $result): array => [
+            array_map(static fn (LookupAvailability $result): array => [
                 $result->id,
                 $result->transport ?? 'none, in the run',
                 $result->isAvailable() ? 'available' : 'failed',
@@ -47,7 +47,7 @@ class LookupCheckCommand
             ], $results),
         );
 
-        $failed = array_filter($results, static fn (ProbeResult $result): bool => !$result->isAvailable());
+        $failed = array_filter($results, static fn (LookupAvailability $result): bool => !$result->isAvailable());
         if ([] !== $failed) {
             $io->error(\sprintf('%d of %d services failed.', \count($failed), \count($results)));
 

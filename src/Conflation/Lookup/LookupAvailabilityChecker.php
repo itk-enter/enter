@@ -9,14 +9,14 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 /**
  * Asks each lookup about one point, to find out if its service is available.
  *
- * The probe calls the lookup directly, not through the queue, so it does not
+ * The checker calls the lookup directly, not through the queue, so it does not
  * wait for the rate limiter. It uses the same configuration as the worker, for
  * example the token of the service. A service that gives no answer for the
  * point is available. A service that throws an exception is not. If the
- * lookup implements ServiceCheckInterface, the probe also calls
- * checkService().
+ * lookup implements AvailabilityCheckInterface, the checker also calls
+ * checkAvailability().
  */
-final readonly class LookupProbe
+final readonly class LookupAvailabilityChecker
 {
     /**
      * A point in the centre of Aarhus: the city hall.
@@ -35,9 +35,9 @@ final readonly class LookupProbe
     /**
      * Asks each lookup about the point.
      *
-     * @return list<ProbeResult> one result for each lookup, ordered by the id of the lookup
+     * @return list<LookupAvailability> one result for each lookup, ordered by the id of the lookup
      */
-    public function probeAll(float $longitude, float $latitude): array
+    public function checkAll(float $longitude, float $latitude): array
     {
         $results = [];
         foreach ($this->lookups as $lookup) {
@@ -45,17 +45,17 @@ final readonly class LookupProbe
             $start = hrtime(true);
             try {
                 $answer = $lookup->lookup($longitude, $latitude);
-                if ($lookup instanceof ServiceCheckInterface) {
-                    $lookup->checkService($longitude, $latitude);
+                if ($lookup instanceof AvailabilityCheckInterface) {
+                    $lookup->checkAvailability($longitude, $latitude);
                 }
                 $error = null;
             } catch (\Throwable $exception) {
                 $answer = null;
                 $error = $exception->getMessage();
             }
-            $results[] = new ProbeResult($config->id, $config->transport, $answer, $error, (hrtime(true) - $start) / 1e6);
+            $results[] = new LookupAvailability($config->id, $config->transport, $answer, $error, (hrtime(true) - $start) / 1e6);
         }
-        usort($results, static fn (ProbeResult $x, ProbeResult $y): int => strcmp($x->id, $y->id));
+        usort($results, static fn (LookupAvailability $x, LookupAvailability $y): int => strcmp($x->id, $y->id));
 
         return $results;
     }

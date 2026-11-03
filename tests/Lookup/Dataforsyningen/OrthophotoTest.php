@@ -52,7 +52,7 @@ class OrthophotoTest extends TestCase
 
     public function testTheServiceCheckAsksTheWms(): void
     {
-        $this->lookup()->checkService(10.2034, 56.1530);
+        $this->lookup()->checkAvailability(10.2034, 56.1530);
 
         $this->assertCount(1, $this->requests);
         $this->assertStringStartsWith(OrthophotoClient::WMS_URL, $this->requests[0]);
