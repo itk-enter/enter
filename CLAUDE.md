@@ -91,10 +91,10 @@ task coding-standards:php:check      # also php, twig, yaml, markdown, assets, c
 task coding-standards:php:apply      # each check has an apply task
 task code-analysis                   # PHPStan
 task test                            # PHPUnit, one task for each folder in tests/
+task test:ci                         # PHPUnit, all the tests in one run. CI uses this task
 ```
 
-`task test` does not run `tests/Import`, `tests/Merge` and `tests/Unit`. To run all the tests, use
-`docker compose exec phpfpm vendor/bin/phpunit`.
+`task test` does not run `tests/Import`, `tests/Merge` and `tests/Unit`. To run all the tests, use `task test:ci`.
 
 ### Tests are not modified without approval
 
