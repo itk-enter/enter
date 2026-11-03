@@ -165,8 +165,7 @@ service fails, the command shows the error and exits with an error code. Use `--
 about another point.
 
 The merged public toilets get the address of an orthophoto, `/orthophoto/{x},{y}.jpg`, as `image`. The route gets
-the image from the orthophoto WMS of Dataforsyningen. Add `?zoom=1` (320 × 240 m) to `?zoom=4` (40 × 30 m) to show a
-larger or a smaller area. The default is 3 (80 × 60 m). Put a token from <https://dataforsyningen.dk/> in
+the image from the orthophoto WMS of Dataforsyningen. Put a token from <https://dataforsyningen.dk/> in
 `DATAFORSYNINGEN_TOKEN` in `.env.local`.
 
 The RabbitMQ management interface shows the queues. To find its port, run `docker compose port rabbit 15672`. The
