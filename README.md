@@ -141,8 +141,10 @@ worker. In development, run the worker yourself:
 docker compose exec phpfpm bin/console messenger:consume --all -vv
 ```
 
-The worker handles the messages of all the transports. The remote lookups use the `lookups` transport. If a service
-has a request limit of its own, give it a transport of its own:
+The worker handles the messages of all the transports. A lookup without a transport in `#[AsLocationLookup]` does not
+use the queue: the merge run asks it. Give a lookup a transport only if it makes slow or limited requests. The
+`lookups` transport is a shared queue for such lookups. If a service has a request limit of its own, give it a
+transport of its own:
 
 1. In `config/packages/rate_limiter.yaml`, add a limiter with the request limit of the service.
 2. In `config/packages/messenger.yaml`, copy the `lookups` transport. Change the names of the exchange, the queue and

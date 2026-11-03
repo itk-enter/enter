@@ -53,6 +53,7 @@ src/
     Data/             Record, Cluster, StatedValue, MergedEntity
     EventListener/    Runs the merges after an import run
     Io/               Reads records from the broker and makes the merged entities
+    Lookup/           Remote lookups: the run, the messages, the worker and the request marks
     MergeByLocation/  Groups the records that describe the same thing
     Pipeline/         Runs the steps and checks their limits
     Spatial/          Distances and the grid index
