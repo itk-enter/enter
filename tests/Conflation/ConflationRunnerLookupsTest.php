@@ -16,7 +16,7 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 use App\Conflation\Pipeline\ConflationPipeline;
 use App\Source\Osm\PublicToilet as OsmPublicToilet;
 use App\SourceManager;
-use App\Tests\Conflation\Fixtures\AerialPhotos;
+use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\Clock\MockClock;
@@ -86,7 +86,7 @@ class ConflationRunnerLookupsTest extends TestCase
             resultModel: 'PublicToilet',
             defining: ['PublicToilet'],
             mergeByLocation: new OneToOneClosestFirst(radius: 10.0),
-            lookups: [AerialPhotos::class => ['image']],
+            lookups: [NearestAddress::class => ['address']],
         ));
 
         $this->assertSame([
@@ -102,6 +102,6 @@ class ConflationRunnerLookupsTest extends TestCase
             'type' => 'Property',
             'value' => 'pending',
             'requestedAt' => ['type' => 'Property', 'value' => '2026-11-20T12:00:00Z'],
-        ], $upserted[0]['lookupAerialPhotos'] ?? null);
+        ], $upserted[0]['lookupAddresses'] ?? null);
     }
 }
