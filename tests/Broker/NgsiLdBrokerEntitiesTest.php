@@ -14,6 +14,12 @@ use Symfony\Component\HttpClient\Response\MockResponse;
  */
 class NgsiLdBrokerEntitiesTest extends TestCase
 {
+    /**
+     * The base URI of the broker client. The real client is a scoped client
+     * with the same base URI.
+     */
+    private const string BASE_URI = 'http://broker.example';
+
     public function testItReadsEachPageUntilAPageIsNotFull(): void
     {
         $offsets = [];
@@ -34,9 +40,9 @@ class NgsiLdBrokerEntitiesTest extends TestCase
                 static fn (int $i): array => ['id' => 'urn:ngsi-ld:PublicToilet:t-'.($offset + $i), 'type' => 'PublicToilet'],
                 range(1, $count),
             ), \JSON_THROW_ON_ERROR));
-        });
+        }, self::BASE_URI);
 
-        $entities = iterator_to_array(new NgsiLdBroker($client, 'http://broker.example')->entities('merged-toilets', 'https://context.example/toilet.jsonld', ['location', 'image']));
+        $entities = iterator_to_array(new NgsiLdBroker($client, self::BASE_URI)->entities('merged-toilets', 'https://context.example/toilet.jsonld', ['location', 'image']));
 
         $this->assertSame([0, 1000], $offsets);
         $this->assertCount(1001, $entities);
@@ -45,11 +51,11 @@ class NgsiLdBrokerEntitiesTest extends TestCase
 
     public function testItFailsIfTheBrokerRejectsTheRead(): void
     {
-        $client = new MockHttpClient(new MockResponse('{"title": "Bad request"}', ['http_code' => 400]));
+        $client = new MockHttpClient(new MockResponse('{"title": "Bad request"}', ['http_code' => 400]), self::BASE_URI);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('rejected the read of merged-toilets with HTTP 400');
 
-        iterator_to_array(new NgsiLdBroker($client, 'http://broker.example')->entities('merged-toilets', 'https://context.example/toilet.jsonld', ['location']));
+        iterator_to_array(new NgsiLdBroker($client, self::BASE_URI)->entities('merged-toilets', 'https://context.example/toilet.jsonld', ['location']));
     }
 }

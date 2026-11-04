@@ -262,7 +262,7 @@ final readonly class NgsiLdBroker
     public function entities(string $sourceId, string $contextUrl, array $attributes): \Generator
     {
         for ($offset = 0;; $offset += self::PAGE_SIZE) {
-            $response = $this->brokerClient->request(Request::METHOD_GET, rtrim($this->brokerUrl, '/').self::ENTITIES_PATH, [
+            $response = $this->brokerClient->request(Request::METHOD_GET, self::ENTITIES_PATH, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),

@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  * For example, a service gives the nearest address of a point:
  *
  *     #[AsLocationLookup(id: 'addresses', attributes: ['address', 'postalCode'],
- *         recheckEmptyAfter: 'P7D', refreshAfter: 'P90D')]
+ *         recheckEmptyAfter: new \DateInterval('P7D'), refreshAfter: new \DateInterval('P90D'))]
  *     final readonly class NearestAddress implements LocationLookupInterface
  *     {
  *         public function lookup(float $longitude, float $latitude): ?array
