@@ -23,20 +23,20 @@ final readonly class AsLocationLookup
     public const string CHECK_PROPERTY_PREFIX = 'lookup';
 
     /**
-     * @param string       $id                the lookup's identifier, in lower case with hyphens, for example
-     *                                        "addresses"
-     * @param list<string> $attributes        the attributes that the service can supply, named as in the result
-     *                                        models of the merges
-     * @param string       $recheckEmptyAfter an ISO 8601 duration: the time to wait before the next check when the
-     *                                        merged entity has no value from the service
-     * @param string       $refreshAfter      an ISO 8601 duration: the time to wait before the next check when the
-     *                                        merged entity has a value from the service
+     * @param string        $id                the lookup's identifier, in lower case with hyphens, for example
+     *                                         "addresses"
+     * @param list<string>  $attributes        the attributes that the service can supply, named as in the result
+     *                                         models of the merges
+     * @param \DateInterval $recheckEmptyAfter the time to wait before the next check when the merged entity has no
+     *                                         value from the service
+     * @param \DateInterval $refreshAfter      the time to wait before the next check when the merged entity has a
+     *                                         value from the service
      */
     public function __construct(
         public string $id,
         public array $attributes,
-        public string $recheckEmptyAfter,
-        public string $refreshAfter,
+        public \DateInterval $recheckEmptyAfter,
+        public \DateInterval $refreshAfter,
     ) {
         if (1 !== preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $id)) {
             throw new \InvalidArgumentException(\sprintf('Lookup id "%s" must be in lower case with hyphens.', $id));
@@ -44,14 +44,6 @@ final readonly class AsLocationLookup
 
         if ([] === $attributes) {
             throw new \InvalidArgumentException(\sprintf('Lookup %s declares no attributes.', $id));
-        }
-
-        foreach (['recheckEmptyAfter' => $recheckEmptyAfter, 'refreshAfter' => $refreshAfter] as $name => $duration) {
-            try {
-                new \DateInterval($duration);
-            } catch (\Exception) {
-                throw new \InvalidArgumentException(\sprintf('Lookup %s gives "%s" as %s; it must be an ISO 8601 duration, for example "P7D".', $id, $duration, $name));
-            }
         }
     }
 
