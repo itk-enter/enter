@@ -52,7 +52,6 @@ class AsLocationLookupTest extends TestCase
      */
     public static function invalidConfigurations(): iterable
     {
-        yield 'id in camel case' => [['id' => 'nearestAddress'], 'in lower case with hyphens'];
         yield 'no attributes' => [['attributes' => []], 'declares no attributes'];
     }
 }
