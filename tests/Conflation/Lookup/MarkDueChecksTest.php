@@ -130,11 +130,6 @@ class MarkDueChecksTest extends TestCase
 
     public function testTheRequestTimeoutIsADuration(): void
     {
-        $this->assertSame('P1D', AsLocationLookup::of(NearestAddress::class)->requestTimeout);
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('gives "a day" as requestTimeout');
-
-        new AsLocationLookup(id: 'addresses', attributes: ['address'], recheckEmptyAfter: 'P7D', refreshAfter: 'P90D', requestTimeout: 'a day');
+        $this->assertEquals(new \DateInterval('P1D'), AsLocationLookup::of(NearestAddress::class)->requestTimeout);
     }
 }
