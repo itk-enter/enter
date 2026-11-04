@@ -38,10 +38,6 @@ final readonly class AsLocationLookup
         public \DateInterval $recheckEmptyAfter,
         public \DateInterval $refreshAfter,
     ) {
-        if (1 !== preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $id)) {
-            throw new \InvalidArgumentException(\sprintf('Lookup id "%s" must be in lower case with hyphens.', $id));
-        }
-
         if ([] === $attributes) {
             throw new \InvalidArgumentException(\sprintf('Lookup %s declares no attributes.', $id));
         }
