@@ -17,8 +17,8 @@ class AsLocationLookupTest extends TestCase
 
         $this->assertSame('addresses', $lookup->id);
         $this->assertSame(['address', 'postalCode'], $lookup->attributes);
-        $this->assertSame('P7D', $lookup->recheckEmptyAfter);
-        $this->assertSame('P90D', $lookup->refreshAfter);
+        $this->assertEquals(new \DateInterval('P7D'), $lookup->recheckEmptyAfter);
+        $this->assertEquals(new \DateInterval('P90D'), $lookup->refreshAfter);
         $this->assertSame('lookupAddresses', $lookup->checkProperty());
     }
 
@@ -41,8 +41,8 @@ class AsLocationLookupTest extends TestCase
         new AsLocationLookup(...[
             'id' => 'addresses',
             'attributes' => ['address'],
-            'recheckEmptyAfter' => 'P7D',
-            'refreshAfter' => 'P90D',
+            'recheckEmptyAfter' => new \DateInterval('P7D'),
+            'refreshAfter' => new \DateInterval('P90D'),
             ...$arguments,
         ]);
     }
@@ -54,6 +54,5 @@ class AsLocationLookupTest extends TestCase
     {
         yield 'id in camel case' => [['id' => 'nearestAddress'], 'in lower case with hyphens'];
         yield 'no attributes' => [['attributes' => []], 'declares no attributes'];
-        yield 'not a duration' => [['refreshAfter' => '90 days'], 'must be an ISO 8601 duration'];
     }
 }
