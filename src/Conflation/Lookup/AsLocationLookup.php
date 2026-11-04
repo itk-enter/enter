@@ -67,10 +67,6 @@ final readonly class AsLocationLookup
         public string $transport = self::DEFAULT_TRANSPORT,
         public \DateInterval $requestTimeout = new \DateInterval('P1D'),
     ) {
-        if (1 !== preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $id)) {
-            throw new \InvalidArgumentException(\sprintf('Lookup id "%s" must be in lower case with hyphens.', $id));
-        }
-
         if ([] === $attributes) {
             throw new \InvalidArgumentException(\sprintf('Lookup %s declares no attributes.', $id));
         }
