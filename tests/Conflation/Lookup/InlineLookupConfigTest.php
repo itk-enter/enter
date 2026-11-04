@@ -23,7 +23,7 @@ class InlineLookupConfigTest extends TestCase
 
     public function testALookupWithATransportUsesTheQueue(): void
     {
-        $this->assertFalse(new AsLocationLookup(id: 'addresses', attributes: ['address'], recheckEmptyAfter: 'P7D', refreshAfter: 'P90D', transport: 'lookups')->isInline());
+        $this->assertFalse(new AsLocationLookup(id: 'addresses', attributes: ['address'], recheckEmptyAfter: new \DateInterval('P7D'), refreshAfter: new \DateInterval('P90D'), transport: 'lookups')->isInline());
     }
 
     public function testALookupWithATransportMustGiveThePeriods(): void
