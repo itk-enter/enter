@@ -43,7 +43,7 @@ DATA,
     omittedFields: [
         'amenity' => 'Selector; every record is published under the one model this source names.',
         'access' => 'Every bench this model describes is public; the few records that carry it state "yes".',
-        'source' => 'Where a mapper took the record from; describes the mapping, and the source this import records is the feed it read.',
+        'source' => 'Where a mapper took the record from; describes the work of the mapper, and the source this import records is the feed it read.',
         'note' => 'Free-text remark addressed to other mappers, as is fixme.',
         'fixme' => 'Free-text remark addressed to other mappers.',
         'not' => 'Hints to other mappers that a tag is deliberately absent, as the not: prefixed keys are; they state nothing about the bench.',
@@ -57,7 +57,7 @@ DATA,
 final class Bench extends AbstractSource
 {
     /**
-     * The tags that this mapping reads.
+     * The tags that this source reads.
      */
     private const array MAPPED_TAGS = [
         'name', 'description', 'backrest', 'armrest', 'seats', 'seats:separated', 'material', 'colour',
@@ -66,7 +66,7 @@ final class Bench extends AbstractSource
     ];
 
     /**
-     * The tags that this mapping does not use, with all keys that they prefix.
+     * The tags that this source does not use, and all the keys that start with these tags.
      */
     private const array OMITTED_TAGS = [
         'amenity', 'access', 'source', 'note', 'fixme', 'not', 'tourism', 'artwork_type', 'artist_name',

@@ -13,10 +13,10 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 /**
  * The configuration of a merge.
  *
- * A merge is a class carrying this attribute and implementing
- * ConflationInterface. Each customizable step is named by an implementation
- * of its abstract class, so a kind that needs other rules for a step names a
- * subclass there.
+ * A merge is a class that has this attribute and implements
+ * ConflationInterface. The attribute names an implementation of the abstract
+ * class of each customizable step. If a kind of thing needs other rules for
+ * a step, the merge names a subclass for that step.
  *
  * @see ConflationInterface
  */
@@ -35,18 +35,20 @@ final readonly class Conflation
      * @param string                           $title              the merged data set's title, as a source's
      * @param string                           $description        what the merged data set holds, as a source's
      * @param string                           $resultModel        the data model merged entities are built in
-     * @param list<string>                     $defining           models whose records are matched, each able to form
-     *                                                             a merged entity
-     * @param list<AbstractConflictResolution> $conflictResolution approaches tried in order on an attribute in conflict;
-     *                                                             with none, every conflict is left out and recorded
+     * @param list<string>                     $defining           the models whose records the merge matches; each one
+     *                                                             can form a merged entity
+     * @param list<AbstractConflictResolution> $conflictResolution the approaches that the pipeline tries in order on an
+     *                                                             attribute in conflict; with none, the merge leaves
+     *                                                             out and records every conflict
      * @param array<string, list<string>>      $augmenting         models that only add attributes, with the attributes
      *                                                             each supplies, named as in the result model
-     * @param AbstractAugmentation|null        $augmentation       how augmenting records reach merged entities; left
-     *                                                             out, WithinAreaOrRadius with the merge's radius
-     * @param string|null                      $contextUrl         the result model's JSON-LD context; left out, the one
-     *                                                             the input data sets of the result model declare
-     * @param string|null                      $licence            the merged data set's licence; left out, the one its
-     *                                                             input data sets share, if they state one
+     * @param AbstractAugmentation|null        $augmentation       how augmenting records reach merged entities; if not
+     *                                                             given, WithinAreaOrRadius with the merge's radius
+     * @param string|null                      $contextUrl         the result model's JSON-LD context; if not given, the
+     *                                                             one that the input data sets of the result model
+     *                                                             declare
+     * @param string|null                      $licence            the merged data set's licence; if not given, the one
+     *                                                             that its input data sets share, if they state one
      */
     public function __construct(
         public string $id,
@@ -77,9 +79,9 @@ final readonly class Conflation
         }
 
         // The default merge by location groups records as they are, so their
-        // attributes keep the names of their own model. A merge reading other
-        // models names a merge by location of its own, which restates its
-        // records in the result model.
+        // attributes keep the names of their own model. A merge that reads
+        // other models names a merge by location of its own, which restates
+        // its records in the result model.
         $otherModels = array_diff($defining, [$resultModel]);
         if ([] !== $otherModels && OneToOneClosestFirst::class === $mergeByLocation::class) {
             throw new \InvalidArgumentException(\sprintf('Merge %s reads %s, which is not its result model %s, so it needs a merge by location of its own that restates those records in %s.', $id, implode(', ', $otherModels), $resultModel, $resultModel));
@@ -91,7 +93,8 @@ final readonly class Conflation
     /**
      * The configuration a merge class declares.
      *
-     * Reading it takes no instance, as with a source's definition.
+     * It is not necessary to make an instance to read it, as with the
+     * definition of a source.
      *
      * @param class-string $class
      *

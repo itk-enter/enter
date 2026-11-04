@@ -24,9 +24,9 @@ class ConflationRunCommand
         SymfonyStyle $io,
         ConflationManager $manager,
         ConflationRunner $runner,
-        #[Argument(description: 'The id of the merge to run; left out, every merge runs')]
+        #[Argument(description: 'The id of the merge to run. If you do not give an id, all merges run')]
         ?string $merge = null,
-        #[Option(description: 'Report what the merge produces without publishing it')]
+        #[Option(description: 'Show the result of the merge, and do not publish it')]
         bool $dryRun = false,
     ): int {
         $conflations = null === $merge ? $manager->getConflations() : [$manager->getConflation($merge)];
@@ -50,7 +50,7 @@ class ConflationRunCommand
             }
 
             if (null === $run->upserted) {
-                $io->note('Dry run: nothing was published.');
+                $io->note('Dry run: the command published nothing.');
             } else {
                 $io->success(\sprintf('Published %d entities as %s and deleted %d stale ones.', $run->upserted, $run->dataSet->id, $run->deleted));
             }

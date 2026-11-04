@@ -93,7 +93,7 @@ abstract class AbstractTestHandicapParking extends AbstractSource
     }
 
     /**
-     * Gets the siting, on or off the street, from the tags.
+     * Gets the location of the site, on or off the street, from the tags.
      *
      * @param array<string, mixed> $tags
      */
@@ -164,13 +164,13 @@ abstract class AbstractTestHandicapParking extends AbstractSource
      */
     final protected function isSingleBay(array $tags): bool
     {
-        if (1 !== $this->reservedBays($tags)) {
+        // Rule out anything but a disabled parking space with one reserved bay.
+        if ('disabled' !== ($tags['parking_space'] ?? null) || 1 !== $this->reservedBays($tags)) {
             return false;
         }
 
-        $capacity = $this->tagAsInt($tags, 'capacity');
-
-        return 1 === $capacity || (null === $capacity && 'disabled' === ($tags['parking_space'] ?? null));
+        // A parking space without a capacity is one bay. Anything above is a site.
+        return \in_array($this->tagAsInt($tags, 'capacity'), [1, null], true);
     }
 
     /**

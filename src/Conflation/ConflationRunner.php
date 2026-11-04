@@ -18,15 +18,16 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * Runs one merge from the broker back to the broker: fetch, the pipeline's
  * steps, create and publish.
  *
- * Publishing upserts every merged entity, then deletes the merged data set's
- * entities this run did not produce, such as a toilet whose records no longer
- * lie together. A step that breaks its limits fails the run before anything
- * is published.
+ * To publish, the runner upserts every merged entity. Then it deletes the
+ * entities of the merged data set that this run did not produce, for example
+ * a toilet whose records are no longer near each other. If a step breaks its
+ * limits, the run fails before it publishes anything.
  */
 final readonly class ConflationRunner
 {
     /**
-     * @param list<string> $contextUrls the contexts attached to every entity, beside the result model's own
+     * @param list<string> $contextUrls the contexts that the runner attaches to every entity, in addition to the
+     *                                  context of the result model
      */
     public function __construct(
         private ConflationFetcher $fetcher,
@@ -41,7 +42,7 @@ final readonly class ConflationRunner
     }
 
     /**
-     * @param bool $publish false to stop after creating the entities, publishing nothing
+     * @param bool $publish false to stop after the runner creates the entities, and to publish nothing
      */
     public function run(Conflation $conflation, bool $publish = true): ConflationRun
     {

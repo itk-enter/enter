@@ -172,17 +172,27 @@ Do not refer to project history in code. Do not write:
 - ADR numbers (`ADR 004`, `see docs/adr/...`).
 - Issue, ticket or PR numbers.
 - Follow-up work, milestones or sprints.
-- Examples.
 
 Put this context in the PR description, the commit message or the CHANGELOG.
 
+You can write a `@todo` for a known defect that the code does not fix yet. The `@todo` tells what to correct, without
+an issue number. Do not write a `@todo` for a new feature or an idea. Do not remove a `@todo` while the defect exists.
+
+```php
+ * @todo Calculate the correct centroid without the GEOS extension.
+```
+
+You can write an example in the docblock of a class. Do not write an example in the docblock of a method or a
+function, or in a comment in the code.
+
 A class or method that other code extends needs more than `@param` lines. Examples are the abstract steps in
-`src/Conflation/` and `AbstractSource`. The docblock tells:
+`src/Conflation/` and `AbstractSource`. The docblock of the method tells:
 
 - When the code calls the method.
 - What each parameter holds.
 - What the method must return.
-- A small, concrete example.
+
+Put a small, concrete example of the method in the docblock of its class.
 
 Give `@param` and `@return` when they tell more than the signature, for example an array shape or a `list<…>`.
 

@@ -7,8 +7,8 @@ namespace App\Conflation;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**
- * Marks a class as a merge, so merges are collected by a service tag the way
- * sources are.
+ * Marks a class as a merge, so that a service tag collects the merges, as it
+ * does for the sources.
  *
  * It holds no rules: a merge's configuration is its #[Conflation] attribute,
  * and its rules are the step implementations the attribute names.

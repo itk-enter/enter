@@ -13,6 +13,7 @@ See [adr.github.io](https://adr.github.io/) for background on the format.
 | [005](005-conflation-merge-by-location.md)   | Conflation, merge by location   | Draft    | 2026-10-13 |
 | [006](006-conflation-conflict-resolution.md) | Conflation, conflict resolution | Draft    | 2026-10-13 |
 | [007](007-conflation-augmentation.md)        | Conflation, augmentation        | Draft    | 2026-10-13 |
+| [008](008-conflation-remote-lookups.md)      | Conflation, remote lookups      | Draft    | 2026-11-02 |
 
 Numbering follows dependency order: each ADR relies only on lower-numbered
 ones. Dates therefore need not run in the same order as numbers.

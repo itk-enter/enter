@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Import\Exception;
 
 /**
- * No source is registered under the requested key.
+ * No registered source has the requested key.
  */
 final class UnknownSourceException extends \InvalidArgumentException
 {
     /**
-     * @param list<string> $known every key that is registered
+     * @param list<string> $known all the registered keys
      */
     public function __construct(
         public readonly string $key,

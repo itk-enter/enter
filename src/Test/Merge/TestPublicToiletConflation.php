@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[When('dev')]
 #[When('test')]
 #[Conflation(
-    // By convention the ID of a test merge must start with `test:`, so it reads only test data sets
+    // The ID of a test merge starts with `test:`, so that the merge reads only the test data sets
     id: 'test:merged-public-toilets',
     title: 'Test: Offentlige toiletter (samlet), Aarhus Kommune',
     description: 'Public toilets merged from the test data sets.',

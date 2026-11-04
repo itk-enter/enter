@@ -16,7 +16,7 @@ class FindToiletSourceImporter extends AbstractSourceImporter
     {
         $items = $data['toilets'] ?? null;
         if (!is_array($items) || !array_is_list($items)) {
-            throw new \RuntimeException('Invalid or missing toilets in data');
+            throw new \RuntimeException('The toilets in the data are missing or not valid');
         }
 
         return $items;

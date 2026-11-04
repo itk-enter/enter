@@ -15,10 +15,11 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
  * publishes them: the municipality's city toilets and other toilets, OSM and
  * FindToilet.
  *
- * Toilets within 5 metres of each other in different data sets are taken as
- * the same toilet. Where they disagree, the value more than half of them state
- * wins; without a majority, the municipality's city toilets decide, then its
- * other toilets. A conflict neither of them states a value in is recorded.
+ * The merge takes toilets in different data sets within 5 metres of each
+ * other as the same toilet. If they disagree, the value that more than half
+ * of them state wins. If there is no majority, the municipality's city
+ * toilets decide, then its other toilets. If neither of these data sets
+ * states a value, the merge records a conflict.
  */
 #[Conflation(
     id: 'merged-public-toilets',

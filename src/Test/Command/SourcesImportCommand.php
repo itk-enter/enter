@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 #[AsCommand(
     name: 'test:source:import-all',
-    description: 'Import all test sources',
+    description: 'Import all the test sources',
 )]
 #[When('dev')]
 class SourcesImportCommand
@@ -29,8 +29,9 @@ class SourcesImportCommand
             static fn (SourceInterface $source): bool => $source->definition instanceof TestDefinition
         );
 
-        // The run's outcome is dispatched like a real import's, so whatever
-        // follows a full import can be tried against the test sources.
+        // The importer dispatches the result of the run as for a real import.
+        // Thus the code that runs after a full import can also run on the test
+        // sources.
         $importer->import($sources, static function (SourceInterface $source, ImportResult|\Throwable $result) use ($io): void {
             $io->section((string) $source);
 

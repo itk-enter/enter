@@ -16,28 +16,30 @@ use Psr\Log\LoggerInterface;
  * Reads the records a merge needs from the broker: the first step of a run.
  *
  * The pipeline works on Records, not on broker entities. This class decides
- * which data sets a merge reads, reads their entities from the broker, and
- * turns each entity into a Record: its id, its data set, its location, and
+ * which data sets a merge reads, and reads their entities from the broker.
+ * It turns each entity into a Record: its id, its data set, its location, and
  * the attributes that describe the thing.
  *
  * For example, for a merge with defining: ['PublicToilet'], it reads the four
- * toilet data sets, and the OSM toilet entity
+ * toilet data sets. It turns the OSM toilet entity
  *
  *     {"id": "urn:…:aarhus-toilet-osm-node-17", "geometry": {"type": "Point", "coordinates": [10.21, 56.15]},
  *      "properties": {"type": "PublicToilet", "name": "Park toilet", "sourceId": "osm-public-toilet", …}}
  *
- * becomes a Record with that id, data set "osm-public-toilet", located at
- * (10.21, 56.15), stating name "Park toilet".
+ * into a Record with that id, the data set "osm-public-toilet", the point
+ * (10.21, 56.15) and the name "Park toilet".
  *
- * A merge names models, not data sets. Every data set whose source publishes
- * one of the merge's defining or augmenting models is read, so a data set
- * added for a model takes part without changing the merge. The entities are
- * read by the data set's source id, so the merge's own result, published under
- * its own source id, is never read back in.
+ * A merge names models, not data sets. The fetcher reads every data set whose
+ * source publishes one of the defining or augmenting models of the merge.
+ * Thus a new data set of a model takes part, and the merge does not change.
+ * The fetcher reads the entities by the source id of the data set. The merge
+ * publishes its result under its own source id, so the fetcher never reads
+ * that result back in.
  *
- * Test data sets, whose source ids start with "test:", are kept apart from
- * published ones: a merge whose id starts with "test:" reads only test data
- * sets, and any other merge reads only published ones.
+ * The fetcher keeps the test data sets apart from the published data sets.
+ * The source id of a test data set starts with "test:". A merge whose id
+ * starts with "test:" reads only test data sets. Any other merge reads only
+ * published data sets.
  */
 final readonly class ConflationFetcher
 {
@@ -47,16 +49,17 @@ final readonly class ConflationFetcher
     public const string TEST_PREFIX = 'test:';
 
     /**
-     * Properties not taken as attributes of a record.
+     * Properties that the fetcher does not take as attributes of a record.
      *
-     * - type: the model, which the record carries as its model.
+     * - type: the model, which the record holds as its model.
      * - location: the broker returns the location twice, as the feature's
-     *   geometry and again as this property. The record is located by the
-     *   geometry, which matching compares, so the copy is not also taken as an
-     *   attribute.
-     * - sourceId and source: which data set the entity comes from and where it
-     *   was read. They differ between data sets by definition, so they would
-     *   put every group in conflict; the record carries its data set already.
+     *   geometry and again as this property. The record gets its location
+     *   from the geometry, which the match compares. Thus the fetcher does not
+     *   also take the copy as an attribute.
+     * - sourceId and source: which data set the entity comes from, and where
+     *   the importer read it. They are different in each data set, so they
+     *   would put every group in conflict. The record already holds its data
+     *   set.
      */
     public const array LEFT_OUT = [
         'type',
@@ -66,14 +69,14 @@ final readonly class ConflationFetcher
     ];
 
     /**
-     * The property holding the source fields the model has no attribute for,
-     * keyed by each feed's own field names.
+     * The property that holds the source fields that the model has no
+     * attribute for. Its keys are the field names of each feed.
      */
     public const string ADDITIONAL_INFORMATION = 'additionalInformation';
 
     /**
      * Joins additionalInformation and one of its keys into the name of the
-     * attribute the key is settled as.
+     * attribute that the pipeline settles the key as.
      */
     public const string KEY_SEPARATOR = '.';
 
@@ -88,8 +91,8 @@ final readonly class ConflationFetcher
      * Every record of the models the merge names, from every data set that
      * publishes them, ordered by data set, then id.
      *
-     * An entity without a geometry cannot be placed, so it is left out with a
-     * warning.
+     * An entity without a geometry has no location, so the fetcher leaves it
+     * out and logs a warning.
      *
      * @return list<Record>
      */
@@ -114,9 +117,9 @@ final readonly class ConflationFetcher
     }
 
     /**
-     * The data sets a merge reads: those publishing one of its models, test
-     * data sets for a test merge and published ones otherwise, ordered by
-     * source id.
+     * The data sets that a merge reads, ordered by source id. These are the
+     * data sets that publish one of its models: test data sets for a test
+     * merge, and published data sets for any other merge.
      *
      * @return list<SourceInterface>
      */
@@ -157,16 +160,15 @@ final readonly class ConflationFetcher
     }
 
     /**
-     * Splits additionalInformation into one attribute per key, so each key is
-     * settled on its own, by the same rules as any other attribute.
+     * Splits additionalInformation into one attribute per key. Thus the
+     * pipeline settles each key on its own, with the same rules as any other
+     * attribute.
      *
-     * Data sets that agree on a key, or where only one states it, keep it
-     * without conflict, and a key two data sets state differently is settled
-     * by the merge's approaches or recorded as a conflict. For example,
-     * {"additionalInformation": {"check_date": "2025-06-01", "operator": "Aarhus Kommune"}}
-     * becomes the attributes "additionalInformation.check_date" and
-     * "additionalInformation.operator". A value that is not keyed, such as a
-     * list, is kept whole.
+     * If the data sets agree on a key, or only one data set states it, the key
+     * has no conflict. If two data sets state different values for a key, the
+     * approaches of the merge settle it, or the pipeline records a conflict.
+     * Each key becomes an attribute with the name "additionalInformation.<key>".
+     * The method keeps a list as one value.
      *
      * @param array<array-key, mixed> $attributes
      *

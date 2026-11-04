@@ -15,6 +15,16 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+/**
+ * The base class of an importer for one type of feed.
+ *
+ * The import reads the feed, gets the records with extractItems() and makes
+ * one entity from each record. Then it upserts the entities into the broker
+ * and deletes the entities of the source that the feed no longer gives.
+ *
+ * For example, the importer for GeoJSON feeds returns true from supports()
+ * for DataType::GeoJSON. Its extractItems() returns the list in "features".
+ */
 abstract class AbstractSourceImporter implements SourceImporterInterface
 {
     use LoggerAwareTrait;
@@ -39,20 +49,32 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         $this->setLogger($logger);
     }
 
+    /**
+     * Tells if this importer can import the source.
+     *
+     * SourceImporterFactory calls this method on each importer and uses the
+     * first importer that returns true. Compare the dataType of the
+     * #[Definition] of the source.
+     */
     abstract public function supports(SourceInterface $source): bool;
 
     /**
-     * Gets the records from the source data.
+     * Gets the records from the decoded feed.
      *
-     * @param iterable<mixed> $data
+     * The import calls this method one time for each source, after it reads
+     * the feed. Return the list of records. The import gives each record to
+     * the createNgsiEntity() method of the source. Throw an exception if the
+     * feed does not have the expected structure.
      *
-     * @return array<array<string, mixed>>
+     * @param iterable<mixed> $data the decoded JSON of the feed
+     *
+     * @return array<array<string, mixed>> the records of the feed
      */
     abstract protected function extractItems(iterable $data, SourceInterface $source): array;
 
     public function import(SourceInterface $source): ImportResult
     {
-        $this->info('Processing source {source}', ['source' => $source->__toString()]);
+        $this->info('The import reads source {source}', ['source' => $source->__toString()]);
 
         $contextUrls = array_merge([$source->definition->contextUrl], $this->contextUrls);
         $payload = [];
@@ -62,7 +84,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                 throw new \LogicException(sprintf('Source %s mapped %s onto model %s, but declares %s.', $source->definition->id, $entity->id(), $entity->type(), $source->definition->model));
             }
 
-            $this->info('Building payload for {entity}', ['entity' => $entity->id()]);
+            $this->info('The import adds {entity} to the payload', ['entity' => $entity->id()]);
             $ids[] = $entity->id();
             $payload[] = $entity
                 ->setProperty(self::SOURCE_ID_ATTRIBUTE, $source->definition->id)
@@ -70,9 +92,9 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         }
 
         if (1 === count($payload)) {
-            $this->info('Upserting 1 entity');
+            $this->info('The import upserts 1 entity');
         } else {
-            $this->info('Upserting {count} entities', ['count' => count($payload)]);
+            $this->info('The import upserts {count} entities', ['count' => count($payload)]);
         }
 
         try {
@@ -104,7 +126,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     private function sweep(SourceInterface $source, array $ids): int
     {
         if ([] === $ids) {
-            $this->warning('Source {source} yielded no entities; keeping what the broker holds', ['source' => $source->definition->id]);
+            $this->warning('Source {source} gave no entities. The broker keeps its entities of the source', ['source' => $source->definition->id]);
 
             return 0;
         }
@@ -115,9 +137,9 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         ));
 
         if (1 === count($stale)) {
-            $this->info('Deleting 1 stale entity');
+            $this->info('The import deletes 1 stale entity');
         } else {
-            $this->info('Deleting {count} stale entities', ['count' => count($stale)]);
+            $this->info('The import deletes {count} stale entities', ['count' => count($stale)]);
         }
 
         $this->broker->delete($stale);
@@ -139,8 +161,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                     yield $entity;
                 }
             } catch (\Exception $e) {
-                // @todo Log in database?
-                $this->error('error: {message} ', ['message' => $e->getMessage()]);
+                $this->error('Skipped a record of {source}: {message}', ['source' => $source->definition->id, 'message' => $e->getMessage()]);
             }
         }
     }

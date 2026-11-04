@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Import\Exception;
 
 /**
- * The payload was built, but the broker could not be written to.
+ * The importer made the payload, but it could not write the payload to the
+ * broker.
  */
 final class UpsertFailedException extends \RuntimeException
 {

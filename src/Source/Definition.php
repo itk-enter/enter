@@ -6,8 +6,6 @@ namespace App\Source;
 
 /**
  * The configuration of a source.
- *
- * @see AsDataSource
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
 readonly class Definition
