@@ -1,0 +1,38 @@
+when:
+    - branch: release/*
+      event: push
+
+skip_clone: true
+
+labels:
+    zone: CLOUD
+
+steps:
+    - name: Run stg site update
+      image: itkdev/ansible-plugin:1
+      pull: true
+      settings:
+          id:
+              from_secret: id
+          secret:
+              from_secret: secret
+          host:
+              from_secret: stg_host
+          path:
+              from_secret: stg_path
+          user:
+              from_secret: user
+          actions:
+              - git reset --hard
+              - git fetch origin ${CI_COMMIT_BRANCH}
+              - git checkout ${CI_COMMIT_BRANCH}
+              - git pull
+              # Install the code before "up", so that the new worker starts on the new code.
+              # "--no-deps" prevents "run" from starting rabbit before "up".
+              - itkdev-docker-compose-server run --rm --no-deps phpfpm composer install --no-dev --classmap-authoritative
+              - itkdev-docker-compose-server run --rm --no-deps phpfpm bin/console cache:clear --no-debug
+              - itkdev-docker-compose-server up -d --force-recreate --remove-orphans
+              - itkdev-docker-compose-server exec phpfpm bin/console asset-map:compile
+              - itkdev-docker-compose-server exec phpfpm bin/console cache:clear --no-debug
+              # The supervisor starts the worker again, with the new code.
+              - itkdev-docker-compose-server exec phpfpm bin/console messenger:stop-workers
