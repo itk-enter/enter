@@ -33,3 +33,6 @@ steps:
               - itkdev-docker-compose-server run --rm --no-deps phpfpm bin/console cache:clear --no-debug
               - itkdev-docker-compose-server up -d --force-recreate --remove-orphans
               - itkdev-docker-compose-server exec phpfpm bin/console asset-map:compile
+              - itkdev-docker-compose-server exec phpfpm bin/console cache:clear --no-debug
+              # The supervisor starts the worker again, with the new code.
+              - itkdev-docker-compose-server exec phpfpm bin/console messenger:stop-workers
