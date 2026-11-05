@@ -262,7 +262,7 @@ final readonly class NgsiLdBroker
     public function entities(string $sourceId, string $contextUrl, array $attributes): \Generator
     {
         for ($offset = 0;; $offset += self::PAGE_SIZE) {
-            $response = $this->brokerClient->request(Request::METHOD_GET, rtrim($this->brokerUrl, '/').self::ENTITIES_PATH, [
+            $response = $this->brokerClient->request(Request::METHOD_GET, self::ENTITIES_PATH, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
@@ -291,6 +291,68 @@ final readonly class NgsiLdBroker
                 return;
             }
         }
+    }
+
+    /**
+     * Reads some attributes of one entity, in normalized form.
+     *
+     * @param list<string> $attributes the attributes to read
+     *
+     * @return array<string, mixed>|null the entity, or null if it does not exist
+     */
+    public function entity(string $id, string $contextUrl, array $attributes): ?array
+    {
+        $response = $this->brokerClient->request(Request::METHOD_GET, rtrim($this->brokerUrl, '/').self::ENTITIES_PATH.'/'.rawurlencode($id), [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
+            ],
+            'query' => ['attrs' => implode(',', $attributes)],
+        ]);
+
+        $status = $response->getStatusCode();
+        if (Response::HTTP_NOT_FOUND === $status) {
+            return null;
+        }
+
+        if ($status >= Response::HTTP_BAD_REQUEST) {
+            throw new \RuntimeException(\sprintf('The broker rejected the read of %s with HTTP %d: %s', $id, $status, $response->getContent(false)));
+        }
+
+        return $response->toArray();
+    }
+
+    /**
+     * Adds or replaces some attributes of one entity, and keeps the others.
+     *
+     * The method uses the NGSI-LD operation "Append Entity Attributes". It
+     * writes only the attributes that it gets, so it does not change values
+     * that another process wrote at the same time.
+     *
+     * @param array<string, array<string, mixed>> $attributes the attributes in normalized form, by name
+     *
+     * @return bool false if the entity does not exist
+     */
+    public function appendAttributes(string $id, string $contextUrl, array $attributes): bool
+    {
+        $response = $this->brokerClient->request(Request::METHOD_POST, rtrim($this->brokerUrl, '/').self::ENTITIES_PATH.'/'.rawurlencode($id).'/attrs', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
+            ],
+            'json' => $attributes,
+        ]);
+
+        $status = $response->getStatusCode();
+        if (Response::HTTP_NOT_FOUND === $status) {
+            return false;
+        }
+
+        if ($status >= Response::HTTP_BAD_REQUEST || Response::HTTP_MULTI_STATUS === $status) {
+            throw new \RuntimeException(\sprintf('The broker rejected the update of %s with HTTP %d: %s', $id, $status, $response->getContent(false)));
+        }
+
+        return true;
     }
 
     /**

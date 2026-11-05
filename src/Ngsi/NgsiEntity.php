@@ -47,6 +47,18 @@ final class NgsiEntity
     }
 
     /**
+     * Sets an attribute in normalized form, with all its sub-attributes.
+     *
+     * @param array<string, mixed> $attribute
+     */
+    public function setAttribute(string $name, array $attribute): self
+    {
+        $this->attributes[$name] = $attribute;
+
+        return $this;
+    }
+
+    /**
      * A copy of the entity with another id, and the same type and attributes.
      */
     public function withId(string $id): self

@@ -8,9 +8,12 @@ use App\Broker\NgsiLdBroker;
 use App\Conflation\Conflation;
 use App\Conflation\Io\MergedDataSet;
 use App\Ngsi\NgsiEntity;
+use Psr\Clock\ClockInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
- * Keeps the answers of the lookups of a merge on its merged entities.
+ * Keeps the answers of the lookups of a merge on its merged entities, and
+ * requests the checks that are due.
  *
  * A run builds each merged entity again from the records. The answers of the
  * lookups are not in the records, so the run would publish the entity
@@ -19,26 +22,22 @@ use App\Ngsi\NgsiEntity;
  * merge published before. It copies them only if the entity has the same id
  * and the same location. A merged entity that moves gets new answers.
  *
+ * Before the runner publishes, this class also marks each check that is due
+ * as requested. After the runner publishes, it sends a LookupMessage for each
+ * marked check. A worker handles the message later, with LookupHandler. While
+ * the mark is younger than the request timeout of the lookup, a later run
+ * does not send the check again. Thus a long queue gets no second message for
+ * one check.
+ *
  * A lookup supplies only the attributes that the records of the thing do not
  * give. A value of the records always stays.
  */
 final readonly class RemoteLookups
 {
-    /**
-     * The decimal places of a coordinate that the location test compares.
-     *
-     * The test compares the location of this run with the location that the
-     * broker gives back as JSON. The two can be different in the format of
-     * the number, for example 10 and 10.0, or in the last digits of a long
-     * decimal. Without the rounding, the test can find that an entity moved
-     * when it did not. Then the entity loses its answers, and the lookup is
-     * asked again on each run. 9 decimal places of a degree is approximately
-     * 0.1 mm. This is much less than the radius of a merge.
-     */
-    private const int PRECISION = 9;
-
     public function __construct(
         private NgsiLdBroker $broker,
+        private MessageBusInterface $bus,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -74,7 +73,7 @@ final readonly class RemoteLookups
         $previous = iterator_to_array($this->broker->entities($dataSet->id, $dataSet->contextUrl, self::attributes($conflation)));
         foreach ($entities as $entity) {
             $before = $previous[$entity->id()] ?? null;
-            if (null === $before || !self::sameLocation($entity->attribute('location'), $before['location'] ?? null)) {
+            if (null === $before || !Location::same($entity->attribute('location')['value'] ?? null, $before['location']['value'] ?? null)) {
                 continue;
             }
 
@@ -86,6 +85,79 @@ final readonly class RemoteLookups
         }
 
         return $wanted;
+    }
+
+    /**
+     * Marks each check that is due as requested.
+     *
+     * The runner calls the method after keepAnswers(), and before it publishes
+     * the merged entities. Thus the marks are in the entities that it
+     * publishes. The method adds the sub-property requestedAt to the check
+     * property. If the entity has no check property, the method adds one with
+     * the value "pending".
+     *
+     * @param list<NgsiEntity>                                 $entities the merged entities, with the answers that
+     *                                                                   keepAnswers() copied; the method adds the
+     *                                                                   marks to them
+     * @param array<string, array<class-string, list<string>>> $wanted   what keepAnswers() returned
+     *
+     * @return array<string, array<class-string, list<string>>> the checks that are due, in the same form as $wanted
+     */
+    public function markDueChecks(array $entities, array $wanted): array
+    {
+        $now = $this->clock->now();
+        $requestedAt = $now->setTimezone(new \DateTimeZone('UTC'))->format(AsLocationLookup::TIME_FORMAT);
+        $due = [];
+        foreach ($entities as $entity) {
+            foreach ($wanted[$entity->id()] ?? [] as $class => $attributes) {
+                $lookup = AsLocationLookup::of($class);
+                $check = $entity->attribute($lookup->checkProperty()) ?? ['type' => 'Property', 'value' => CheckResult::Pending->value];
+                $checkedAt = \is_string($check['observedAt'] ?? null) ? $check['observedAt'] : null;
+                $pending = $check[AsLocationLookup::REQUESTED_AT]['value'] ?? null;
+                $pending = \is_string($pending) ? $pending : null;
+
+                if (null === $entity->attribute('location') || !$lookup->isDue($checkedAt, array_any($attributes, $entity->has(...)), $now, $pending)) {
+                    continue;
+                }
+
+                $check[AsLocationLookup::REQUESTED_AT] = ['type' => 'Property', 'value' => $requestedAt];
+                $entity->setAttribute($lookup->checkProperty(), $check);
+                $due[$entity->id()][$class] = $attributes;
+            }
+        }
+
+        return $due;
+    }
+
+    /**
+     * Sends a message for each check that markDueChecks() marked.
+     *
+     * The runner calls the method after it publishes the merged entities, so
+     * that the worker finds the entities in the broker.
+     *
+     * @param list<NgsiEntity>                                 $entities the merged entities that the runner published
+     * @param array<string, array<class-string, list<string>>> $due      what markDueChecks() returned
+     *
+     * @return int the number of messages sent
+     */
+    public function requestChecks(MergedDataSet $dataSet, array $entities, array $due): int
+    {
+        $sent = 0;
+        foreach ($entities as $entity) {
+            foreach ($due[$entity->id()] ?? [] as $class => $attributes) {
+                $lookup = AsLocationLookup::of($class);
+                $checkedAt = $entity->attribute($lookup->checkProperty())['observedAt'] ?? null;
+                $checkedAt = \is_string($checkedAt) ? $checkedAt : null;
+
+                /** @var array<string, mixed> $location */
+                $location = $entity->attribute('location')['value'] ?? [];
+
+                $this->bus->dispatch(new LookupMessage($entity->id(), $dataSet->contextUrl, $class, $attributes, $location, $checkedAt));
+                ++$sent;
+            }
+        }
+
+        return $sent;
     }
 
     /**
@@ -104,41 +176,17 @@ final readonly class RemoteLookups
         return $attributes;
     }
 
+    /**
+     * Copies an attribute as the broker gave it, with its observedAt and its
+     * sub-properties, for example the request mark of a check property.
+     */
     private static function copy(NgsiEntity $entity, string $name, mixed $attribute): void
     {
         if (!\is_array($attribute) || 'Property' !== ($attribute['type'] ?? null) || !\array_key_exists('value', $attribute)) {
             return;
         }
 
-        $observedAt = $attribute['observedAt'] ?? null;
-        $entity->setProperty($name, $attribute['value'], \is_string($observedAt) ? $observedAt : null);
-    }
-
-    /**
-     * Tests if two GeoProperties hold the same geometry.
-     */
-    private static function sameLocation(mixed $location, mixed $other): bool
-    {
-        if (!\is_array($location) || !\is_array($other)) {
-            return false;
-        }
-
-        return self::rounded($location['value'] ?? null) === self::rounded($other['value'] ?? null);
-    }
-
-    /**
-     * The geometry with each coordinate rounded to PRECISION.
-     */
-    private static function rounded(mixed $value): mixed
-    {
-        if (\is_int($value) || \is_float($value)) {
-            return round((float) $value, self::PRECISION);
-        }
-
-        if (\is_array($value)) {
-            return array_map(self::rounded(...), $value);
-        }
-
-        return $value;
+        /* @var array<string, mixed> $attribute */
+        $entity->setAttribute($name, $attribute);
     }
 }

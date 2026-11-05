@@ -18,8 +18,10 @@ use App\Source\Osm\PublicToilet as OsmPublicToilet;
 use App\SourceManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Messenger\MessageBus;
 
 class ConflationRunnerTest extends TestCase
 {
@@ -69,7 +71,7 @@ class ConflationRunnerTest extends TestCase
             new MergedDataSetFactory($fetcher),
             new MergedEntityFactory(),
             $broker,
-            new RemoteLookups($broker),
+            new RemoteLookups($broker, new MessageBus(), new MockClock()),
             new NullLogger(),
             ['https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld'],
         );
