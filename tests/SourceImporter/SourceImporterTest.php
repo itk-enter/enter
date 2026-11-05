@@ -18,6 +18,7 @@ use App\Source\SourceInterface;
 use App\SourceImporter\GetJsonSourceImporter;
 use App\SourceImporter\OverpassSourceImporter;
 use App\SourceReader\SourceReaderInterface;
+use App\Test\Source\MtmSpatialMaps\TestOnStreetParking;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -52,6 +53,21 @@ class SourceImporterTest extends TestCase
                 $entity['sourceId'],
             );
         }
+    }
+
+    /**
+     * Makes sure that a test source gives entity ids of its own, so that its
+     * entities do not replace the entities of the published source.
+     */
+    public function testItGivesTheEntitiesOfATestSourceIdsOfTheirOwn(): void
+    {
+        $this->import(new OnStreetParking(), $this->features(1));
+        $this->import(new TestOnStreetParking(), $this->features(1));
+
+        $this->assertSame(
+            ['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1', 'urn:ngsi-ld:OnStreetParking:test:aarhus-handicap-1'],
+            array_column($this->upserted(), 'id'),
+        );
     }
 
     /**

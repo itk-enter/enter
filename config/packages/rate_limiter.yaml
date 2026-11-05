@@ -1,0 +1,9 @@
+framework:
+    # https://symfony.com/doc/current/rate_limiter.html
+    rate_limiter:
+        # The request limit of the lookups transport: 60 requests each minute.
+        # A service with a limit of its own gets a limiter of its own.
+        lookups:
+            policy: 'fixed_window'
+            limit: 60
+            interval: '1 minute'

@@ -11,6 +11,7 @@ use App\Conflation\EventListener\RunConflationsListener;
 use App\Conflation\Io\ConflationFetcher;
 use App\Conflation\Io\MergedDataSetFactory;
 use App\Conflation\Io\MergedEntityFactory;
+use App\Conflation\Lookup\RemoteLookups;
 use App\Conflation\Pipeline\ConflationPipeline;
 use App\Import\Event\SourcesImportedEvent;
 use App\Import\ImportResult;
@@ -20,9 +21,11 @@ use App\Source\Osm\PublicToilet as OsmPublicToilet;
 use App\SourceManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Messenger\MessageBus;
 
 class RunConflationsListenerTest extends TestCase
 {
@@ -65,7 +68,7 @@ class RunConflationsListenerTest extends TestCase
 
         $broker = new NgsiLdBroker($client, 'http://broker.example');
         $fetcher = new ConflationFetcher(new SourceManager([new OsmPublicToilet(), new FindToiletPublicToilet()]), $broker, new NullLogger());
-        $runner = new ConflationRunner($fetcher, new ConflationPipeline(), new MergedDataSetFactory($fetcher), new MergedEntityFactory(), $broker, new NullLogger(), []);
+        $runner = new ConflationRunner($fetcher, new ConflationPipeline(), new MergedDataSetFactory($fetcher), new MergedEntityFactory(), $broker, new RemoteLookups($broker, new MessageBus(), new MockClock()), new NullLogger(), []);
 
         $this->logger = new BufferingLogger();
 

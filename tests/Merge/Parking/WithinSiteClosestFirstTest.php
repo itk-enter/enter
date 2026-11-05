@@ -130,7 +130,7 @@ class WithinSiteClosestFirstTest extends TestCase
         $this->assertCount(4, self::unmatched($clusters));
     }
 
-    public function testAnUnmatchedBayMovesToTheMappedBaysOfItsSiteAndIsGenerated(): void
+    public function testAnUnmatchedBayTakesAFreePlaceInItsSiteAndIsGenerated(): void
     {
         $clusters = new WithinSiteClosestFirst(5.0)->merge([
             self::strip(),
@@ -144,9 +144,9 @@ class WithinSiteClosestFirstTest extends TestCase
         $this->assertSame('S-1', $unmatched[0]->restatedFrom);
         $this->assertTrue($unmatched[0]->attributes[WithinSiteClosestFirst::GENERATED] ?? null);
 
-        [$longitude, $latitude] = self::at(18, 2);
-        $this->assertEqualsWithDelta($longitude, $unmatched[0]->longitude, 1e-9);
-        $this->assertEqualsWithDelta($latitude, $unmatched[0]->latitude, 1e-9);
+        [$longitude, $latitude] = self::at(2.5, 2);
+        $this->assertEqualsWithDelta($longitude, $unmatched[0]->longitude, 1e-7);
+        $this->assertEqualsWithDelta($latitude, $unmatched[0]->latitude, 1e-7);
 
         // A restated bay that matched a mapped bay is not generated.
         foreach ($clusters as $cluster) {
@@ -200,5 +200,53 @@ class WithinSiteClosestFirstTest extends TestCase
 
         $this->assertSame(['B-1' => ['S-2']], self::matched($clusters));
         $this->assertSame(['S-1'], array_map(static fn (Record $record): string => $record->inputId(), self::unmatched($clusters)));
+    }
+
+    public function testTwoMappedBaysInsideASitePairByTheirDistanceBeforeTheSiteJoins(): void
+    {
+        // Two bays of data set "polygons" side by side in the strip, each 3 m wide.
+        $polygon = static fn (string $id, float $west): Record => Record::fromGeometry($id, 'polygons', [
+            'type' => 'Polygon',
+            'coordinates' => [[self::at($west, 0), self::at($west + 3, 0), self::at($west + 3, 4), self::at($west, 4), self::at($west, 0)]],
+        ], 'ParkingSpot');
+
+        // M-1 lies inside P-2, and M-2 lies inside P-1. Every record is 0 m
+        // from the strip, so only the distances between the bays can pair them.
+        $clusters = new WithinSiteClosestFirst(5.0)->merge([
+            self::strip(),
+            $polygon('P-1', 4),
+            $polygon('P-2', 7),
+            self::bay('M-1', 9, 2),
+            self::bay('M-2', 5, 2),
+        ]);
+
+        $this->assertSame(['M-1' => ['P-2', 'S-1'], 'M-2' => ['P-1', 'S-1']], self::matched($clusters));
+    }
+
+    public function testASiteWithAnAreaTakesAMappedBayBeforeASiteAtAPointInIt(): void
+    {
+        // S-2 is the same place mapped again, as a point of two bays inside the strip S-1.
+        $clusters = new WithinSiteClosestFirst(5.0)->merge([
+            self::strip(),
+            self::site('S-2', 2, 10, 2),
+            self::bay('B-1', 11, 2),
+        ]);
+
+        $this->assertSame(['B-1' => ['S-1']], self::matched($clusters));
+    }
+
+    public function testPointSitesOfOneAddressAreOneBayEach(): void
+    {
+        // Two sites 3 m apart that each state the 2 bays of their address.
+        $unmatched = self::unmatched(new WithinSiteClosestFirst(5.0)->merge([
+            self::site('S-1', 2, 0, 0),
+            self::site('S-2', 2, 3, 0),
+        ]));
+
+        $this->assertSame(['S-1', 'S-2'], array_map(static fn (Record $record): string => $record->inputId(), $unmatched));
+        $this->assertSame([self::at(0, 0), self::at(3, 0)], array_map(static fn (Record $record): array => [$record->longitude, $record->latitude], $unmatched));
+        foreach ($unmatched as $bay) {
+            $this->assertArrayNotHasKey(WithinSiteClosestFirst::GENERATED, $bay->attributes);
+        }
     }
 }

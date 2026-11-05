@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-145](https://github.com/itk-enter/enter/pull/145)
   Pointed the landing page of the MTM toilet sources to their data set on opendata.dk
+* [PR-143](https://github.com/itk-enter/enter/pull/143)
+  Added the OSM picnic tables as a source
+* [PR-125](https://github.com/itk-enter/enter/pull/125)
+  Added the GM Park benches and picnic tables as sources
+* [PR-121](https://github.com/itk-enter/enter/pull/121)
+  Fixed the /test map, which hid every test data set
+* [PR-123](https://github.com/itk-enter/enter/pull/123)
+  Improved how the parking merge uses the shapes of the sites
+* [PR-118](https://github.com/itk-enter/enter/pull/118)
+  Spread the bays of a parking site along it with GEOS
+* [PR-116](https://github.com/itk-enter/enter/pull/116)
+  Replaced the home-made geometry in Shape with GEOS
+* [PR-120](https://github.com/itk-enter/enter/pull/120)
+  Removed the unused transform methods from GeometryHelper
+* [PR-131](https://github.com/itk-enter/enter/pull/131)
+  Added a transport, a rate limiter and a log channel for the lookups
+* [PR-130](https://github.com/itk-enter/enter/pull/130)
+  Added the lookup messages and the handler that updates the merged entities
+* [PR-128](https://github.com/itk-enter/enter/pull/128)
+  Added the lookup interface and the `lookups` option of a merge
+* [PR-127](https://github.com/itk-enter/enter/pull/127)
+  Added Symfony Messenger with RabbitMQ
+* [PR-126](https://github.com/itk-enter/enter/pull/126)
+  Added ADR 008 on remote lookups through a message queue
 * [PR-108](https://github.com/itk-enter/enter/pull/108)
   Added Geos extension to PHP
 * [PR-110](https://github.com/itk-enter/enter/pull/110)

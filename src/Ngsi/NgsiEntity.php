@@ -31,6 +31,45 @@ final class NgsiEntity
     }
 
     /**
+     * A copy of the entity with another id, and the same type and attributes.
+     */
+    public function withId(string $id): self
+    {
+        $copy = new self($id, $this->type);
+        $copy->attributes = $this->attributes;
+
+        return $copy;
+    }
+
+    public function has(string $name): bool
+    {
+        return isset($this->attributes[$name]);
+    }
+
+    /**
+     * The attribute in normalized form, or null if the entity does not have
+     * it.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function attribute(string $name): ?array
+    {
+        return $this->attributes[$name] ?? null;
+    }
+
+    /**
+     * Sets an attribute in normalized form, with all its sub-attributes.
+     *
+     * @param array<string, mixed> $attribute
+     */
+    public function setAttribute(string $name, array $attribute): self
+    {
+        $this->attributes[$name] = $attribute;
+
+        return $this;
+    }
+
+    /**
      * Sets a property, and ignores an empty value.
      */
     public function setProperty(string $name, mixed $value, ?string $observedAt = null): self
