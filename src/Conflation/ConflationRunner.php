@@ -9,6 +9,7 @@ use App\Conflation\Data\MergedEntity;
 use App\Conflation\Io\ConflationFetcher;
 use App\Conflation\Io\MergedDataSetFactory;
 use App\Conflation\Io\MergedEntityFactory;
+use App\Conflation\Lookup\RemoteLookups;
 use App\Conflation\Pipeline\ConflationPipeline;
 use App\Ngsi\NgsiEntity;
 use Psr\Log\LoggerInterface;
@@ -22,6 +23,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * entities of the merged data set that this run did not produce, for example
  * a toilet whose records are no longer near each other. If a step breaks its
  * limits, the run fails before it publishes anything.
+ *
+ * Before it publishes, the runner keeps the answers of the lookups of the
+ * merge from the entities that it published before.
  */
 final readonly class ConflationRunner
 {
@@ -35,6 +39,7 @@ final readonly class ConflationRunner
         private MergedDataSetFactory $dataSets,
         private MergedEntityFactory $entities,
         private NgsiLdBroker $broker,
+        private RemoteLookups $lookups,
         private LoggerInterface $logger,
         #[Autowire(env: 'json:APP_NGSI_CONTEXT_URLS')]
         private array $contextUrls,
@@ -55,6 +60,8 @@ final readonly class ConflationRunner
         if (!$publish) {
             return $run;
         }
+
+        $this->lookups->keepAnswers($conflation, $dataSet, $entities);
 
         $contextUrls = array_merge([$dataSet->contextUrl], $this->contextUrls);
         $this->broker->upsert(array_map(static fn (NgsiEntity $entity): array => $entity->toPayload($contextUrls), $entities));

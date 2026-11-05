@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-128](https://github.com/itk-enter/enter/pull/128)
+  Added the lookup interface and the `lookups` option of a merge
+* [PR-127](https://github.com/itk-enter/enter/pull/127)
+  Added Symfony Messenger with RabbitMQ
 * [PR-126](https://github.com/itk-enter/enter/pull/126)
   Added ADR 008 on remote lookups through a message queue
 * [PR-108](https://github.com/itk-enter/enter/pull/108)
