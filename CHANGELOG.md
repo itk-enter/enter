@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-138](https://github.com/itk-enter/enter/pull/138)
+  Added lookups that the run asks without the queue
 * [PR-131](https://github.com/itk-enter/enter/pull/131)
   Added a transport, a rate limiter and a log channel for the lookups
 * [PR-130](https://github.com/itk-enter/enter/pull/130)

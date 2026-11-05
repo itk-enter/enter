@@ -7,6 +7,11 @@ namespace App\Conflation\Lookup;
 /**
  * The configuration of a lookup: what it supplies and when to ask it again.
  *
+ * A lookup without a transport makes no slow or limited request, for example
+ * because it builds a URL from the location. The run asks it for each merged
+ * entity on each run, before the publish, and the entity gets the values at
+ * once. A lookup with a transport goes through the queue, as follows.
+ *
  * The merged entity keeps the result of the last check in a property of its
  * own for each lookup, the check property. The NGSI-LD observedAt of the
  * property is the time of the check. The property exists also when the
@@ -28,8 +33,8 @@ final readonly class AsLocationLookup
     public const string CHECK_PROPERTY_PREFIX = 'lookup';
 
     /**
-     * The Messenger transport of the lookups that do not declare one of
-     * their own.
+     * The shared Messenger transport, for a lookup that needs the queue but
+     * no request limit of its own.
      */
     public const string DEFAULT_TRANSPORT = 'lookups';
 
@@ -44,31 +49,36 @@ final readonly class AsLocationLookup
     public const string TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * @param string        $id                the lookup's identifier, in lower case with hyphens, for example
-     *                                         "addresses"
-     * @param list<string>  $attributes        the attributes that the service can supply, named as in the result
-     *                                         models of the merges
-     * @param \DateInterval $recheckEmptyAfter the time to wait before the next check when the merged entity has no
-     *                                         value from the service
-     * @param \DateInterval $refreshAfter      the time to wait before the next check when the merged entity has a
-     *                                         value from the service
-     * @param string        $transport         the Messenger transport, that is the queue, that holds the messages of
-     *                                         the lookup; the transport sets the request limit and the retries of
-     *                                         the service in config/packages/messenger.yaml
-     * @param \DateInterval $requestTimeout    the time that a requested check can wait in the queue before the run
-     *                                         sends it again; it must be longer than the time that the queue of the
-     *                                         service takes to empty
+     * @param string             $id                the lookup's identifier, in lower case with hyphens, for
+     *                                              example "addresses"
+     * @param list<string>       $attributes        the attributes that the service can supply, named as in the
+     *                                              result models of the merges
+     * @param \DateInterval|null $recheckEmptyAfter the time to wait before the next check when the merged entity has
+     *                                              no value from the service; required with a transport
+     * @param \DateInterval|null $refreshAfter      the time to wait before the next check when the merged entity has
+     *                                              a value from the service; required with a transport
+     * @param string|null        $transport         the Messenger transport, that is the queue, that holds the
+     *                                              messages of the lookup; the transport sets the request limit and
+     *                                              the retries of the service in config/packages/messenger.yaml; null
+     *                                              to ask the lookup in the run, without the queue
+     * @param \DateInterval      $requestTimeout    the time that a requested check can wait in the queue before the
+     *                                              run sends it again; it must be longer than the time that the queue
+     *                                              of the service takes to empty
      */
     public function __construct(
         public string $id,
         public array $attributes,
-        public \DateInterval $recheckEmptyAfter,
-        public \DateInterval $refreshAfter,
-        public string $transport = self::DEFAULT_TRANSPORT,
+        public ?\DateInterval $recheckEmptyAfter = null,
+        public ?\DateInterval $refreshAfter = null,
+        public ?string $transport = null,
         public \DateInterval $requestTimeout = new \DateInterval('P1D'),
     ) {
         if ([] === $attributes) {
             throw new \InvalidArgumentException(\sprintf('Lookup %s declares no attributes.', $id));
+        }
+
+        if (null !== $transport && (null === $recheckEmptyAfter || null === $refreshAfter)) {
+            throw new \InvalidArgumentException(\sprintf('Lookup %s has the transport %s, so it must give recheckEmptyAfter and refreshAfter.', $id, $transport));
         }
     }
 
@@ -110,7 +120,17 @@ final readonly class AsLocationLookup
             return true;
         }
 
-        return self::hasPassed($checkedAt, $hasValue ? $this->refreshAfter : $this->recheckEmptyAfter, $now);
+        $period = $hasValue ? $this->refreshAfter : $this->recheckEmptyAfter;
+
+        return null === $period || self::hasPassed($checkedAt, $period, $now);
+    }
+
+    /**
+     * Tests if the run asks the lookup itself, without the queue.
+     */
+    public function isInline(): bool
+    {
+        return null === $this->transport;
     }
 
     /**

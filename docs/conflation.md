@@ -28,7 +28,7 @@ stricter distance or another order of trusted sources is a change of configurati
 | Conflict rules      | Which rules settle a disagreement, and in what order                   | Trusted sources: Kommune city toilets first, then Kommune other toilets |
 | Augmenting data     | Which datasets about the surroundings add which details                | District areas add the district                                         |
 | Augmentation method | How data about the surroundings reaches places                         | An area reaches every place inside it; a point, places nearby           |
-| Remote lookups      | Which remote services add which details, after the run                 | None yet                                                                |
+| Remote lookups      | Which remote services add which details                                | None yet                                                                |
 | Dataset details     | The merged dataset's name, description and licence                     | "Offentlige toiletter (samlet), Aarhus Kommune"                         |
 
 ## How records are matched
@@ -64,6 +64,8 @@ This data never becomes a place of its own, and it never overrides what the sour
 
 ## Adding details from remote services
 
+![Remote services fill in details after the run; a value is never removed](images/conflation-lookups.svg)
+
 Some details come from a remote service that answers a question about one point, for example "the nearest address".
 A merge names these services, the lookups, and the details that it takes from each. This is step 7 in the overview.
 
@@ -77,6 +79,9 @@ and the time of the check, to the merged record.
   not send it again until the worker answers or the request times out, for example after 1 day.
 - A service only fills details that the sources do not give.
 - A service never removes a value. If the service has no answer, the place keeps its value.
+
+A lookup that makes no slow or limited request does not use the queue. The run asks it for each place, before it
+publishes.
 
 ## Worked example: the toilet at Ørnereden
 

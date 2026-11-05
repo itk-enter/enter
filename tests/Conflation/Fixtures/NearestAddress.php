@@ -10,7 +10,7 @@ use App\Conflation\Lookup\LocationLookupInterface;
 /**
  * A lookup that gives an address for each coordinate east of longitude 10.
  */
-#[AsLocationLookup(id: 'addresses', attributes: ['address', 'postalCode'], recheckEmptyAfter: new \DateInterval('P7D'), refreshAfter: new \DateInterval('P90D'))]
+#[AsLocationLookup(id: 'addresses', attributes: ['address', 'postalCode'], recheckEmptyAfter: new \DateInterval('P7D'), refreshAfter: new \DateInterval('P90D'), transport: 'lookups')]
 final class NearestAddress implements LocationLookupInterface
 {
     public function lookup(float $longitude, float $latitude): ?array
