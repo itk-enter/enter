@@ -8,7 +8,6 @@ use App\Broker\NgsiLdBroker;
 use App\Conflation\Lookup\Location;
 use App\Conflation\Lookup\LookupHandler;
 use App\Conflation\Lookup\LookupMessage;
-use App\GeometryHelper;
 use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -51,7 +50,7 @@ class LookupHandlerTest extends TestCase
         return new LookupHandler(
             new ServiceLocator([NearestAddress::class => static fn (): NearestAddress => new NearestAddress()]),
             new NgsiLdBroker($client, 'http://broker.example'),
-            new Location(new GeometryHelper()),
+            new Location(),
             new MockClock('2026-11-20T12:00:00Z'),
             new NullLogger(),
         );
