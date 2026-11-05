@@ -7,10 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-124](https://github.com/itk-enter/enter/pull/124)
-  Gave the entities of test sources ids of their own
-* [PR-136](https://github.com/itk-enter/enter/pull/136)
-  Removed an unused loop key in `WithinSiteClosestFirst` that Rector reports
 * [PR-126](https://github.com/itk-enter/enter/pull/126)
   Added ADR 008 on remote lookups through a message queue
 * [PR-108](https://github.com/itk-enter/enter/pull/108)

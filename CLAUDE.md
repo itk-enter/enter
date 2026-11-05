@@ -32,6 +32,8 @@ The data sets are published on `/sources` and `/sources.json`. The `/test` page 
 - **Symfony HttpClient** reads the feeds and calls the broker. **Monolog** logs.
 - **Twig**, **Stimulus** and **AssetMapper** (`importmap.php`) make the front end. **MapLibre GL** draws the map.
 - **proj4php** and **geoPHP** reproject and measure geometries.
+- **Symfony Messenger** sends messages to **RabbitMQ** (`rabbit`). On the server, the `supervisor` service runs the
+  worker. In development, run `bin/console messenger:consume async` in `phpfpm`.
 - **Mailpit** catches the mail that the app sends.
 - There is no application database. The `mariadb` service from the template is removed in
   `docker-compose.override.yml`.
