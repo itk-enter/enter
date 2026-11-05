@@ -127,6 +127,38 @@ class ShapeTest extends TestCase
         $this->assertSame([min($longitudes), min($latitudes), max($longitudes), max($latitudes)], Shape::bounds($strip));
     }
 
+    public function testPositionsSpreadAlongALineLieAtTheMiddleOfEqualParts(): void
+    {
+        $line = ['type' => 'LineString', 'coordinates' => [self::at(0, 0), self::at(30, 0)]];
+
+        $this->assertEqualsWithDelta([self::at(5, 0), self::at(15, 0), self::at(25, 0)], Shape::spread($line, 3), 1e-9);
+    }
+
+    public function testPositionsSpreadInAnAreaLieAlongItsLongCentreLine(): void
+    {
+        // The centre line of an area has no fixed direction, so compare the positions from west to east.
+        $positions = Shape::spread(self::strip(), 4);
+        sort($positions);
+
+        $this->assertEqualsWithDelta([self::at(2.5, 2), self::at(7.5, 2), self::at(12.5, 2), self::at(17.5, 2)], $positions, 1e-9);
+    }
+
+    public function testPositionsInAnAreaWithoutACentreLineInOnePieceAreOnePointInside(): void
+    {
+        // A U: the centre line crosses the gap between its two arms.
+        $u = ['type' => 'Polygon', 'coordinates' => [[
+            self::at(0, 0), self::at(20, 0), self::at(20, 10), self::at(16, 10), self::at(16, 4),
+            self::at(4, 4), self::at(4, 10), self::at(0, 10), self::at(0, 0),
+        ]]];
+
+        $positions = Shape::spread($u, 3);
+
+        $this->assertCount(3, $positions);
+        $this->assertSame($positions[0], $positions[1]);
+        $this->assertSame($positions[0], $positions[2]);
+        $this->assertTrue(Shape::contains($u, ...$positions[0]));
+    }
+
     public function testTheCentroidOfASmallAreaIsItsCentre(): void
     {
         $square = ['type' => 'Polygon', 'coordinates' => [[self::at(0, 0), self::at(2, 0), self::at(2, 2), self::at(0, 2), self::at(0, 0)]]];
@@ -156,6 +188,20 @@ class ShapeTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         Shape::distance(self::point(0, 0), ['type' => 'GeometryCollection', 'geometries' => []]);
+    }
+
+    public function testItSpreadsPositionsOnlyAlongALineOrInAnArea(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        Shape::spread(['type' => 'Point', 'coordinates' => self::at(0, 0)], 2);
+    }
+
+    public function testItSpreadsAtLeastOnePosition(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        Shape::spread(self::strip(), 0);
     }
 
     public function testItNeedsTheGeosExtension(): void
