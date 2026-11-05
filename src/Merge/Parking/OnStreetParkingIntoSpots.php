@@ -55,7 +55,8 @@ final class OnStreetParkingIntoSpots
     /**
      * The attributes of a site, as a ParkingSpot states them.
      *
-     * The name, the description and the additional information are kept.
+     * The name, the address, the description and the additional information
+     * are kept.
      * The fee in the category becomes the fee in the additional
      * information. The number of bays and the parking mode are left out.
      *
@@ -65,7 +66,7 @@ final class OnStreetParkingIntoSpots
     {
         $attributes = array_filter(
             $site->attributes,
-            static fn (string $attribute): bool => \in_array($attribute, ['name', 'description'], true)
+            static fn (string $attribute): bool => \in_array($attribute, ['name', 'address', 'description'], true)
                 || str_starts_with($attribute, ConflationFetcher::ADDITIONAL_INFORMATION.ConflationFetcher::KEY_SEPARATOR),
             \ARRAY_FILTER_USE_KEY,
         );
