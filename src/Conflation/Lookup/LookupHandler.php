@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Conflation\Lookup;
 
 use App\Broker\NgsiLdBroker;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Clock\ClockInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -30,8 +31,11 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * The entity keeps the values that it has, because a service with no answer
  * can be down or have a defect. If the lookup throws an exception, the
  * handler writes nothing, and Messenger tries the message again.
+ *
+ * The handler logs on the log channel of the lookup.
  */
 #[AsMessageHandler]
+#[WithMonologChannel(LookupLog::CHANNEL)]
 final readonly class LookupHandler
 {
     public function __construct(
@@ -48,23 +52,24 @@ final readonly class LookupHandler
     {
         $config = AsLocationLookup::of($message->lookup);
         $checkProperty = $config->checkProperty();
+        $logger = LookupLog::for($this->logger, $config->id);
 
         $entity = $this->broker->entity($message->entityId, $message->contextUrl, ['location', $checkProperty]);
         if (null === $entity) {
-            $this->logger->info('Skipped lookup {lookup} for {entity}: the entity does not exist.', ['lookup' => $config->id, 'entity' => $message->entityId]);
+            $logger->info('Skipped lookup {lookup} for {entity}: the entity does not exist.', ['lookup' => $config->id, 'entity' => $message->entityId]);
 
             return;
         }
 
         if (!Location::same($entity['location']['value'] ?? null, $message->location)) {
-            $this->logger->info('Skipped lookup {lookup} for {entity}: the entity has moved.', ['lookup' => $config->id, 'entity' => $message->entityId]);
+            $logger->info('Skipped lookup {lookup} for {entity}: the entity has moved.', ['lookup' => $config->id, 'entity' => $message->entityId]);
 
             return;
         }
 
         $checkedAt = $entity[$checkProperty]['observedAt'] ?? null;
         if ($checkedAt !== $message->checkedAt) {
-            $this->logger->info('Skipped lookup {lookup} for {entity}: another message did the check.', ['lookup' => $config->id, 'entity' => $message->entityId]);
+            $logger->info('Skipped lookup {lookup} for {entity}: another message did the check.', ['lookup' => $config->id, 'entity' => $message->entityId]);
 
             return;
         }
@@ -86,11 +91,11 @@ final readonly class LookupHandler
         $attributes[$checkProperty] = ['type' => 'Property', 'value' => $result->value, 'observedAt' => $now];
 
         if (!$this->broker->appendAttributes($message->entityId, $message->contextUrl, $attributes)) {
-            $this->logger->info('Skipped lookup {lookup} for {entity}: the entity does not exist.', ['lookup' => $config->id, 'entity' => $message->entityId]);
+            $logger->info('Skipped lookup {lookup} for {entity}: the entity does not exist.', ['lookup' => $config->id, 'entity' => $message->entityId]);
 
             return;
         }
 
-        $this->logger->debug('Lookup {lookup} wrote "{result}" to {entity}.', ['lookup' => $config->id, 'result' => $result->value, 'entity' => $message->entityId]);
+        $logger->debug('Lookup {lookup} wrote "{result}" to {entity}.', ['lookup' => $config->id, 'result' => $result->value, 'entity' => $message->entityId]);
     }
 }

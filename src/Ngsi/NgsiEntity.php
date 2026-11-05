@@ -30,6 +30,17 @@ final class NgsiEntity
         return $this->type;
     }
 
+    /**
+     * A copy of the entity with another id, and the same type and attributes.
+     */
+    public function withId(string $id): self
+    {
+        $copy = new self($id, $this->type);
+        $copy->attributes = $this->attributes;
+
+        return $copy;
+    }
+
     public function has(string $name): bool
     {
         return isset($this->attributes[$name]);
@@ -56,17 +67,6 @@ final class NgsiEntity
         $this->attributes[$name] = $attribute;
 
         return $this;
-    }
-
-    /**
-     * A copy of the entity with another id, and the same type and attributes.
-     */
-    public function withId(string $id): self
-    {
-        $copy = new self($id, $this->type);
-        $copy->attributes = $this->attributes;
-
-        return $copy;
     }
 
     /**

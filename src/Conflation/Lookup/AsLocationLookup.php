@@ -28,6 +28,12 @@ final readonly class AsLocationLookup
     public const string CHECK_PROPERTY_PREFIX = 'lookup';
 
     /**
+     * The Messenger transport of the lookups that do not declare one of
+     * their own.
+     */
+    public const string DEFAULT_TRANSPORT = 'lookups';
+
+    /**
      * The sub-property of the check property that marks a requested check.
      */
     public const string REQUESTED_AT = 'requestedAt';
@@ -46,6 +52,9 @@ final readonly class AsLocationLookup
      *                                         value from the service
      * @param \DateInterval $refreshAfter      the time to wait before the next check when the merged entity has a
      *                                         value from the service
+     * @param string        $transport         the Messenger transport, that is the queue, that holds the messages of
+     *                                         the lookup; the transport sets the request limit and the retries of
+     *                                         the service in config/packages/messenger.yaml
      * @param \DateInterval $requestTimeout    the time that a requested check can wait in the queue before the run
      *                                         sends it again; it must be longer than the time that the queue of the
      *                                         service takes to empty
@@ -55,6 +64,7 @@ final readonly class AsLocationLookup
         public array $attributes,
         public \DateInterval $recheckEmptyAfter,
         public \DateInterval $refreshAfter,
+        public string $transport = self::DEFAULT_TRANSPORT,
         public \DateInterval $requestTimeout = new \DateInterval('P1D'),
     ) {
         if ([] === $attributes) {

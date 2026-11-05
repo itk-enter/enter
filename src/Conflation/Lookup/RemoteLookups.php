@@ -10,6 +10,7 @@ use App\Conflation\Io\MergedDataSet;
 use App\Ngsi\NgsiEntity;
 use Psr\Clock\ClockInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 
 /**
  * Keeps the answers of the lookups of a merge on its merged entities, and
@@ -24,10 +25,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
  *
  * Before the runner publishes, this class also marks each check that is due
  * as requested. After the runner publishes, it sends a LookupMessage for each
- * marked check. A worker handles the message later, with LookupHandler. While
- * the mark is younger than the request timeout of the lookup, a later run
- * does not send the check again. Thus a long queue gets no second message for
- * one check.
+ * marked check, to the transport of the lookup. A worker handles the message
+ * later, with LookupHandler. While the mark is younger than the request
+ * timeout of the lookup, a later run does not send the check again. Thus a
+ * long queue gets no second message for one check.
  *
  * A lookup supplies only the attributes that the records of the thing do not
  * give. A value of the records always stays.
@@ -152,7 +153,10 @@ final readonly class RemoteLookups
                 /** @var array<string, mixed> $location */
                 $location = $entity->attribute('location')['value'] ?? [];
 
-                $this->bus->dispatch(new LookupMessage($entity->id(), $dataSet->contextUrl, $class, $attributes, $location, $checkedAt));
+                $this->bus->dispatch(
+                    new LookupMessage($entity->id(), $dataSet->contextUrl, $class, $attributes, $location, $checkedAt),
+                    [new TransportNamesStamp([$lookup->transport])],
+                );
                 ++$sent;
             }
         }

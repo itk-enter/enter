@@ -138,8 +138,19 @@ The app sends messages with [Symfony Messenger](https://symfony.com/doc/current/
 worker. In development, run the worker yourself:
 
 ``` shell
-docker compose exec phpfpm bin/console messenger:consume async -vv
+docker compose exec phpfpm bin/console messenger:consume --all -vv
 ```
+
+The worker handles the messages of all the transports. The remote lookups use the `lookups` transport. If a service
+has a request limit of its own, give it a transport of its own:
+
+1. In `config/packages/rate_limiter.yaml`, add a limiter with the request limit of the service.
+2. In `config/packages/messenger.yaml`, copy the `lookups` transport. Change the names of the exchange, the queue and
+   the rate limiter.
+3. In `when@test` in the same file, add the transport as `in-memory://`.
+4. Give the name of the transport in `#[AsLocationLookup(transport: …)]` of the service.
+
+In prod, each lookup logs to stdout on the channel `lookup.<lookup id>`.
 
 The RabbitMQ management interface shows the queues. To find its port, run `docker compose port rabbit 15672`. The
 user is `user` and the password is `password`.

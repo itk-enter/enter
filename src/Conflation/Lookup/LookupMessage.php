@@ -10,7 +10,9 @@ use Symfony\Component\Messenger\Attribute\AsMessage;
  * A request to ask one lookup about one merged entity.
  *
  * The run sends the message after it publishes. The worker handles it with
- * LookupHandler.
+ * LookupHandler. RemoteLookups adds a TransportNamesStamp, so the message
+ * goes to the transport that the lookup declares. A message without the
+ * stamp goes to the async transport.
  */
 #[AsMessage('async')]
 final readonly class LookupMessage

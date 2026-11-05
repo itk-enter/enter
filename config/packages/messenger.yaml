@@ -7,6 +7,27 @@ framework:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             async: '%env(MESSENGER_TRANSPORT_DSN)%'
 
+            # The queue of the lookups that do not declare a transport of their
+            # own. A service with a request limit of its own gets a transport
+            # like this one, with its own queue and rate limiter, and declares
+            # it in #[AsLocationLookup(transport: …)].
+            lookups:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: lookups
+                    queues:
+                        lookups: ~
+                # https://symfony.com/doc/current/messenger.html#rate-limited-transport
+                rate_limiter: lookups
+                # Retry after 1, 5 and 25 minutes. Then the next run of the
+                # merge sends the check again.
+                retry_strategy:
+                    max_retries: 3
+                    delay: 60000
+                    multiplier: 5
+                    max_delay: 3600000
+
         routing:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
@@ -16,3 +37,4 @@ when@test:
         messenger:
             transports:
                 async: 'in-memory://'
+                lookups: 'in-memory://'
