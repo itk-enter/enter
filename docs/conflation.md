@@ -86,6 +86,23 @@ The three records lie within 1.8 m of each other and come from three different s
 details agree or are stated by only one source. The names disagree, so the trusted source order decides: the Kommune
 name wins. Finally, the district area the toilet lies in adds its district.
 
+## Parking bays
+
+Parking needs rules of its own, because the sources describe bays in two ways: as single bays, and as sites with a
+number of bays. The merge restates each site as one bay for each of its bays, and then matches all the bays.
+
+- If a site is a line or an area, its bays lie spread along the long centre line of the site. A site at a point gives
+  all its bays that point.
+- The mapped bays pair with each other first, closest first. The bays of the sites join after them. A bay of a site
+  with an area is 0 m from each record in the area, so it would otherwise pair the records in the order of their ids.
+- A bay of a site that no mapped bay matches is marked as generated. It gets a free position along its site, away
+  from the mapped bays.
+- If a member of a group states an area, and the OpenStreetMap bays of the group lie in it or within 3 m of it, the
+  merged bay gets the area as its location.
+- The register of the municipality can state each bay of an address as a record of its own, with the number of bays
+  at the whole address. Thus records with the same number of bays within 5 m of each other count as one bay each.
+- The merge distance for parking is 8 m.
+
 ## Background
 
 The design is described in these architecture decision records:
