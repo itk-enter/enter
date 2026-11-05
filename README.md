@@ -154,6 +154,10 @@ transport of its own:
 
 In prod, each lookup logs to stdout on the channel `lookup.<lookup id>`.
 
+The merged public toilets get the address of an orthophoto, `/orthophoto/{x},{y}.jpg`, as `image`. The route gets
+the image from the orthophoto WMS of Dataforsyningen. Put a token from <https://dataforsyningen.dk/> in
+`DATAFORSYNINGEN_TOKEN` in `.env.local`.
+
 The RabbitMQ management interface shows the queues. To find its port, run `docker compose port rabbit 15672`. The
 user is `user` and the password is `password`.
 

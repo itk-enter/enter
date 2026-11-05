@@ -9,10 +9,12 @@ use App\Conflation\ConflationInterface;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
+use App\Lookup\Dataforsyningen\Orthophoto;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * The public toilet merge over the test data sets.
+ * The public toilet merge over the test data sets. It takes the orthophoto, as
+ * the public toilet merge does, so that the test map shows the image.
  */
 #[When('dev')]
 #[When('test')]
@@ -28,6 +30,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         new MajorityWins(),
         new SourceAuthority(['test:mtm_spatialmaps-toilet-city', 'test:mtm_spatialmaps-toilet-other']),
     ],
+    lookups: [Orthophoto::class => ['image']],
 )]
 final class TestPublicToiletConflation implements ConflationInterface
 {

@@ -16,6 +16,12 @@ framework:
             broker.client:
                 base_uri: '%env(APP_BROKER_BASE_URI)%'
 
+            # Reads the APIs of Dataforsyningen, for example the orthophoto WMS, and sends the token.
+            dataforsyningen.client:
+                scope: '^https://api\.dataforsyningen\.dk/'
+                headers:
+                    token: '%env(DATAFORSYNINGEN_TOKEN)%'
+
             # Fetches the live feeds for the test fixtures.
             test_fixture.client:
                 scope: '^https?://'

@@ -9,6 +9,7 @@ use App\Conflation\ConflationInterface;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
+use App\Lookup\Dataforsyningen\Orthophoto;
 
 /**
  * Public toilets in Aarhus Municipality, merged from every data set that
@@ -20,6 +21,9 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
  * of them state wins. If there is no majority, the municipality's city
  * toilets decide, then its other toilets. If neither of these data sets
  * states a value, the merge records a conflict.
+ *
+ * Each merged toilet gets the address of an orthophoto of its location, as
+ * the attribute "image".
  */
 #[Conflation(
     id: 'merged-public-toilets',
@@ -32,6 +36,7 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
         new MajorityWins(),
         new SourceAuthority(['mtm_spatialmaps-toilet-city', 'mtm_spatialmaps-toilet-other']),
     ],
+    lookups: [Orthophoto::class => ['image']],
 )]
 final class PublicToiletConflation implements ConflationInterface
 {

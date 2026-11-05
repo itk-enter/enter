@@ -54,6 +54,7 @@ tasks:
       - task: test:conflation
       - task: test:controller
       - task: test:geo
+      - task: test:lookup
       - task: test:source
       - task: test:sourceImporter
       - task: test:sourceReader
@@ -73,6 +74,7 @@ tasks:
   test:conflation: *test_task
   test:controller: *test_task
   test:geo: *test_task
+  test:lookup: *test_task
   test:source: *test_task
   test:sourceImporter: *test_task
   test:sourceReader: *test_task

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-134](https://github.com/itk-enter/enter/pull/134)
+  Added an orthophoto to the merged public toilets
 * [PR-138](https://github.com/itk-enter/enter/pull/138)
   Added lookups that the run asks without the queue
 * [PR-131](https://github.com/itk-enter/enter/pull/131)

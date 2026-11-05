@@ -60,6 +60,7 @@ src/
   Controller/         Pages and JSON endpoints
   Geo/, GeometryHelper/  Reprojection and geometry functions
   Import/             SourcesImporter and SourcesImportedEvent
+  Lookup/             The remote services that the merges use, one folder per provider, e.g. Dataforsyningen/
   Merge/              The merges that the app publishes
   Ngsi/               NgsiEntity, one entity in normalized NGSI-LD
   Source/             One class per source, with its #[Definition]

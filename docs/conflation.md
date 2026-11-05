@@ -28,7 +28,7 @@ stricter distance or another order of trusted sources is a change of configurati
 | Conflict rules      | Which rules settle a disagreement, and in what order                   | Trusted sources: Kommune city toilets first, then Kommune other toilets |
 | Augmenting data     | Which datasets about the surroundings add which details                | District areas add the district                                         |
 | Augmentation method | How data about the surroundings reaches places                         | An area reaches every place inside it; a point, places nearby           |
-| Remote lookups      | Which remote services add which details                                | None yet                                                                |
+| Remote lookups      | Which remote services add which details                                | The address of an orthophoto of the place                               |
 | Dataset details     | The merged dataset's name, description and licence                     | "Offentlige toiletter (samlet), Aarhus Kommune"                         |
 
 ## How records are matched
@@ -81,7 +81,9 @@ and the time of the check, to the merged record.
 - A service never removes a value. If the service has no answer, the place keeps its value.
 
 A lookup that makes no slow or limited request does not use the queue. The run asks it for each place, before it
-publishes.
+publishes. For example, the merged public toilets get the address of an orthophoto of their location as `image`. The
+app makes the address from the location, and a route of the app gets the image from Dataforsyningen when a page shows
+it.
 
 ## Worked example: the toilet at Ørnereden
 
@@ -89,7 +91,8 @@ publishes.
 
 The three records lie within 1.8 m of each other and come from three different sources, so they form one group. Most
 details agree or are stated by only one source. The names disagree, so the trusted source order decides: the Kommune
-name wins. Finally, the district area the toilet lies in adds its district.
+name wins. Then the district area the toilet lies in adds its district. Last, the run adds the address of an
+orthophoto of the toilet.
 
 ## Background
 
