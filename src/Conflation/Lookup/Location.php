@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Conflation\Lookup;
 
-use App\GeometryHelper;
+use App\Conflation\Spatial\Shape;
 
 /**
  * The location of a merged entity, as the run and the worker compare it and
@@ -24,11 +24,6 @@ final readonly class Location
      * approximately 0.1 mm. This is much less than the radius of a merge.
      */
     private const int PRECISION = 9;
-
-    public function __construct(
-        private GeometryHelper $geometry,
-    ) {
-    }
 
     /**
      * Tests if two GeoJSON geometries are the same, to PRECISION decimal
@@ -54,9 +49,7 @@ final readonly class Location
             return [(float) $coordinates[0], (float) $coordinates[1]];
         }
 
-        [$longitude, $latitude] = $this->geometry->getCentroid($geometry)->toArray();
-
-        return [(float) $longitude, (float) $latitude];
+        return Shape::centroid($geometry);
     }
 
     /**

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Conflation\Lookup;
 
 use App\Conflation\Lookup\Location;
-use App\GeometryHelper;
 use PHPUnit\Framework\TestCase;
 
 class LocationTest extends TestCase
@@ -21,12 +20,12 @@ class LocationTest extends TestCase
 
     public function testALookupGetsThePointItself(): void
     {
-        $this->assertSame([10.21, 56.15], new Location(new GeometryHelper())->point(['type' => 'Point', 'coordinates' => [10.21, 56.15]]));
+        $this->assertSame([10.21, 56.15], new Location()->point(['type' => 'Point', 'coordinates' => [10.21, 56.15]]));
     }
 
     public function testALookupGetsTheCentroidOfAnArea(): void
     {
-        [$longitude, $latitude] = new Location(new GeometryHelper())->point([
+        [$longitude, $latitude] = new Location()->point([
             'type' => 'Polygon',
             'coordinates' => [[[10.0, 56.0], [10.2, 56.0], [10.2, 56.2], [10.0, 56.2], [10.0, 56.0]]],
         ]);
