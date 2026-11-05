@@ -19,7 +19,7 @@ use App\Source\Definition;
     description: 'Public toilets outside the city-kiosk network in Aarhus Municipality, including seasonal and access-restricted facilities.',
     publisher: 'Aarhus Kommune',
     contact: 'ppg@aarhus.dk',
-    landingPage: 'https://www.opendata.dk/city-of-aarhus',
+    landingPage: 'https://www.opendata.dk/city-of-aarhus/toiletter-i-aarhus-kommune',
 
     accessUrl: 'https://webkort.aarhuskommune.dk/spatialmap?page=get_geojson_opendata&datasource=andre_toiletter',
     dataType: DataType::GeoJSON,
