@@ -115,14 +115,19 @@ abstract class AbstractHandicapParking extends AbstractSource
      * Returns the street and the house number of the record, for example
      * "Heibergsgade 27".
      *
+     * In some records, the street already ends with a house number, for
+     * example "Klostergade 2". Then the method ignores the house number of
+     * the record, because two numbers do not make a valid address.
+     *
      * @param array<string, mixed> $properties
      */
     private function address(array $properties): string
     {
-        return trim(\sprintf(
-            '%s %s',
-            trim((string) ($properties['vejnavn'] ?? '')),
-            trim((string) ($properties['husnnr'] ?? ''))
-        ));
+        $street = trim((string) ($properties['vejnavn'] ?? ''));
+        if (1 === preg_match('/\s\d+[A-Za-z]?$/', $street)) {
+            return $street;
+        }
+
+        return trim(\sprintf('%s %s', $street, trim((string) ($properties['husnnr'] ?? ''))));
     }
 }

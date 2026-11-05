@@ -44,6 +44,8 @@ class HandicapParkingAddressTest extends TestCase
         yield 'a site with bays' => [6, 'Domkirkeplads/Bispegade', '1', 'OnStreetParking', ['streetAddress' => 'Domkirkeplads/Bispegade 1']];
         yield 'no house number' => [1, 'Kystvejen', null, 'ParkingSpot', ['streetAddress' => 'Kystvejen']];
         yield 'no street and no house number' => [1, null, null, 'ParkingSpot', null];
+        yield 'a street that ends with the same house number' => [1, 'Thunøgade 26B', '26B', 'ParkingSpot', ['streetAddress' => 'Thunøgade 26B']];
+        yield 'a street that ends with another house number' => [1, 'Klostergade 2', '56', 'ParkingSpot', ['streetAddress' => 'Klostergade 2']];
     }
 
     /**

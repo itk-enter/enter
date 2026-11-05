@@ -148,7 +148,7 @@ class HandicapParkingTest extends TestCase
 
     public function testItNamesARecordByItsAddress(): void
     {
-        $this->assertSame('Klostergade 2 56', $this->entities[0]['name']['value']);
+        $this->assertSame('Klostergade 2', $this->entities[0]['name']['value']);
         $this->assertSame('Domkirkeplads/Bispegade 1', $this->entities[1]['name']['value']);
 
         $this->assertSame('Kystvejen', $this->entities[2]['name']['value']);
