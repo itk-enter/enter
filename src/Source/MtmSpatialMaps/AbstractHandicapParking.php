@@ -80,6 +80,7 @@ abstract class AbstractHandicapParking extends AbstractSource
             $model
         )
             ->setProperty('name', $this->address($properties))
+            ->setProperty('address', $this->postalAddress($properties))
             ->setProperty('description', trim((string) ($properties['bemrk'] ?? '')))
             ->setProperty('source', $this->definition->accessUrl)
             ->geoProperty('location', $transformer->transformGeometry($this->definition->crs, $geometry));
@@ -98,6 +99,22 @@ abstract class AbstractHandicapParking extends AbstractSource
     }
 
     /**
+     * Returns the postal address of the record. The feed gives only the
+     * street and the house number, so the address has only a streetAddress.
+     *
+     * @param array<string, mixed> $properties
+     *
+     * @return array<string, string> an empty array if the record has no street and no house number
+     */
+    private function postalAddress(array $properties): array
+    {
+        return array_filter(['streetAddress' => $this->address($properties)], static fn (string $value): bool => '' !== $value);
+    }
+
+    /**
+     * Returns the street and the house number of the record, for example
+     * "Heibergsgade 27".
+     *
      * @param array<string, mixed> $properties
      */
     private function address(array $properties): string
