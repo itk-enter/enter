@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-137](https://github.com/itk-enter/enter/pull/137)
+  Added the command `app:lookup:check`, which checks the remote services
 * [PR-134](https://github.com/itk-enter/enter/pull/134)
   Added an orthophoto to the merged public toilets
 * [PR-138](https://github.com/itk-enter/enter/pull/138)

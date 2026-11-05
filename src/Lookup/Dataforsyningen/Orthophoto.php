@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Lookup\Dataforsyningen;
 
 use App\Conflation\Lookup\AsLocationLookup;
+use App\Conflation\Lookup\AvailabilityCheckInterface;
 use App\Conflation\Lookup\LocationLookupInterface;
 use App\GeometryHelper;
 use App\GeometryHelper\Crs;
@@ -24,9 +25,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * no image.
  */
 #[AsLocationLookup(id: 'orthophotos', attributes: ['image'])]
-final readonly class Orthophoto implements LocationLookupInterface
+final readonly class Orthophoto implements LocationLookupInterface, AvailabilityCheckInterface
 {
     public function __construct(
+        private OrthophotoClient $client,
         private GeometryHelper $geometry,
         private UrlGeneratorInterface $urls,
     ) {
@@ -40,6 +42,14 @@ final readonly class Orthophoto implements LocationLookupInterface
         }
 
         return ['image' => $this->urls->generate('app_orthophoto', ['x' => $x, 'y' => $y], UrlGeneratorInterface::ABSOLUTE_URL)];
+    }
+
+    public function checkAvailability(float $longitude, float $latitude): void
+    {
+        [$x, $y] = $this->utm($longitude, $latitude);
+        if (null === $this->client->image($x, $y)) {
+            throw new \RuntimeException('The orthophoto WMS gave no image of the point.');
+        }
     }
 
     /**

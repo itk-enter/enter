@@ -154,6 +154,16 @@ transport of its own:
 
 In prod, each lookup logs to stdout on the channel `lookup.<lookup id>`.
 
+To find out if the remote services are available, run:
+
+``` shell
+docker compose exec phpfpm bin/console app:lookup:check
+```
+
+The command asks each service about one point, with the configuration of the worker, for example the token. If a
+service fails, the command shows the error and exits with an error code. Use `--longitude` and `--latitude` to ask
+about another point.
+
 The merged public toilets get the address of an orthophoto, `/orthophoto/{x},{y}.jpg`, as `image`. The route gets
 the image from the orthophoto WMS of Dataforsyningen. Put a token from <https://dataforsyningen.dk/> in
 `DATAFORSYNINGEN_TOKEN` in `.env.local`.
