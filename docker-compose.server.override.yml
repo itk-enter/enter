@@ -95,6 +95,8 @@ services:
             - "9090"
         environment:
             - DBHOST=scorpio-db
+            # The app does not use the temporal API (cf. docs/Scorpio.md).
+            - SCORPIO_HISTORY_AUTORECORDING=false
         depends_on:
             - "scorpio-db"
         networks:

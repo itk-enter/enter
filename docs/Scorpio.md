@@ -9,3 +9,12 @@ authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Authent
 
 See Scorpio's [API Walkthrough](https://github.com/ScorpioBroker/ScorpioBroker#api-walkthrough) for examples on how to
 use the NGSI-LD API implemented by Scorpio.
+
+## History
+
+Scorpio does not record the history of the entities. The `scorpio` service sets
+`SCORPIO_HISTORY_AUTORECORDING=false`, so Scorpio adds nothing to the temporal API (`/ngsi-ld/v1/temporal/`).
+
+When the recording is on, each upsert adds a copy of each attribute, also when the value did not change. Scorpio has
+no setting that skips the copies or deletes old ones. The app keeps its own history of the imports in the database
+instead.
