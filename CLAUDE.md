@@ -60,7 +60,7 @@ src/
   Controller/         Pages and JSON endpoints
   Geo/, GeometryHelper/  Reprojection and geometry functions
   Import/             SourcesImporter and the import events
-    History/          The import history: Feed, SourceImport and ImportRecorder
+    History/          The import history: Feed, SourceImport, EntityChange and ImportRecorder
   Merge/              The merges that the app publishes
   Ngsi/               NgsiEntity, one entity in normalized NGSI-LD
   Source/             One class per source, with its #[Definition]

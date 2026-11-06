@@ -7,6 +7,7 @@ namespace App\Tests\SourceImporter;
 use App\Broker\NgsiLdBroker;
 use App\Broker\Rejection;
 use App\Geo\Wgs84Transformer;
+use App\Import\Exception\SweepFailedException;
 use App\Import\ImportResult;
 use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
@@ -165,6 +166,69 @@ class SourceImporterTest extends TestCase
 
         $this->assertSame([], $this->requests);
         $this->assertSame(0, $result->deleted);
+    }
+
+    public function testItReportsTheEntitiesItAddedAndDeleted(): void
+    {
+        $result = $this->import(new OnStreetParking(), $this->features(1, 2, 3), held: [
+            'urn:ngsi-ld:OnStreetParking:aarhus-handicap-1',
+            'urn:ngsi-ld:OnStreetParking:aarhus-handicap-9',
+        ]);
+
+        $this->assertSame(['urn:ngsi-ld:OnStreetParking:aarhus-handicap-2', 'urn:ngsi-ld:OnStreetParking:aarhus-handicap-3'], $result->addedIds);
+        $this->assertSame(['urn:ngsi-ld:OnStreetParking:aarhus-handicap-9'], $result->deletedIds);
+    }
+
+    public function testAnEntityThatTheBrokerRejectedIsNotAdded(): void
+    {
+        $rejected = 'urn:ngsi-ld:OnStreetParking:aarhus-handicap-2';
+
+        $result = $this->import(new OnStreetParking(), $this->features(1, 2), upserted: new MockResponse(json_encode([
+            'success' => ['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1'],
+            'errors' => [['entityId' => $rejected, 'error' => ['detail' => 'Invalid location']]],
+        ], \JSON_THROW_ON_ERROR), ['http_code' => Response::HTTP_MULTI_STATUS]));
+
+        $this->assertSame(['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1'], $result->addedIds);
+    }
+
+    /**
+     * Makes sure that the import still upserts when the broker cannot list
+     * the entities of the source, and fails after the upsert. The import()
+     * helper cannot make the listing fail, so this test makes its own broker.
+     */
+    public function testAFailedListingStillUpsertsAndThenFails(): void
+    {
+        $requests = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$requests): MockResponse {
+            $requests[] = $method.' '.parse_url($url, \PHP_URL_PATH);
+
+            return Request::METHOD_GET === $method
+                ? new MockResponse('', ['http_code' => Response::HTTP_SERVICE_UNAVAILABLE])
+                : new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT]);
+        }, 'http://broker.example');
+        $reader = new readonly class($this->features(1)) implements SourceReaderInterface {
+            /**
+             * @param array<string, mixed> $data
+             */
+            public function __construct(
+                private array $data,
+            ) {
+            }
+
+            public function read(SourceInterface $source): FeedResponse
+            {
+                return new FeedResponse(json_encode($this->data, \JSON_THROW_ON_ERROR), 'application/json');
+            }
+        };
+        $importer = new GetJsonSourceImporter($reader, new NgsiLdBroker($client, 'http://broker.example'), new Wgs84Transformer(), ['https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld'], new NullLogger());
+
+        try {
+            $importer->import(new OnStreetParking());
+            $this->fail('The import must fail when the broker cannot list the entities.');
+        } catch (SweepFailedException) {
+        }
+
+        $this->assertSame(['GET /ngsi-ld/v1/entities', 'POST /ngsi-ld/v1/entityOperations/upsert'], $requests);
     }
 
     /**
