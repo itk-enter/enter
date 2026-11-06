@@ -176,7 +176,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
      */
     private function read(SourceInterface $source): iterable
     {
-        $data = $this->reader->read($source);
+        $data = $this->reader->read($source)->toArray();
         $items = $this->extractItems($data, $source);
 
         foreach ($items as $item) {

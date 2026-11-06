@@ -20,15 +20,17 @@ final class SourceReader implements SourceReaderInterface
     ) {
     }
 
-    public function read(SourceInterface $source): iterable
+    public function read(SourceInterface $source): FeedResponse
     {
         // @todo If the read fails, throw an exception that names the source.
         //   Use the same approach as UpsertFailedException.
         $definition = $source->definition;
 
-        return $this->client->request(Request::METHOD_GET, $definition->accessUrlBase(), [
+        $response = $this->client->request(Request::METHOD_GET, $definition->accessUrlBase(), [
             'query' => $definition->accessUrlQuery(),
-        ])->toArray();
+        ]);
+
+        return new FeedResponse($response->getContent(), $response->getHeaders()['content-type'][0] ?? null);
     }
 
     /**
