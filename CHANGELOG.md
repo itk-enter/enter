@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-154](https://github.com/itk-enter/enter/pull/154)
+  Security updates
 * [PR-135](https://github.com/itk-enter/enter/pull/135)
   Added the merge `merged-benches` of the benches and picnic tables from OSM and GM Park
 * [PR-147](https://github.com/itk-enter/enter/pull/147)
