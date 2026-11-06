@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+final class Version20261106132144 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return 'Added the table of the entity changes of the import history';
+    }
+
+    public function up(Schema $schema): void
+    {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE TABLE entity_change (id INT AUTO_INCREMENT NOT NULL, source_import_id INT NOT NULL, entity_id VARCHAR(255) NOT NULL, type VARCHAR(16) NOT NULL, INDEX IDX_849A40AD81257D5D (entity_id), INDEX IDX_849A40ADDE3CF017 (source_import_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('ALTER TABLE entity_change ADD CONSTRAINT FK_849A40ADDE3CF017 FOREIGN KEY (source_import_id) REFERENCES source_import (id)');
+    }
+
+    public function down(Schema $schema): void
+    {
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE entity_change DROP FOREIGN KEY FK_849A40ADDE3CF017');
+        $this->addSql('DROP TABLE entity_change');
+    }
+}

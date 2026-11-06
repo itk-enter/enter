@@ -22,6 +22,10 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
  * gives the feed that the import read. Between these moments, the recorder
  * keeps the running SourceImport of each source.
  *
+ * When an import succeeds, the recorder also writes one EntityChange for
+ * each entity that the import added or deleted. A failed import gets no
+ * changes, because the importer does not report them.
+ *
  * The history must not stop an import. Thus, if the database fails, the
  * recorder logs the error and the import continues.
  */
@@ -88,20 +92,29 @@ final class ImportRecorder
         }
 
         $result = $event->result;
+        $changes = [];
         if ($result instanceof ImportResult) {
             $rejected = \count($result->rejected);
             $import->succeed($this->clock->now(), $result->entityHash, $result->count - $rejected, $rejected, $result->deleted);
+            foreach ($result->addedIds as $entityId) {
+                $changes[] = new EntityChange($import, $entityId, EntityChangeType::Added);
+            }
+            foreach ($result->deletedIds as $entityId) {
+                $changes[] = new EntityChange($import, $entityId, EntityChangeType::Removed);
+            }
         } else {
             $import->fail($this->clock->now(), $result::class.': '.$result->getMessage());
         }
 
-        $this->save($sourceId, $import);
+        $this->save($sourceId, $import, ...$changes);
     }
 
-    private function save(string $sourceId, object $entity): void
+    private function save(string $sourceId, object ...$entities): void
     {
         try {
-            $this->entityManager->persist($entity);
+            foreach ($entities as $entity) {
+                $this->entityManager->persist($entity);
+            }
             $this->entityManager->flush();
         } catch (\Throwable $exception) {
             $this->logFailure($sourceId, $exception);

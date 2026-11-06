@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-158](https://github.com/itk-enter/enter/pull/158)
+  Recorded the entities that each import added and removed
 * [PR-157](https://github.com/itk-enter/enter/pull/157)
   Recorded each import of a source
 * [PR-156](https://github.com/itk-enter/enter/pull/156)
