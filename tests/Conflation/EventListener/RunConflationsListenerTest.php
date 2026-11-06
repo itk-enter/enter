@@ -90,7 +90,7 @@ class RunConflationsListenerTest extends TestCase
     private static function event(array $imported, array $failed = []): SourcesImportedEvent
     {
         return new SourcesImportedEvent(
-            array_fill_keys($imported, new ImportResult(1, 0, 201, 'http://broker.example/')),
+            array_fill_keys($imported, new ImportResult(1, 0, 201, 'http://broker.example/', str_repeat('a', 64))),
             array_fill_keys($failed, new \RuntimeException('Feed unreachable')),
         );
     }
