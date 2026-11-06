@@ -107,6 +107,18 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                 ->toPayload($contextUrls);
         }
 
+        // Ask the broker before the upsert. After the upsert, the broker has
+        // every id of the feed, and the import cannot tell the added ones.
+        $held = [];
+        $listingFailure = null;
+        if ([] !== $ids) {
+            try {
+                $held = $this->broker->fetchIdsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id);
+            } catch (\Throwable $exception) {
+                $listingFailure = $exception;
+            }
+        }
+
         if (1 === count($payload)) {
             $this->info('The import upserts 1 entity');
         } else {
@@ -123,13 +135,19 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             $this->warning('Broker rejected {entity}: {reason}', ['entity' => $id, 'reason' => $rejection->reason, 'error' => $rejection->error]);
         }
 
+        if (null !== $listingFailure) {
+            throw new SweepFailedException($listingFailure);
+        }
+
         try {
-            $deleted = $this->sweep($source, $ids);
+            $deletedIds = $this->sweep($source, $ids, $held);
         } catch (\Throwable $exception) {
             throw new SweepFailedException($exception);
         }
 
-        return new ImportResult(\count($payload), $deleted, $upsert->status, $this->broker->brokerUrl(), PayloadHash::of($payload), $upsert->rejected);
+        $addedIds = array_values(array_diff($ids, $held, array_keys($upsert->rejected)));
+
+        return new ImportResult(\count($payload), \count($deletedIds), $upsert->status, $this->broker->brokerUrl(), PayloadHash::of($payload), $upsert->rejected, $addedIds, $deletedIds);
     }
 
     /**
@@ -144,22 +162,20 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     /**
      * Deletes the entities of the source that this import does not give.
      *
-     * @param list<string> $ids the upserted entity IDs
+     * @param list<string> $ids  the upserted entity IDs
+     * @param list<string> $held the IDs of the entities of the source that the broker had before the upsert
      *
-     * @return int the number of deleted entities
+     * @return list<string> the IDs of the deleted entities
      */
-    private function sweep(SourceInterface $source, array $ids): int
+    private function sweep(SourceInterface $source, array $ids, array $held): array
     {
         if ([] === $ids) {
             $this->warning('Source {source} gave no entities. The broker keeps its entities of the source', ['source' => $source->definition->id]);
 
-            return 0;
+            return [];
         }
 
-        $stale = array_values(array_diff(
-            $this->broker->fetchIdsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
-            $ids,
-        ));
+        $stale = array_values(array_diff($held, $ids));
 
         if (1 === count($stale)) {
             $this->info('The import deletes 1 stale entity');
@@ -169,7 +185,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
 
         $this->broker->delete($stale);
 
-        return \count($stale);
+        return $stale;
     }
 
     /**
