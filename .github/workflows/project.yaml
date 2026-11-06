@@ -26,3 +26,13 @@ jobs:
 
             - name: Run tests
               run: task test
+
+            - name: Validate the Doctrine schema
+              run: |
+                  docker compose up --detach --wait mariadb
+                  docker compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+                  docker compose exec phpfpm bin/console doctrine:schema:validate
+
+            - name: Show the container logs
+              if: failure()
+              run: docker compose logs --no-color
