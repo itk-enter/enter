@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-155](https://github.com/itk-enter/enter/pull/155)
+  Turned off the history in Scorpio
 * [PR-152](https://github.com/itk-enter/enter/pull/152)
   Added the tables of the import history: `Feed` and `SourceImport`
 * [PR-151](https://github.com/itk-enter/enter/pull/151)
