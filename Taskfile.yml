@@ -32,6 +32,9 @@ tasks:
       - task: composer:install
       - task: console
         vars:
+          TASK_ARGS: doctrine:migrations:migrate --no-interaction
+      - task: console
+        vars:
           TASK_ARGS: cache:clear
 
   site:open:
@@ -53,7 +56,9 @@ tasks:
       - task: test:broker
       - task: test:conflation
       - task: test:controller
+      - task: test:doctrine
       - task: test:geo
+      - task: test:import
       - task: test:source
       - task: test:sourceImporter
       - task: test:sourceReader
@@ -72,7 +77,9 @@ tasks:
   test:broker: *test_task
   test:conflation: *test_task
   test:controller: *test_task
+  test:doctrine: *test_task
   test:geo: *test_task
+  test:import: *test_task
   test:source: *test_task
   test:sourceImporter: *test_task
   test:sourceReader: *test_task

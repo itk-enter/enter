@@ -96,7 +96,7 @@ task code-analysis                   # PHPStan
 task test                            # PHPUnit, one task for each folder in tests/
 ```
 
-`task test` does not run `tests/Import`, `tests/Merge` and `tests/Unit`. To run all the tests, use
+`task test` does not run `tests/Merge` and `tests/Unit`. To run all the tests, use
 `docker compose exec phpfpm vendor/bin/phpunit`.
 
 ### Tests are not modified without approval
