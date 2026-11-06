@@ -16,6 +16,14 @@ framework:
             broker.client:
                 base_uri: '%env(APP_BROKER_BASE_URI)%'
 
+            # Sends the GraphQL queries of the lookups to Datafordeleren. The
+            # API key goes in the query string, because Datafordeleren accepts
+            # it only there.
+            datafordeler.client:
+                base_uri: 'https://graphql.datafordeler.dk/'
+                query:
+                    apiKey: '%env(DATAFORDELER_API_KEY)%'
+
             # Fetches the live feeds for the test fixtures.
             test_fixture.client:
                 scope: '^https?://'

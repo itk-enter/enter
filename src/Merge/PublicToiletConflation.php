@@ -9,6 +9,7 @@ use App\Conflation\ConflationInterface;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
+use App\Lookup\Datafordeler\DarAddress;
 
 /**
  * Public toilets in Aarhus Municipality, merged from every data set that
@@ -20,6 +21,8 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
  * of them state wins. If there is no majority, the municipality's city
  * toilets decide, then its other toilets. If neither of these data sets
  * states a value, the merge records a conflict.
+ *
+ * If no record gives an address, the address comes from DAR.
  */
 #[Conflation(
     id: 'merged-public-toilets',
@@ -32,6 +35,7 @@ use App\Conflation\MergeByLocation\OneToOneClosestFirst;
         new MajorityWins(),
         new SourceAuthority(['mtm_spatialmaps-toilet-city', 'mtm_spatialmaps-toilet-other']),
     ],
+    lookups: [DarAddress::class => ['address']],
 )]
 final class PublicToiletConflation implements ConflationInterface
 {

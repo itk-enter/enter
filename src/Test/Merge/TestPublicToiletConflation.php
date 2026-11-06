@@ -9,6 +9,7 @@ use App\Conflation\ConflationInterface;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
+use App\Lookup\Datafordeler\DarAddress;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
@@ -28,6 +29,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         new MajorityWins(),
         new SourceAuthority(['test:mtm_spatialmaps-toilet-city', 'test:mtm_spatialmaps-toilet-other']),
     ],
+    lookups: [DarAddress::class => ['address']],
 )]
 final class TestPublicToiletConflation implements ConflationInterface
 {

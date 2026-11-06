@@ -28,6 +28,21 @@ framework:
                     multiplier: 5
                     max_delay: 3600000
 
+            # The queue of the lookups that use Datafordeleren.
+            datafordeler:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: datafordeler
+                    queues:
+                        datafordeler: ~
+                rate_limiter: datafordeler
+                retry_strategy:
+                    max_retries: 3
+                    delay: 60000
+                    multiplier: 5
+                    max_delay: 3600000
+
         routing:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
@@ -38,3 +53,4 @@ when@test:
             transports:
                 async: 'in-memory://'
                 lookups: 'in-memory://'
+                datafordeler: 'in-memory://'
