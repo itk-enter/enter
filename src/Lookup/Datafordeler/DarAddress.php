@@ -29,7 +29,7 @@ use Psr\Clock\ClockInterface;
     id: 'dar-address',
     attributes: ['address'],
     recheckEmptyAfter: new \DateInterval('P30D'),
-    refreshAfter: new \DateInterval('P90D'),
+    refreshAfter: new \DateInterval('P150D'),
     transport: 'datafordeler',
 )]
 final readonly class DarAddress implements LocationLookupInterface
@@ -99,29 +99,56 @@ final readonly class DarAddress implements LocationLookupInterface
     /**
      * Gets the access points in a circle around a point.
      *
-     * @return array<string, float> the distance in metres by the id of the access point
+     * DAR can filter only by a geometry, not by a distance. Thus the method
+     * asks for the access points in a square around the circle. Then it
+     * calculates the distance to each access point, and removes the access
+     * points in the corners of the square.
+     *
+     * @param float  $x      the easting of the point in EPSG:25832, in metres
+     * @param float  $y      the northing of the point in EPSG:25832, in metres
+     * @param int    $radius the radius of the circle, in metres
+     * @param string $now    the time of the data in DAR, as a DafDateTime
+     *
+     * @return array<string, float> the distance in metres by the id of the access point, nearest first
      */
     private function accessPoints(float $x, float $y, int $radius, string $now): array
     {
+        // The square around the circle, as WKT. The corners go from south-west
+        // to south-east, north-east and north-west. The last corner is the
+        // first again, because WKT requires a closed ring. Argument 1 is the
+        // west edge, 2 the south edge, 3 the east edge and 4 the north edge.
+        // "%F" always writes a decimal point. "%f" uses the locale, and a
+        // decimal comma is not valid WKT.
         $area = \sprintf(
             'POLYGON((%1$F %2$F, %3$F %2$F, %3$F %4$F, %1$F %4$F, %1$F %2$F))',
             $x - $radius, $y - $radius, $x + $radius, $y + $radius,
         );
+
+        // The client sends $area and $now as GraphQL variables. The query uses
+        // them in its "within" filter and its "virkningstid" argument.
         $data = $this->client->query(self::ACCESS_POINTS, ['area' => $area, 'now' => $now]);
 
         $distances = [];
         foreach (self::nodes($data, 'DAR_Adressepunkt') as $node) {
+            // DAR gives the position as a WKT point in EPSG:25832. Ignore an
+            // access point without an id or with a position of another form.
             $id = $node['id_lokalId'] ?? null;
             $wkt = $node['position']['wkt'] ?? null;
             if (!\is_string($id) || !\is_string($wkt) || 1 !== preg_match('/^POINT\s*\(\s*(\S+)\s+(\S+)\s*\)$/i', $wkt, $match)) {
                 continue;
             }
 
+            // EPSG:25832 has its axes in metres, so the straight-line
+            // distance is in metres. Keep only the access points in the
+            // circle.
             $distance = hypot((float) $match[1] - $x, (float) $match[2] - $y);
             if ($distance <= $radius) {
                 $distances[$id] = $distance;
             }
         }
+
+        // Sort by distance and keep the ids, so the nearest access point
+        // comes first.
         asort($distances);
 
         return $distances;
