@@ -7,3 +7,10 @@ framework:
             policy: 'fixed_window'
             limit: 60
             interval: '1 minute'
+
+        # The limit of the datafordeler transport: 60 lookups each minute. A
+        # lookup makes 2 to 6 requests to Datafordeleren.
+        datafordeler:
+            policy: 'fixed_window'
+            limit: 60
+            interval: '1 minute'

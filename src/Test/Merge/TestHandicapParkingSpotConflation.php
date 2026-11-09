@@ -10,6 +10,7 @@ use App\Conflation\ConflictResolution\CoveringArea;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\Pipeline\ConflictResolver;
+use App\Lookup\Datafordeler\DarAddress;
 use App\Merge\Parking\WithinSiteClosestFirst;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
@@ -32,6 +33,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         new MajorityWins(),
         new SourceAuthority(['test:mtm_spatialmaps-handicap-parking-spot', 'test:osm-handicap-parking-spot', 'test:mtm_spatialmaps-handicap-parking-on-street', 'test:osm-handicap-parking-on-street']),
     ],
+    lookups: [DarAddress::class => ['address']],
 )]
 final class TestHandicapParkingSpotConflation implements ConflationInterface
 {

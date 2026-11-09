@@ -10,6 +10,7 @@ use App\Conflation\ConflictResolution\CoveringArea;
 use App\Conflation\ConflictResolution\MajorityWins;
 use App\Conflation\ConflictResolution\SourceAuthority;
 use App\Conflation\Pipeline\ConflictResolver;
+use App\Lookup\Datafordeler\DarAddress;
 use App\Merge\Parking\WithinSiteClosestFirst;
 
 /**
@@ -22,6 +23,8 @@ use App\Merge\Parking\WithinSiteClosestFirst;
  * the location of a site, OSM before the municipality. For other attributes,
  * the value more than half of the records state wins; without a majority,
  * the municipality's bays decide, then OSM's bays, then the sites.
+ *
+ * If no record gives an address, the address comes from DAR.
  */
 #[Conflation(
     id: 'merged-handicap-parking-spots',
@@ -36,6 +39,7 @@ use App\Merge\Parking\WithinSiteClosestFirst;
         new MajorityWins(),
         new SourceAuthority(['mtm_spatialmaps-handicap-parking-spot', 'osm-handicap-parking-spot', 'mtm_spatialmaps-handicap-parking-on-street', 'osm-handicap-parking-on-street']),
     ],
+    lookups: [DarAddress::class => ['address']],
 )]
 final class HandicapParkingSpotConflation implements ConflationInterface
 {
