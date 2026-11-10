@@ -22,6 +22,32 @@ class EntityHashTest extends TestCase
         $this->assertSame(EntityHash::of([$first, $second]), EntityHash::of([$second, $first]));
     }
 
+    public function testTheOrderOfTheKeysHasNoEffect(): void
+    {
+        $before = [
+            'id' => 'urn:ngsi-ld:Bench:1',
+            'type' => 'Bench',
+            'name' => ['type' => 'Property', 'value' => 'Mølleparken'],
+            'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [10.2, 56.15]]],
+        ];
+        $after = [
+            'location' => ['value' => ['coordinates' => [10.2, 56.15], 'type' => 'Point'], 'type' => 'GeoProperty'],
+            'name' => ['value' => 'Mølleparken', 'type' => 'Property'],
+            'type' => 'Bench',
+            'id' => 'urn:ngsi-ld:Bench:1',
+        ];
+
+        $this->assertSame(EntityHash::of([$before]), EntityHash::of([$after]));
+    }
+
+    public function testTheOrderInAListHasAnEffect(): void
+    {
+        $before = ['id' => 'urn:ngsi-ld:Bench:1', 'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [10.2, 56.15]]]];
+        $after = ['id' => 'urn:ngsi-ld:Bench:1', 'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [56.15, 10.2]]]];
+
+        $this->assertNotSame(EntityHash::of([$before]), EntityHash::of([$after]));
+    }
+
     public function testAChangedValueGivesAnotherHash(): void
     {
         $before = ['id' => 'urn:ngsi-ld:Bench:1', 'name' => ['type' => 'Property', 'value' => 'Mølleparken']];
