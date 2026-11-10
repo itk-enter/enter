@@ -4,10 +4,10 @@ namespace App\SourceImporter;
 
 use App\Broker\NgsiLdBroker;
 use App\Geo\Wgs84Transformer;
-use App\Import\EntityHash;
 use App\Import\Exception\SweepFailedException;
 use App\Import\Exception\UpsertFailedException;
 use App\Import\ImportResult;
+use App\Import\PayloadHash;
 use App\Ngsi\NgsiEntity;
 use App\Source\SourceInterface;
 use App\SourceReader\SourceReaderInterface;
@@ -129,7 +129,7 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             throw new SweepFailedException($exception);
         }
 
-        return new ImportResult(\count($payload), $deleted, $upsert->status, $this->broker->brokerUrl(), EntityHash::of($payload), $upsert->rejected);
+        return new ImportResult(\count($payload), $deleted, $upsert->status, $this->broker->brokerUrl(), PayloadHash::of($payload), $upsert->rejected);
     }
 
     /**

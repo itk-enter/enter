@@ -12,19 +12,19 @@ use App\Broker\Rejection;
 final readonly class ImportResult
 {
     /**
-     * @param int                      $count      the number of upserted entities
-     * @param int                      $deleted    the number of deleted stale entities
-     * @param int                      $status     the HTTP status code from the broker
-     * @param string                   $brokerUrl  the broker URL
-     * @param string                   $entityHash the hash of the upserted entities, from EntityHash::of()
-     * @param array<string, Rejection> $rejected   the rejections, by entity id
+     * @param int                      $count       the number of upserted entities
+     * @param int                      $deleted     the number of deleted stale entities
+     * @param int                      $status      the HTTP status code from the broker
+     * @param string                   $brokerUrl   the broker URL
+     * @param string                   $payloadHash the hash of the upsert payload, from PayloadHash::of()
+     * @param array<string, Rejection> $rejected    the rejections, by entity id
      */
     public function __construct(
         public int $count,
         public int $deleted,
         public int $status,
         public string $brokerUrl,
-        public string $entityHash,
+        public string $payloadHash,
         public array $rejected = [],
     ) {
     }

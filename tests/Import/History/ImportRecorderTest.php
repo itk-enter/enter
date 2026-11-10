@@ -103,7 +103,7 @@ class ImportRecorderTest extends TestCase
         $import = $this->import();
         $this->assertSame(ImportStatus::Succeeded, $import->getStatus());
         $this->assertEquals(new \DateTimeImmutable('2026-11-07 01:01:30 UTC'), $import->getFinishedAt());
-        $this->assertSame(str_repeat('a', 64), $import->getEntityHash());
+        $this->assertSame(str_repeat('a', 64), $import->getPayloadHash());
         $this->assertSame(9, $import->getUpserted());
         $this->assertSame(1, $import->getRejected());
         $this->assertSame(2, $import->getDeleted());

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Import;
 
-use App\Import\EntityHash;
+use App\Import\PayloadHash;
 use PHPUnit\Framework\TestCase;
 
-class EntityHashTest extends TestCase
+class PayloadHashTest extends TestCase
 {
     public function testItIsASha256Hash(): void
     {
-        $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', EntityHash::of([['id' => 'urn:ngsi-ld:Bench:1']]));
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', PayloadHash::of([['id' => 'urn:ngsi-ld:Bench:1']]));
     }
 
     public function testTheOrderOfTheEntitiesHasNoEffect(): void
@@ -19,7 +19,7 @@ class EntityHashTest extends TestCase
         $first = ['id' => 'urn:ngsi-ld:Bench:1', 'name' => ['type' => 'Property', 'value' => 'Mølleparken']];
         $second = ['id' => 'urn:ngsi-ld:Bench:2', 'name' => ['type' => 'Property', 'value' => 'Ådalen']];
 
-        $this->assertSame(EntityHash::of([$first, $second]), EntityHash::of([$second, $first]));
+        $this->assertSame(PayloadHash::of([$first, $second]), PayloadHash::of([$second, $first]));
     }
 
     public function testTheOrderOfTheKeysHasNoEffect(): void
@@ -37,7 +37,7 @@ class EntityHashTest extends TestCase
             'id' => 'urn:ngsi-ld:Bench:1',
         ];
 
-        $this->assertSame(EntityHash::of([$before]), EntityHash::of([$after]));
+        $this->assertSame(PayloadHash::of([$before]), PayloadHash::of([$after]));
     }
 
     public function testTheOrderInAListHasAnEffect(): void
@@ -45,7 +45,7 @@ class EntityHashTest extends TestCase
         $before = ['id' => 'urn:ngsi-ld:Bench:1', 'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [10.2, 56.15]]]];
         $after = ['id' => 'urn:ngsi-ld:Bench:1', 'location' => ['type' => 'GeoProperty', 'value' => ['type' => 'Point', 'coordinates' => [56.15, 10.2]]]];
 
-        $this->assertNotSame(EntityHash::of([$before]), EntityHash::of([$after]));
+        $this->assertNotSame(PayloadHash::of([$before]), PayloadHash::of([$after]));
     }
 
     public function testAChangedValueGivesAnotherHash(): void
@@ -53,6 +53,6 @@ class EntityHashTest extends TestCase
         $before = ['id' => 'urn:ngsi-ld:Bench:1', 'name' => ['type' => 'Property', 'value' => 'Mølleparken']];
         $after = ['id' => 'urn:ngsi-ld:Bench:1', 'name' => ['type' => 'Property', 'value' => 'Møllestien']];
 
-        $this->assertNotSame(EntityHash::of([$before]), EntityHash::of([$after]));
+        $this->assertNotSame(PayloadHash::of([$before]), PayloadHash::of([$after]));
     }
 }

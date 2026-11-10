@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Import;
 
 /**
- * Gets one hash for the entities that an import upserts.
+ * Gets one hash for the upsert payload: all the entities that an import
+ * sends to the broker.
  *
  * If two imports of a source give the same hash, they upserted the same
  * entities both times. The order of the entities has no effect on the hash,
  * because a feed can give its records in a different order each time.
  */
-final class EntityHash
+final class PayloadHash
 {
     /**
      * @param list<array<string, mixed>> $payload the entities in the upsert payload, each with an "id"

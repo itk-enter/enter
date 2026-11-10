@@ -90,7 +90,7 @@ final class ImportRecorder
         $result = $event->result;
         if ($result instanceof ImportResult) {
             $rejected = \count($result->rejected);
-            $import->succeed($this->clock->now(), $result->entityHash, $result->count - $rejected, $rejected, $result->deleted);
+            $import->succeed($this->clock->now(), $result->payloadHash, $result->count - $rejected, $rejected, $result->deleted);
         } else {
             $import->fail($this->clock->now(), $result::class.': '.$result->getMessage());
         }
