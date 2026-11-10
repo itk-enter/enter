@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 556" role="img" aria-label="One toilet, three sources, one merged record">
+  <style>
+    svg { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; }
+    text { fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 600; }
+    .q { font-size: 11.5px; fill: #59636e; }
+    .c { font-size: 11.5px; fill: #8250df; }
+    .s { font-size: 11.5px; }
+    .n { font-weight: 600; }
+    .m { text-anchor: middle; }
+    .box { fill: #ffffff; stroke: #8c959f; stroke-width: 1.25; }
+    .main { fill: #0969da; fill-opacity: 0.12; stroke: #0969da; stroke-width: 2; }
+    .line { fill: none; stroke: #8c959f; stroke-width: 1.25; }
+    .head { fill: #8c959f; }
+  </style>
+  <rect x="0" y="0" width="760" height="556" rx="12" fill="#f6f8fa"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="head" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="24" y="34">One toilet, three sources, one merged record</text>
+  <text class="q" x="24" y="54">The toilet at Ørnereden, Ørneredevej 55, Højbjerg</text>
+
+  <!-- Source cards -->
+  <rect class="box" x="24" y="72" width="226" height="120" rx="8"/>
+  <text class="n" x="40" y="96">OtherSource</text>
+  <text class="s" x="40" y="114">name: Ørneredevej 55</text>
+  <text class="s" x="40" y="130">wheelchair: yes · free: yes</text>
+  <text class="s" x="40" y="146">staffed: no · handwashing: yes</text>
+
+  <rect class="box" x="266" y="72" width="226" height="120" rx="8"/>
+  <text class="n" x="282" y="96">Kommune, other toilets</text>
+  <text class="s" x="282" y="114">name: Ørnereden</text>
+  <text class="s" x="282" y="130">wheelchair: yes · access: public</text>
+  <text class="s" x="282" y="146">description: Handicaptoilet</text>
+  <text class="q" x="282" y="178">same spot as OtherSource</text>
+
+  <rect class="box" x="508" y="72" width="226" height="120" rx="8"/>
+  <text class="n" x="524" y="96">OpenStreetMap</text>
+  <text class="s" x="524" y="114">wheelchair: yes · free: yes</text>
+  <text class="s" x="524" y="130">access: public</text>
+  <text class="s" x="524" y="146">toilet type: flush</text>
+  <text class="q" x="524" y="178">about 1.8 m from the others</text>
+
+  <!-- Match, then augment -->
+  <path class="line" d="M137 192V208M379 192V208M621 192V208M137 208H621"/>
+  <path class="line" d="M380 208V224" marker-end="url(#arrow)"/>
+  <rect class="box" x="160" y="224" width="440" height="40" rx="8"/>
+  <text class="m" x="380" y="248">Matched: different sources, all within 5 m → one group</text>
+  <path class="line" d="M380 264V288" marker-end="url(#arrow)"/>
+  <rect class="box" x="160" y="288" width="440" height="40" rx="8"/>
+  <text class="m" x="380" y="312">Augmented: the district area it lies in adds the district</text>
+  <path class="line" d="M380 328V352" marker-end="url(#arrow)"/>
+
+  <!-- Merged record -->
+  <rect class="main" x="24" y="352" width="712" height="180" rx="8"/>
+  <text class="n" x="40" y="376">Merged record</text>
+  <text class="q" x="400" y="376">Why</text>
+
+  <text class="q" x="40" y="400">Name</text>
+  <text class="n" x="220" y="400">Ørnereden</text>
+  <text class="q" x="400" y="400">Sources disagree; the trusted source decides</text>
+
+  <text class="q" x="40" y="420">Wheelchair · free · access</text>
+  <text class="n" x="220" y="420">yes · yes · public</text>
+  <text class="q" x="400" y="420">All sources that state it agree</text>
+
+  <text class="q" x="40" y="440">Description</text>
+  <text class="n" x="220" y="440">Handicaptoilet</text>
+  <text class="q" x="400" y="440">Only the Kommune states it</text>
+
+  <text class="q" x="40" y="460">Toilet type</text>
+  <text class="n" x="220" y="460">flush</text>
+  <text class="q" x="400" y="460">Only OpenStreetMap states it</text>
+
+  <text class="q" x="40" y="480">Staffed · handwashing</text>
+  <text class="n" x="220" y="480">no · yes</text>
+  <text class="q" x="400" y="480">Only OtherSource states it</text>
+
+  <text class="q" x="40" y="500">District</text>
+  <text class="n" x="220" y="500">Højbjerg</text>
+  <text class="c" x="400" y="500">Added by augmentation from district areas</text>
+
+  <text class="q" x="40" y="520">Sources</text>
+  <text class="n" x="220" y="520">all three linked</text>
+  <text class="q" x="400" y="520">So every value can be traced back</text>
+</svg>

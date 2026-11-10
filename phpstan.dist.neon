@@ -1,0 +1,21 @@
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
+
+parameters:
+    level: 6
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+
+    scanDirectories:
+        - vendor/itamair/geophp/lib
+
+    excludePaths:
+        - src/Kernel.php
+        - tests/bootstrap.php
+
+    treatPhpDocTypesAsCertain: false

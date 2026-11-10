@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 456" role="img" aria-label="Each detail is settled on its own; an unresolved conflict is recorded, not guessed">
+  <style>
+    svg { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; }
+    text { fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 600; }
+    .q { font-size: 11.5px; fill: #59636e; }
+    .c { font-size: 11.5px; fill: #8250df; }
+    .n { font-weight: 600; }
+    .m { text-anchor: middle; }
+    .box { fill: #ffffff; stroke: #8c959f; stroke-width: 1.25; }
+    .main { fill: #0969da; fill-opacity: 0.12; stroke: #0969da; stroke-width: 2; }
+    .warn { fill: #cf222e; fill-opacity: 0.08; stroke: #cf222e; stroke-width: 1.5; }
+    .line { fill: none; stroke: #8c959f; stroke-width: 1.25; }
+    .head { fill: #8c959f; }
+  </style>
+  <rect x="0" y="0" width="760" height="456" rx="12" fill="#f6f8fa"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path class="head" d="M0 0L10 5L0 10z"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="24" y="34">Each detail is settled on its own; an unresolved conflict is recorded, not guessed</text>
+  <text class="q" x="24" y="54"><tspan class="c">Purple lines</tspan> are set in each merge's configuration.</text>
+
+  <!-- Connectors: the "no" path down the left -->
+  <path class="line" d="M230 112V136" marker-end="url(#arrow)"/>
+  <path class="line" d="M230 192V216" marker-end="url(#arrow)"/>
+  <path class="line" d="M230 288V312" marker-end="url(#arrow)"/>
+  <path class="line" d="M230 368V392" marker-end="url(#arrow)"/>
+  <text class="q" x="238" y="208">no</text>
+  <text class="q" x="238" y="304">no</text>
+
+  <!-- Connectors: the "yes" exits to the right, joined on a bus down to publish -->
+  <path class="line" d="M436 164H476" marker-end="url(#arrow)"/>
+  <path class="line" d="M436 252H476" marker-end="url(#arrow)"/>
+  <text class="q m" x="456" y="156">yes</text>
+  <text class="q m" x="456" y="244">yes</text>
+  <path class="line" d="M712 164H728M712 252H728M728 164V392" marker-end="url(#arrow)"/>
+
+  <!-- Start -->
+  <rect class="box" x="24" y="72" width="412" height="40" rx="8"/>
+  <text class="m" x="230" y="96">One detail, e.g. the name, across the group</text>
+
+  <!-- Checks -->
+  <rect class="box" x="24" y="136" width="412" height="56" rx="8"/>
+  <text class="n" x="40" y="160">1  Do the records agree?</text>
+  <text x="40" y="178">Or only one record states it</text>
+
+  <rect class="box" x="24" y="216" width="412" height="72" rx="8"/>
+  <text class="n" x="40" y="240">2  Do the configured rules decide?</text>
+  <text x="40" y="258">Rules are tried in order, for example:</text>
+  <text class="c" x="40" y="276">Trusted sources: 1. Kommune city toilets  2. Kommune other toilets</text>
+
+  <rect class="warn" x="24" y="312" width="412" height="56" rx="8"/>
+  <text class="n" x="40" y="336">Left out of the merged record</text>
+  <text x="40" y="354">The conflict is saved on the record for follow-up</text>
+
+  <!-- Outcomes -->
+  <rect class="box" x="476" y="144" width="236" height="40" rx="8"/>
+  <text class="m" x="594" y="168">Use that value</text>
+
+  <rect class="box" x="476" y="232" width="236" height="40" rx="8"/>
+  <text class="m" x="594" y="256">The first rule that decides wins</text>
+
+  <!-- Publish -->
+  <rect class="main" x="24" y="392" width="712" height="40" rx="8"/>
+  <text class="n m" x="380" y="416">The merged record is published</text>
+</svg>

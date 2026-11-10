@@ -1,0 +1,31 @@
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+
+    # Note that the session will be started ONLY if you read or write from it.
+    session: true
+
+    #esi: true
+    #fragments: true
+
+    trusted_proxies: '127.0.0.1,REMOTE_ADDR'
+
+    # https://symfony.com/doc/current/http_client.html#scoping-client
+    http_client:
+        scoped_clients:
+            broker.client:
+                base_uri: '%env(APP_BROKER_BASE_URI)%'
+
+            # Fetches the live feeds for the test fixtures.
+            test_fixture.client:
+                scope: '^https?://'
+                retry_failed:
+                    max_retries: 4
+                    delay: 5000
+                    multiplier: 2
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

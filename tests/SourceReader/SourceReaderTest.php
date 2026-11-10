@@ -1,0 +1,117 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\SourceReader;
+
+use App\Source\Osm\Bench;
+use App\Source\Osm\OnStreetParking;
+use App\Source\Osm\ParkingSpot;
+use App\SourceReader\FixedLifetimeCachingHttpClient;
+use App\SourceReader\SourceReader;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Tests the shared fetch of a feed.
+ */
+class SourceReaderTest extends TestCase
+{
+    /** @var list<string> */
+    private array $requested = [];
+
+    public function testSourcesSharingAnAccessUrlShareOneFetch(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}')]);
+
+        $this->assertSame(['elements' => [1]], $reader->read(new ParkingSpot())->toArray());
+        $this->assertSame(['elements' => [1]], $reader->read(new OnStreetParking())->toArray());
+        $this->assertCount(1, $this->requested);
+    }
+
+    /**
+     * Makes sure that the sources share one fetch when the server forbids caching.
+     */
+    public function testSourcesShareOneFetchWhateverTheServerSaysAboutCaching(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}', ['response_headers' => [
+            'cache-control' => 'no-cache',
+            'expires' => 'Thu, 01 Jan 1970 00:00:00 GMT',
+        ]])]);
+
+        $reader->read(new ParkingSpot());
+        $reader->read(new OnStreetParking());
+        $this->assertCount(1, $this->requested);
+    }
+
+    public function testSourcesWithDifferentAccessUrlsAreFetchedApart(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}'), new MockResponse('{"elements": [2]}')]);
+
+        $this->assertSame(['elements' => [1]], $reader->read(new ParkingSpot())->toArray());
+        $this->assertSame(['elements' => [2]], $reader->read(new Bench())->toArray());
+        $this->assertCount(2, $this->requested);
+    }
+
+    public function testAFailedFetchIsNotKept(): void
+    {
+        $reader = $this->reader([new MockResponse('', ['http_code' => Response::HTTP_TOO_MANY_REQUESTS]), new MockResponse('{"elements": [1]}')]);
+
+        try {
+            $reader->read(new ParkingSpot());
+            $this->fail('A rate-limited fetch must not read as data.');
+        } catch (\Throwable) {
+        }
+
+        $this->assertSame(['elements' => [1]], $reader->read(new OnStreetParking())->toArray());
+        $this->assertCount(2, $this->requested);
+    }
+
+    public function testItGivesTheBodyAndTheContentTypeAsTheSourceSentThem(): void
+    {
+        $reader = $this->reader([new MockResponse("{ \"elements\": [1] }\n", ['response_headers' => [
+            'content-type' => 'application/json; charset=utf-8',
+        ]])]);
+
+        $response = $reader->read(new ParkingSpot());
+
+        $this->assertSame("{ \"elements\": [1] }\n", $response->body);
+        $this->assertSame('application/json; charset=utf-8', $response->contentType);
+    }
+
+    public function testTheContentTypeIsNullWhenTheSourceSendsNone(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}')]);
+
+        $this->assertNull($reader->read(new ParkingSpot())->contentType);
+    }
+
+    public function testASharedFetchKeepsTheContentType(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}', ['response_headers' => [
+            'content-type' => 'application/json',
+        ]])]);
+
+        $reader->read(new ParkingSpot());
+
+        $this->assertSame('application/json', $reader->read(new OnStreetParking())->contentType);
+        $this->assertCount(1, $this->requested);
+    }
+
+    /**
+     * @param list<MockResponse> $responses
+     */
+    private function reader(array $responses): SourceReader
+    {
+        $client = new MockHttpClient(function (string $method, string $url) use (&$responses): MockResponse {
+            $this->requested[] = $url;
+
+            return array_shift($responses) ?? throw new \LogicException('No response left for '.$url);
+        });
+
+        return new SourceReader(new FixedLifetimeCachingHttpClient($client, new ArrayAdapter()));
+    }
+}
