@@ -35,11 +35,12 @@ class SourceImport
     private ?Feed $feed = null;
 
     /**
-     * The SHA-256 hash of the entities that the import upserted. If two
+     * The SHA-256 hash of the upsert payload: each entity that the import
+     * sent to the broker, also an entity that the broker rejected. If two
      * imports of a source have the same hash, the data did not change.
      */
     #[ORM\Column(length: 64, nullable: true, options: ['fixed' => true])]
-    private ?string $entityHash = null;
+    private ?string $payloadHash = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $upserted = null;
@@ -74,17 +75,17 @@ class SourceImport
      * Records that the import upserted the entities and deleted the stale
      * entities.
      *
-     * @param string $entityHash the SHA-256 hash of the upserted entities
-     * @param int    $upserted   the number of upserted entities
-     * @param int    $rejected   the number of entities that the broker rejected
-     * @param int    $deleted    the number of deleted stale entities
+     * @param string $payloadHash the SHA-256 hash of the upsert payload
+     * @param int    $upserted    the number of upserted entities
+     * @param int    $rejected    the number of entities that the broker rejected
+     * @param int    $deleted     the number of deleted stale entities
      */
-    public function succeed(\DateTimeImmutable $finishedAt, string $entityHash, int $upserted, int $rejected, int $deleted): void
+    public function succeed(\DateTimeImmutable $finishedAt, string $payloadHash, int $upserted, int $rejected, int $deleted): void
     {
         $this->assertRunning();
         $this->status = ImportStatus::Succeeded;
         $this->finishedAt = $finishedAt;
-        $this->entityHash = $entityHash;
+        $this->payloadHash = $payloadHash;
         $this->upserted = $upserted;
         $this->rejected = $rejected;
         $this->deleted = $deleted;
@@ -134,9 +135,9 @@ class SourceImport
         return $this->feed;
     }
 
-    public function getEntityHash(): ?string
+    public function getPayloadHash(): ?string
     {
-        return $this->entityHash;
+        return $this->payloadHash;
     }
 
     public function getUpserted(): ?int

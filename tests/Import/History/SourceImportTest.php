@@ -35,7 +35,7 @@ class SourceImportTest extends TestCase
         $this->assertSame(ImportStatus::Succeeded, $import->getStatus());
         $this->assertEquals($this->at('01:02'), $import->getFinishedAt());
         $this->assertSame($feed, $import->getFeed());
-        $this->assertSame(str_repeat('a', 64), $import->getEntityHash());
+        $this->assertSame(str_repeat('a', 64), $import->getPayloadHash());
         $this->assertSame(10, $import->getUpserted());
         $this->assertSame(1, $import->getRejected());
         $this->assertSame(2, $import->getDeleted());
@@ -51,7 +51,7 @@ class SourceImportTest extends TestCase
         $this->assertSame(ImportStatus::Failed, $import->getStatus());
         $this->assertEquals($this->at('01:01'), $import->getFinishedAt());
         $this->assertSame('The broker is not available', $import->getFailure());
-        $this->assertNull($import->getEntityHash());
+        $this->assertNull($import->getPayloadHash());
         $this->assertNull($import->getUpserted());
     }
 
