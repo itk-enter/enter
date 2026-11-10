@@ -7,6 +7,7 @@ namespace App\Tests\Import\History;
 use App\Broker\Rejection;
 use App\Import\Event\SourceImportFinishedEvent;
 use App\Import\Event\SourceImportStartedEvent;
+use App\Import\History\EntityChange;
 use App\Import\History\Feed;
 use App\Import\History\ImportRecorder;
 use App\Import\History\ImportStatus;
@@ -121,6 +122,36 @@ class ImportRecorderTest extends TestCase
         $this->assertSame('RuntimeException: Feed unreachable', $import->getFailure());
     }
 
+    public function testASuccessfulImportRecordsTheEntitiesThatItAddedAndDeleted(): void
+    {
+        $recorder = $this->recorder();
+        $recorder->onSourceImportStarted(new SourceImportStartedEvent(new ToiletCity()));
+        $result = new ImportResult(2, 1, 201, 'http://broker.example/', str_repeat('a', 64), [], [
+            'urn:ngsi-ld:PublicToilet:aarhus-toilet-city-8',
+        ], [
+            'urn:ngsi-ld:PublicToilet:aarhus-toilet-city-3',
+        ]);
+
+        $recorder->onSourceImportFinished(new SourceImportFinishedEvent(new ToiletCity(), $result));
+
+        $changes = $this->changes();
+        $this->assertSame([
+            'added urn:ngsi-ld:PublicToilet:aarhus-toilet-city-8',
+            'removed urn:ngsi-ld:PublicToilet:aarhus-toilet-city-3',
+        ], array_map(static fn (EntityChange $change): string => $change->getType()->value.' '.$change->getEntityId(), $changes));
+        $this->assertSame($this->import(), $changes[0]->getSourceImport());
+    }
+
+    public function testAFailedImportRecordsNoChanges(): void
+    {
+        $recorder = $this->recorder();
+        $recorder->onSourceImportStarted(new SourceImportStartedEvent(new ToiletCity()));
+
+        $recorder->onSourceImportFinished(new SourceImportFinishedEvent(new ToiletCity(), new \RuntimeException('Feed unreachable')));
+
+        $this->assertSame([], $this->changes());
+    }
+
     public function testAFailureOfTheDatabaseIsLoggedAndTheImportContinues(): void
     {
         $this->flushFailure = new \RuntimeException('Connection refused');
@@ -150,6 +181,16 @@ class ImportRecorderTest extends TestCase
         });
 
         return new ImportRecorder($entityManager, $this->clock, $this->logger);
+    }
+
+    /**
+     * Gets the entity changes that the recorder persisted.
+     *
+     * @return list<EntityChange>
+     */
+    private function changes(): array
+    {
+        return array_values(array_filter($this->persisted, static fn (object $object): bool => $object instanceof EntityChange));
     }
 
     /**
