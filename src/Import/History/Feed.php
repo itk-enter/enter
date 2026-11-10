@@ -19,6 +19,11 @@ use Doctrine\ORM\Mapping as ORM;
  * COMPRESSED attribute. Doctrine has no option for this attribute, so the
  * mapping gives the column definition in SQL. A text column gives PHP a
  * string. It accepts each body, because a feed is JSON and JSON is UTF-8.
+ *
+ * The column has DEFAULT '' only to match the database. MariaDB before
+ * 10.11.20 adds this default to each compressed NOT NULL column (MDEV-40417).
+ * The mapping gives the default both in SQL and in the options, because
+ * Doctrine compares the options with the database, not the SQL.
  */
 #[ORM\Entity]
 class Feed
@@ -34,7 +39,7 @@ class Feed
     private int $size;
 
     public function __construct(
-        #[ORM\Column(type: Types::TEXT, columnDefinition: 'LONGTEXT COMPRESSED NOT NULL')]
+        #[ORM\Column(type: Types::TEXT, columnDefinition: "LONGTEXT COMPRESSED NOT NULL DEFAULT ''", options: ['default' => ''])]
         private string $body,
         #[ORM\Column(length: 255, nullable: true)]
         private ?string $contentType,
