@@ -9,7 +9,7 @@ doctrine:
         profiling_collect_backtrace: '%kernel.debug%'
 
         types:
-            datetime_immutable: App\Doctrine\UtcDateTimeImmutableType
+            # Compress a large text with gzip. A compressed feed body is approximately a tenth of the original size.
             gzip_blob: App\Doctrine\GzipBlobType
     orm:
         validate_xml_mapping: true
