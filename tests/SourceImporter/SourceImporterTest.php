@@ -17,6 +17,7 @@ use App\Source\Osm\Bench;
 use App\Source\SourceInterface;
 use App\SourceImporter\GetJsonSourceImporter;
 use App\SourceImporter\OverpassSourceImporter;
+use App\SourceReader\FeedResponse;
 use App\SourceReader\SourceReaderInterface;
 use App\Test\Source\MtmSpatialMaps\TestOnStreetParking;
 use PHPUnit\Framework\TestCase;
@@ -218,9 +219,9 @@ class SourceImporterTest extends TestCase
             ) {
             }
 
-            public function read(SourceInterface $source): iterable
+            public function read(SourceInterface $source): FeedResponse
             {
-                return $this->data;
+                return new FeedResponse(json_encode($this->data, \JSON_THROW_ON_ERROR), 'application/json');
             }
         };
 

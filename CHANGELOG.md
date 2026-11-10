@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-156](https://github.com/itk-enter/enter/pull/156)
+  Changed `SourceReader` to return the raw feed
 * [PR-155](https://github.com/itk-enter/enter/pull/155)
   Turned off the history in Scorpio
 * [PR-152](https://github.com/itk-enter/enter/pull/152)
