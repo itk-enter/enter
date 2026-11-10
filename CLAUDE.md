@@ -35,14 +35,15 @@ The data sets are published on `/sources` and `/sources.json`. The `/test` page 
 - **Symfony Messenger** sends messages to **RabbitMQ** (`rabbit`). On the server, the `supervisor` service runs the
   worker. In development, run `bin/console messenger:consume --all` in `phpfpm`.
 - **Mailpit** catches the mail that the app sends.
-- There is no application database. The `mariadb` service from the template is removed in
-  `docker-compose.override.yml`.
+- **MariaDB** (`mariadb`) is the application database. **Doctrine ORM** maps the entities. **Doctrine Migrations**
+  changes the schema with the classes in `migrations/`.
 
 ## Project structure
 
 ```text
 bin/                  Symfony console entry
 config/               Symfony configuration (packages, routes, services)
+migrations/           Doctrine Migrations, one class for each change of the schema
 public/               Web root
 src/
   Broker/             NgsiLdBroker: upsert, delete and read entities in the broker

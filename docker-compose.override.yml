@@ -2,9 +2,6 @@ include:
     - docker-compose.scorpio.yml
 
 services:
-    # We don't (yet?) need a database.
-    mariadb: !reset
-
     phpfpm:
         image: enter-fpm:latest
         # We want to use GEOS in PHP, cf. https://geophp.net/geos.html.
@@ -44,7 +41,7 @@ services:
 
                 USER deploy
 
-        depends_on: !override
+        depends_on:
             rabbit:
                 condition: service_healthy
 
