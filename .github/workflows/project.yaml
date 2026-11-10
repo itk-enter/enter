@@ -29,7 +29,7 @@ jobs:
 
             - name: Validate the Doctrine schema
               run: |
-                  docker compose up --detach --wait mariadb
+                  docker compose up --wait mariadb
                   docker compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
                   docker compose exec phpfpm bin/console doctrine:schema:validate
 
