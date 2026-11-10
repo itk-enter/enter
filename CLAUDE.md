@@ -72,7 +72,7 @@ templates/            Twig templates
 docs/                 Notes on NGSI-LD, Scorpio, tests and conflation
 docs/adr/             Architecture Decision Records. Read docs/adr/CLAUDE.md before you write one
 .docker/              Nginx configuration and templates
-.github/workflows/    CI workflows, mirrored from upstream. Do not edit them here
+.github/workflows/    CI workflows, mirrored from upstream. Do not edit them here, except project.yaml
 ```
 
 ## Coding standards
@@ -96,7 +96,7 @@ task code-analysis                   # PHPStan
 task test                            # PHPUnit, one task for each folder in tests/
 ```
 
-`task test` does not run `tests/Import`, `tests/Merge` and `tests/Unit`. To run all the tests, use
+`task test` does not run `tests/Merge` and `tests/Unit`. To run all the tests, use
 `docker compose exec phpfpm vendor/bin/phpunit`.
 
 ### Tests are not modified without approval
@@ -221,7 +221,7 @@ Give `@param` and `@return` when they tell more than the signature, for example 
   without review.
 - The CI workflows in `.github/workflows/` come from
   [`itk-dev/devops_itkdev-docker`](https://github.com/itk-dev/devops_itkdev-docker). Do not edit them here. Make a PR
-  upstream.
+  upstream. The exception is `project.yaml`, which holds the checks of this project only.
 - Before a merge, all CI checks must pass. One check makes sure that `CHANGELOG.md` changed.
 
 ### PR description

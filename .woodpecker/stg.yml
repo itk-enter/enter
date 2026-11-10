@@ -31,6 +31,8 @@ steps:
               # "--no-deps" prevents "run" from starting rabbit before "up".
               - itkdev-docker-compose-server run --rm --no-deps phpfpm composer install --no-dev --classmap-authoritative
               - itkdev-docker-compose-server run --rm --no-deps phpfpm bin/console cache:clear --no-debug
+              # Migrate before "up", so that the new worker starts on the new schema.
+              - itkdev-docker-compose-server run --rm --no-deps phpfpm bin/console doctrine:migrations:migrate --no-interaction
               - itkdev-docker-compose-server up -d --force-recreate --remove-orphans
               - itkdev-docker-compose-server exec phpfpm bin/console asset-map:compile
               - itkdev-docker-compose-server exec phpfpm bin/console cache:clear --no-debug
