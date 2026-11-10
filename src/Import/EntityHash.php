@@ -9,10 +9,7 @@ namespace App\Import;
  *
  * If two imports of a source give the same hash, they upserted the same
  * entities both times. The order of the entities has no effect on the hash,
- * because a feed can give its records in a different order each time. The
- * order of the keys in an entity has no effect either, because the keys of a
- * JSON object have no order in NGSI-LD. The order in a list has an effect,
- * because it can have a meaning, for example in coordinates.
+ * because a feed can give its records in a different order each time.
  */
 final class EntityHash
 {
