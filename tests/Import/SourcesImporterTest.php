@@ -112,7 +112,7 @@ class SourcesImporterTest extends TestCase
                     throw new \RuntimeException('Feed unreachable');
                 }
 
-                return new ImportResult(3, 0, 201, 'http://broker.example/');
+                return new ImportResult(3, 0, 201, 'http://broker.example/', str_repeat('a', 64));
             }
         };
 
