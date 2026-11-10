@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Import\History;
 
-use App\Doctrine\GzipBlobType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -13,7 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  * The SHA-256 hash of the body is the id. Thus the history keeps each body
  * one time only, also when several imports read the same body. For example,
  * two sources that share one feed, or a feed that did not change since the
- * last import. The database holds the body with gzip compression.
+ * last import.
+ *
+ * MariaDB compresses the body with zlib, because the column has the
+ * COMPRESSED attribute. Doctrine has no option for this attribute, so the
+ * mapping gives the column definition in SQL. A text column gives PHP a
+ * string. It accepts each body, because a feed is JSON and JSON is UTF-8.
  */
 #[ORM\Entity]
 class Feed
@@ -29,7 +34,7 @@ class Feed
     private int $size;
 
     public function __construct(
-        #[ORM\Column(type: GzipBlobType::NAME)]
+        #[ORM\Column(type: Types::TEXT, columnDefinition: 'LONGTEXT COMPRESSED NOT NULL')]
         private string $body,
         #[ORM\Column(length: 255, nullable: true)]
         private ?string $contentType,

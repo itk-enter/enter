@@ -56,7 +56,6 @@ tasks:
       - task: test:broker
       - task: test:conflation
       - task: test:controller
-      - task: test:doctrine
       - task: test:geo
       - task: test:import
       - task: test:source
@@ -77,7 +76,6 @@ tasks:
   test:broker: *test_task
   test:conflation: *test_task
   test:controller: *test_task
-  test:doctrine: *test_task
   test:geo: *test_task
   test:import: *test_task
   test:source: *test_task

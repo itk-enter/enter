@@ -7,10 +7,6 @@ doctrine:
         #server_version: '16'
 
         profiling_collect_backtrace: '%kernel.debug%'
-
-        types:
-            # Compress a large text with gzip. A compressed feed body is approximately a tenth of the original size.
-            gzip_blob: App\Doctrine\GzipBlobType
     orm:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore
