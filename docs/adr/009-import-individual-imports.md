@@ -29,14 +29,18 @@ runs.
 
 ### Individual imports
 
-Each source is imported on its own. Each night, a schedule in the application sends one message for each source. The
-worker of 008 takes the messages and imports the sources one at a time. A source that is slow or fails affects only
-its own data set. A message that fails after its retries is kept in the database, so a developer can find it and send
-it again. The schedule gives its times in Danish time, because the application runs in UTC. The commands that import
-one source or all the sources stay, for use by hand.
+Each source is imported on its own. Each night, a cron job on the server imports the sources one at a time, with the
+command that imports one source. Each import runs in its own process. Thus, a source that is slow or fails, or that
+stops its process, affects only its own data set. The cron job gets the list of sources from the application, so a
+new source needs no change on the server. The command that imports all the sources in one run stays, for use by hand.
 
 We do not keep one run for all the sources, for the reasons in the context. We also do not give each source a cron job
-on the server, because then each new source needs a change on the server, outside the code.
+of its own, because then each new source needs a change on the server, outside the code.
+
+We also do not send a message for each source from a schedule in the application, for a worker to import. A message
+can try a failed import again after some minutes, and a message that fails is kept for a developer to send again. But
+the messages, the schedule and the queue add parts that the team must set up, watch and understand when something goes
+wrong. The cron jobs use commands that already exist, and the whole team knows how a cron job works.
 
 ### The import history
 
@@ -66,23 +70,31 @@ source no longer gave B-12, or if the import left it out.
 
 ### Merges on new data
 
-The data sets that a merge reads are its group. At a fixed time after the imports of the night, a merge runs if at
-least one data set in its group has new data. A data set has new data when the payload hash of its last successful
-import is different from the payload hash that the last run of the merge read. The other data sets of the group take
-part with the entities that the broker already has, also when their import failed that night, because a failed import
-deletes nothing. The application records each run of a merge, with the payload hash of each data set that it read.
+The data sets that a merge reads are its group. Each night, at a fixed time after the imports, a second cron job runs
+the merges. Each merge looks in the import history, and it runs only if at least one data set in its group has new
+data. A data set has new data when its last successful import of the last 24 hours has another payload hash than its
+last successful import before that. The other data sets of the group take part with the entities that the broker
+already has, also when their import failed that night, because a failed import deletes nothing.
+
+The application does not record the runs of the merges. If a merge fails one night, the next night finds no new data,
+and the merge waits until a data set changes again. Thus, once a week, a third cron job runs all the merges without
+the check. A merged data set is then never more than one week behind its data sets.
 
 We do not run a merge after each import with new data. A merge that reads several data sets would then run several
 times in one night and publish a result between the imports. One run at a fixed time uses all the new data of the
 night.
 
+We also do not record each run of a merge with the payload hashes that it read. With that record, a merge that failed
+can find its new data again the next night. But the record needs one more table, and the weekly run gives the same
+result some days later.
+
 For example, a merge of benches reads three data sets:
 
-| Data set             | Night import | Payload hash   | Last run of the merge read |
-|----------------------|--------------|----------------|----------------------------|
-| Benches, register A  | succeeded    | `7c1e…` (new)  | `51a0…`                    |
-| Benches, map B       | failed       | `9b2d…` (kept) | `9b2d…`                    |
-| Picnic tables, map B | succeeded    | `e44f…`        | `e44f…`                    |
+| Data set             | Last import before the last 24 hours | Import in the last 24 hours |
+|----------------------|--------------------------------------|-----------------------------|
+| Benches, register A  | succeeded, `51a0…`                   | succeeded, `7c1e…` (new)    |
+| Benches, map B       | succeeded, `9b2d…`                   | failed                      |
+| Picnic tables, map B | succeeded, `e44f…`                   | succeeded, `e44f…`          |
 
 The merge runs, because "Benches, register A" has new data. It uses the benches that map B gave on an earlier night.
 
@@ -94,7 +106,7 @@ The merge runs, because "Benches, register A" has new data. It uses the benches 
 - A merge uses the new data of one data set, also when another data set of its group fails.
 - A merge does not run when no data set in its group changed.
 - The history shows when an entity went away, and the feed bodies show why.
-- A failed message is kept, not dropped.
+- The cron jobs use commands that already exist. The application gets no queue or schedule for the imports.
 - The history grows slowly, because each feed body is stored one time and compressed.
 
 ### Negative / Trade-offs
@@ -104,7 +116,10 @@ The merge runs, because "Benches, register A" has new data. It uses the benches 
 - The compression of the feed bodies uses a feature of MariaDB, so the schema needs MariaDB.
 - The history keeps feed bodies and identifiers, not each value over time. To see an old value, somebody must read an
   old feed body.
+- The cron jobs are on the server, outside the code. A change of their times needs a change on the server.
+- A failed import is not tried again until the next night.
+- A merge that fails waits until a data set changes again, or until the weekly run.
 - New data that arrives after the time of the merges waits until the next night.
 - A merged data set can combine data sets that were imported on different nights.
-- If the worker stops, no source is imported. An import that the worker did not finish keeps the status `running`.
+- An import whose process stops before the end keeps the status `running`.
 - A data set whose import fails each night keeps its old entities, and only the history shows it.
