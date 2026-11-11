@@ -17,7 +17,8 @@ The application does two jobs:
 - **Conflation.** A merge reads the data sets of one or more models from the broker. It groups the records that
   describe the same thing, settles the attributes that they disagree on, and publishes the result as a merged data
   set. An attribute that no approach settles stays out of the entity. Its values go into
-  `additionalInformation.conflicts`. The merge runs after each import run that imports all of its data sets.
+  `additionalInformation.conflicts`. Each night, a cron job runs the merges after the imports. A merge runs only if
+  one of its data sets got new data.
 
 The data sets are published on `/sources` and `/sources.json`. The `/test` page shows the test data sets on a map.
 
@@ -52,7 +53,6 @@ src/
     Augmentation/     Adds attributes from records of augmenting models
     ConflictResolution/  Approaches that settle attributes the records disagree on
     Data/             Record, Cluster, StatedValue, MergedEntity
-    EventListener/    Runs the merges after an import run
     Io/               Reads records from the broker and makes the merged entities
     MergeByLocation/  Groups the records that describe the same thing
     Pipeline/         Runs the steps and checks their limits

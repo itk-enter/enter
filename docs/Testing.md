@@ -57,6 +57,8 @@ docker compose exec phpfpm php bin/console test:source:import-all
 Like `app:source:import-all`, it dispatches a `SourcesImportedEvent` when it is done, so listeners can be tried
 against the test sources.
 
+The test merges do not run after the import. To run them, use `app:conflation:run`.
+
 To empty your local broker, e.g. before loading test data, run
 
 ```shell
