@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-164](https://github.com/itk-enter/enter/pull/164)
-  Updated project template
+  * Updated project template
+  * Applied coding standards
 * [PR-158](https://github.com/itk-enter/enter/pull/158)
   Recorded the entities that each import added and removed
 * [PR-157](https://github.com/itk-enter/enter/pull/157)
