@@ -46,6 +46,27 @@ A failing source does not stop the run, and the command exits with a failure cod
 done, it dispatches a [`SourcesImportedEvent`](src/Import/Event/SourcesImportedEvent.php) saying which sources imported
 and which failed, so work that depends on a complete import can listen for it.
 
+The merges do not run after an import. To run them, use `app:conflation:run`.
+
+### The nightly import on the server
+
+On the server, cron jobs import each source on its own and then run the merges, as ADR
+[009](docs/adr/009-import-individual-imports.md) decides. The times are in Danish time:
+
+``` text
+# Each night at 01:00: import the sources one at a time, each in its own process.
+0 1 * * *    for id in $(bin/console app:source:list --ids); do bin/console app:source:import "$id"; done
+
+# Monday to Saturday at 05:00: run the merges whose data sets got new data in the last 24 hours.
+0 5 * * 1-6  bin/console app:conflation:run --if-new-data
+
+# Sunday at 05:00: run all the merges, also a merge that failed earlier in the week.
+0 5 * * 0    bin/console app:conflation:run
+```
+
+Run each command in the `phpfpm` service. The jobs replace the job that runs `app:source:import-all`. A failed import
+or merge does not stop the others. The import history records each import, and the log records each failed merge.
+
 ### Sources
 
 Adding a data source means adding a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way
