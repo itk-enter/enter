@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-166](https://github.com/itk-enter/enter/pull/166)
+  Switched the nightly import to cron jobs
 * [PR-163](https://github.com/itk-enter/enter/pull/163)
   Added the option `--if-new-data` to `app:conflation:run`
 * [PR-158](https://github.com/itk-enter/enter/pull/158)
