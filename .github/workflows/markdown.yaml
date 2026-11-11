@@ -21,25 +21,25 @@
 name: Markdown
 
 on:
-    pull_request:
-        paths: &paths
-            - "**/*.md"
-    push:
-        branches:
-            - main
-            - develop
-        paths: *paths
+  pull_request:
+    paths: &paths
+      - "**/*.md"
+  push:
+    branches:
+      - main
+      - develop
+    paths: *paths
 
 jobs:
-    markdown-lint:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
-            - name: Create docker network
-              run: |
-                  docker network create frontend
+      - name: Create docker network
+        run: |
+          docker network create frontend
 
-            - run: |
-                  docker compose run --rm markdownlint markdownlint '**/*.md'
+      - run: |
+          docker compose run --rm markdownlint markdownlint '**/*.md'

@@ -14,26 +14,26 @@
 name: JavaScript
 
 on:
-    pull_request:
-        paths: &paths
-            - "assets/**/*.js"
-            - "docker-compose.yml"
-    push:
-        branches:
-            - main
-            - develop
-        paths: *paths
+  pull_request:
+    paths: &paths
+      - "assets/**/*.js"
+      - "docker-compose.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths: *paths
 
 jobs:
-    javascript-lint:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+  javascript-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
-            - name: Create docker network
-              run: |
-                  docker network create frontend
+      - name: Create docker network
+        run: |
+          docker network create frontend
 
-            - run: |
-                  docker compose run --rm prettier 'assets/**/*.js' --check
+      - run: |
+          docker compose run --rm prettier --no-editorconfig 'assets/**/*.js' --check
