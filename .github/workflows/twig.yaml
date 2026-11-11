@@ -24,32 +24,32 @@
 name: Twig
 
 env:
-    COMPOSE_USER: runner
+  COMPOSE_USER: runner
 
 on:
-    pull_request:
-        paths: &paths
-            - "**/*.twig"
-            - "composer.json"
-            - "composer.lock"
-            - "docker-compose.yml"
-    push:
-        branches:
-            - main
-            - develop
-        paths: *paths
+  pull_request:
+    paths: &paths
+      - "**/*.twig"
+      - "composer.json"
+      - "composer.lock"
+      - "docker-compose.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths: *paths
 
 jobs:
-    twig-lint:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+  twig-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
-            - name: Create docker network
-              run: |
-                  docker network create frontend
+      - name: Create docker network
+        run: |
+          docker network create frontend
 
-            - run: |
-                  docker compose run --rm phpfpm composer install
-                  docker compose run --rm phpfpm vendor/bin/twig-cs-fixer lint
+      - run: |
+          docker compose run --rm phpfpm composer install
+          docker compose run --rm phpfpm vendor/bin/twig-cs-fixer lint

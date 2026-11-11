@@ -21,25 +21,25 @@
 name: YAML
 
 on:
-    pull_request:
-        paths: &paths
-            - "**/*.yml"
-            - "**/*.yaml"
-    push:
-        branches:
-            - main
-            - develop
-        paths: *paths
+  pull_request:
+    paths: &paths
+      - "**/*.yml"
+      - "**/*.yaml"
+  push:
+    branches:
+      - main
+      - develop
+    paths: *paths
 
 jobs:
-    yaml-lint:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v7
+  yaml-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
 
-            - name: Create docker network
-              run: |
-                  docker network create frontend
+      - name: Create docker network
+        run: |
+          docker network create frontend
 
-            - run: |
-                  docker compose run --rm prettier '**/*.{yml,yaml}' --check
+      - run: |
+          docker compose run --rm prettier --no-editorconfig '**/*.{yml,yaml}' --check

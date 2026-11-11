@@ -3,16 +3,16 @@
 
 # https://prettier.io/docs/configuration
 overrides:
-    # https://taskfile.dev/docs/styleguide
-    - files:
-          - "Taskfile.{yml,yaml}"
-      options:
-          tabWidth: 2
-          singleQuote: true
+  # https://taskfile.dev/docs/styleguide
+  - files:
+      - "Taskfile.{yml,yaml}"
+    options:
+      tabWidth: 2
+      singleQuote: true
 
-    # Symfony config
-    - files:
-          - "config/**/*.{yml,yaml}"
-      options:
-          tabWidth: 4
-          singleQuote: true
+  # Symfony config
+  - files:
+      - "config/**/*.{yml,yaml}"
+    options:
+      tabWidth: 4
+      singleQuote: true

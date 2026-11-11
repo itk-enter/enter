@@ -34,33 +34,33 @@
 name: Symfony PHP
 
 env:
-    COMPOSE_USER: runner
+  COMPOSE_USER: runner
 
 on:
-    pull_request:
-        paths: &paths
-            - "**/*.php"
-            - "composer.json"
-            - "composer.lock"
-            - "docker-compose.yml"
-    push:
-        branches:
-            - main
-            - develop
-        paths: *paths
+  pull_request:
+    paths: &paths
+      - "**/*.php"
+      - "composer.json"
+      - "composer.lock"
+      - "docker-compose.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths: *paths
 
 jobs:
-    coding-standards:
-        name: PHP - Check Coding Standards
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v7
+  coding-standards:
+    name: PHP - Check Coding Standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
 
-            - name: Create docker network
-              run: |
-                  docker network create frontend
+      - name: Create docker network
+        run: |
+          docker network create frontend
 
-            - run: |
-                  docker compose run --rm phpfpm composer install
-                  # https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/blob/master/doc/usage.rst#the-check-command
-                  docker compose run --rm phpfpm vendor/bin/php-cs-fixer fix --dry-run --diff
+      - run: |
+          docker compose run --rm phpfpm composer install
+          # https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/blob/master/doc/usage.rst#the-check-command
+          docker compose run --rm phpfpm vendor/bin/php-cs-fixer fix --dry-run --diff

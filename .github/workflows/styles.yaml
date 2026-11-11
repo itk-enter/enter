@@ -14,27 +14,27 @@
 name: Styles
 
 on:
-    pull_request:
-        paths: &paths
-            - "assets/**/*.css"
-            - "assets/**/*.scss"
-            - "docker-compose.yml"
-    push:
-        branches:
-            - main
-            - develop
-        paths: *paths
+  pull_request:
+    paths: &paths
+      - "assets/**/*.css"
+      - "assets/**/*.scss"
+      - "docker-compose.yml"
+  push:
+    branches:
+      - main
+      - develop
+    paths: *paths
 
 jobs:
-    styles-lint:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+  styles-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
-            - name: Create docker network
-              run: |
-                  docker network create frontend
+      - name: Create docker network
+        run: |
+          docker network create frontend
 
-            - run: |
-                  docker compose run --rm prettier 'assets/**/*.{css,scss}' --check
+      - run: |
+          docker compose run --rm prettier --no-editorconfig 'assets/**/*.{css,scss}' --check
