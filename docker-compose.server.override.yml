@@ -52,9 +52,9 @@ services:
         networks:
             - app
         environment:
-            - "RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}"
-            - "RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}"
-            - "RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}"
+            - "RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:?}"
+            - "RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:?}"
+            - "RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE:?}"
         volumes:
             - ".docker/data/rabbitmq:/var/lib/rabbitmq/mnesia/"
         healthcheck:
