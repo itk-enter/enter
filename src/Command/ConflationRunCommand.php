@@ -8,6 +8,7 @@ use App\Conflation\ConflationManager;
 use App\Conflation\ConflationRunner;
 use App\Conflation\Data\MergedEntity;
 use App\Conflation\Data\StatedValue;
+use App\Conflation\NewDataCheck;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -24,10 +25,13 @@ class ConflationRunCommand
         SymfonyStyle $io,
         ConflationManager $manager,
         ConflationRunner $runner,
+        NewDataCheck $newDataCheck,
         #[Argument(description: 'The id of the merge to run. If you do not give an id, all merges run')]
         ?string $merge = null,
         #[Option(description: 'Show the result of the merge, and do not publish it')]
         bool $dryRun = false,
+        #[Option(description: 'Run a merge only if one of its data sets got new data in the last 24 hours')]
+        bool $ifNewData = false,
     ): int {
         $conflations = null === $merge ? $manager->getConflations() : [$manager->getConflation($merge)];
         if ([] === $conflations) {
@@ -38,6 +42,12 @@ class ConflationRunCommand
 
         foreach ($conflations as $conflation) {
             $io->section($conflation->id);
+
+            if ($ifNewData && !$newDataCheck->hasNewData($conflation)) {
+                $io->writeln('Skipped the merge: no data set got new data in the last 24 hours.');
+                continue;
+            }
+
             $run = $runner->run($conflation, !$dryRun);
 
             $io->writeln(\sprintf('Read %d records from %s.', $run->records, implode(', ', $run->dataSet->inputs)));
