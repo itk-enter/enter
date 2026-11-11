@@ -9,6 +9,7 @@ use App\Conflation\ConflationRunner;
 use App\Conflation\Data\MergedEntity;
 use App\Conflation\Data\StatedValue;
 use App\Conflation\NewDataCheck;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -26,6 +27,7 @@ class ConflationRunCommand
         ConflationManager $manager,
         ConflationRunner $runner,
         NewDataCheck $newDataCheck,
+        LoggerInterface $logger,
         #[Argument(description: 'The id of the merge to run. If you do not give an id, all merges run')]
         ?string $merge = null,
         #[Option(description: 'Show the result of the merge, and do not publish it')]
@@ -40,6 +42,7 @@ class ConflationRunCommand
             return Command::SUCCESS;
         }
 
+        $failed = false;
         foreach ($conflations as $conflation) {
             $io->section($conflation->id);
 
@@ -48,7 +51,15 @@ class ConflationRunCommand
                 continue;
             }
 
-            $run = $runner->run($conflation, !$dryRun);
+            // A merge that fails does not stop the merges after it.
+            try {
+                $run = $runner->run($conflation, !$dryRun);
+            } catch (\Throwable $exception) {
+                $logger->error('Merge {merge} failed: {message}', ['merge' => $conflation->id, 'message' => $exception->getMessage(), 'exception' => $exception]);
+                $io->error($exception->getMessage());
+                $failed = true;
+                continue;
+            }
 
             $io->writeln(\sprintf('Read %d records from %s.', $run->records, implode(', ', $run->dataSet->inputs)));
             $io->writeln(\sprintf('Merged them into %d entities, %d of them with conflicts.', \count($run->entities), \count($run->withConflicts())));
@@ -66,7 +77,8 @@ class ConflationRunCommand
             }
         }
 
-        return Command::SUCCESS;
+        // A cron job must be able to tell that something failed.
+        return $failed ? Command::FAILURE : Command::SUCCESS;
     }
 
     private function conflicts(MergedEntity $entity): string
