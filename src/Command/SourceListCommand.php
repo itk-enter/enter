@@ -16,6 +16,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 #[AsCommand(
     name: 'app:source:list',
+    description: 'List the sources, or only their ids with --ids',
+    usages: ['--ids'],
 )]
 class SourceListCommand
 {
