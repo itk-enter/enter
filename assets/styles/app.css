@@ -332,3 +332,21 @@
     color: var(--bs-secondary-color);
     white-space: nowrap;
 }
+
+.source-about > summary {
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.source-about > summary:hover {
+    color: var(--bs-body-color);
+}
+
+.source-about[open] > summary {
+    margin-bottom: 0.75rem;
+}
+
+.source-about-keys {
+    margin-left: 0.5rem;
+}
