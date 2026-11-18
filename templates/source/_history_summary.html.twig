@@ -1,7 +1,6 @@
 {#
     The import status of one source: the last import and four figures for the period.
-    Variables: history (a SourceHistory, or null if the source has no import), link (the URL of the page with the
-    details, or null) and chart (true to show a small chart of the entities that came and went).
+    Variables: history (a SourceHistory, or null if the source has no import).
 #}
 {% import 'source/_history_macros.html.twig' as h %}
 <div class="import-summary">
@@ -18,9 +17,6 @@
             {{ h.status(last) }}
             <span>Last import {{ h.duration(history.sinceLastImport) }} ago</span>
             <span class="text-body-secondary small">{{ h.time(last.startedAt) }} UTC</span>
-            {% if link %}
-                <a class="import-summary-link" href="{{ link }}">Import history</a>
-            {% endif %}
         </div>
 
         {% if last.failure %}
@@ -70,9 +66,6 @@
                         <span class="import-swatch import-swatch-added"></span>+{{ history.added|number_format }}
                         <span class="import-swatch import-swatch-removed ms-2"></span>−{{ history.removed|number_format }}
                     </div>
-                    {% if chart %}
-                        {{ include('source/_history_chart.html.twig', {history: history, compact: true}, with_context: false) }}
-                    {% endif %}
                 {% else %}
                     <div class="import-tile-value">0</div>
                     <div class="import-tile-note">No entities came or went in {{ days }} days.</div>
