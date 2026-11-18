@@ -31,13 +31,13 @@ final class SourceController extends AbstractController
         defaults: ['_format' => self::FORMAT_HTML],
         methods: [Request::METHOD_GET],
     )]
-    public function index(DataSetCatalog $catalog, string $_format): Response
+    public function index(DataSetCatalog $catalog, ImportHistory $history, string $_format): Response
     {
         if (self::FORMAT_JSON === $_format) {
             return new JsonResponse($catalog->toArray());
         }
 
-        return $this->render('source/index.html.twig', $catalog->all());
+        return $this->render('source/index.html.twig', [...$catalog->all(), 'histories' => $history->bySource()]);
     }
 
     #[Route(
