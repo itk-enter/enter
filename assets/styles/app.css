@@ -326,10 +326,16 @@
 }
 
 .source-group {
-    margin: 1.5rem 0 0.5rem;
-    color: var(--bs-secondary-color);
-    font-size: 1rem;
+    margin: 1.75rem 0 0.5rem;
+    font-size: 1.125rem;
     font-weight: 600;
+}
+
+.source-group-count {
+    margin-left: 0.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
 .source-card {
