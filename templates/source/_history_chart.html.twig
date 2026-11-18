@@ -1,0 +1,54 @@
+{#
+    The entities that the imports of a source added and removed each day.
+    Variables: history (a SourceHistory) and compact (true for a small chart without scale and dates).
+#}
+{% set busiest = history.busiestDay %}
+{% set first = history.days|first %}
+{% set last = history.days|last %}
+<div class="import-chart{{ compact ? ' import-chart-compact' }}">
+    {% if not compact %}
+        <div class="import-chart-legend small mb-1">
+            <span><span class="import-swatch import-swatch-added"></span>Added</span>
+            <span><span class="import-swatch import-swatch-removed"></span>Removed</span>
+        </div>
+    {% endif %}
+    <div class="import-chart-plot">
+        {% if not compact %}
+            <div class="import-chart-scale small" aria-hidden="true">
+                <span>+{{ busiest|number_format }}</span>
+                <span>0</span>
+                <span>−{{ busiest|number_format }}</span>
+            </div>
+        {% endif %}
+        <div
+            class="import-chart-days"
+            style="--import-chart-day-count: {{ history.days|length }}"
+            role="img"
+            aria-label="{{ history.added }} entities added and {{ history.removed }} removed from {{ first.date|date('Y-m-d') }} to {{ last.date|date('Y-m-d') }}"
+        >
+            {% for day in history.days %}
+                <div
+                    class="import-chart-day"
+                    title="{{ day.date|date('Y-m-d') }}: {{ day.added }} added, {{ day.removed }} removed, {{ day.imports }} imports"
+                >
+                    <div class="import-chart-up">
+                        {% if day.added > 0 %}
+                            <div class="import-chart-bar import-swatch-added" style="height: {{ (day.added / busiest * 100)|round(1) }}%"></div>
+                        {% endif %}
+                    </div>
+                    <div class="import-chart-down">
+                        {% if day.removed > 0 %}
+                            <div class="import-chart-bar import-swatch-removed" style="height: {{ (day.removed / busiest * 100)|round(1) }}%"></div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% if not compact %}
+        <div class="import-chart-axis small" aria-hidden="true">
+            <span>{{ first.date|date('j M') }}</span>
+            <span>{{ last.date|date('j M') }}</span>
+        </div>
+    {% endif %}
+</div>
