@@ -10,112 +10,135 @@
         This list is also available as <a href="{{ path('app_sources', {_format: 'json'}) }}">JSON</a>.
     </p>
 
+    {% if histories is null %}
+        <p class="text-body-secondary">The import history is not available.</p>
+    {% else %}
+        <p>
+            Each source shows its last import, and figures for the imports of the last
+            {{ constant('App\\Import\\History\\ImportHistory::DAYS') }} days. Its import history gives the details.
+        </p>
+    {% endif %}
+
     {% for source in sources %}
         {% set definition = source.definition %}
-        <section class="mb-5">
-            <h2>{{ definition.title }}</h2>
-            <dl class="row">
-                <dt class="col-sm-3">Id</dt>
-                <dd class="col-sm-9"><code>{{ definition.id }}</code></dd>
+        <section class="card mb-4" id="{{ definition.id }}">
+            <div class="card-body">
+                <h2 class="card-title h3">{{ definition.title }}</h2>
 
-                {% if definition.description %}
-                    <dt class="col-sm-3">Description</dt>
-                    <dd class="col-sm-9">{{ definition.description }}</dd>
+                {% if histories is not null %}
+                    {% set history = histories[definition.id] ?? null %}
+                    {{ include('source/_history_summary.html.twig', {
+                        history: history,
+                        link: history ? path('app_source_show', {id: definition.id}) : null,
+                        chart: true,
+                    }, with_context: false) }}
                 {% endif %}
 
-                {% if definition.publisher %}
-                    <dt class="col-sm-3">Publisher</dt>
-                    <dd class="col-sm-9">{{ definition.publisher }}</dd>
-                {% endif %}
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Id</dt>
+                    <dd class="col-sm-9"><code>{{ definition.id }}</code></dd>
 
-                {% if definition.contact %}
-                    <dt class="col-sm-3">Contact</dt>
-                    <dd class="col-sm-9">{{ definition.contact }}</dd>
-                {% endif %}
-
-                {% if definition.landingPage %}
-                    <dt class="col-sm-3">Landing page</dt>
-                    <dd class="col-sm-9"><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
-                {% endif %}
-
-                <dt class="col-sm-3">Access URL</dt>
-                <dd class="col-sm-9">
-                    <a href="{{ definition.accessUrlBase }}">{{ definition.accessUrlBase }}</a>
-                    {% if definition.accessUrlQuery %}
-                        <pre class="mt-2 mb-0">{{ definition.accessUrlQuery|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    {% if definition.description %}
+                        <dt class="col-sm-3">Description</dt>
+                        <dd class="col-sm-9">{{ definition.description }}</dd>
                     {% endif %}
-                </dd>
 
-                <dt class="col-sm-3">Data type</dt>
-                <dd class="col-sm-9">{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
+                    {% if definition.publisher %}
+                        <dt class="col-sm-3">Publisher</dt>
+                        <dd class="col-sm-9">{{ definition.publisher }}</dd>
+                    {% endif %}
 
-                <dt class="col-sm-3">Model</dt>
-                <dd class="col-sm-9"><code>{{ definition.model }}</code></dd>
+                    {% if definition.contact %}
+                        <dt class="col-sm-3">Contact</dt>
+                        <dd class="col-sm-9">{{ definition.contact }}</dd>
+                    {% endif %}
 
-                <dt class="col-sm-3">Context</dt>
-                <dd class="col-sm-9"><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
+                    {% if definition.landingPage %}
+                        <dt class="col-sm-3">Landing page</dt>
+                        <dd class="col-sm-9"><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
+                    {% endif %}
 
-                <dt class="col-sm-3">Entities</dt>
-                <dd class="col-sm-9"><a href="{{ entitiesUrls[definition.id] }}">{{ entitiesUrls[definition.id] }}</a></dd>
-
-                {% if definition.updateFrequency %}
-                    <dt class="col-sm-3">Update frequency</dt>
-                    <dd class="col-sm-9">{{ definition.updateFrequency }}</dd>
-                {% endif %}
-
-                {% if definition.licence %}
-                    <dt class="col-sm-3">Licence</dt>
-                    <dd class="col-sm-9"><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
-                {% endif %}
-
-                {% if definition.omittedFields %}
-                    <dt class="col-sm-3">Omitted fields</dt>
+                    <dt class="col-sm-3">Access URL</dt>
                     <dd class="col-sm-9">
-                        <dl class="mb-0">
-                            {% for field, reason in definition.omittedFields %}
-                                <dt><code>{{ field }}</code></dt>
-                                <dd>{{ reason }}</dd>
-                            {% endfor %}
-                        </dl>
+                        <a href="{{ definition.accessUrlBase }}">{{ definition.accessUrlBase }}</a>
+                        {% if definition.accessUrlQuery %}
+                            <pre class="mt-2 mb-0">{{ definition.accessUrlQuery|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                        {% endif %}
                     </dd>
-                {% endif %}
-            </dl>
+
+                    <dt class="col-sm-3">Data type</dt>
+                    <dd class="col-sm-9">{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
+
+                    <dt class="col-sm-3">Model</dt>
+                    <dd class="col-sm-9"><code>{{ definition.model }}</code></dd>
+
+                    <dt class="col-sm-3">Context</dt>
+                    <dd class="col-sm-9"><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
+
+                    <dt class="col-sm-3">Entities</dt>
+                    <dd class="col-sm-9"><a href="{{ entitiesUrls[definition.id] }}">{{ entitiesUrls[definition.id] }}</a></dd>
+
+                    {% if definition.updateFrequency %}
+                        <dt class="col-sm-3">Update frequency</dt>
+                        <dd class="col-sm-9">{{ definition.updateFrequency }}</dd>
+                    {% endif %}
+
+                    {% if definition.licence %}
+                        <dt class="col-sm-3">Licence</dt>
+                        <dd class="col-sm-9"><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
+                    {% endif %}
+
+                    {% if definition.omittedFields %}
+                        <dt class="col-sm-3">Omitted fields</dt>
+                        <dd class="col-sm-9">
+                            <dl class="mb-0">
+                                {% for field, reason in definition.omittedFields %}
+                                    <dt><code>{{ field }}</code></dt>
+                                    <dd>{{ reason }}</dd>
+                                {% endfor %}
+                            </dl>
+                        </dd>
+                    {% endif %}
+                </dl>
+            </div>
         </section>
     {% endfor %}
 
     {% for dataSet in merged %}
-        <section class="mb-5">
-            <h2>{{ dataSet.title }}</h2>
-            <dl class="row">
-                <dt class="col-sm-3">Id</dt>
-                <dd class="col-sm-9"><code>{{ dataSet.id }}</code></dd>
+        <section class="card mb-4" id="{{ dataSet.id }}">
+            <div class="card-body">
+                <h2 class="card-title h3">{{ dataSet.title }}</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Id</dt>
+                    <dd class="col-sm-9"><code>{{ dataSet.id }}</code></dd>
 
-                <dt class="col-sm-3">Description</dt>
-                <dd class="col-sm-9">{{ dataSet.description }}</dd>
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">{{ dataSet.description }}</dd>
 
-                <dt class="col-sm-3">Merged from</dt>
-                <dd class="col-sm-9">
-                    {% for input in dataSet.inputs %}
-                        <code>{{ input }}</code>{% if not loop.last %}, {% endif %}
-                    {% else %}
-                        No data set publishes its models.
-                    {% endfor %}
-                </dd>
+                    <dt class="col-sm-3">Merged from</dt>
+                    <dd class="col-sm-9">
+                        {% for input in dataSet.inputs %}
+                            <code>{{ input }}</code>{% if not loop.last %}, {% endif %}
+                        {% else %}
+                            No data set publishes its models.
+                        {% endfor %}
+                    </dd>
 
-                <dt class="col-sm-3">Model</dt>
-                <dd class="col-sm-9"><code>{{ dataSet.model }}</code></dd>
+                    <dt class="col-sm-3">Model</dt>
+                    <dd class="col-sm-9"><code>{{ dataSet.model }}</code></dd>
 
-                <dt class="col-sm-3">Context</dt>
-                <dd class="col-sm-9"><a href="{{ dataSet.contextUrl }}">{{ dataSet.contextUrl }}</a></dd>
+                    <dt class="col-sm-3">Context</dt>
+                    <dd class="col-sm-9"><a href="{{ dataSet.contextUrl }}">{{ dataSet.contextUrl }}</a></dd>
 
-                <dt class="col-sm-3">Entities</dt>
-                <dd class="col-sm-9"><a href="{{ entitiesUrls[dataSet.id] }}">{{ entitiesUrls[dataSet.id] }}</a></dd>
+                    <dt class="col-sm-3">Entities</dt>
+                    <dd class="col-sm-9"><a href="{{ entitiesUrls[dataSet.id] }}">{{ entitiesUrls[dataSet.id] }}</a></dd>
 
-                {% if dataSet.licence %}
-                    <dt class="col-sm-3">Licence</dt>
-                    <dd class="col-sm-9"><a href="{{ dataSet.licence }}">{{ dataSet.licence }}</a></dd>
-                {% endif %}
-            </dl>
+                    {% if dataSet.licence %}
+                        <dt class="col-sm-3">Licence</dt>
+                        <dd class="col-sm-9"><a href="{{ dataSet.licence }}">{{ dataSet.licence }}</a></dd>
+                    {% endif %}
+                </dl>
+            </div>
         </section>
     {% endfor %}
 {% endblock %}
