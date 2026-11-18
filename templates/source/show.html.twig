@@ -14,7 +14,7 @@
     {% if histories is null %}
         <p class="text-body-secondary">The import history is not available.</p>
     {% else %}
-        {{ include('source/_history_summary.html.twig', {history: history, link: null, chart: false}, with_context: false) }}
+        {{ include('source/_history_summary.html.twig', {history: history}, with_context: false) }}
 
         {% if history %}
             <p class="small text-body-secondary">

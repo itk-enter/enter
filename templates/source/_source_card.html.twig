@@ -1,0 +1,130 @@
+{#
+    One source on /sources. The closed card shows the title, the entities that came and went, and the status of the
+    last import. The open card adds the figures of the period and the facts about the source.
+    Variables: source, history (a SourceHistory, or null), idle (true if the history has no import of the source) and
+    entities_url (the broker URL of the entities of the source).
+#}
+{% import 'source/_history_macros.html.twig' as h %}
+{% set definition = source.definition %}
+<section class="card source-card{{ idle ? ' source-card-idle' }}" id="{{ definition.id }}">
+    <details>
+        <summary class="source-card-summary">
+            <h3 class="source-card-title">{{ definition.title }}</h3>
+            {% if history %}
+                {% set last = history.lastImport %}
+                {% set success = history.lastSuccess %}
+                <span class="source-card-entities" title="{{ success ? 'At the last successful import, ' ~ success.startedAt|date('Y-m-d H:i') ~ ' UTC' : 'No import succeeded' }}">
+                    <b>{{ success ? success.upserted|number_format : '–' }}</b> entities
+                </span>
+                <span class="source-card-change" title="Entities added and removed in the last {{ history.days|length }} days, without full loads">
+                    {{ h.change(history.added, '+', 'text-success') }}
+                    {{ h.change(history.removed, '−', 'text-danger') }}
+                </span>
+                <span class="source-card-status">
+                    {{ h.status(last) }}
+                    <span title="{{ last.startedAt|date('Y-m-d H:i') }} UTC">{{ h.duration(history.sinceLastImport) }} ago</span>
+                </span>
+            {% elseif idle %}
+                <span class="source-card-status">No import</span>
+            {% endif %}
+        </summary>
+
+        <div class="source-card-body">
+            {% if history %}
+                {% set success = history.lastSuccess %}
+                <div class="source-figures">
+                    {% if success and success.rejected %}
+                        <span class="source-figure"><b class="text-danger-emphasis">{{ success.rejected|number_format }}</b> rejected at the last import</span>
+                    {% endif %}
+                    <span class="source-figure-period">Last {{ history.days|length }} days</span>
+                    <span class="source-figure">
+                        <b>{{ history.imports|length }}</b> {{ history.imports|length == 1 ? 'import' : 'imports' }}
+                        {%- if history.failed %}, <b class="text-danger-emphasis">{{ history.failed }}</b> failed{% endif %}
+                    </span>
+                    {% if history.importInterval is not null %}
+                        <span class="source-figure"><b>{{ h.duration(history.importInterval) }}</b> between imports</span>
+                    {% endif %}
+                    <span class="source-figure" title="{{ history.lastDataChange ? 'The last at ' ~ history.lastDataChange.startedAt|date('Y-m-d H:i') ~ ' UTC' : 'The data did not change' }}">
+                        <b>{{ history.dataChanges }}</b> data {{ history.dataChanges == 1 ? 'change' : 'changes' }}
+                    </span>
+                    {% if history.busiestDay > 0 %}
+                        <span class="source-figure source-figure-chart">
+                            {{ include('source/_history_chart.html.twig', {history: history, compact: true}, with_context: false) }}
+                        </span>
+                    {% endif %}
+                    <a class="source-figure-link" href="{{ path('app_source_show', {id: definition.id}) }}">Import history</a>
+                </div>
+                {% if history.lastImport.failure %}
+                    <p class="source-card-failure">{{ history.lastImport.failure }}</p>
+                {% endif %}
+            {% endif %}
+
+            <dl class="row mb-0 source-facts">
+                <dt class="col-sm-3">Id</dt>
+                <dd class="col-sm-9"><code>{{ definition.id }}</code></dd>
+
+                {% if definition.description %}
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">{{ definition.description }}</dd>
+                {% endif %}
+
+                {% if definition.publisher %}
+                    <dt class="col-sm-3">Publisher</dt>
+                    <dd class="col-sm-9">{{ definition.publisher }}</dd>
+                {% endif %}
+
+                {% if definition.contact %}
+                    <dt class="col-sm-3">Contact</dt>
+                    <dd class="col-sm-9">{{ definition.contact }}</dd>
+                {% endif %}
+
+                {% if definition.landingPage %}
+                    <dt class="col-sm-3">Landing page</dt>
+                    <dd class="col-sm-9"><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
+                {% endif %}
+
+                <dt class="col-sm-3">Access URL</dt>
+                <dd class="col-sm-9">
+                    <a href="{{ definition.accessUrlBase }}">{{ definition.accessUrlBase }}</a>
+                    {% if definition.accessUrlQuery %}
+                        <pre class="mt-2 mb-0">{{ definition.accessUrlQuery|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Data type</dt>
+                <dd class="col-sm-9">{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
+
+                <dt class="col-sm-3">Model</dt>
+                <dd class="col-sm-9"><code>{{ definition.model }}</code></dd>
+
+                <dt class="col-sm-3">Context</dt>
+                <dd class="col-sm-9"><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
+
+                <dt class="col-sm-3">Entities</dt>
+                <dd class="col-sm-9"><a href="{{ entities_url }}">{{ entities_url }}</a></dd>
+
+                {% if definition.updateFrequency %}
+                    <dt class="col-sm-3">Update frequency</dt>
+                    <dd class="col-sm-9">{{ definition.updateFrequency }}</dd>
+                {% endif %}
+
+                {% if definition.licence %}
+                    <dt class="col-sm-3">Licence</dt>
+                    <dd class="col-sm-9"><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
+                {% endif %}
+
+                {% if definition.omittedFields %}
+                    <dt class="col-sm-3">Omitted fields</dt>
+                    <dd class="col-sm-9">
+                        <dl class="mb-0">
+                            {% for field, reason in definition.omittedFields %}
+                                <dt><code>{{ field }}</code></dt>
+                                <dd>{{ reason }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </dd>
+                {% endif %}
+            </dl>
+        </div>
+    </details>
+</section>

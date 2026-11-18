@@ -23,7 +23,11 @@
     </span>
 {% endmacro %}
 
-{# A number of entities with a sign before it. Zero has no sign and a light colour. #}
-{% macro change(count, sign) %}
-    {%- if count > 0 -%}{{ sign }}{{ count|number_format }}{%- else -%}<span class="text-body-secondary">0</span>{%- endif -%}
+{# A number of entities with a sign before it, in the colour of the class if one is given. Zero has no sign and a light colour. #}
+{% macro change(count, sign, class = '') %}
+    {%- if count > 0 -%}
+        <span class="import-change {{ class }}">{{ sign }}{{ count|number_format }}</span>
+    {%- else -%}
+        <span class="import-change import-change-zero">0</span>
+    {%- endif -%}
 {% endmacro %}
