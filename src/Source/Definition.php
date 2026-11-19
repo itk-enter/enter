@@ -84,6 +84,33 @@ readonly class Definition
     }
 
     /**
+     * The URL of the page that describes the data model of the source, or
+     * null if the context is not in a repository of data models on GitHub.
+     */
+    public function modelUrl(): ?string
+    {
+        return self::modelUrlOf($this->contextUrl, $this->model);
+    }
+
+    /**
+     * The URL of the page that describes a data model, made from the URL of
+     * its JSON-LD context.
+     *
+     * A repository of data models, as Smart Data Models has them, keeps the
+     * context of a domain next to a folder for each model. The page is that
+     * folder on GitHub, which shows the README of the model. The function
+     * returns null if the context is not a raw file in a GitHub repository.
+     */
+    public static function modelUrlOf(string $contextUrl, string $model): ?string
+    {
+        if (1 !== preg_match('#^https://raw\.githubusercontent\.com/([^/]+/[^/]+)/(.+)/context\.jsonld$#', $contextUrl, $matches)) {
+            return null;
+        }
+
+        return \sprintf('https://github.com/%s/tree/%s/%s', $matches[1], $matches[2], $model);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(): array
