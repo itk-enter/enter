@@ -5,25 +5,25 @@
     The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in
     a button. The heading is visually hidden, and the summary shows the title.
 #}
-<section class="card source-card" id="{{ data_set.id }}">
+<section class="card fold-card" id="{{ data_set.id }}">
     <h3 class="visually-hidden">{{ data_set.title }}</h3>
     <details>
-        <summary class="source-card-summary">
-            <span class="source-card-title">{{ data_set.title }}</span>
+        <summary class="fold-card-summary">
+            <span class="fold-card-title">{{ data_set.title }}</span>
             <span class="source-card-status">
                 Merged from {{ data_set.inputs|length }} {{ data_set.inputs|length == 1 ? 'data set' : 'data sets' }}
             </span>
         </summary>
-        <div class="source-card-body">
-            <dl class="row mb-0 source-facts">
-                <dt class="col-sm-3">Id</dt>
-                <dd class="col-sm-9"><code>{{ data_set.id }}</code></dd>
+        <div class="fold-card-body">
+            <dl class="fold-card-facts source-facts">
+                <dt>Id</dt>
+                <dd><code>{{ data_set.id }}</code></dd>
 
-                <dt class="col-sm-3">Description</dt>
-                <dd class="col-sm-9">{{ data_set.description }}</dd>
+                <dt>Description</dt>
+                <dd>{{ data_set.description }}</dd>
 
-                <dt class="col-sm-3">Merged from</dt>
-                <dd class="col-sm-9">
+                <dt>Merged from</dt>
+                <dd>
                     {% for input in data_set.inputs %}
                         <code>{{ input }}</code>{% if not loop.last %}, {% endif %}
                     {% else %}
@@ -31,8 +31,8 @@
                     {% endfor %}
                 </dd>
 
-                <dt class="col-sm-3">Model</dt>
-                <dd class="col-sm-9">
+                <dt>Model</dt>
+                <dd>
                     {% if data_set.modelUrl %}
                         <a href="{{ data_set.modelUrl }}"><code>{{ data_set.model }}</code></a>
                     {% else %}
@@ -40,15 +40,15 @@
                     {% endif %}
                 </dd>
 
-                <dt class="col-sm-3">Context</dt>
-                <dd class="col-sm-9"><a href="{{ data_set.contextUrl }}">{{ data_set.contextUrl }}</a></dd>
+                <dt>Context</dt>
+                <dd><a href="{{ data_set.contextUrl }}">{{ data_set.contextUrl }}</a></dd>
 
-                <dt class="col-sm-3">Entities</dt>
-                <dd class="col-sm-9"><a href="{{ entities_url }}">{{ entities_url }}</a></dd>
+                <dt>Entities</dt>
+                <dd><a href="{{ entities_url }}">{{ entities_url }}</a></dd>
 
                 {% if data_set.licence %}
-                    <dt class="col-sm-3">Licence</dt>
-                    <dd class="col-sm-9"><a href="{{ data_set.licence }}">{{ data_set.licence }}</a></dd>
+                    <dt>Licence</dt>
+                    <dd><a href="{{ data_set.licence }}">{{ data_set.licence }}</a></dd>
                 {% endif %}
             </dl>
         </div>

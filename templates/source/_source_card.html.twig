@@ -8,11 +8,11 @@
 #}
 {% import 'source/_history_macros.html.twig' as h %}
 {% set definition = source.definition %}
-<section class="card source-card{{ idle ? ' source-card-idle' }}" id="{{ definition.id }}">
+<section class="card fold-card{{ idle ? ' source-card-idle' }}" id="{{ definition.id }}">
     <h3 class="visually-hidden">{{ definition.title }}</h3>
     <details>
-        <summary class="source-card-summary">
-            <span class="source-card-title">{{ definition.title }}</span>
+        <summary class="fold-card-summary">
+            <span class="fold-card-title">{{ definition.title }}</span>
             {% if history %}
                 {% set last = history.lastImport %}
                 {% set success = history.lastSuccess %}
@@ -32,7 +32,7 @@
             {% endif %}
         </summary>
 
-        <div class="source-card-body">
+        <div class="fold-card-body">
             {% if history %}
                 {% set success = history.lastSuccess %}
                 <div class="source-figures">
@@ -62,43 +62,43 @@
                 {% endif %}
             {% endif %}
 
-            <dl class="row mb-0 source-facts">
-                <dt class="col-sm-3">Id</dt>
-                <dd class="col-sm-9"><code>{{ definition.id }}</code></dd>
+            <dl class="fold-card-facts source-facts">
+                <dt>Id</dt>
+                <dd><code>{{ definition.id }}</code></dd>
 
                 {% if definition.description %}
-                    <dt class="col-sm-3">Description</dt>
-                    <dd class="col-sm-9">{{ definition.description }}</dd>
+                    <dt>Description</dt>
+                    <dd>{{ definition.description }}</dd>
                 {% endif %}
 
                 {% if definition.publisher %}
-                    <dt class="col-sm-3">Publisher</dt>
-                    <dd class="col-sm-9">{{ definition.publisher }}</dd>
+                    <dt>Publisher</dt>
+                    <dd>{{ definition.publisher }}</dd>
                 {% endif %}
 
                 {% if definition.contact %}
-                    <dt class="col-sm-3">Contact</dt>
-                    <dd class="col-sm-9">{{ definition.contact }}</dd>
+                    <dt>Contact</dt>
+                    <dd>{{ definition.contact }}</dd>
                 {% endif %}
 
                 {% if definition.landingPage %}
-                    <dt class="col-sm-3">Landing page</dt>
-                    <dd class="col-sm-9"><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
+                    <dt>Landing page</dt>
+                    <dd><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
                 {% endif %}
 
-                <dt class="col-sm-3">Access URL</dt>
-                <dd class="col-sm-9">
+                <dt>Access URL</dt>
+                <dd>
                     <a href="{{ definition.accessUrlBase }}">{{ definition.accessUrlBase }}</a>
                     {% if definition.accessUrlQuery %}
                         <pre class="mt-2 mb-0">{{ definition.accessUrlQuery|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
                     {% endif %}
                 </dd>
 
-                <dt class="col-sm-3">Data type</dt>
-                <dd class="col-sm-9">{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
+                <dt>Data type</dt>
+                <dd>{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
 
-                <dt class="col-sm-3">Model</dt>
-                <dd class="col-sm-9">
+                <dt>Model</dt>
+                <dd>
                     {% if definition.modelUrl %}
                         <a href="{{ definition.modelUrl }}"><code>{{ definition.model }}</code></a>
                     {% else %}
@@ -106,25 +106,25 @@
                     {% endif %}
                 </dd>
 
-                <dt class="col-sm-3">Context</dt>
-                <dd class="col-sm-9"><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
+                <dt>Context</dt>
+                <dd><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
 
-                <dt class="col-sm-3">Entities</dt>
-                <dd class="col-sm-9"><a href="{{ entities_url }}">{{ entities_url }}</a></dd>
+                <dt>Entities</dt>
+                <dd><a href="{{ entities_url }}">{{ entities_url }}</a></dd>
 
                 {% if definition.updateFrequency %}
-                    <dt class="col-sm-3">Update frequency</dt>
-                    <dd class="col-sm-9">{{ definition.updateFrequency }}</dd>
+                    <dt>Update frequency</dt>
+                    <dd>{{ definition.updateFrequency }}</dd>
                 {% endif %}
 
                 {% if definition.licence %}
-                    <dt class="col-sm-3">Licence</dt>
-                    <dd class="col-sm-9"><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
+                    <dt>Licence</dt>
+                    <dd><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
                 {% endif %}
 
                 {% if definition.omittedFields %}
-                    <dt class="col-sm-3">Omitted fields</dt>
-                    <dd class="col-sm-9">
+                    <dt>Omitted fields</dt>
+                    <dd>
                         <dl class="mb-0">
                             {% for field, reason in definition.omittedFields %}
                                 <dt><code>{{ field }}</code></dt>
