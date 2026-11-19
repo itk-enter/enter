@@ -354,6 +354,43 @@
     color: var(--bs-secondary-color);
 }
 
+.link-boxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 1rem;
+}
+
+.link-box {
+    display: block;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    color: var(--bs-body-color);
+    text-decoration: none;
+}
+
+.link-box:hover {
+    border-color: var(--bs-secondary-color);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.link-box-title {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.link-box-title::after {
+    content: " →";
+    color: var(--bs-secondary-color);
+}
+
+.link-box-text {
+    display: block;
+    color: var(--bs-secondary-color);
+}
+
 .data-sets-facts {
     display: flex;
     flex-wrap: wrap;
