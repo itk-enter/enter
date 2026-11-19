@@ -27,34 +27,56 @@
         {% set idle = histories is null ? [] : group.sources|filter(source => histories[source.definition.id] is not defined) %}
         {% set count = group.sources|length + group.merged|length %}
 
-        <h2 class="source-group">
-            {{ group.title }}
-            <span class="source-group-count">{{ count }} {{ count == 1 ? 'data set' : 'data sets' }}</span>
-        </h2>
+        <section class="source-group">
+            <h2 class="source-group-title">
+                {{ group.title }}
+                <span class="source-group-count">{{ count }} {{ count == 1 ? 'data set' : 'data sets' }}</span>
+            </h2>
 
-        {% for dataSet in group.merged %}
-            {{ include('source/_merged_card.html.twig', {
-                data_set: dataSet,
-                entities_url: entitiesUrls[dataSet.id],
-            }, with_context: false) }}
-        {% endfor %}
+            {% if group.merged %}
+                <details class="source-part">
+                    <summary class="source-part-summary">
+                        <span>
+                            {{ group.merged|length == 1 ? 'Merged data set' : 'Merged data sets' }}
+                            <span class="source-group-count">{{ group.merged|length }}</span>
+                        </span>
+                    </summary>
+                    {% for dataSet in group.merged %}
+                        {{ include('source/_merged_card.html.twig', {
+                            data_set: dataSet,
+                            entities_url: entitiesUrls[dataSet.id],
+                        }, with_context: false) }}
+                    {% endfor %}
+                </details>
+            {% endif %}
 
-        {% for source in imported %}
-            {{ include('source/_source_card.html.twig', {
-                source: source,
-                history: histories[source.definition.id] ?? null,
-                idle: false,
-                entities_url: entitiesUrls[source.definition.id],
-            }, with_context: false) }}
-        {% endfor %}
+            {% if group.sources %}
+                <details class="source-part">
+                    <summary class="source-part-summary">
+                        <span>
+                            {{ group.sources|length == 1 ? 'Source' : 'Sources' }}
+                            <span class="source-group-count">{{ group.sources|length }}</span>
+                        </span>
+                    </summary>
+                    {% for source in imported %}
+                        {{ include('source/_source_card.html.twig', {
+                            source: source,
+                            history: histories[source.definition.id] ?? null,
+                            idle: false,
+                            entities_url: entitiesUrls[source.definition.id],
+                        }, with_context: false) }}
+                    {% endfor %}
 
-        {% for source in idle %}
-            {{ include('source/_source_card.html.twig', {
-                source: source,
-                history: null,
-                idle: true,
-                entities_url: entitiesUrls[source.definition.id],
-            }, with_context: false) }}
-        {% endfor %}
+                    {% for source in idle %}
+                        {{ include('source/_source_card.html.twig', {
+                            source: source,
+                            history: null,
+                            idle: true,
+                            entities_url: entitiesUrls[source.definition.id],
+                        }, with_context: false) }}
+                    {% endfor %}
+                </details>
+            {% endif %}
+        </section>
     {% endfor %}
 {% endblock %}
