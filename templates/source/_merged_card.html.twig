@@ -29,7 +29,13 @@
                 </dd>
 
                 <dt class="col-sm-3">Model</dt>
-                <dd class="col-sm-9"><code>{{ data_set.model }}</code></dd>
+                <dd class="col-sm-9">
+                    {% if data_set.modelUrl %}
+                        <a href="{{ data_set.modelUrl }}"><code>{{ data_set.model }}</code></a>
+                    {% else %}
+                        <code>{{ data_set.model }}</code>
+                    {% endif %}
+                </dd>
 
                 <dt class="col-sm-3">Context</dt>
                 <dd class="col-sm-9"><a href="{{ data_set.contextUrl }}">{{ data_set.contextUrl }}</a></dd>

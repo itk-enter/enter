@@ -95,7 +95,13 @@
                 <dd class="col-sm-9">{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
 
                 <dt class="col-sm-3">Model</dt>
-                <dd class="col-sm-9"><code>{{ definition.model }}</code></dd>
+                <dd class="col-sm-9">
+                    {% if definition.modelUrl %}
+                        <a href="{{ definition.modelUrl }}"><code>{{ definition.model }}</code></a>
+                    {% else %}
+                        <code>{{ definition.model }}</code>
+                    {% endif %}
+                </dd>
 
                 <dt class="col-sm-3">Context</dt>
                 <dd class="col-sm-9"><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
