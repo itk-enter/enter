@@ -1,5 +1,14 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Developer map{% endblock %}
+
+{% block header %}
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [{label: 'Enter', url: path('app_default')}],
+        current: block('title'),
+    }) }}
+{% endblock %}
+
 {% block content %}
     <div class="test-map-wrapper"
          data-controller="test-map test-datasets"
