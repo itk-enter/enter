@@ -1,22 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Data sets{% endblock %}
+{% block title %}Open data about Aarhus{% endblock %}
 
 {% block header %}
-    <header class="data-sets-header">
-        <p class="data-sets-eyebrow">Enter · {{ block('title') }}</p>
-        <h1 class="data-sets-title">Open data about Aarhus</h1>
-
-        <div class="data-sets-facts">
-            <span class="data-sets-fact"><b>{{ groups|length }}</b> {{ groups|length == 1 ? 'topic' : 'topics' }}</span>
-            <span class="data-sets-fact"><b>{{ merged|length }}</b> merged data {{ merged|length == 1 ? 'set' : 'sets' }}</span>
-            <span class="data-sets-fact"><b>{{ sources|length }}</b> {{ sources|length == 1 ? 'source' : 'sources' }}</span>
-            <span class="data-sets-links">
-                <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_sources', {_format: 'json'}) }}">List as JSON</a>
-                <a class="btn btn-sm btn-outline-secondary" href="{{ path('ngsi_ld_v1_request', {path: 'types'}) }}">Types in the broker</a>
-            </span>
-        </div>
-    </header>
+    {% embed '_page_header.html.twig' with {
+        breadcrumbs: [{label: 'Enter', url: path('app_default')}],
+        current: block('title'),
+    } %}
+        {% block details %}
+            <div class="data-sets-facts">
+                <span class="data-sets-fact"><b>{{ groups|length }}</b> {{ groups|length == 1 ? 'topic' : 'topics' }}</span>
+                <span class="data-sets-fact"><b>{{ merged|length }}</b> merged data {{ merged|length == 1 ? 'set' : 'sets' }}</span>
+                <span class="data-sets-fact"><b>{{ sources|length }}</b> {{ sources|length == 1 ? 'source' : 'sources' }}</span>
+                <span class="data-sets-links">
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_sources', {_format: 'json'}) }}">List as JSON</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('ngsi_ld_v1_request', {path: 'types'}) }}">Types in the broker</a>
+                </span>
+            </div>
+        {% endblock %}
+    {% endembed %}
 {% endblock %}
 
 {% block content %}
