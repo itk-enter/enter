@@ -1,5 +1,5 @@
 {#
-    The grey header at the top of a page, with the heading, the breadcrumbs and the content of the details block.
+    The grey header at the top of a page, with the heading and the breadcrumbs. It has the same height on each page.
     Variables: breadcrumbs (a list of {label, url} for the pages above this page), current (the name of this page, as
     the last breadcrumb and as the heading) and logo (optional, the URL of an image that replaces the heading). A page
     with a logo has no breadcrumbs. The logo is as high as the heading and the breadcrumbs of the other pages.
@@ -18,5 +18,4 @@
             </ol>
         </nav>
     {% endif %}
-    {% block details %}{% endblock %}
 </header>
