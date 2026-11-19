@@ -4,18 +4,28 @@
 
 {% block title %}{{ source.definition.title }}{% endblock %}
 
-{% block content %}
+{% block header %}
     {% set definition = source.definition %}
-    <p class="text-body-secondary">
-        <a href="{{ path('app_sources') }}#{{ definition.id }}">All data sets</a>
-        · <code>{{ definition.id }}</code> · Model <code>{{ definition.model }}</code>
-    </p>
+    {% embed '_page_header.html.twig' with {
+        breadcrumbs: [
+            {label: 'Enter', url: path('app_default')},
+            {label: 'Open data about Aarhus', url: path('app_sources') ~ '#' ~ definition.id},
+        ],
+        current: definition.title,
+    } %}
+        {% block details %}
+            <p class="page-header-meta"><code>{{ definition.id }}</code> · Model <code>{{ definition.model }}</code></p>
+            {% if histories is not null %}
+                {{ include('source/_history_summary.html.twig', {history: history}, with_context: false) }}
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
 
+{% block content %}
     {% if histories is null %}
         <p class="text-body-secondary">The import history is not available.</p>
     {% else %}
-        {{ include('source/_history_summary.html.twig', {history: history}, with_context: false) }}
-
         {% if history %}
             <p class="small text-body-secondary">
                 The figures count the last {{ history.days|length }} days. The data changed if the entities of an

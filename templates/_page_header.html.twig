@@ -1,0 +1,17 @@
+{#
+    The grey header at the top of a page, with the breadcrumbs, the heading and the content of the details block.
+    Variables: breadcrumbs (a list of {label, url} for the pages above this page) and current (the name of this page,
+    as the last breadcrumb and as the heading).
+#}
+<header class="page-header">
+    <nav aria-label="Breadcrumb">
+        <ol class="breadcrumb page-header-breadcrumb">
+            {% for crumb in breadcrumbs %}
+                <li class="breadcrumb-item"><a href="{{ crumb.url }}">{{ crumb.label }}</a></li>
+            {% endfor %}
+            <li class="breadcrumb-item active" aria-current="page">{{ current }}</li>
+        </ol>
+    </nav>
+    <h1 class="page-header-title">{{ current }}</h1>
+    {% block details %}{% endblock %}
+</header>
