@@ -33,6 +33,11 @@
 {% block content %}
     {% import _self as api %}
 
+    <p class="page-intro">
+        Read the data in the broker with GET requests. Open an endpoint to see its parameters, an example and the
+        response.
+    </p>
+
     <section class="card fold-card">
         <details>
             {{ api.summary('/sources.json', 'The list of data sets') }}

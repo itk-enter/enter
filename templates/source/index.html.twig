@@ -24,6 +24,11 @@
 {% endblock %}
 
 {% block content %}
+    <p class="page-intro">
+        Browse the data sets in the broker, grouped by topic. Open a data set to see its source, its import history
+        and the link to its entities.
+    </p>
+
     {% if histories is null %}
         <p class="text-body-secondary">The import history is not available.</p>
     {% endif %}
