@@ -8,16 +8,16 @@
     <nav class="link-boxes" aria-label="Pages">
         <a class="link-box" href="{{ path('app_sources') }}">
             <span class="link-box-title">Data sources</span>
-            <span class="link-box-text">The data sets in the broker, with their sources and their import history.</span>
+            <span class="link-box-text">Data sets, sources and import history</span>
         </a>
         <a class="link-box" href="{{ path('app_default', {path: 'api'}) }}">
             <span class="link-box-title">API examples</span>
-            <span class="link-box-text">Example requests to the NGSI-LD API of the broker.</span>
+            <span class="link-box-text">Example requests to the NGSI-LD API</span>
         </a>
         {% if 'dev' == app.environment %}
             <a class="link-box" href="{{ path('test_default') }}">
                 <span class="link-box-title">Developer map</span>
-                <span class="link-box-text">The test data sets on a map. This page is only in development.</span>
+                <span class="link-box-text">View data sets on a map</span>
             </a>
         {% endif %}
     </nav>
