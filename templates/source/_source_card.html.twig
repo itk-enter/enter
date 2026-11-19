@@ -52,7 +52,7 @@
                             {{ include('source/_history_chart.html.twig', {history: history, compact: true}, with_context: false) }}
                         </span>
                     {% endif %}
-                    <a class="source-figure-link" href="{{ path('app_source_show', {id: definition.id}) }}">Import history</a>
+                    <a class="btn btn-sm btn-outline-secondary source-figure-link" href="{{ path('app_source_show', {id: definition.id}) }}">Import history</a>
                 </div>
                 {% if history.lastImport.failure %}
                     <p class="source-card-failure">{{ history.lastImport.failure }}</p>

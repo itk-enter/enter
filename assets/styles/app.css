@@ -562,6 +562,7 @@ details[open] > .source-part-summary::before {
 }
 
 .source-figure-link {
+    align-self: center;
     margin-left: auto;
 }
 
