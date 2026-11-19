@@ -14,30 +14,30 @@
         <p class="text-body-secondary">The import history is not available.</p>
     {% else %}
         <p>
-            The data sets are grouped by their model. In each group, the sources come first, then the merged data
-            sets. The sources without an import come last. Each source shows its last import, and figures for the
-            imports of the last {{ constant('App\\Import\\History\\ImportHistory::DAYS') }} days.
+            The data sets are grouped by the model of the merged data set. Each group starts with the merged data
+            set, then the sources that it is merged from, also when their model is different. A source that no merge
+            reads is in the group of its own model. The sources without an import come last. Each source shows its
+            last import, and figures for the imports of the last
+            {{ constant('App\\Import\\History\\ImportHistory::DAYS') }} days.
         </p>
     {% endif %}
 
-    {% set models = [] %}
-    {% for model in sources|map(source => source.definition.model)|merge(merged|map(dataSet => dataSet.model)) %}
-        {% if model not in models %}
-            {% set models = models|merge([model]) %}
-        {% endif %}
-    {% endfor %}
-
-    {% for model in models|sort %}
-        {% set modelSources = sources|filter(source => source.definition.model == model) %}
-        {% set modelMerged = merged|filter(dataSet => dataSet.model == model) %}
-        {% set imported = histories is null ? modelSources : modelSources|filter(source => histories[source.definition.id] is defined) %}
-        {% set idle = histories is null ? [] : modelSources|filter(source => histories[source.definition.id] is not defined) %}
-        {% set count = modelSources|length + modelMerged|length %}
+    {% for group in groups %}
+        {% set imported = histories is null ? group.sources : group.sources|filter(source => histories[source.definition.id] is defined) %}
+        {% set idle = histories is null ? [] : group.sources|filter(source => histories[source.definition.id] is not defined) %}
+        {% set count = group.sources|length + group.merged|length %}
 
         <h2 class="source-group">
-            {{ model }}
+            {{ group.title }}
             <span class="source-group-count">{{ count }} {{ count == 1 ? 'data set' : 'data sets' }}</span>
         </h2>
+
+        {% for dataSet in group.merged %}
+            {{ include('source/_merged_card.html.twig', {
+                data_set: dataSet,
+                entities_url: entitiesUrls[dataSet.id],
+            }, with_context: false) }}
+        {% endfor %}
 
         {% for source in imported %}
             {{ include('source/_source_card.html.twig', {
@@ -45,13 +45,6 @@
                 history: histories[source.definition.id] ?? null,
                 idle: false,
                 entities_url: entitiesUrls[source.definition.id],
-            }, with_context: false) }}
-        {% endfor %}
-
-        {% for dataSet in modelMerged %}
-            {{ include('source/_merged_card.html.twig', {
-                data_set: dataSet,
-                entities_url: entitiesUrls[dataSet.id],
             }, with_context: false) }}
         {% endfor %}
 
