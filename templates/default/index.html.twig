@@ -1,7 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block header %}
-    {{ include('_page_header.html.twig', {breadcrumbs: [], current: block('title')}) }}
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [],
+        current: block('title'),
+        logo: asset('images/enter-logo.png'),
+    }) }}
 {% endblock %}
 
 {% block content %}
