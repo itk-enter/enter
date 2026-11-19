@@ -361,14 +361,13 @@
     gap: 0.5rem 1.75rem;
 }
 
-.data-sets-fact {
+.data-sets-summary {
     color: var(--bs-secondary-color);
+    font-size: 1.125rem;
 }
 
-.data-sets-fact b {
-    margin-right: 0.25rem;
+.data-sets-summary b {
     color: var(--bs-body-color);
-    font-size: 1.5rem;
     font-weight: 700;
 }
 
@@ -377,10 +376,6 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-left: auto;
-}
-
-.data-sets-about {
-    max-width: 64rem;
 }
 
 .source-group {
