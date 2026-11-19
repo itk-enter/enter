@@ -2,24 +2,32 @@
 
 {% block title %}Data sets{% endblock %}
 
+{% block header %}
+    <header class="data-sets-header">
+        <p class="data-sets-eyebrow">Enter · {{ block('title') }}</p>
+        <h1 class="data-sets-title">Open data about Aarhus</h1>
+
+        <div class="data-sets-facts">
+            <span class="data-sets-fact"><b>{{ groups|length }}</b> {{ groups|length == 1 ? 'topic' : 'topics' }}</span>
+            <span class="data-sets-fact"><b>{{ merged|length }}</b> merged data {{ merged|length == 1 ? 'set' : 'sets' }}</span>
+            <span class="data-sets-fact"><b>{{ sources|length }}</b> {{ sources|length == 1 ? 'source' : 'sources' }}</span>
+            <span class="data-sets-links">
+                <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_sources', {_format: 'json'}) }}">List as JSON</a>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ path('ngsi_ld_v1_request', {path: 'types'}) }}">Types in the broker</a>
+            </span>
+        </div>
+    </header>
+{% endblock %}
+
 {% block content %}
-    <p>
-        The data sets in the broker: the sources, and the merged data sets that the merges make from them. Each
-        entity has a <code>sourceId</code> attribute with the id of its data set. Each data set below links to its
-        entities in the broker.
-        This list is also available as <a href="{{ path('app_sources', {_format: 'json'}) }}">JSON</a>.
+    <p class="data-sets-about">
+        We collect open data from many publishers. Where they describe the same things, we merge the data into one
+        data set. The data models build on <a href="https://smartdatamodels.org/">Smart Data Models</a>, an open set of
+        shared data models for cities. All data is served as NGSI-LD.
     </p>
 
     {% if histories is null %}
         <p class="text-body-secondary">The import history is not available.</p>
-    {% else %}
-        <p>
-            The data sets are grouped by the model of the merged data set. Each group starts with the merged data
-            set, then the sources that it is merged from, also when their model is different. A source that no merge
-            reads is in the group of its own model. The sources without an import come last. Each source shows its
-            last import, and figures for the imports of the last
-            {{ constant('App\\Import\\History\\ImportHistory::DAYS') }} days.
-        </p>
     {% endif %}
 
     {% for group in groups %}
