@@ -10,9 +10,9 @@
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     {% endblock %}
 </head>
-<body>
+<body class="page">
     {% block body %}
-        <div class="container-fluid">
+        <div class="container-fluid page-main">
         {% block header %}
             <h1>{{ block('title') }}</h1>
         {% endblock %}
@@ -29,6 +29,10 @@
 
         {% block content %}{% endblock %}
     </div>
+
+    {% block footer %}
+        {{ include('_page_footer.html.twig') }}
+    {% endblock %}
 {% endblock %}
 </body>
 </html>
