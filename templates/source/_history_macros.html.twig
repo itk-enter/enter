@@ -1,4 +1,4 @@
-{# A time in UTC, with the minutes. #}
+{# A time in Danish time, with the minutes. #}
 {% macro time(date) %}
     {%- if date -%}
         <time datetime="{{ date|date('c') }}">{{ date|date('Y-m-d H:i') }}</time>

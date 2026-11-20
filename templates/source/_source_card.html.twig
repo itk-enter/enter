@@ -17,7 +17,7 @@
             {% if history %}
                 {% set last = history.lastImport %}
                 {% set success = history.lastSuccess %}
-                <span class="source-card-entities" title="{{ success ? 'At the last successful import, ' ~ success.startedAt|date('Y-m-d H:i') ~ ' UTC' : 'No import succeeded' }}">
+                <span class="source-card-entities" title="{{ success ? 'At the last successful import, ' ~ success.startedAt|date('Y-m-d H:i') : 'No import succeeded' }}">
                     <b>{{ success ? success.upserted|number_format : '–' }}</b> entities
                 </span>
                 <span class="source-card-change" title="Entities added and removed by all the imports, without full loads">
@@ -26,7 +26,7 @@
                 </span>
                 <span class="source-card-status">
                     <span class="source-card-state">{{ h.status(last) }}</span>
-                    <span class="source-card-ago" title="{{ last.startedAt|date('Y-m-d H:i') }} UTC">{{ h.duration(history.sinceLastImport) }} ago</span>
+                    <span class="source-card-ago" title="{{ last.startedAt|date('Y-m-d H:i') }}">{{ h.duration(history.sinceLastImport) }} ago</span>
                 </span>
             {% elseif idle %}
                 <span class="source-card-status">No import</span>
@@ -48,7 +48,7 @@
                     {% if history.importInterval is not null %}
                         <span class="source-figure"><b>{{ h.duration(history.importInterval) }}</b> between imports</span>
                     {% endif %}
-                    <span class="source-figure" title="{{ history.lastDataChange ? 'The last at ' ~ history.lastDataChange.startedAt|date('Y-m-d H:i') ~ ' UTC' : 'The data did not change' }}">
+                    <span class="source-figure" title="{{ history.lastDataChange ? 'The last at ' ~ history.lastDataChange.startedAt|date('Y-m-d H:i') : 'The data did not change' }}">
                         <b>{{ history.dataChanges }}</b> data {{ history.dataChanges == 1 ? 'change' : 'changes' }}
                     </span>
                     {% if history.busiestDay > 0 %}
