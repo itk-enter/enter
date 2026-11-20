@@ -1,0 +1,33 @@
+{# A time in UTC, with the minutes. #}
+{% macro time(date) %}
+    {%- if date -%}
+        <time datetime="{{ date|date('c') }}">{{ date|date('Y-m-d H:i') }}</time>
+    {%- endif -%}
+{% endmacro %}
+
+{# A number of seconds in the largest unit that fits, for example "3 h". #}
+{% macro duration(seconds) %}
+    {%- if seconds is null -%}
+    {%- elseif seconds < 60 -%}{{ seconds }} s
+    {%- elseif seconds < 3600 -%}{{ (seconds / 60)|round }} min
+    {%- elseif seconds < 172800 -%}{{ (seconds / 3600)|round }} h
+    {%- else -%}{{ (seconds / 86400)|round }} d
+    {%- endif -%}
+{% endmacro %}
+
+{# The status of an import as a badge. A failed import shows its failure on hover. #}
+{% macro status(import) %}
+    {%- set classes = {succeeded: 'text-bg-success', failed: 'text-bg-danger', running: 'text-bg-warning'} -%}
+    <span class="badge {{ classes[import.status.value] }}"{% if import.failure %} title="{{ import.failure }}"{% endif %}>
+        {{- import.status.value|capitalize -}}
+    </span>
+{% endmacro %}
+
+{# A number of entities with a sign before it, in the colour of the class if one is given. Zero has no sign and a light colour. #}
+{% macro change(count, sign, class = '') %}
+    {%- if count > 0 -%}
+        <span class="import-change {{ class }}">{{ sign }}{{ count|number_format }}</span>
+    {%- else -%}
+        <span class="import-change import-change-zero">0</span>
+    {%- endif -%}
+{% endmacro %}

@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% import 'source/_history_macros.html.twig' as h %}
+
+{% block title %}{{ source.definition.title }}{% endblock %}
+
+{% block header %}
+    {% set definition = source.definition %}
+    {% embed '_page_header.html.twig' with {
+        breadcrumbs: [
+            {label: 'Enter', url: path('app_default')},
+            {label: 'Open data about Aarhus', url: path('app_sources') ~ '#' ~ definition.id},
+        ],
+        current: definition.title,
+    } %}
+        {% block details %}
+            <p class="page-header-meta">
+                <code>{{ definition.id }}</code> · Model
+                {% if definition.modelUrl %}
+                    <a href="{{ definition.modelUrl }}"><code>{{ definition.model }}</code></a>
+                {% else %}
+                    <code>{{ definition.model }}</code>
+                {% endif %}
+            </p>
+            {% if histories is not null %}
+                {{ include('source/_history_summary.html.twig', {history: history}, with_context: false) }}
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block content %}
+    {% if histories is null %}
+        <p class="text-body-secondary">The import history is not available.</p>
+    {% else %}
+        {% if history %}
+            <p class="small text-body-secondary">
+                The figures count the last {{ history.days|length }} days. The data changed if the entities of an
+                import are different from the entities of the import before it. A full load adds all the entities of
+                the source. The figures and the chart do not count its added entities. All times are in UTC.
+            </p>
+
+            <div class="row g-4">
+                <div class="col-xl-7">
+                    <h2 class="h4">Entities added and removed each day</h2>
+                    {% if history.busiestDay > 0 %}
+                        {{ include('source/_history_chart.html.twig', {history: history, compact: false}, with_context: false) }}
+                    {% else %}
+                        <p class="text-body-secondary mb-0">No entities came or went in the last {{ history.days|length }} days.</p>
+                    {% endif %}
+
+                    <details class="mt-2 mb-4">
+                        <summary class="small">Show the days as a table</summary>
+                        <div class="table-responsive">
+                            <table class="table table-sm import-table small">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Day</th>
+                                        <th scope="col" class="text-end">Imports</th>
+                                        <th scope="col" class="text-end">Failed</th>
+                                        <th scope="col" class="text-end">Added</th>
+                                        <th scope="col" class="text-end">Removed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for day in history.days|reverse|filter(day => day.imports > 0) %}
+                                        <tr>
+                                            <td><time datetime="{{ day.date|date('Y-m-d') }}">{{ day.date|date('Y-m-d') }}</time></td>
+                                            <td class="text-end">{{ day.imports }}</td>
+                                            <td class="text-end">{{ day.failed ?: '' }}</td>
+                                            <td class="text-end">{{ h.change(day.added, '+') }}</td>
+                                            <td class="text-end">{{ h.change(day.removed, '−') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+
+                    <h2 class="h4">Imports that changed something or failed</h2>
+                    {% set imports = history.events(events) %}
+                    {% if imports %}
+                        <ol class="import-timeline">
+                            {% for import in imports %}
+                                <li class="import-timeline-item import-timeline-{{ import.status.value }}">
+                                    <div class="import-timeline-head">
+                                        {{ h.time(import.startedAt) }}
+                                        {{ h.status(import) }}
+                                        {% if import.fullLoad %}<span class="badge text-bg-secondary">Full load</span>{% endif %}
+                                    </div>
+                                    {% if import.succeeded %}
+                                        <div class="import-timeline-body">
+                                            {% if import.added %}
+                                                <span><span class="import-swatch import-swatch-added"></span>{{ import.added|number_format }} added</span>
+                                            {% endif %}
+                                            {% if import.removed %}
+                                                <span><span class="import-swatch import-swatch-removed"></span>{{ import.removed|number_format }} removed</span>
+                                            {% endif %}
+                                            {% if history.changedData(import) %}
+                                                <span>The data changed</span>
+                                            {% endif %}
+                                            <span class="text-body-secondary">
+                                                {{ import.upserted|number_format }} entities
+                                                {%- if import.rejected %}, {{ import.rejected|number_format }} rejected{% endif %}
+                                                · {{ h.duration(import.duration) }}
+                                            </span>
+                                        </div>
+                                    {% elseif import.failure %}
+                                        <div class="import-timeline-body small text-break">{{ import.failure }}</div>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        <p class="text-body-secondary">No import changed something or failed in the last {{ history.days|length }} days.</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-xl-5">
+                    <h2 class="h4">The last entities that came and went</h2>
+                    {% if changes %}
+                        <ul class="list-group list-group-flush import-changes">
+                            {% for change in changes %}
+                                <li class="list-group-item">
+                                    <span class="import-swatch import-swatch-{{ change.type.value }}"></span>
+                                    <code class="text-break">{{ change.entityId }}</code>
+                                    <span class="import-changes-time">{{ change.type.value|capitalize }} {{ h.time(change.sourceImport.startedAt) }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-body-secondary">No import added or removed an entity.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
