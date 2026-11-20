@@ -37,12 +37,12 @@ class DataSetCatalogTest extends KernelTestCase
         $this->assertSame(['osm-handicap-parking-off-street', 'test:osm-handicap-parking-off-street'], $groups['OffStreetParking']['sources']);
     }
 
-    public function testEachGroupHasTheDanishNameOfItsModelAsTitle(): void
+    public function testEachGroupHasTheEnglishNameOfItsModelAsTitle(): void
     {
         $titles = array_column(static::getContainer()->get(DataSetCatalog::class)->all()['groups'], 'title', 'model');
 
-        $this->assertSame('Parkeringspladser', $titles['ParkingSpot']);
-        $this->assertSame('Offentlige toiletter', $titles['PublicToilet']);
+        $this->assertSame('Parking spaces', $titles['ParkingSpot']);
+        $this->assertSame('Public toilets', $titles['PublicToilet']);
     }
 
     public function testTheGroupsHoldEachDataSetOneTimeAndAreSortedByTitle(): void

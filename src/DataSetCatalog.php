@@ -18,14 +18,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final readonly class DataSetCatalog
 {
     /**
-     * The Danish name of each data model, for the headings on /sources. A
+     * The English name of each data model, for the headings on /sources. A
      * model that is not in the list uses its own name.
      */
     private const array MODEL_TITLES = [
-        'Bench' => 'Bænke og bordbænkesæt',
-        'OffStreetParking' => 'Parkering uden for gaden',
-        'ParkingSpot' => 'Parkeringspladser',
-        'PublicToilet' => 'Offentlige toiletter',
+        'Bench' => 'Benches and picnic tables',
+        'OffStreetParking' => 'Off-street parking',
+        'ParkingSpot' => 'Parking spaces',
+        'PublicToilet' => 'Public toilets',
     ];
 
     public function __construct(
@@ -42,7 +42,7 @@ final readonly class DataSetCatalog
      *
      * The groups hold the same data sets, grouped by model. A source that a
      * merge reads is in the group of the merged data set, because the merged
-     * data set is the result that a reader uses. Each group has the Danish
+     * data set is the result that a reader uses. Each group has the English
      * name of its model as title, and the groups are sorted by title.
      *
      * @return array{
