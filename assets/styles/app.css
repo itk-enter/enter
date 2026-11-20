@@ -480,38 +480,31 @@ h6,
 .link-boxes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-    gap: 1rem;
+    gap: var(--itkaarhus-space-4);
 }
 
 .link-box {
-    display: block;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    color: var(--bs-body-color);
+    color: inherit;
     text-decoration: none;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
 }
 
 .link-box:hover {
-    border-color: var(--bs-secondary-color);
-    background-color: var(--bs-tertiary-bg);
+    border-color: var(--itkaarhus-border-strong);
+    box-shadow: var(--itkaarhus-shadow-2);
+    color: inherit;
 }
 
-.link-box-title {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-size: 1.25rem;
-    font-weight: 600;
+.link-box:focus-visible {
+    outline: none;
+    box-shadow: var(--itkaarhus-focus);
 }
 
 .link-box-title::after {
     content: " →";
-    color: var(--bs-secondary-color);
-}
-
-.link-box-text {
-    display: block;
-    color: var(--bs-secondary-color);
+    color: var(--itkaarhus-primary);
 }
 
 .api-endpoint-label {
@@ -532,8 +525,10 @@ h6,
 
 .api-code {
     max-width: 64rem;
-    padding: 1rem 1.25rem;
-    background-color: var(--bs-tertiary-bg);
+    padding: var(--itkaarhus-space-4) var(--itkaarhus-space-5);
+    border: 1px solid var(--itkaarhus-border-subtle);
+    border-radius: var(--itkaarhus-radius-2);
+    background-color: var(--itkaarhus-bg-muted);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
@@ -623,6 +618,16 @@ details[open] > .source-part-summary::before {
     background-color: var(--bs-tertiary-bg);
 }
 
+.fold-card-summary:focus-visible {
+    outline: none;
+    box-shadow: inset var(--itkaarhus-focus);
+}
+
+.source-part-summary:focus-visible {
+    outline: none;
+    box-shadow: var(--itkaarhus-focus);
+}
+
 .fold-card-title {
     display: flex;
     flex: 1;
@@ -694,6 +699,14 @@ details[open] > .source-part-summary::before {
 .source-card-change .import-change {
     min-width: 3rem;
     text-align: right;
+}
+
+.import-change-added {
+    color: var(--itkaarhus-success-text);
+}
+
+.import-change-removed {
+    color: var(--itkaarhus-danger-text);
 }
 
 .import-change-zero {

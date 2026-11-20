@@ -15,10 +15,10 @@
     {%- endif -%}
 {% endmacro %}
 
-{# The status of an import as a badge. A failed import shows its failure on hover. #}
+{# The status of an import as a tag. A failed import shows its failure on hover. #}
 {% macro status(import) %}
-    {%- set classes = {succeeded: 'text-bg-success', failed: 'text-bg-danger', running: 'text-bg-warning'} -%}
-    <span class="badge {{ classes[import.status.value] }}"{% if import.failure %} title="{{ import.failure }}"{% endif %}>
+    {%- set classes = {succeeded: 'itkaarhus-tag--success', failed: 'itkaarhus-tag--danger', running: 'itkaarhus-tag--warning'} -%}
+    <span class="itkaarhus-tag itkaarhus-tag--dot {{ classes[import.status.value] }}"{% if import.failure %} title="{{ import.failure }}"{% endif %}>
         {{- import.status.value|capitalize -}}
     </span>
 {% endmacro %}

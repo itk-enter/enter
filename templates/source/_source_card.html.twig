@@ -8,7 +8,7 @@
 #}
 {% import 'source/_history_macros.html.twig' as h %}
 {% set definition = source.definition %}
-<section class="card fold-card{{ idle ? ' source-card-idle' }}" id="{{ definition.id }}">
+<section class="itkaarhus-card fold-card{{ idle ? ' source-card-idle' }}" id="{{ definition.id }}">
     <h3 class="visually-hidden">{{ definition.title }}</h3>
     <details>
         <summary class="fold-card-summary">
@@ -20,8 +20,8 @@
                     <b>{{ success ? success.upserted|number_format : '–' }}</b> entities
                 </span>
                 <span class="source-card-change" title="Entities added and removed in the last {{ history.days|length }} days, without full loads">
-                    {{ h.change(history.added, '+', 'text-success') }}
-                    {{ h.change(history.removed, '−', 'text-danger') }}
+                    {{ h.change(history.added, '+', 'import-change-added') }}
+                    {{ h.change(history.removed, '−', 'import-change-removed') }}
                 </span>
                 <span class="source-card-status">
                     {{ h.status(last) }}
@@ -55,7 +55,7 @@
                             {{ include('source/_history_chart.html.twig', {history: history, compact: true}, with_context: false) }}
                         </span>
                     {% endif %}
-                    <a class="btn btn-sm btn-outline-secondary source-figure-link" href="{{ path('app_source_show', {id: definition.id}) }}">Import history</a>
+                    <a class="itkaarhus-btn itkaarhus-btn--secondary itkaarhus-btn--sm source-figure-link" href="{{ path('app_source_show', {id: definition.id}) }}">Import history</a>
                 </div>
                 {% if history.lastImport.failure %}
                     <p class="source-card-failure">{{ history.lastImport.failure }}</p>

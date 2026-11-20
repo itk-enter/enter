@@ -49,7 +49,7 @@
                     <details class="mt-2 mb-4">
                         <summary class="small">Show the days as a table</summary>
                         <div class="table-responsive">
-                            <table class="table table-sm import-table small">
+                            <table class="itkaarhus-table import-table">
                                 <thead>
                                     <tr>
                                         <th scope="col">Day</th>
@@ -83,7 +83,7 @@
                                     <div class="import-timeline-head">
                                         {{ h.time(import.startedAt) }}
                                         {{ h.status(import) }}
-                                        {% if import.fullLoad %}<span class="badge text-bg-secondary">Full load</span>{% endif %}
+                                        {% if import.fullLoad %}<span class="itkaarhus-tag itkaarhus-tag--neutral">Full load</span>{% endif %}
                                     </div>
                                     {% if import.succeeded %}
                                         <div class="import-timeline-body">
