@@ -5,39 +5,36 @@
 {% block title %}{{ source.definition.title }}{% endblock %}
 
 {% block header %}
-    {% set definition = source.definition %}
-    {% embed '_page_header.html.twig' with {
+    {{ include('_page_header.html.twig', {
         breadcrumbs: [
-            {label: 'Enter', url: path('app_default')},
-            {label: 'Data sources', url: path('app_sources') ~ '#' ~ definition.id},
+            {label: 'Home', url: path('app_default')},
+            {label: 'Data sources', url: path('app_sources') ~ '#' ~ source.definition.id},
         ],
-        current: definition.title,
-    } %}
-        {% block details %}
-            <p class="page-header-meta">
-                <code>{{ definition.id }}</code> · Model
-                {% if definition.modelUrl %}
-                    <a href="{{ definition.modelUrl }}"><code>{{ definition.model }}</code></a>
-                {% else %}
-                    <code>{{ definition.model }}</code>
-                {% endif %}
-            </p>
-            {% if histories is not null %}
-                {{ include('source/_history_summary.html.twig', {history: history}, with_context: false) }}
-            {% endif %}
-        {% endblock %}
-    {% endembed %}
+        current: source.definition.title,
+    }) }}
 {% endblock %}
 
 {% block content %}
+    {% set definition = source.definition %}
+    <p class="page-meta">
+        <code>{{ definition.id }}</code> · Model
+        {% if definition.modelUrl %}
+            <a href="{{ definition.modelUrl }}"><code>{{ definition.model }}</code></a>
+        {% else %}
+            <code>{{ definition.model }}</code>
+        {% endif %}
+    </p>
+
     {% if histories is null %}
         <p class="text-body-secondary">The import history is not available.</p>
     {% else %}
+        {{ include('source/_history_summary.html.twig', {history: history}, with_context: false) }}
+
         {% if history %}
             <p class="small text-body-secondary">
                 The figures count the last {{ history.days|length }} days. The data changed if the entities of an
                 import are different from the entities of the import before it. A full load adds all the entities of
-                the source. The figures and the chart do not count its added entities. All times are in UTC.
+                the source. The figures and the chart do not count its added entities. All times are in Danish time.
             </p>
 
             <div class="row g-4">
@@ -52,7 +49,7 @@
                     <details class="mt-2 mb-4">
                         <summary class="small">Show the days as a table</summary>
                         <div class="table-responsive">
-                            <table class="table table-sm import-table small">
+                            <table class="itkaarhus-table import-table">
                                 <thead>
                                     <tr>
                                         <th scope="col">Day</th>
@@ -86,7 +83,7 @@
                                     <div class="import-timeline-head">
                                         {{ h.time(import.startedAt) }}
                                         {{ h.status(import) }}
-                                        {% if import.fullLoad %}<span class="badge text-bg-secondary">Full load</span>{% endif %}
+                                        {% if import.fullLoad %}<span class="itkaarhus-tag itkaarhus-tag--neutral">Full load</span>{% endif %}
                                     </div>
                                     {% if import.succeeded %}
                                         <div class="import-timeline-body">

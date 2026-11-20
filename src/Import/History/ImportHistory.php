@@ -88,6 +88,62 @@ final readonly class ImportHistory
     }
 
     /**
+     * Gets the number of entities that all the imports of each source added
+     * and removed. As in SourceHistory, the added entities of a full load do
+     * not count.
+     *
+     * @return array<string, array{added: int, removed: int}>|null the totals of each source with a successful
+     *                                                             import, by source id. Null if the database failed.
+     */
+    public function totalsBySource(): ?array
+    {
+        try {
+            /** @var list<array{sourceId: string, removed: int|string|null}> $removed */
+            $removed = $this->entityManager
+                ->createQuery(\sprintf(
+                    'SELECT i.sourceId, SUM(i.deleted) AS removed FROM %s i WHERE i.status = :succeeded GROUP BY i.sourceId',
+                    SourceImport::class,
+                ))
+                ->setParameter('succeeded', ImportStatus::Succeeded)
+                ->getArrayResult();
+
+            /** @var list<array{sourceId: string, upserted: int|null, added: int|string}> $added */
+            $added = $this->entityManager
+                ->createQuery(\sprintf(
+                    'SELECT i.sourceId, i.upserted, COUNT(c.id) AS added
+                    FROM %s c JOIN c.sourceImport i
+                    WHERE c.type = :added AND i.status = :succeeded
+                    GROUP BY i.id, i.sourceId, i.upserted',
+                    EntityChange::class,
+                ))
+                ->setParameter('added', EntityChangeType::Added)
+                ->setParameter('succeeded', ImportStatus::Succeeded)
+                ->getArrayResult();
+        } catch (DbalException $exception) {
+            $this->logUnavailable($exception);
+
+            return null;
+        }
+
+        $totals = [];
+        foreach ($removed as $row) {
+            $totals[$row['sourceId']] = ['added' => 0, 'removed' => (int) $row['removed']];
+        }
+
+        foreach ($added as $row) {
+            $count = (int) $row['added'];
+            if ($count === $row['upserted']) {
+                continue;
+            }
+
+            $totals[$row['sourceId']] ??= ['added' => 0, 'removed' => 0];
+            $totals[$row['sourceId']]['added'] += $count;
+        }
+
+        return $totals;
+    }
+
+    /**
      * Gets the last entities that the imports of a source added or removed.
      * The last change is first.
      *

@@ -3,27 +3,18 @@
 {% block title %}Data sources{% endblock %}
 
 {% block header %}
-    {% embed '_page_header.html.twig' with {
-        breadcrumbs: [{label: 'Enter', url: path('app_default')}],
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [{label: 'Home', url: path('app_default')}],
         current: block('title'),
-    } %}
-        {% block details %}
-            <div class="data-sets-facts">
-                <span class="data-sets-summary">
-                    <b>{{ sources|length }}</b> {{ sources|length == 1 ? 'source' : 'sources' }} across
-                    <b>{{ groups|length }}</b> {{ groups|length == 1 ? 'topic' : 'topics' }}, with
-                    <b>{{ merged|length }}</b> merged data {{ merged|length == 1 ? 'set' : 'sets' }}.
-                </span>
-                <span class="data-sets-links">
-                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_sources', {_format: 'json'}) }}">List as JSON</a>
-                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('ngsi_ld_v1_request', {path: 'types'}) }}">Types in the broker</a>
-                </span>
-            </div>
-        {% endblock %}
-    {% endembed %}
+    }) }}
 {% endblock %}
 
 {% block content %}
+    <p class="page-intro">
+        Browse the data sets in the broker, grouped by topic.<br>
+        Open a data set to see its source, its import history and the link to its entities.
+    </p>
+
     {% if histories is null %}
         <p class="text-body-secondary">The import history is not available.</p>
     {% endif %}
@@ -68,6 +59,7 @@
                         {{ include('source/_source_card.html.twig', {
                             source: source,
                             history: histories[source.definition.id] ?? null,
+                            totals: totals[source.definition.id] ?? null,
                             idle: false,
                             entities_url: entitiesUrls[source.definition.id],
                         }, with_context: false) }}
@@ -77,6 +69,7 @@
                         {{ include('source/_source_card.html.twig', {
                             source: source,
                             history: null,
+                            totals: null,
                             idle: true,
                             entities_url: entitiesUrls[source.definition.id],
                         }, with_context: false) }}
