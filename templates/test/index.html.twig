@@ -29,7 +29,12 @@
             </button>
             <form id="test-map-datasets" class="test-map-datasets collapse show shadow-sm"
                   data-test-datasets-target="form" data-action="change->test-datasets#toggle"
-                  aria-label="Datamodeller"></form>
+                  aria-label="Datamodeller">
+                <p class="test-map-loading" role="status" data-test-datasets-target="loading">
+                    <span class="spinner-border" aria-hidden="true"></span>
+                    Henter datasæt…
+                </p>
+            </form>
         </div>
     </div>
 {% endblock %}

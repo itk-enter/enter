@@ -82,6 +82,25 @@ h6,
     display: none;
 }
 
+.test-map-loading {
+    display: flex;
+    align-items: center;
+    gap: var(--itkaarhus-space-3);
+    margin: 0;
+    padding: var(--itkaarhus-space-2) var(--itkaarhus-space-1);
+    color: var(--itkaarhus-text);
+    font-size: var(--itkaarhus-text-base);
+    font-weight: 600;
+}
+
+.test-map-loading .spinner-border {
+    --bs-spinner-width: 1.5rem;
+    --bs-spinner-height: 1.5rem;
+    --bs-spinner-border-width: 0.2em;
+
+    color: var(--itkaarhus-primary);
+}
+
 .test-map-group .form-check + .form-check {
     margin-top: 0.125rem;
 }

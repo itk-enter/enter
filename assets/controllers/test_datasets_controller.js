@@ -158,11 +158,23 @@ function reflectGroup(fieldset) {
 }
 
 export default class extends Controller {
-    static targets = ["form"];
+    static targets = ["form", "loading"];
     static values = { url: String };
 
+    /* Loads the sources. The loading target shows until they are ready. */
     async connect() {
-        const { models, sources } = await loadSources(this.urlValue);
+        let models;
+        let sources;
+        try {
+            ({ models, sources } = await loadSources(this.urlValue));
+        } catch (error) {
+            this.loadingTarget.textContent = "Datasættene kunne ikke hentes.";
+            console.error(error);
+
+            return;
+        }
+
+        this.loadingTarget.remove();
         this.sources = sources;
 
         this.dispatch("loaded", { detail: { sources } });
