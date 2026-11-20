@@ -726,6 +726,16 @@ details[open] > .source-part-summary::before {
     white-space: nowrap;
 }
 
+.source-card-state {
+    min-width: 6.5rem;
+    text-align: right;
+}
+
+.source-card-ago {
+    min-width: 5rem;
+    text-align: right;
+}
+
 .source-figures {
     display: flex;
     flex-wrap: wrap;

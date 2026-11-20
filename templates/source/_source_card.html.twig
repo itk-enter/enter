@@ -24,8 +24,8 @@
                     {{ h.change(history.removed, '−', 'import-change-removed') }}
                 </span>
                 <span class="source-card-status">
-                    {{ h.status(last) }}
-                    <span title="{{ last.startedAt|date('Y-m-d H:i') }} UTC">{{ h.duration(history.sinceLastImport) }} ago</span>
+                    <span class="source-card-state">{{ h.status(last) }}</span>
+                    <span class="source-card-ago" title="{{ last.startedAt|date('Y-m-d H:i') }} UTC">{{ h.duration(history.sinceLastImport) }} ago</span>
                 </span>
             {% elseif idle %}
                 <span class="source-card-status">No import</span>
