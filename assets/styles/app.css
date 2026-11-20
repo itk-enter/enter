@@ -387,10 +387,11 @@ h6,
 }
 
 .page-footer {
-    margin-top: 3rem;
-    padding: 1.5rem 0;
-    background-color: var(--bs-tertiary-bg);
-    font-size: 0.875rem;
+    margin-top: var(--itkaarhus-space-7);
+    padding: var(--itkaarhus-space-5) 0;
+    border-top: 1px solid var(--itkaarhus-border);
+    background-color: var(--itkaarhus-bg-muted);
+    font-size: var(--itkaarhus-text-sm);
 }
 
 .page-footer-content {
@@ -398,55 +399,54 @@ h6,
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem 2rem;
+    gap: var(--itkaarhus-space-3) var(--itkaarhus-space-6);
 }
 
 .page-footer-logo img {
     display: block;
     width: auto;
-    height: 1.5rem;
+    height: var(--itkaarhus-space-5);
 }
 
 .page-footer-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
+    gap: var(--itkaarhus-space-2) var(--itkaarhus-space-5);
 }
 
 .page-footer-links a {
-    color: var(--bs-secondary-color);
+    color: var(--itkaarhus-text-muted);
     text-decoration: none;
 }
 
 .page-footer-links a:hover {
-    color: var(--bs-body-color);
+    color: var(--itkaarhus-primary);
     text-decoration: underline;
 }
 
 .page-header {
-    --page-header-title-size: 2.5rem;
-    --page-header-title-gap: 0.25rem;
+    --page-header-title-size: var(--itkaarhus-text-2xl);
+    --page-header-title-gap: var(--itkaarhus-space-1);
     --page-header-breadcrumb-size: 0.8125rem;
 
-    margin: 0 calc(var(--bs-gutter-x) * -0.5) 1.25rem;
-    padding: 1.25rem calc(var(--bs-gutter-x) * 0.5) 1.5rem;
-    background-color: var(--bs-tertiary-bg);
+    margin: 0 calc(var(--bs-gutter-x) * -0.5) var(--itkaarhus-space-5);
+    padding: var(--itkaarhus-space-5) calc(var(--bs-gutter-x) * 0.5);
+    border-bottom: 1px solid var(--itkaarhus-border);
+    background-color: var(--itkaarhus-bg-muted);
 }
 
 .page-header-breadcrumb {
-    margin-bottom: 0;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
     font-size: var(--page-header-breadcrumb-size);
     line-height: 1.5;
+    list-style: none;
 }
 
-.page-header-breadcrumb a {
-    color: var(--bs-secondary-color);
-    text-decoration: none;
-}
-
-.page-header-breadcrumb a:hover {
-    color: var(--bs-body-color);
-    text-decoration: underline;
+.page-header-breadcrumb li {
+    display: flex;
+    gap: inherit;
 }
 
 .page-header-title {
@@ -454,6 +454,7 @@ h6,
     font-size: var(--page-header-title-size);
     font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.02em;
 }
 
 .page-header-logo {

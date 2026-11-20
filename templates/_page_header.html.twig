@@ -10,11 +10,11 @@
     {% else %}
         <h1 class="page-header-title">{{ current }}</h1>
         <nav aria-label="Breadcrumb">
-            <ol class="breadcrumb page-header-breadcrumb">
+            <ol class="itkaarhus-breadcrumb page-header-breadcrumb">
                 {% for crumb in breadcrumbs %}
-                    <li class="breadcrumb-item"><a href="{{ crumb.url }}">{{ crumb.label }}</a></li>
+                    <li><a href="{{ crumb.url }}">{{ crumb.label }}</a><span class="sep" aria-hidden="true">/</span></li>
                 {% endfor %}
-                <li class="breadcrumb-item active" aria-current="page">{{ current }}</li>
+                <li class="cur" aria-current="page">{{ current }}</li>
             </ol>
         </nav>
     {% endif %}
