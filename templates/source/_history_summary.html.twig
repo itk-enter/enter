@@ -16,7 +16,7 @@
         <div class="import-summary-head">
             {{ h.status(last) }}
             <span>Last import {{ h.duration(history.sinceLastImport) }} ago</span>
-            <span class="text-body-secondary small">{{ h.time(last.startedAt) }} UTC</span>
+            <span class="text-body-secondary small">{{ h.time(last.startedAt) }}</span>
         </div>
 
         {% if last.failure %}
