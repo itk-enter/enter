@@ -9,7 +9,7 @@
     {% embed '_page_header.html.twig' with {
         breadcrumbs: [
             {label: 'Enter', url: path('app_default')},
-            {label: 'Open data about Aarhus', url: path('app_sources') ~ '#' ~ definition.id},
+            {label: 'Data sources', url: path('app_sources') ~ '#' ~ definition.id},
         ],
         current: definition.title,
     } %}
