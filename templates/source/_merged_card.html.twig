@@ -2,11 +2,14 @@
     One merged data set on /sources. The closed card shows the title and the number of data sets that the merge
     reads. The open card adds the facts about the merged data set.
     Variables: data_set (a MergedDataSet) and entities_url (the broker URL of its entities).
+    The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in
+    a button. The heading is visually hidden, and the summary shows the title.
 #}
 <section class="card source-card" id="{{ data_set.id }}">
+    <h3 class="visually-hidden">{{ data_set.title }}</h3>
     <details>
         <summary class="source-card-summary">
-            <h3 class="source-card-title">{{ data_set.title }}</h3>
+            <span class="source-card-title">{{ data_set.title }}</span>
             <span class="source-card-status">
                 Merged from {{ data_set.inputs|length }} {{ data_set.inputs|length == 1 ? 'data set' : 'data sets' }}
             </span>

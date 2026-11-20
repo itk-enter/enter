@@ -469,6 +469,7 @@ details[open] > .source-part-summary::before {
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
+    line-height: 1.2;
 }
 
 .source-card-entities {

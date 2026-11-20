@@ -3,13 +3,16 @@
     last import. The open card adds the figures of the period and the facts about the source.
     Variables: source, history (a SourceHistory, or null), idle (true if the history has no import of the source) and
     entities_url (the broker URL of the entities of the source).
+    The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in
+    a button. The heading is visually hidden, and the summary shows the title.
 #}
 {% import 'source/_history_macros.html.twig' as h %}
 {% set definition = source.definition %}
 <section class="card source-card{{ idle ? ' source-card-idle' }}" id="{{ definition.id }}">
+    <h3 class="visually-hidden">{{ definition.title }}</h3>
     <details>
         <summary class="source-card-summary">
-            <h3 class="source-card-title">{{ definition.title }}</h3>
+            <span class="source-card-title">{{ definition.title }}</span>
             {% if history %}
                 {% set last = history.lastImport %}
                 {% set success = history.lastSuccess %}
