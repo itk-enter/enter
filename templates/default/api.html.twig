@@ -15,7 +15,7 @@
 {% macro summary(path, label) %}
     <summary class="fold-card-summary">
         <h2 class="fold-card-title">
-            <span class="badge text-bg-success">GET</span>
+            <span class="itkaarhus-tag itkaarhus-tag--primary">GET</span>
             <code>{{ path }}</code>
             <span class="api-endpoint-label">{{ label }}</span>
         </h2>
@@ -38,7 +38,7 @@
         response.
     </p>
 
-    <section class="card fold-card">
+    <section class="itkaarhus-card fold-card">
         <details>
             {{ api.summary('/sources.json', 'The list of data sets') }}
             <div class="fold-card-body">
@@ -67,7 +67,7 @@
         </details>
     </section>
 
-    <section class="card fold-card">
+    <section class="itkaarhus-card fold-card">
         <details>
             {{ api.summary('/ngsi-ld/v1/types', 'The types in the broker') }}
             <div class="fold-card-body">
@@ -89,7 +89,7 @@
         </details>
     </section>
 
-    <section class="card fold-card">
+    <section class="itkaarhus-card fold-card">
         <details>
             {{ api.summary('/ngsi-ld/v1/entities', 'The entities that match a query') }}
             <div class="fold-card-body">
@@ -161,7 +161,7 @@
         </details>
     </section>
 
-    <section class="card fold-card">
+    <section class="itkaarhus-card fold-card">
         <details>
             {{ api.summary('/ngsi-ld/v1/entities/{id}', 'One entity') }}
             <div class="fold-card-body">

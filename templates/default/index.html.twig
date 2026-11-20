@@ -10,18 +10,24 @@
 
 {% block content %}
     <nav class="link-boxes" aria-label="Pages">
-        <a class="link-box" href="{{ path('app_sources') }}">
-            <span class="link-box-title">Data sources</span>
-            <span class="link-box-text">Data sets, sources and import history</span>
+        <a class="itkaarhus-card link-box" href="{{ path('app_sources') }}">
+            <span class="itkaarhus-card__body">
+                <span class="itkaarhus-card__title link-box-title">Data sources</span>
+                <span class="itkaarhus-card__excerpt">Data sets, sources and import history</span>
+            </span>
         </a>
-        <a class="link-box" href="{{ path('app_default', {path: 'api'}) }}">
-            <span class="link-box-title">API</span>
-            <span class="link-box-text">Example requests to the NGSI-LD API</span>
+        <a class="itkaarhus-card link-box" href="{{ path('app_default', {path: 'api'}) }}">
+            <span class="itkaarhus-card__body">
+                <span class="itkaarhus-card__title link-box-title">API</span>
+                <span class="itkaarhus-card__excerpt">Example requests to the NGSI-LD API</span>
+            </span>
         </a>
         {% if 'dev' == app.environment %}
-            <a class="link-box" href="{{ path('test_default') }}">
-                <span class="link-box-title">Test map</span>
-                <span class="link-box-text">View data sets on a map</span>
+            <a class="itkaarhus-card link-box" href="{{ path('test_default') }}">
+                <span class="itkaarhus-card__body">
+                    <span class="itkaarhus-card__title link-box-title">Test map</span>
+                    <span class="itkaarhus-card__excerpt">View data sets on a map</span>
+                </span>
             </a>
         {% endif %}
     </nav>
