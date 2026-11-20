@@ -7,9 +7,9 @@
 #}
 <header class="page-header">
     {% if breadcrumbs is empty %}
-        <h1 class="page-header-logo"><img src="{{ asset('images/enter-logo.png') }}" alt="{{ current }}"></h1>
+        <h1 class="page-header-logo"><img src="{{ asset('images/enter-logo.png') }}" alt="{{ current }}" width="600" height="212" fetchpriority="high"></h1>
     {% else %}
-        <a class="page-header-logo" href="{{ path('app_default') }}"><img src="{{ asset('images/enter-logo.png') }}" alt="Enter"></a>
+        <a class="page-header-logo" href="{{ path('app_default') }}"><img src="{{ asset('images/enter-logo.png') }}" alt="Enter" width="600" height="212" fetchpriority="high"></a>
         <div class="page-header-text">
             <h1 class="page-header-title">{{ current }}</h1>
             <nav aria-label="Breadcrumb">
