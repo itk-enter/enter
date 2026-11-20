@@ -39,14 +39,14 @@ final readonly class SourceHistory
     private array $dataChanges;
 
     /**
-     * @param ImportSummary|null  $lastImport  the last import of the source, also if it is older than the period
+     * @param ImportSummary       $lastImport  the last import of the source, also if it is older than the period
      * @param ImportSummary|null  $lastSuccess the last successful import of the source, also if it is older than the period
      * @param list<ImportSummary> $imports     the imports that started in the period, oldest first
      * @param \DateTimeImmutable  $since       the start of the first day of the period
      */
     public function __construct(
         public string $sourceId,
-        public ?ImportSummary $lastImport,
+        public ImportSummary $lastImport,
         public ?ImportSummary $lastSuccess,
         public array $imports,
         public \DateTimeImmutable $since,
@@ -101,12 +101,11 @@ final readonly class SourceHistory
     }
 
     /**
-     * The time since the start of the last import, in seconds. Null if the
-     * source has no import.
+     * The time since the start of the last import, in seconds.
      */
-    public function sinceLastImport(): ?int
+    public function sinceLastImport(): int
     {
-        return null === $this->lastImport ? null : $this->now->getTimestamp() - $this->lastImport->startedAt->getTimestamp();
+        return $this->now->getTimestamp() - $this->lastImport->startedAt->getTimestamp();
     }
 
     /**
