@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Import\FeedOrder;
 use App\Import\SourceProcessImporter;
 use App\Source\SourceInterface;
 use App\SourceManager;
@@ -16,7 +17,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * Imports all sources, one after another, each in a PHP process of its own.
  *
  * A failed import, or a process that stops, affects only its own source. The
- * other sources still import.
+ * other sources still import. The sources that read the same feed import right
+ * after each other, so they get the feed from the cache.
  *
  * This command does not import the test sources. test:source:import-all
  * imports them. The test sources exist only in dev and test, and read local
@@ -39,7 +41,7 @@ final class SourceImportAllCommand
         );
 
         $failed = [];
-        foreach ($sources as $source) {
+        foreach (FeedOrder::sort($sources) as $source) {
             $io->section((string) $source);
 
             if (!$importer->import($source, $io->write(...))) {
