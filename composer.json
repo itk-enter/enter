@@ -11,6 +11,7 @@
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.7",
         "itamair/geophp": "^1.12",
+        "itk-dev/itkaarhus-design-system": "^0.7",
         "phpdocumentor/reflection-docblock": "^6.0",
         "phpstan/phpdoc-parser": "^2.4.0",
         "proj4php/proj4php": "^2.0",
@@ -67,6 +68,13 @@
     "conflict": {
         "symfony/symfony": "*"
     },
+    "repositories": [
+        {
+            "name": "itkaarhus-design-system",
+            "type": "vcs",
+            "url": "https://github.com/itk-dev/itkaarhus-design-system"
+        }
+    ],
     "minimum-stability": "stable",
     "prefer-stable": true,
     "autoload": {

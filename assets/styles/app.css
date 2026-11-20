@@ -1,3 +1,49 @@
+:root {
+    --bs-body-font-family: var(--itkaarhus-font-sans);
+    --bs-font-monospace: var(--itkaarhus-font-mono);
+    --bs-body-color: var(--itkaarhus-text);
+    --bs-body-bg: var(--itkaarhus-bg);
+    --bs-emphasis-color: var(--itkaarhus-text);
+    --bs-heading-color: var(--itkaarhus-text);
+    --bs-secondary-color: var(--itkaarhus-text-subtle);
+    --bs-secondary-bg: var(--itkaarhus-neutral-soft);
+    --bs-tertiary-color: var(--itkaarhus-text-disabled);
+    --bs-tertiary-bg: var(--itkaarhus-bg-muted);
+    --bs-code-color: var(--itkaarhus-text);
+    --bs-link-color: var(--itkaarhus-primary);
+    --bs-link-hover-color: var(--itkaarhus-primary-hover);
+    --bs-border-color: var(--itkaarhus-border);
+    --bs-border-color-translucent: var(--itkaarhus-border-subtle);
+    --bs-border-radius-sm: var(--itkaarhus-radius-1);
+    --bs-border-radius: var(--itkaarhus-radius-2);
+    --bs-border-radius-lg: var(--itkaarhus-radius-3);
+    --bs-box-shadow-sm: var(--itkaarhus-shadow-1);
+    --bs-box-shadow: var(--itkaarhus-shadow-2);
+    --bs-box-shadow-lg: var(--itkaarhus-shadow-3);
+    --bs-success: var(--itkaarhus-success);
+    --bs-danger: var(--itkaarhus-danger);
+    --bs-success-text-emphasis: var(--itkaarhus-success-text);
+    --bs-danger-text-emphasis: var(--itkaarhus-danger-text);
+    --import-added: var(--itkaarhus-success);
+    --import-removed: var(--itkaarhus-danger);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
 .test-map-wrapper {
     position: relative;
 }
@@ -18,8 +64,18 @@
 .test-map-datasets {
     margin-top: 0.25rem;
     padding: 0.5rem 0.75rem;
-    border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.92);
+    border-radius: var(--itkaarhus-radius-2);
+    background: color-mix(in srgb, var(--itkaarhus-bg-raised) 92%, transparent);
+}
+
+.test-map-datasets .form-check-input:checked {
+    border-color: var(--itkaarhus-primary);
+    background-color: var(--itkaarhus-primary);
+}
+
+.test-map-datasets .form-check-input:focus {
+    border-color: var(--itkaarhus-primary);
+    box-shadow: var(--itkaarhus-focus);
 }
 
 .test-map-datasets:empty {
@@ -35,7 +91,7 @@
     width: 0.8em;
     height: 0.8em;
     margin-right: 0.35em;
-    border: 1.5px solid #212121;
+    border: 1.5px solid var(--itkaarhus-text);
     border-radius: 50%;
     vertical-align: baseline;
 }
@@ -59,7 +115,7 @@
 }
 
 .test-map-section + .test-map-section {
-    border-top: 1px solid #e3e3e3;
+    border-top: 1px solid var(--itkaarhus-border);
 }
 
 .test-map-title {
@@ -71,7 +127,7 @@
 
 .test-map-model {
     margin-left: 0.4rem;
-    color: #555;
+    color: var(--itkaarhus-text-subtle);
     font-weight: 400;
 }
 
@@ -84,7 +140,7 @@
 }
 
 .test-map-details dt {
-    color: #555;
+    color: var(--itkaarhus-text-subtle);
     font-weight: 600;
     white-space: nowrap;
 }
@@ -92,11 +148,6 @@
 .test-map-details dd {
     margin: 0;
     overflow-wrap: anywhere;
-}
-
-:root {
-    --import-added: var(--bs-success);
-    --import-removed: var(--bs-danger);
 }
 
 .import-table {
