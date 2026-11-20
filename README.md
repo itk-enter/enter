@@ -45,6 +45,21 @@ task import:all
 The command imports the sources one after another, each in a PHP process of its own. A failing source does not stop the
 run, and the command exits with a failure code if any source failed.
 
+### The nightly import on the server
+
+On the server, two cron jobs in the `phpfpm` container import the sources and then run the merges:
+
+``` text
+# Each night at 01:00: import all the sources.
+0 1 * * *  bin/console app:source:import-all
+
+# Each night at 05:00: run all the merges.
+0 5 * * *  bin/console app:conflation:run
+```
+
+The merges read what the broker has. If the import of a source failed, its merges use the data of its last successful
+import.
+
 ### Sources
 
 Adding a data source means adding a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way
