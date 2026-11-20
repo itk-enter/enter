@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-179](https://github.com/itk-enter/enter/pull/179)
-  Stopped running the merges after an import run
+  Separated the conflation from the import
 * [PR-178](https://github.com/itk-enter/enter/pull/178)
   Made `app:conflation:run` continue after a failed merge
 * [PR-176](https://github.com/itk-enter/enter/pull/176)
