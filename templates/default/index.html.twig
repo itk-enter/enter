@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <style>
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <div style="max-width: 560px">
+<div class="video-container">
+    <iframe src="https://www.youtube-nocookie.com/embed/_mHcWWOa3aI?si=T6UN2Y8pe9e8Owdg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+    </div>
+
+    <h2>Example NGSI-LD API requests</h2>
+    <ul>
+        {% for example in [
+            {
+                description: 'Get all types',
+                path: 'types',
+            },
+            {
+                description: 'Get all entities',
+                path: 'entities',
+                query: {
+                    type: '*',
+                },
+            },
+            {
+                description: 'Get entities of type <code>https://smartdatamodels.org/dataModel.Parking/OnStreetParking</code>',
+                path: 'entities',
+                query: {
+                    type: 'https://smartdatamodels.org/dataModel.Parking/OnStreetParking',
+                },
+            },
+            {
+                description: 'Get <a href="https://ngsild.org/">simplified entities</a> of type <code>https://smartdatamodels.org/dataModel.Parking/OnStreetParking</code>',
+                path: 'entities',
+                query: {
+                    type: 'https://smartdatamodels.org/dataModel.Parking/OnStreetParking',
+                    format: 'simplified',
+                },
+            },
+            {
+                description: 'Get a specific entity (which probably does not exist)',
+                path: 'entities/urn:hest',
+            },
+            {
+                description: 'Get all subscriptions (will deny access)',
+                path: 'subscriptions',
+            },
+            ] %}
+            {% set url = url('ngsi_ld_v1_request', {path: example.path}|merge(example.query ?? {})) %}
+            <li>{{ example.description|raw }}: <a href="{{ url }}">{{ url }}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% if 'dev' == app.environment %}
+        <div class="alert alert-info" role="alert">
+        You're probably looking for the <a class="alert-link" href="{{ path('test_default') }} ">test controller</a>, right?
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,40 @@
+name: Enter
+
+env:
+    COMPOSE_USER: runner
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+            - develop
+
+jobs:
+    misc:
+        name: Miscellaneus
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+            - uses: go-task/setup-task@v2
+
+            - name: Create docker network
+              run: docker network create frontend
+
+            - name: Code analysis
+              run: task code-analysis
+
+            - name: Run tests
+              run: task test
+
+            # The "Run tests" step started phpfpm with --no-deps. Thus phpfpm runs, but mariadb does not.
+            # Start mariadb and wait for its healthcheck before the console connects to the database.
+            - name: Validate the Doctrine schema
+              run: |
+                  docker compose up --wait mariadb
+                  docker compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+                  docker compose exec phpfpm bin/console doctrine:schema:validate
+
+            - name: Show the container logs
+              if: failure()
+              run: docker compose logs --no-color

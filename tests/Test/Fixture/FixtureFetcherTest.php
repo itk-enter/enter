@@ -1,0 +1,99 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Test\Fixture;
+
+use App\Source\Osm\Bench;
+use App\Test\Fixture\FixtureFetcher;
+use App\Test\Source\MtmSpatialMaps\TestOnStreetParking;
+use App\Test\Source\MtmSpatialMaps\TestParkingSpot;
+use App\Test\Source\Osm\TestBench;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Tests the fetch of fixtures from the public feeds.
+ */
+class FixtureFetcherTest extends TestCase
+{
+    private string $directory;
+
+    /** @var list<string> */
+    private array $requested = [];
+
+    protected function setUp(): void
+    {
+        $this->directory = sys_get_temp_dir().'/fixture-fetcher-'.bin2hex(random_bytes(4));
+    }
+
+    protected function tearDown(): void
+    {
+        new Filesystem()->remove($this->directory);
+    }
+
+    public function testItWritesTheFeedToTheFixtureTheSourceReads(): void
+    {
+        $fetch = $this->fetcher([new MockResponse('{"features": []}')])->fetch(new TestParkingSpot());
+
+        $this->assertSame($this->directory.'/data/webkort.aarhuskommune.dk/spatialmap?mtm_spatialmaps-handicap-parking', $fetch->filename);
+        $this->assertSame('{"features": []}', file_get_contents($fetch->filename));
+    }
+
+    public function testEachFetchGetsTheFeedAgain(): void
+    {
+        $fetcher = $this->fetcher([new MockResponse('{"features": [1]}'), new MockResponse('{"features": [2]}')]);
+
+        $fetcher->fetch(new TestParkingSpot());
+        $fetch = $fetcher->fetch(new TestOnStreetParking());
+
+        $this->assertCount(2, $this->requested);
+        $this->assertSame('{"features": [2]}', file_get_contents($fetch->filename));
+    }
+
+    public function testAFailedFetchKeepsTheOldFixture(): void
+    {
+        $fetcher = $this->fetcher([new MockResponse('{"elements": [1]}'), new MockResponse('', ['http_code' => Response::HTTP_GATEWAY_TIMEOUT])]);
+        $fetch = $fetcher->fetch(new TestBench());
+
+        try {
+            $fetcher->fetch(new TestBench());
+            $this->fail('A failed fetch passed.');
+        } catch (\Exception) {
+        }
+
+        $this->assertSame('{"elements": [1]}', file_get_contents($fetch->filename));
+    }
+
+    public function testItRefusesAPartialOverpassResult(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('timed out');
+
+        $this->fetcher([new MockResponse('{"elements": [], "remark": "runtime error: Query timed out"}')])->fetch(new TestBench());
+    }
+
+    public function testItRefusesASourceThatIsNotATestSource(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->fetcher([])->fetch(new Bench());
+    }
+
+    /**
+     * @param list<MockResponse> $responses
+     */
+    private function fetcher(array $responses): FixtureFetcher
+    {
+        $client = new MockHttpClient(function (string $method, string $url) use (&$responses): MockResponse {
+            $this->requested[] = $url;
+
+            return array_shift($responses) ?? throw new \LogicException('No response left.');
+        });
+
+        return new FixtureFetcher($client, new Filesystem(), $this->directory);
+    }
+}

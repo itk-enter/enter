@@ -1,0 +1,124 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Controller;
+
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * Tests the list of sources as JSON and as a page.
+ */
+class SourceControllerTest extends WebTestCase
+{
+    public function testItListsEverySourceAsJson(): void
+    {
+        $ids = array_column($this->sources(static::createClient()), 'id');
+
+        $this->assertContains('mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('mtm_spatialmaps-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-spot', $ids);
+        $this->assertContains('osm-handicap-parking-on-street', $ids);
+        $this->assertContains('osm-handicap-parking-off-street', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-spot', $ids);
+        $this->assertContains('test:mtm_spatialmaps-handicap-parking-on-street', $ids);
+    }
+
+    /**
+     * A merged data set is listed after the sources, with the data sets it
+     * is merged from, and read from the broker the same way.
+     */
+    public function testItListsEveryMergedDataSetAsJson(): void
+    {
+        $dataSets = array_column($this->sources(static::createClient()), null, 'id');
+
+        $this->assertArrayHasKey('merged-public-toilets', $dataSets);
+        $merged = $dataSets['test:merged-public-toilets'];
+
+        $this->assertSame('PublicToilet', $merged['model']);
+        $this->assertSame($dataSets['test:osm-public-toilet']['context_url'], $merged['context_url']);
+        $this->assertSame([
+            'test:findtoilet-public-toilet',
+            'test:mtm_spatialmaps-toilet-city',
+            'test:mtm_spatialmaps-toilet-other',
+            'test:osm-public-toilet',
+        ], $merged['inputs']);
+        $this->assertSame(['id' => 'test:merged-public-toilets', 'title' => $merged['title']], $merged['dataset']);
+        $this->assertStringEndsWith('q=sourceId=="test:merged-public-toilets"', urldecode($merged['entities_url']));
+        $this->assertSame('test:merged-public-toilets', array_key_last($dataSets));
+    }
+
+    /**
+     * A reader needs no more than this to fetch a source's entities from
+     * the broker: the URL that selects them by the id they are stamped
+     * with, and the context that gives them the names the source declared.
+     */
+    public function testItSaysHowToReadEachSource(): void
+    {
+        foreach ($this->sources(static::createClient()) as $source) {
+            $this->assertNotSame('', $source['id']);
+            $this->assertNotSame('', $source['title']);
+            $this->assertNotSame('', $source['model']);
+            $this->assertStringStartsWith('https://', $source['context_url']);
+
+            $entitiesUrl = urldecode($source['entities_url']);
+            $this->assertStringContainsString('/ngsi-ld/v1/entities?', $entitiesUrl);
+            $this->assertStringEndsWith(\sprintf('q=sourceId=="%s"', $source['id']), $entitiesUrl);
+        }
+    }
+
+    /**
+     * Makes sure that the list groups the sources by data set.
+     */
+    public function testItGroupsSourcesByTheirDataSet(): void
+    {
+        $datasets = array_column($this->sources(static::createClient()), 'dataset', 'id');
+
+        $handicapParking = ['id' => 'osm-handicap-parking', 'title' => 'Handicapparkering (OpenStreetMap), Aarhus Kommune'];
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-spot']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-on-street']);
+        $this->assertSame($handicapParking, $datasets['osm-handicap-parking-off-street']);
+
+        $register = ['id' => 'mtm_spatialmaps-handicap-parking', 'title' => 'Handicapparkering (MTM), Aarhus Kommune'];
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-spot']);
+        $this->assertSame($register, $datasets['mtm_spatialmaps-handicap-parking-on-street']);
+
+        $this->assertSame('osm-bench', $datasets['osm-bench']['id']);
+        $this->assertNotSame('', $datasets['osm-bench']['title']);
+    }
+
+    public function testItListsEverySourceOnAPage(): void
+    {
+        $client = static::createClient();
+        $ids = array_column($this->sources($client), 'id');
+
+        $client->request(Request::METHOD_GET, '/sources');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'text/html; charset=UTF-8');
+        $this->assertSelectorTextSame('h1', 'Sources');
+
+        $page = (string) $client->getResponse()->getContent();
+        foreach ($ids as $id) {
+            $this->assertStringContainsString(\sprintf('<code>%s</code>', $id), $page);
+        }
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function sources(KernelBrowser $client): array
+    {
+        $client->request(Request::METHOD_GET, '/sources.json');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/json');
+
+        $sources = json_decode((string) $client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertNotEmpty($sources);
+
+        return $sources;
+    }
+}
