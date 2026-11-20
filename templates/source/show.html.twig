@@ -7,7 +7,7 @@
 {% block header %}
     {{ include('_page_header.html.twig', {
         breadcrumbs: [
-            {label: 'Enter', url: path('app_default')},
+            {label: 'Home', url: path('app_default')},
             {label: 'Data sources', url: path('app_sources') ~ '#' ~ source.definition.id},
         ],
         current: source.definition.title,

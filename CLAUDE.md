@@ -219,7 +219,7 @@ The pages follow the [ITK Aarhus design system](https://itk-dev.github.io/itkaar
 - Use the `--itkaarhus-*` tokens for colours, type sizes, spacing, radii and shadows. Do not write a hex colour in CSS.
 - Use an `.itkaarhus-*` component class, for example a tag, a button or a card, before you write new CSS.
 - `assets/styles/app.css` sets the Bootstrap variables to the tokens. Thus the Bootstrap classes match the tokens.
-- Give each page the shared header `_page_header.html.twig`, with breadcrumbs from "Enter".
+- Give each page the shared header `_page_header.html.twig`, with breadcrumbs from "Home".
 
 ## Branching and PRs
 
