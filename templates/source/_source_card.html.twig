@@ -1,8 +1,9 @@
 {#
-    One source on /sources. The closed card shows the title, the entities that came and went, and the status of the
-    last import. The open card adds the figures of the period and the facts about the source.
-    Variables: source, history (a SourceHistory, or null), idle (true if the history has no import of the source) and
-    entities_url (the broker URL of the entities of the source).
+    One source on /sources. The closed card shows the title, the entities that came and went since the first import,
+    and the status of the last import. The open card adds the figures of the period and the facts about the source.
+    Variables: source, history (a SourceHistory, or null), totals (the {added, removed} of all the imports, or null),
+    idle (true if the history has no import of the source) and entities_url (the broker URL of the entities of the
+    source).
     The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in
     a button. The heading is visually hidden, and the summary shows the title.
 #}
@@ -19,9 +20,9 @@
                 <span class="source-card-entities" title="{{ success ? 'At the last successful import, ' ~ success.startedAt|date('Y-m-d H:i') ~ ' UTC' : 'No import succeeded' }}">
                     <b>{{ success ? success.upserted|number_format : '–' }}</b> entities
                 </span>
-                <span class="source-card-change" title="Entities added and removed in the last {{ history.days|length }} days, without full loads">
-                    {{ h.change(history.added, '+', 'import-change-added') }}
-                    {{ h.change(history.removed, '−', 'import-change-removed') }}
+                <span class="source-card-change" title="Entities added and removed by all the imports, without full loads">
+                    {{ h.change(totals.added ?? 0, '+', 'import-change-added') }}
+                    {{ h.change(totals.removed ?? 0, '−', 'import-change-removed') }}
                 </span>
                 <span class="source-card-status">
                     <span class="source-card-state">{{ h.status(last) }}</span>

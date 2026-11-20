@@ -37,7 +37,13 @@ final class SourceController extends AbstractController
             return new JsonResponse($catalog->toArray());
         }
 
-        return $this->render('source/index.html.twig', [...$catalog->all(), 'histories' => $history->bySource()]);
+        $histories = $history->bySource();
+
+        return $this->render('source/index.html.twig', [
+            ...$catalog->all(),
+            'histories' => $histories,
+            'totals' => null === $histories ? null : $history->totalsBySource(),
+        ]);
     }
 
     #[Route(

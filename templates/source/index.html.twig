@@ -59,6 +59,7 @@
                         {{ include('source/_source_card.html.twig', {
                             source: source,
                             history: histories[source.definition.id] ?? null,
+                            totals: totals[source.definition.id] ?? null,
                             idle: false,
                             entities_url: entitiesUrls[source.definition.id],
                         }, with_context: false) }}
@@ -68,6 +69,7 @@
                         {{ include('source/_source_card.html.twig', {
                             source: source,
                             history: null,
+                            totals: null,
                             idle: true,
                             entities_url: entitiesUrls[source.definition.id],
                         }, with_context: false) }}
