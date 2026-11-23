@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-198](https://github.com/itk-enter/enter/pull/198)
+  Added an overview of the conflation conflicts
 * [PR-171](https://github.com/itk-enter/enter/pull/171)
   Rewrote the API page, added the logo and a footer, and applied the ITK Aarhus design system
 * [PR-169](https://github.com/itk-enter/enter/pull/169)
