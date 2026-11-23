@@ -116,4 +116,20 @@ class CoveringAreaTest extends TestCase
             new StatedValue(self::point(10.21002, 56.15002), 'B-1', 'bays'),
         ]));
     }
+
+    public function testALineBesideTheAreaLeavesTheLocationToTheNextApproach(): void
+    {
+        $this->assertNull(self::resolve(
+            new StatedValue(self::bay(), 'S-1', 'sites'),
+            new StatedValue(['type' => 'LineString', 'coordinates' => [[10.21001, 56.15001], [10.21003, 56.15004]]], 'B-1', 'bays'),
+        ));
+    }
+
+    public function testAPointWithoutValidCoordinatesIsNotInTheArea(): void
+    {
+        $this->assertNull(self::resolve(
+            new StatedValue(self::bay(), 'S-1', 'sites'),
+            new StatedValue(['type' => 'Point', 'coordinates' => ['east', 'north']], 'B-1', 'bays'),
+        ));
+    }
 }

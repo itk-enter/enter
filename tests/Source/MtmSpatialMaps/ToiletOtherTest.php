@@ -89,6 +89,21 @@ class ToiletOtherTest extends TestCase
         $this->assertArrayNotHasKey('toiletPosition', $this->entities[0]);
     }
 
+    public function testItMapsAUrinalOntoToiletPosition(): void
+    {
+        $feature = $this->features()[3];
+        $feature['properties']['beskrivelse'] = 'Urinal';
+
+        $entity = $this->source->createNgsiEntity($feature, new Wgs84Transformer());
+
+        $this->assertSame(['type' => 'Property', 'value' => ['urinal']], $entity?->attribute('toiletPosition'));
+    }
+
+    public function testItSkipsARecordWithoutPropertiesOrGeometry(): void
+    {
+        $this->assertNull($this->source->createNgsiEntity(['type' => 'Feature', 'properties' => ['mi_prinx' => 1]], new Wgs84Transformer()));
+    }
+
     public function testItMapsARentedCabinOntoAPortableToilet(): void
     {
         $this->assertSame('portable', $this->entities[3]['toiletType']['value']);

@@ -7,6 +7,7 @@ namespace App\Tests\Source\Osm;
 use App\Geo\Wgs84Transformer;
 use App\Ngsi\NgsiEntity;
 use App\Source\Osm\PublicToilet;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -136,6 +137,48 @@ class PublicToiletTest extends TestCase
     {
         $this->assertSame('customers', $this->entities[1]['accessType']['value']);
         $this->assertArrayNotHasKey('additionalInformation', $this->entities[1]);
+    }
+
+    /**
+     * @param array<string, string> $tags
+     */
+    #[DataProvider('accessAndDisposalTags')]
+    public function testItMapsEachAccessAndDisposalValue(array $tags, string $attribute, string $value): void
+    {
+        $entity = $this->source->createNgsiEntity(['type' => 'node', 'id' => 1, 'lat' => 56.15, 'lon' => 10.21, 'tags' => ['amenity' => 'toilets', ...$tags]], new Wgs84Transformer());
+
+        $this->assertSame($value, $entity?->attribute($attribute)['value'] ?? null);
+    }
+
+    /**
+     * @return iterable<string, array{array<string, string>, string, string}>
+     */
+    public static function accessAndDisposalTags(): iterable
+    {
+        yield 'access yes' => [['access' => 'yes'], 'accessType', 'public'];
+        yield 'access public' => [['access' => 'public'], 'accessType', 'public'];
+        yield 'access permissive' => [['access' => 'permissive'], 'accessType', 'permissive'];
+        yield 'chemical disposal' => [['toilets:disposal' => 'chemical'], 'disposal', 'chemical'];
+        yield 'bucket disposal' => [['toilets:disposal' => 'bucket'], 'disposal', 'bucket'];
+    }
+
+    /**
+     * @param array<string, mixed> $element
+     */
+    #[DataProvider('elementsWithoutAPosition')]
+    public function testItSkipsAnElementWithoutAPosition(array $element): void
+    {
+        $this->assertNull($this->source->createNgsiEntity(['id' => 1, 'tags' => ['amenity' => 'toilets'], ...$element], new Wgs84Transformer()));
+    }
+
+    /**
+     * @return iterable<string, array{array<string, mixed>}>
+     */
+    public static function elementsWithoutAPosition(): iterable
+    {
+        yield 'a node without coordinates' => [['type' => 'node']];
+        yield 'a way without a centre' => [['type' => 'way']];
+        yield 'an element of an unknown type' => [['type' => 'area', 'lat' => 56.15, 'lon' => 10.21]];
     }
 
     public function testItCarriesValuesThatDoNotFitTheModelAsAdditionalInformation(): void

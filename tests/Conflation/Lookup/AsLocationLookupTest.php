@@ -22,6 +22,17 @@ class AsLocationLookupTest extends TestCase
         $this->assertSame('lookupAddresses', $lookup->checkProperty());
     }
 
+    /**
+     * A defect in the data must not stop the checks. Thus a time that is not
+     * valid has always passed.
+     */
+    public function testAnEntityWithACheckTimeThatIsNotValidIsDue(): void
+    {
+        $lookup = AsLocationLookup::of(NearestAddress::class);
+
+        $this->assertTrue($lookup->isDue('not a time', true, new \DateTimeImmutable('2026-11-23T12:00:00Z')));
+    }
+
     public function testItRequiresTheAttribute(): void
     {
         $this->expectException(\LogicException::class);
