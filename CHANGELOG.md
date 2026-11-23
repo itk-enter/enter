@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-186](https://github.com/itk-enter/enter/pull/186)
+  Moved all broker calls into `NgsiLdBroker`
 * [PR-194](https://github.com/itk-enter/enter/pull/194)
   Pinned Scorpio to version 6.0.2
 * [PR-182](https://github.com/itk-enter/enter/pull/182)
