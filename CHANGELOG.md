@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-192](https://github.com/itk-enter/enter/pull/192)
+  Rejected the attribute names that NGSI-LD reserves
 * [PR-188](https://github.com/itk-enter/enter/pull/188)
   Added a test coverage check to CI
 * [PR-186](https://github.com/itk-enter/enter/pull/186)
