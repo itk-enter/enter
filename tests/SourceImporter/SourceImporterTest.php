@@ -11,6 +11,7 @@ use App\Import\Exception\SweepFailedException;
 use App\Import\Exception\UpsertFailedException;
 use App\Import\ImportResult;
 use App\Ngsi\NgsiEntity;
+use App\Ngsi\ReservedNameException;
 use App\Source\AbstractSource;
 use App\Source\DataType;
 use App\Source\Definition;
@@ -285,6 +286,31 @@ class SourceImporterTest extends TestCase
 
         $this->assertSame(1, $result->count);
         $this->assertCount(1, $this->upserted());
+    }
+
+    /**
+     * A reserved name is a defect in the mapping, so it stops the import
+     * before the import sends anything to the broker. If the import skipped
+     * the records, the sweep would delete their entities.
+     */
+    public function testAReservedNameStopsTheImportOfTheSource(): void
+    {
+        $source = new #[Definition(id: 'test:reserved-name', title: 'Test', description: '', publisher: '', contact: '', landingPage: '', accessUrl: 'https://example.com', dataType: DataType::GeoJSON, mediaType: 'application/geo+json', crs: 'EPSG:4326', model: 'OnStreetParking', contextUrl: 'https://example.com/context.jsonld', updateFrequency: '', licence: null, omittedFields: [], dataset: 'test:reserved-name', datasetTitle: 'Test', )] class extends AbstractSource {
+            public function createNgsiEntity(array $data, Wgs84Transformer $transformer): NgsiEntity
+            {
+                return new NgsiEntity('urn:ngsi-ld:OnStreetParking:test', 'OnStreetParking')
+                    ->additionalInformation(['createdAt' => '2026-11-23']);
+            }
+        };
+
+        try {
+            $this->import($source, $this->features(1, 2));
+            $this->fail('The import did not stop.');
+        } catch (ReservedNameException $exception) {
+            $this->assertStringContainsString('"createdAt"', $exception->getMessage());
+        }
+
+        $this->assertSame([], $this->requests);
     }
 
     /**
