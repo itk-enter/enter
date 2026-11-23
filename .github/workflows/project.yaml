@@ -27,6 +27,9 @@ jobs:
             - name: Run tests
               run: task test
 
+            - name: Check the test coverage
+              run: task test:coverage
+
             # The "Run tests" step started phpfpm with --no-deps. Thus phpfpm runs, but mariadb does not.
             # Start mariadb and wait for its healthcheck before the console connects to the database.
             - name: Validate the Doctrine schema

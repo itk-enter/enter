@@ -1,0 +1,75 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Checks the line coverage in a Clover report of PHPUnit.
+ *
+ * Give the path of the report and the minimum line coverage in percent. The
+ * script writes the line coverage and the lines that no test runs. If the line
+ * coverage is less than the minimum, the script exits with 1.
+ *
+ * Usage: bin/coverage-check <clover file> <minimum percent>
+ */
+
+declare(strict_types=1);
+
+if (3 !== $argc || !is_numeric($argv[2])) {
+    fwrite(STDERR, "Usage: bin/coverage-check <clover file> <minimum percent>\n");
+    exit(2);
+}
+
+[, $path, $minimum] = $argv;
+
+$report = is_file($path) ? simplexml_load_file($path) : false;
+if (false === $report) {
+    fwrite(STDERR, sprintf("Cannot read the Clover report %s.\n", $path));
+    exit(2);
+}
+
+/**
+ * Writes a list of line numbers as ranges, for example "4-6, 9".
+ *
+ * @param list<int> $lines
+ */
+function ranges(array $lines): string
+{
+    $ranges = [];
+    $start = $end = array_shift($lines);
+    foreach ([...$lines, null] as $line) {
+        if ($line === $end + 1) {
+            $end = $line;
+            continue;
+        }
+        $ranges[] = $start === $end ? (string) $start : $start.'-'.$end;
+        $start = $end = $line;
+    }
+
+    return implode(', ', $ranges);
+}
+
+$root = getcwd().'/';
+$statements = 0;
+$covered = 0;
+foreach ($report->xpath('//file') ?: [] as $file) {
+    $missed = [];
+    foreach ($file->line as $line) {
+        if ('stmt' !== (string) $line['type']) {
+            continue;
+        }
+        ++$statements;
+        if ((int) $line['count'] > 0) {
+            ++$covered;
+        } else {
+            $missed[] = (int) $line['num'];
+        }
+    }
+    if ([] !== $missed) {
+        sort($missed);
+        printf("%s: %s\n", str_replace($root, '', (string) $file['name']), ranges($missed));
+    }
+}
+
+$percent = 0 === $statements ? 100.0 : 100 * $covered / $statements;
+printf("Line coverage: %.2F %% (%d of %d lines). The minimum is %s %%.\n", $percent, $covered, $statements, $minimum);
+
+exit($covered * 100 < (float) $minimum * $statements ? 1 : 0);

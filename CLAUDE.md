@@ -94,10 +94,15 @@ task coding-standards:php:check      # also php, twig, yaml, markdown, assets, c
 task coding-standards:php:apply      # each check has an apply task
 task code-analysis                   # PHPStan
 task test                            # PHPUnit, one task for each folder in tests/
+task test:coverage                   # all the tests, with a check of the line coverage
 ```
 
 `task test` does not run `tests/Merge` and `tests/Unit`. To run all the tests, use
 `docker compose exec phpfpm vendor/bin/phpunit`.
+
+CI requires that the tests run each line in `src/`. If you add or change code in `src/`, run `task test:coverage`.
+The task lists each line that no test runs. Write a test for each of these lines. If no code calls a line, remove it.
+If a line cannot run in a test, put `// @codeCoverageIgnore` after it, with the reason.
 
 ### Tests are not modified without approval
 
