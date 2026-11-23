@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\Requirement\Requirement;
 
 /**
  * Shows the developer map, gives its data and serves the fixture files of the test sources.
@@ -66,12 +65,15 @@ final class TestController extends AbstractController
     /**
      * Serves the fixture file of a test source. The query of the URL is a
      * part of the file name.
+     *
+     * The path is the shortest match. Thus a file name that ends in
+     * ".geojson" gives the format, and the path does not take the extension.
      */
     #[Route(
         path: '/data/{path}.{_format}',
         methods: [Request::METHOD_GET],
         requirements: [
-            'path' => Requirement::CATCH_ALL,
+            'path' => '.+?',
             '_format' => 'json|geojson',
         ],
         defaults: ['_format' => self::FORMAT_JSON],
