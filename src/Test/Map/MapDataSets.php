@@ -11,9 +11,8 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Gives the data of the developer map: the test data sets that have entities
- * in the broker, and the entities of each test data set as GeoJSON features.
- * The map uses only the entities of the model of each data set.
+ * Gives the data of the developer map. The map shows only the entities of the
+ * model of each data set.
  */
 #[When('dev')]
 #[When('test')]
@@ -27,13 +26,11 @@ final readonly class MapDataSets
     }
 
     /**
-     * Gets the test data sets that have entities in the broker.
+     * Gets the test data sets that have entities in the broker, as items of
+     * /sources.json with the key features_url.
      *
-     * Each item has the keys of an item in /sources.json. It also has the key
-     * features_url, the URL of the features of the data set.
-     *
-     * If the broker cannot count the entities of a data set, the list keeps
-     * the data set. Then the map shows the error when it reads the features.
+     * A data set that the broker cannot count stays in the list, so that the
+     * map shows the error when it reads the features.
      *
      * @return list<array<string, mixed>>
      */
@@ -62,10 +59,9 @@ final readonly class MapDataSets
     }
 
     /**
-     * Gets the entities of a test data set as GeoJSON features.
-     *
-     * The method reads all the pages before it returns. Thus a broker error
-     * stops the request before the response starts.
+     * Gets the entities of a test data set as GeoJSON features. The method
+     * reads all the pages before it returns, so that a broker error gives an
+     * error response.
      *
      * @return list<array<string, mixed>>|null the features, or null if no test data set has the id
      */
@@ -77,9 +73,7 @@ final readonly class MapDataSets
     }
 
     /**
-     * Gets the test data sets from the list of data sets.
-     *
-     * @return array<string, array<string, mixed>> the data sets, by id
+     * @return array<string, array<string, mixed>> the test data sets, by id
      */
     private function testDataSets(): array
     {

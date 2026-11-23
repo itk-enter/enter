@@ -86,7 +86,7 @@ final readonly class DataSetCatalog
     /**
      * Gets one data set as an item of /sources.json.
      *
-     * @return array<string, mixed>|null the data set with the key entities_url, or null if no data set has the id
+     * @return array<string, mixed>|null the data set, or null if no data set has the id
      */
     public function find(string $id): ?array
     {

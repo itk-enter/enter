@@ -15,8 +15,6 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 /**
  * Reads and writes entities in an NGSI-LD context broker.
  *
- * All the code in the app calls the broker through this class.
- *
  * The class writes entities with the batch upsert operation. Thus a new
  * import updates the entities that it created before, and it does not fail on
  * 409 Conflict. This makes the import idempotent. This is important because
@@ -32,10 +30,6 @@ final readonly class NgsiLdBroker
 
     private const string TYPES_PATH = '/ngsi-ld/v1/types';
 
-    /**
-     * The header that holds the number of entities when a query asks for the
-     * count.
-     */
     private const string RESULTS_COUNT_HEADER = 'ngsild-results-count';
 
     /**
@@ -151,9 +145,8 @@ final readonly class NgsiLdBroker
     /**
      * Gets the IDs of all the entities of a type.
      *
-     * The method sends no context. Thus the type must be the full URI, for
-     * example "https://smartdatamodels.org/dataModel.Parking/OnStreetParking".
-     * If the type is a short name, the broker gives no entities.
+     * The method sends no context, so the type must be the full URI. A short
+     * name gives no entities.
      *
      * @return list<string>
      */
@@ -163,10 +156,7 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Gets the types of all the entities in the broker.
-     *
-     * The method sends no context. Thus the broker gives each type as the
-     * full URI, and the result can go to idsOfType().
+     * Gets the types of all the entities in the broker, as full URIs.
      *
      * @return list<string>
      */
@@ -186,13 +176,7 @@ final readonly class NgsiLdBroker
     /**
      * Counts the entities that a data set published.
      *
-     * The broker gives the number in the NGSILD-Results-Count header. The
-     * request asks for one entity, because Scorpio gives a count of 0 if the
-     * limit is 0.
-     *
-     * @param string      $sourceId   the source id of the data set
-     * @param string      $contextUrl the JSON-LD context of the data set
-     * @param string|null $type       the type of the entities to count, or null for all types
+     * @param string|null $type the type of the entities to count, or null for all types
      */
     public function count(string $sourceId, string $contextUrl, ?string $type = null): int
     {
@@ -200,14 +184,11 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Counts the entities of several data sets at the same time.
+     * Counts the entities of several data sets in parallel.
      *
-     * The method sends all the requests before it reads the first answer.
-     * Thus the broker counts the data sets in parallel.
+     * @param array<string, array{contextUrl: string, type: string|null}> $dataSets the data sets, by source id
      *
-     * @param array<string, array{contextUrl: string, type: string|null}> $dataSets the context and the type of each data set, by source id
-     *
-     * @return array<string, int|null> the count of each data set, by source id, or null if the broker could not count the data set
+     * @return array<string, int|null> the counts by source id, or null for a data set that the broker could not count
      */
     public function counts(array $dataSets): array
     {
@@ -256,8 +237,7 @@ final readonly class NgsiLdBroker
      * Reads all the entities that a data set published, as GeoJSON features.
      *
      * The method finds the entities by the source id that the importer adds
-     * to each entity. If the method gets a type, it reads only the entities of
-     * that type. The broker gives them in the simplified format. The
+     * to each entity. The broker gives them in the simplified format. The
      * properties of each feature hold only the values, not the NGSI-LD
      * objects with a type and a value.
      * The Link header holds the context of the data set. Thus the broker
@@ -432,8 +412,8 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Sends a request that counts the entities of a data set. The method does
-     * not wait for the answer.
+     * Sends a count request without waiting for the answer. The request asks
+     * for one entity, because Scorpio counts 0 if the limit is 0.
      */
     private function sendCount(string $sourceId, string $contextUrl, ?string $type): ResponseInterface
     {
@@ -447,9 +427,6 @@ final readonly class NgsiLdBroker
         ], $contextUrl);
     }
 
-    /**
-     * Reads the count from the answer to a count request.
-     */
     private static function readCount(ResponseInterface $response, string $sourceId): int
     {
         self::check($response, \sprintf('the count of %s', $sourceId));
@@ -463,15 +440,10 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Sends a request to the broker.
+     * Sends a request to the broker. A context URL goes in the Link header, so
+     * that the broker uses the names of that context.
      *
-     * If the method gets a context URL, it adds the Link header with that
-     * context. Then the broker uses the attribute and type names of the
-     * context.
-     *
-     * @param string               $path       the path of the NGSI-LD API, for example "/ngsi-ld/v1/entities"
-     * @param array<string, mixed> $options    the options of the HTTP client
-     * @param string|null          $contextUrl the JSON-LD context, or null for no context
+     * @param array<string, mixed> $options the options of the HTTP client
      */
     private function send(string $method, string $path, array $options, ?string $contextUrl = null): ResponseInterface
     {
@@ -500,8 +472,7 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Gets the query that selects the entities of a data set by the source id
-     * that the importer adds to each entity.
+     * Gets the query that selects the entities of a data set.
      */
     public static function sourceQuery(string $sourceId): string
     {
@@ -509,8 +480,8 @@ final readonly class NgsiLdBroker
     }
 
     /**
-     * Gets the query parameters that select the entities of a data set. If
-     * the method gets a type, the parameters also select that type.
+     * Gets the query parameters that select the entities of a data set, and
+     * of one type if the method gets a type.
      *
      * @return array<string, string>
      */
