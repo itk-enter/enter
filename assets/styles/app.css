@@ -855,3 +855,79 @@ details[open] > .source-part-summary::before {
 .source-card-idle:focus-within {
     opacity: 1;
 }
+
+.conflict-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--bs-border-radius-lg);
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+}
+
+.conflict-summary b {
+    color: var(--bs-body-color);
+    font-weight: 600;
+}
+
+.conflict-map {
+    height: 28rem;
+    border-radius: var(--bs-border-radius);
+    overflow: hidden;
+}
+
+.conflict-bars {
+    display: grid;
+    gap: 0.375rem;
+    margin-bottom: 0;
+}
+
+.conflict-bar {
+    display: grid;
+    grid-template-columns: minmax(8rem, 2fr) 3fr 3rem;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.conflict-bar-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.conflict-bar-track {
+    height: 0.625rem;
+    border-radius: var(--bs-border-radius-sm);
+    background-color: var(--bs-secondary-bg);
+}
+
+.conflict-bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--bs-border-radius-sm);
+    background-color: var(--itkaarhus-warning-500);
+}
+
+.conflict-bar-count {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.conflict-entity .source-card-status {
+    gap: 0.375rem;
+}
+
+.conflict-values li + li {
+    margin-top: 0.25rem;
+}
+
+.conflict-record {
+    display: block;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+}

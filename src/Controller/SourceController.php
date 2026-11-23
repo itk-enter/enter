@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Conflation\Io\ConflictReader;
 use App\DataSetCatalog;
 use App\Import\History\ImportHistory;
 use App\SourceManager;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Shows the sources as a page and as JSON, and the import history of each source.
+ * Shows the sources as a page and as JSON, the import history of each source, and the conflicts of each merged data set.
  */
 final class SourceController extends AbstractController
 {
@@ -52,9 +53,18 @@ final class SourceController extends AbstractController
         requirements: ['id' => '[^/]+'],
         methods: [Request::METHOD_GET],
     )]
-    public function show(SourceManager $sources, ImportHistory $history, string $id): Response
+    public function show(SourceManager $sources, DataSetCatalog $catalog, ImportHistory $history, ConflictReader $conflicts, string $id): Response
     {
-        $source = $sources->getSources()[$id] ?? throw $this->createNotFoundException(\sprintf('The source "%s" does not exist.', $id));
+        $source = $sources->getSources()[$id] ?? null;
+        if (null === $source) {
+            $dataSet = $catalog->mergedDataSet($id) ?? throw $this->createNotFoundException(\sprintf('The data set "%s" does not exist.', $id));
+
+            return $this->render('source/merged.html.twig', [
+                'data_set' => $dataSet,
+                'overview' => $conflicts->read($dataSet),
+            ]);
+        }
+
         $histories = $history->bySource($id);
 
         return $this->render('source/show.html.twig', [
