@@ -12,14 +12,12 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 
 /**
- * Shows the developer map, gives the data of the map and serves the fixture
- * files of the test sources.
+ * Shows the developer map, gives its data and serves the fixture files of the test sources.
  */
 #[When('dev')]
 #[When('test')]
@@ -55,11 +53,11 @@ final class TestController extends AbstractController
      * Gives the entities of a test data set as a GeoJSON feature collection.
      */
     #[Route('/data-sets/{id}.geojson', name: 'features', requirements: ['id' => '[^/]+'], methods: [Request::METHOD_GET])]
-    public function features(string $id, MapDataSets $dataSets): StreamedJsonResponse
+    public function features(string $id, MapDataSets $dataSets): JsonResponse
     {
         $features = $dataSets->features($id) ?? throw new NotFoundHttpException();
 
-        return new StreamedJsonResponse(
+        return new JsonResponse(
             ['type' => 'FeatureCollection', 'features' => $features],
             headers: ['Content-Type' => self::APPLICATION_GEOJSON],
         );

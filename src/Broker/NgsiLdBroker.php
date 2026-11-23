@@ -8,6 +8,7 @@ use App\SourceImporter\AbstractSourceImporter;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -189,64 +190,90 @@ final readonly class NgsiLdBroker
      * request asks for one entity, because Scorpio gives a count of 0 if the
      * limit is 0.
      *
-     * @param string $sourceId   the source id of the data set
-     * @param string $contextUrl the JSON-LD context of the data set
+     * @param string      $sourceId   the source id of the data set
+     * @param string      $contextUrl the JSON-LD context of the data set
+     * @param string|null $type       the type of the entities to count, or null for all types
      */
-    public function count(string $sourceId, string $contextUrl): int
+    public function count(string $sourceId, string $contextUrl, ?string $type = null): int
     {
-        $response = $this->send(Request::METHOD_GET, self::ENTITIES_PATH, [
-            'headers' => ['Accept' => 'application/json'],
-            'query' => [
-                'q' => self::sourceQuery($sourceId),
-                'count' => 'true',
-                'limit' => 1,
-            ],
-        ], $contextUrl);
+        return self::readCount($this->sendCount($sourceId, $contextUrl, $type), $sourceId);
+    }
 
-        self::check($response, \sprintf('the count of %s', $sourceId));
-
-        $count = $response->getHeaders()[self::RESULTS_COUNT_HEADER][0] ?? '';
-        if (!ctype_digit($count)) {
-            throw new \RuntimeException(\sprintf('The broker gave no count of %s', $sourceId));
+    /**
+     * Counts the entities of several data sets at the same time.
+     *
+     * The method sends all the requests before it reads the first answer.
+     * Thus the broker counts the data sets in parallel.
+     *
+     * @param array<string, array{contextUrl: string, type: string|null}> $dataSets the context and the type of each data set, by source id
+     *
+     * @return array<string, int|null> the count of each data set, by source id, or null if the broker could not count the data set
+     */
+    public function counts(array $dataSets): array
+    {
+        $responses = [];
+        foreach ($dataSets as $sourceId => $dataSet) {
+            $responses[$sourceId] = $this->sendCount($sourceId, $dataSet['contextUrl'], $dataSet['type']);
         }
 
-        return (int) $count;
+        $counts = [];
+        foreach ($responses as $sourceId => $response) {
+            try {
+                $counts[$sourceId] = self::readCount($response, $sourceId);
+            } catch (\RuntimeException|ExceptionInterface) {
+                $counts[$sourceId] = null;
+            }
+        }
+
+        return $counts;
     }
 
     /**
      * Deletes entities by id in batches.
      *
      * @param list<string> $ids
+     *
+     * @return array<string, Rejection> the entities that the broker did not delete, by id
      */
-    public function delete(array $ids): void
+    public function delete(array $ids): array
     {
+        $rejected = [];
+
         foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
             $response = $this->send(Request::METHOD_POST, self::DELETE_PATH, ['json' => $batch]);
 
             self::check($response, 'the delete');
+
+            if (Response::HTTP_MULTI_STATUS === $response->getStatusCode()) {
+                $rejected += $this->rejections($response);
+            }
         }
+
+        return $rejected;
     }
 
     /**
      * Reads all the entities that a data set published, as GeoJSON features.
      *
-     * The method finds the entities of all models by the source id that the
-     * importer adds to each entity. The broker gives them in the simplified
-     * format. The properties of each feature hold only the values, not the
-     * NGSI-LD objects with a type and a value.
+     * The method finds the entities by the source id that the importer adds
+     * to each entity. If the method gets a type, it reads only the entities of
+     * that type. The broker gives them in the simplified format. The
+     * properties of each feature hold only the values, not the NGSI-LD
+     * objects with a type and a value.
      * The Link header holds the context of the data set. Thus the broker
      * gives the attribute names that the source declared. The method reads
      * the next page until the broker gives no next page.
      *
-     * @param string $sourceId   the source id of the data set
-     * @param string $contextUrl the JSON-LD context of the data set
+     * @param string      $sourceId   the source id of the data set
+     * @param string      $contextUrl the JSON-LD context of the data set
+     * @param string|null $type       the type of the entities to read, or null for all types
      *
      * @return \Generator<int, array<string, mixed>> GeoJSON features, each with an id, a geometry and properties
      */
-    public function features(string $sourceId, string $contextUrl): \Generator
+    public function features(string $sourceId, string $contextUrl, ?string $type = null): \Generator
     {
         $query = [
-            'q' => self::sourceQuery($sourceId),
+            ...self::dataSetQuery($sourceId, $type),
             'format' => 'simplified',
             'limit' => self::PAGE_SIZE,
         ];
@@ -383,7 +410,7 @@ final readonly class NgsiLdBroker
      */
     private function ids(array $query, ?string $contextUrl, string $action): array
     {
-        $pages = [];
+        $ids = [];
 
         for ($offset = 0;; $offset += self::PAGE_SIZE) {
             $response = $this->send(Request::METHOD_GET, self::ENTITIES_PATH, [
@@ -394,14 +421,45 @@ final readonly class NgsiLdBroker
             self::check($response, $action);
 
             $page = $response->toArray();
-            $pages[] = $page;
+            $ids[] = array_column($page, 'id');
 
             if (\count($page) < self::PAGE_SIZE) {
                 break;
             }
         }
 
-        return array_column(array_merge(...$pages), 'id');
+        return array_merge(...$ids);
+    }
+
+    /**
+     * Sends a request that counts the entities of a data set. The method does
+     * not wait for the answer.
+     */
+    private function sendCount(string $sourceId, string $contextUrl, ?string $type): ResponseInterface
+    {
+        return $this->send(Request::METHOD_GET, self::ENTITIES_PATH, [
+            'headers' => ['Accept' => 'application/json'],
+            'query' => [
+                ...self::dataSetQuery($sourceId, $type),
+                'count' => 'true',
+                'limit' => 1,
+            ],
+        ], $contextUrl);
+    }
+
+    /**
+     * Reads the count from the answer to a count request.
+     */
+    private static function readCount(ResponseInterface $response, string $sourceId): int
+    {
+        self::check($response, \sprintf('the count of %s', $sourceId));
+
+        $count = $response->getHeaders()[self::RESULTS_COUNT_HEADER][0] ?? '';
+        if (!ctype_digit($count)) {
+            throw new \RuntimeException(\sprintf('The broker gave no count of %s', $sourceId));
+        }
+
+        return (int) $count;
     }
 
     /**
@@ -445,9 +503,26 @@ final readonly class NgsiLdBroker
      * Gets the query that selects the entities of a data set by the source id
      * that the importer adds to each entity.
      */
-    private static function sourceQuery(string $sourceId): string
+    public static function sourceQuery(string $sourceId): string
     {
         return \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId);
+    }
+
+    /**
+     * Gets the query parameters that select the entities of a data set. If
+     * the method gets a type, the parameters also select that type.
+     *
+     * @return array<string, string>
+     */
+    private static function dataSetQuery(string $sourceId, ?string $type): array
+    {
+        $query = ['q' => self::sourceQuery($sourceId)];
+
+        if (null !== $type) {
+            $query['type'] = $type;
+        }
+
+        return $query;
     }
 
     /**

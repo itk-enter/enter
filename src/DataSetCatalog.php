@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Broker\NgsiLdBroker;
 use App\Conflation\ConflationManager;
 use App\Conflation\Io\MergedDataSet;
 use App\Conflation\Io\MergedDataSetFactory;
 use App\Source\SourceInterface;
-use App\SourceImporter\AbstractSourceImporter;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -84,13 +84,32 @@ final readonly class DataSetCatalog
     }
 
     /**
+     * Gets one data set as an item of /sources.json.
+     *
+     * @return array<string, mixed>|null the data set with the key entities_url, or null if no data set has the id
+     */
+    public function find(string $id): ?array
+    {
+        $source = $this->sources->getSources()[$id] ?? null;
+        $conflation = $this->conflations->getConflations()[$id] ?? null;
+
+        $dataSet = match (true) {
+            null !== $source => $source->toArray(),
+            null !== $conflation => $this->mergedDataSets->create($conflation)->toArray(),
+            default => null,
+        };
+
+        return null === $dataSet ? null : [...$dataSet, 'entities_url' => $this->entitiesUrl($id)];
+    }
+
+    /**
      * Gets the broker URL of the entities of a data set.
      */
     private function entitiesUrl(string $dataSetId): string
     {
         return $this->urlGenerator->generate('ngsi_ld_v1_request', [
             'path' => 'entities',
-            'q' => \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $dataSetId),
+            'q' => NgsiLdBroker::sourceQuery($dataSetId),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }
