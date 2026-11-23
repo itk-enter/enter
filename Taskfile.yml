@@ -76,15 +76,26 @@ tasks:
         TASK_ARGS: bin/phpunit tests/{{.TASK | replace "test:" "" | title }}
 
   test:coverage:
-    desc: 'Run all the tests with code coverage, and fail if a line in src/ is not covered'
+    desc: 'Run all the tests with code coverage, and fail if the coverage is less than the threshold'
     deps: [test:start]
+    vars:
+      # The minimum code coverage of src/, in percent. The CI job "Test coverage (100 %)" runs this task.
+      COVERAGE_THRESHOLD: 100
     cmds:
       - task: php
         vars:
           TASK_ARGS: -d xdebug.mode=coverage bin/phpunit --coverage-clover var/coverage/clover.xml
       - task: php
         vars:
-          TASK_ARGS: bin/coverage-check var/coverage/clover.xml 100
+          TASK_ARGS: vendor/bin/coverage-check var/coverage/clover.xml {{.COVERAGE_THRESHOLD}}
+
+  test:coverage:html:
+    desc: 'Run all the tests, and write the code coverage as HTML to var/coverage/html/'
+    deps: [test:start]
+    cmd:
+      task: php
+      vars:
+        TASK_ARGS: -d xdebug.mode=coverage bin/phpunit --coverage-html var/coverage/html
 
   test:broker: *test_task
   test:command: *test_task
