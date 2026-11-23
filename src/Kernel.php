@@ -22,12 +22,4 @@ class Kernel extends BaseKernel
         parent::__construct($environment, $debug);
         date_default_timezone_set('UTC');
     }
-
-    /**
-     * @return list<string> the allowed values of APP_ENV
-     */
-    private function getAllowedEnvs(): array
-    {
-        return ['prod', 'dev', 'test'];
-    }
 }
