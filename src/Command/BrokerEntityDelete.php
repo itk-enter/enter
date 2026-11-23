@@ -2,14 +2,13 @@
 
 namespace App\Command;
 
+use App\Broker\NgsiLdBroker;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
     name: 'app:broker:entity:delete',
@@ -22,57 +21,28 @@ class BrokerEntityDelete
      */
     public function __invoke(
         SymfonyStyle $io,
-        HttpClientInterface $brokerClient,
+        NgsiLdBroker $broker,
         #[Argument(name: 'type')]
         ?array $entityTypes = null,
         #[Option]
         bool $all = false,
     ): int {
         if ($all) {
-            $data = $brokerClient->request(Request::METHOD_GET, '/ngsi-ld/v1/types')->toArray();
-            $entityTypes = $data['typeList'] ?? [];
-        } else {
-            if (0 === count($entityTypes)) {
-                throw new RuntimeException('The entity types are missing');
-            }
+            $entityTypes = $broker->types();
+        } elseif ([] === ($entityTypes ?? [])) {
+            throw new RuntimeException('The entity types are missing');
         }
 
-        $limit = 1000;
-        foreach ($entityTypes as $entityType) {
-            while (true) {
-                /**
-                 * @var array<array{
-                 *     type: string,
-                 *     id: string
-                 * }> $entities
-                 */
-                $response = $brokerClient->request(Request::METHOD_GET, '/ngsi-ld/v1/entities', [
-                    'query' => [
-                        'type' => $entityType,
-                        'limit' => $limit,
-                    ],
-                ]);
+        foreach ($entityTypes ?? [] as $entityType) {
+            $ids = $broker->idsOfType($entityType);
 
-                $entities = $response->toArray();
-                $count = count($entities);
-                if ($count > 0) {
-                    $io->writeln(match ($count) {
-                        1 => sprintf('The command deletes one %s entity …', $entityType),
-                        default => sprintf('The command deletes %d %s entities …', $count, $entityType),
-                    });
-                    $io->progressStart($count);
-                    foreach ($entities as $entity) {
-                        $brokerClient->request(Request::METHOD_DELETE, '/ngsi-ld/v1/entities/'.urlencode($entity['id']))
-                            ->getStatusCode();
-                        $io->progressAdvance();
-                    }
-                    $io->progressFinish();
-                }
+            $io->writeln(match (\count($ids)) {
+                0 => \sprintf('The broker has no %s entities.', $entityType),
+                1 => \sprintf('The command deletes one %s entity …', $entityType),
+                default => \sprintf('The command deletes %d %s entities …', \count($ids), $entityType),
+            });
 
-                if ($count < $limit) {
-                    break;
-                }
-            }
+            $broker->delete($ids);
         }
 
         return Command::SUCCESS;
