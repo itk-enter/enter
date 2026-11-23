@@ -3,7 +3,7 @@
 {% block content %}
     <div class="test-map-wrapper"
          data-controller="test-map test-datasets"
-         data-test-datasets-url-value="{{ path('app_sources', {_format: 'json'}) }}"
+         data-test-datasets-url-value="{{ path('test_data_sets') }}"
          data-action="test-datasets:loaded->test-map#sources test-datasets:toggle->test-map#show">
         <div class="test-map" data-test-map-target="canvas"></div>
 
