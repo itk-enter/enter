@@ -8,6 +8,14 @@ upstream scorpio {
     server scorpio.local:9090 resolve;
 }
 
+# Web pages on other sites can read the open API (CORS): the broker under /ngsi-ld/v1/ and the list of data sets.
+# For all other requests the value is empty, and then nginx does not send the header.
+map $request_uri $cors_allow_origin {
+    ~^/ngsi-ld/v1/(entities|types)(/|\?|$) "*";
+    ~^/sources\.json(\?|$) "*";
+    default "";
+}
+
 server {
     listen ${NGINX_PORT};
     server_name localhost;
@@ -25,12 +33,31 @@ server {
     # Allow access to types and entities
     location ~ ^/ngsi-ld/v1/(entities|types)(?:/.+)? {
 
-        # Allow only GET (and HEAD) requests for anonymous users. Require authentication for all other methods.
+        # Before some requests from another site, a browser asks with OPTIONS if it may send them (CORS preflight).
+        # An example is a request with the Link header of NGSI-LD. The browser sends no login with this question.
+        # Thus nginx answers it here, before the login check, and the question does not go to Scorpio.
+        # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin $cors_allow_origin always;
+            add_header Access-Control-Allow-Methods "GET, HEAD, OPTIONS" always;
+            add_header Access-Control-Allow-Headers "Accept, Link" always;
+            add_header Access-Control-Max-Age 86400 always;
+            return 204;
+        }
+
+        # Allow only GET (and HEAD) and OPTIONS requests for anonymous users. Require authentication for all other
+        # methods. nginx applies the configuration inside limit_except to the other methods, and that configuration
+        # does not have the "if" above. Thus OPTIONS must be in the list, so that nginx answers it above.
         # https://nginx.org/en/docs/http/ngx_http_core_module.html#limit_except
-        limit_except GET {
+        limit_except GET OPTIONS {
             auth_basic           "Login required";
             auth_basic_user_file /etc/nginx/auth/.htpasswd;
         }
+
+        # Let web pages on other sites read the answer, and the paging and count headers of NGSI-LD.
+        proxy_hide_header Access-Control-Allow-Origin;
+        add_header Access-Control-Allow-Origin $cors_allow_origin always;
+        add_header Access-Control-Expose-Headers "Link, NGSILD-Results-Count" always;
 
         proxy_pass http://scorpio$request_uri;
         proxy_set_header Host $host;
@@ -74,6 +101,9 @@ server {
 
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT $realpath_root;
+
+        # Let web pages on other sites read /sources.json. The value is empty for all other pages.
+        add_header Access-Control-Allow-Origin $cors_allow_origin always;
 
         internal;
     }
