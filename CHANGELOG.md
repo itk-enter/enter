@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-200](https://github.com/itk-enter/enter/pull/200)
+  Tidied the docs
 * [PR-172](https://github.com/itk-enter/enter/pull/172)
   Added an architecture diagram
 * [PR-158](https://github.com/itk-enter/enter/pull/158)
