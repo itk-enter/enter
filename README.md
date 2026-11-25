@@ -47,15 +47,13 @@ run, and the command exits with a failure code if any source failed.
 
 ### The nightly import on the server
 
-On the server, two cron jobs in the `phpfpm` container import the sources and then run the merges:
+On the server, [supercronic](https://github.com/itk-dev/documentation/blob/main/docs/web/server/supercronic.md) runs
+the jobs in [`crontab.prod`](crontab.prod) in the `phpfpm` container. Each night, it imports all the sources at 01:00
+and runs all the merges at 05:00, in the time zone of the container (Europe/Copenhagen). `CRONFILE` in
+`docker-compose.server.override.yml` selects the file. Thus the jobs do not run in development.
 
-``` text
-# Each night at 01:00: import all the sources.
-0 1 * * *  bin/console app:source:import-all
-
-# Each night at 05:00: run all the merges.
-0 5 * * *  bin/console app:conflation:run
-```
+Both commands exit with a failure code if a source or a merge failed. Supercronic counts the failed runs of each job.
+It publishes the counters on `/cron-metrics`, behind the ITK metrics login.
 
 The merges read what the broker has. If the import of a source failed, its merges use the data of its last successful
 import.
