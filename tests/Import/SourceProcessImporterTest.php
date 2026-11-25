@@ -36,6 +36,19 @@ class SourceProcessImporterTest extends TestCase
         }));
     }
 
+    public function testItReportsAnImportThatRunsTooLong(): void
+    {
+        $importer = new SourceProcessImporter(['-r', 'sleep(30);', '--'], timeout: 1);
+        $output = '';
+
+        $succeeded = $importer->import(new ToiletCity(), static function (string $buffer) use (&$output): void {
+            $output .= $buffer;
+        });
+
+        $this->assertFalse($succeeded);
+        $this->assertStringContainsString('The importer stopped the process.', $output);
+    }
+
     private function importer(): SourceProcessImporter
     {
         return new SourceProcessImporter(['-r', self::SCRIPT, '--']);
