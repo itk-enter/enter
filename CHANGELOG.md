@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-176](https://github.com/itk-enter/enter/pull/176)
+  Added retries and longer timeouts to the feed client
 * [PR-175](https://github.com/itk-enter/enter/pull/175)
   Marked imports as failed when their process stopped
 * [PR-174](https://github.com/itk-enter/enter/pull/174)
