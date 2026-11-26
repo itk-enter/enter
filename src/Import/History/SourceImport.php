@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * read was successful. At the end, call succeed() or fail() one time. After
  * that, the import does not change.
  */
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SourceImportRepository::class)]
 #[ORM\Index(columns: ['source_id', 'started_at'])]
 class SourceImport
 {
