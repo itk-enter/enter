@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-201](https://github.com/itk-enter/enter/pull/201)
   Security updates
+* [PR-194](https://github.com/itk-enter/enter/pull/194)
+  Pinned Scorpio to version 6.0.2
 * [PR-182](https://github.com/itk-enter/enter/pull/182)
   Ran the nightly import and the merges with supercronic
 * [PR-181](https://github.com/itk-enter/enter/pull/181)
