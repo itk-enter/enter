@@ -3,7 +3,9 @@ networks:
 
 services:
     scorpio:
-        image: scorpiobroker/all-in-one-runner:java-latest
+        # A fixed version, so that the broker changes only when the tag changes. Use the same tag in
+        # docker-compose.server.override.yml.
+        image: scorpiobroker/all-in-one-runner:java-6.0.2
         restart: "no"
         environment:
             - HTTP_EXPOSE=9090:9999
