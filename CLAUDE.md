@@ -227,6 +227,25 @@ The pages follow the [ITK Aarhus design system](https://itk-dev.github.io/itkaar
 - `assets/styles/app.css` sets the Bootstrap variables to the tokens. Thus the Bootstrap classes match the tokens.
 - Give each page the shared header `_page_header.html.twig`, with breadcrumbs from "Home".
 
+### Migrations use the Schema API
+
+Write each migration with the Schema API of Doctrine: `$schema->createTable()`, `addColumn()`, `addIndex()` and
+`addForeignKeyConstraint()`. Then Doctrine writes the SQL. PHPStan refuses `addSql()` and SQL through the connection in
+`migrations/`.
+
+1. Change the entity.
+2. Run `bin/console doctrine:migrations:diff`. It writes a migration with `addSql()`.
+3. Write the same change again with the Schema API, and remove the `addSql()` calls.
+4. Run `bin/console doctrine:migrations:migrate --dry-run --write-sql=var/migration.sql`. Make sure that the SQL is the
+   same as the SQL of the `addSql()` calls.
+5. Run the migration. Then `bin/console doctrine:schema:update --dump-sql` must tell "Nothing to update".
+
+Use the `columnDefinition` option only for a column that the Schema API cannot make, for example a `COMPRESSED` column
+of MariaDB.
+
+DBAL 4.5 marks these methods as deprecated. Their replacement makes a new `Schema` object, and Doctrine Migrations
+cannot use it yet. Keep these methods until Doctrine Migrations supports the replacement.
+
 ## Branching and PRs
 
 - The base branch is **`develop`**. Make a PR to `develop` in `itk-enter/enter`.

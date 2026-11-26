@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Thus the table tells when an entity came or went, and the import that made
  * the change.
  */
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: EntityChangeRepository::class)]
 #[ORM\Index(columns: ['entity_id'])]
 class EntityChange
 {
