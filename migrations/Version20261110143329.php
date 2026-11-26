@@ -5,29 +5,37 @@ declare(strict_types=1);
 namespace DoctrineMigrations;
 
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * Adds the table entity_change of the import history.
+ *
+ * The migration uses the Schema API of Doctrine, so Doctrine writes the SQL.
  */
 final class Version20261110143329 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Added the table entity_change';
     }
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE entity_change (id INT AUTO_INCREMENT NOT NULL, entity_id VARCHAR(255) NOT NULL, type VARCHAR(16) NOT NULL, source_import_id INT NOT NULL, INDEX IDX_849A40AD81257D5D (entity_id), INDEX IDX_849A40ADDE3CF017 (source_import_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
-        $this->addSql('ALTER TABLE entity_change ADD CONSTRAINT FK_849A40ADDE3CF017 FOREIGN KEY (source_import_id) REFERENCES source_import (id)');
+        $entityChange = $schema->createTable('entity_change');
+        $entityChange->addColumn('id', Types::INTEGER, ['autoincrement' => true]);
+        $entityChange->addColumn('entity_id', Types::STRING, ['length' => 255]);
+        $entityChange->addColumn('type', Types::STRING, ['length' => 16]);
+        $entityChange->addColumn('source_import_id', Types::INTEGER);
+        $entityChange->setPrimaryKey(['id']);
+        $entityChange->addIndex(['entity_id']);
+        $entityChange->addIndex(['source_import_id']);
+        $entityChange->addForeignKeyConstraint('source_import', ['source_import_id'], ['id']);
+        $entityChange->addOption('charset', 'utf8mb4');
     }
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE entity_change DROP FOREIGN KEY FK_849A40ADDE3CF017');
-        $this->addSql('DROP TABLE entity_change');
+        $schema->dropTable('entity_change');
     }
 }
