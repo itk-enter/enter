@@ -98,7 +98,7 @@ class SourceControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'text/html; charset=UTF-8');
-        $this->assertSelectorTextSame('h1', 'Sources');
+        $this->assertSelectorTextSame('h1', 'Open data about Aarhus');
 
         $page = (string) $client->getResponse()->getContent();
         foreach ($ids as $id) {
