@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-180](https://github.com/itk-enter/enter/pull/180)
+  Imported each source in a process of its own in `app:source:import-all`
 * [PR-179](https://github.com/itk-enter/enter/pull/179)
   Separated the conflation from the import
 * [PR-178](https://github.com/itk-enter/enter/pull/178)

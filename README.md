@@ -42,9 +42,8 @@ To import every source in one run:
 task import:all
 ```
 
-A failing source does not stop the run, and the command exits with a failure code if any source failed. Once the run is
-done, it dispatches a [`SourcesImportedEvent`](src/Import/Event/SourcesImportedEvent.php) saying which sources imported
-and which failed, so work that depends on a complete import can listen for it.
+The command imports the sources one after another, each in a PHP process of its own. A failing source does not stop the
+run, and the command exits with a failure code if any source failed.
 
 ### Sources
 
