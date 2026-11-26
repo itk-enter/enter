@@ -10,7 +10,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 /**
  * The importer dispatches this event when a run of several sources is
  * complete, also if a source failed. Work that needs a complete set of
- * imports, such as conflation, can start from this event.
+ * imports can start from this event.
  *
  * Each source that the run tried to import is in imported or in failed. A
  * source is never in both.
