@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-169](https://github.com/itk-enter/enter/pull/169)
+  Turned the front page into links to the subpages
 * [PR-168](https://github.com/itk-enter/enter/pull/168)
   Added the import history to `/sources`
 * [PR-192](https://github.com/itk-enter/enter/pull/192)

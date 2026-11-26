@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}API examples{% endblock %}
+
+{% block header %}
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [{label: 'Enter', url: path('app_default')}],
+        current: block('title'),
+    }) }}
+{% endblock %}
+
+{% block content %}
+    <h2>Example NGSI-LD API requests</h2>
+    <ul>
+        {% for example in [
+            {
+                description: 'Get all types',
+                path: 'types',
+            },
+            {
+                description: 'Get all entities',
+                path: 'entities',
+                query: {
+                    type: '*',
+                },
+            },
+            {
+                description: 'Get entities of type <code>https://smartdatamodels.org/dataModel.Parking/OnStreetParking</code>',
+                path: 'entities',
+                query: {
+                    type: 'https://smartdatamodels.org/dataModel.Parking/OnStreetParking',
+                },
+            },
+            {
+                description: 'Get <a href="https://ngsild.org/">simplified entities</a> of type <code>https://smartdatamodels.org/dataModel.Parking/OnStreetParking</code>',
+                path: 'entities',
+                query: {
+                    type: 'https://smartdatamodels.org/dataModel.Parking/OnStreetParking',
+                    format: 'simplified',
+                },
+            },
+            {
+                description: 'Get a specific entity (which probably does not exist)',
+                path: 'entities/urn:hest',
+            },
+            {
+                description: 'Get all subscriptions (will deny access)',
+                path: 'subscriptions',
+            },
+            ] %}
+            {% set url = url('ngsi_ld_v1_request', {path: example.path}|merge(example.query ?? {})) %}
+            <li>{{ example.description|raw }}: <a href="{{ url }}">{{ url }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
