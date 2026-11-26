@@ -115,6 +115,21 @@ class WithinSiteClosestFirstTest extends TestCase
         $this->assertCount(1, self::unmatched($clusters));
     }
 
+    /**
+     * The merge measures from the shape of the site in either order of a
+     * pair. A pair puts the record with the lower id first. The bays of S-1
+     * have ids that start with "urn:ngsi-ld:ParkingSpot:S-1", so here the
+     * bay of the site comes first.
+     */
+    public function testTheShapeOfASiteCountsInEitherOrderOfAPair(): void
+    {
+        $id = 'urn:ngsi-ld:ParkingSpot:T-1';
+
+        $clusters = new WithinSiteClosestFirst(5.0)->merge([self::strip(), self::bay($id, 18, 2)]);
+
+        $this->assertSame([$id => ['S-1']], self::matched($clusters));
+    }
+
     public function testAMappedBayNearTheEdgeOfASiteMatchesIt(): void
     {
         $clusters = new WithinSiteClosestFirst(5.0)->merge([self::strip(), self::bay('B-1', 22, 2)]);

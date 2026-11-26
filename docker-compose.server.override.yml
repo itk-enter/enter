@@ -41,6 +41,9 @@ services:
 
                 USER deploy
 
+        environment:
+            # Supercronic runs the nightly import and the merges in crontab.prod.
+            - CRONFILE=/app/crontab.prod
         depends_on:
             rabbit:
                 condition: service_healthy
@@ -89,7 +92,9 @@ services:
                 condition: service_healthy
 
     scorpio:
-        image: scorpiobroker/all-in-one-runner:java-latest
+        # A fixed version, so that the broker changes only when the tag changes. Use the same tag in
+        # docker-compose.scorpio.yml.
+        image: scorpiobroker/all-in-one-runner:java-6.0.2
         restart: unless-stopped
         ports:
             - "9090"

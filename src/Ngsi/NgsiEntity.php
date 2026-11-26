@@ -11,6 +11,26 @@ namespace App\Ngsi;
  */
 final class NgsiEntity
 {
+    /**
+     * The names that an attribute must not have.
+     *
+     * The payload uses id, type and @context for the entity. The broker
+     * drops createdAt and modifiedAt, because it sets them itself, and it
+     * stores objects and values under other names. NGSI-LD uses the other
+     * names for the data of the broker and for the metadata of an attribute.
+     */
+    private const array RESERVED_ATTRIBUTE_NAMES = [
+        'id', 'type', '@context',
+        'createdAt', 'modifiedAt', 'deletedAt', 'observedAt', 'datasetId', 'instanceId', 'unitCode',
+        'objects', 'values',
+    ];
+
+    /**
+     * The keys that the value of an attribute must not have, at any depth.
+     * The broker drops them without an error.
+     */
+    private const array RESERVED_VALUE_KEYS = ['createdAt', 'modifiedAt'];
+
     /** @var array<string, array<string, mixed>> */
     private array $attributes = [];
 
@@ -61,9 +81,16 @@ final class NgsiEntity
      * Sets an attribute in normalized form, with all its sub-attributes.
      *
      * @param array<string, mixed> $attribute
+     *
+     * @throws ReservedNameException if NGSI-LD reserves the name, or a key in the value
      */
     public function setAttribute(string $name, array $attribute): self
     {
+        if (\in_array($name, self::RESERVED_ATTRIBUTE_NAMES, true)) {
+            throw ReservedNameException::attributeName($name);
+        }
+        self::assertNoReservedKeys($name, $attribute['value'] ?? null);
+
         $this->attributes[$name] = $attribute;
 
         return $this;
@@ -71,6 +98,8 @@ final class NgsiEntity
 
     /**
      * Sets a property, and ignores an empty value.
+     *
+     * @throws ReservedNameException if NGSI-LD reserves the name, or a key in the value
      */
     public function setProperty(string $name, mixed $value, ?string $observedAt = null): self
     {
@@ -84,9 +113,7 @@ final class NgsiEntity
             $attribute['observedAt'] = $observedAt;
         }
 
-        $this->attributes[$name] = $attribute;
-
-        return $this;
+        return $this->setAttribute($name, $attribute);
     }
 
     /**
@@ -103,19 +130,31 @@ final class NgsiEntity
 
     /**
      * @param array{type: string, coordinates: mixed} $geoJson
+     *
+     * @throws ReservedNameException if NGSI-LD reserves the name
      */
     public function geoProperty(string $name, array $geoJson): self
     {
-        $this->attributes[$name] = ['type' => 'GeoProperty', 'value' => $geoJson];
-
-        return $this;
+        return $this->setAttribute($name, ['type' => 'GeoProperty', 'value' => $geoJson]);
     }
 
-    public function relationship(string $name, string $object): self
+    /**
+     * Fails if a key in the value, at any depth, is a key that the broker drops.
+     *
+     * @throws ReservedNameException
+     */
+    private static function assertNoReservedKeys(string $attribute, mixed $value): void
     {
-        $this->attributes[$name] = ['type' => 'Relationship', 'object' => $object];
+        if (!\is_array($value)) {
+            return;
+        }
 
-        return $this;
+        foreach ($value as $key => $item) {
+            if (\in_array($key, self::RESERVED_VALUE_KEYS, true)) {
+                throw ReservedNameException::keyInValue($attribute, $key);
+            }
+            self::assertNoReservedKeys($attribute, $item);
+        }
     }
 
     /**

@@ -4,16 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Enter{% endblock %}</title>
+    <link rel="icon" href="{{ asset('images/favicon.ico') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap">
     {% block stylesheets %}{% endblock %}
 
     {% block javascripts %}
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     {% endblock %}
 </head>
-<body>
+<body class="page">
     {% block body %}
-        <div class="container-fluid">
-        <h1>{{ block('title') }}</h1>
+        <div class="container-fluid page-main">
+        {% block header %}
+            <h1>{{ block('title') }}</h1>
+        {% endblock %}
 
         {% block flashes %}
             {% for type, messages in app.flashes %}
@@ -27,6 +33,10 @@
 
         {% block content %}{% endblock %}
     </div>
+
+    {% block footer %}
+        {{ include('_page_footer.html.twig') }}
+    {% endblock %}
 {% endblock %}
 </body>
 </html>

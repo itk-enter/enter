@@ -42,41 +42,62 @@ To import every source in one run:
 task import:all
 ```
 
-A failing source does not stop the run, and the command exits with a failure code if any source failed. Once the run is
-done, it dispatches a [`SourcesImportedEvent`](src/Import/Event/SourcesImportedEvent.php) saying which sources imported
-and which failed, so work that depends on a complete import can listen for it.
+The command imports the sources one after another, each in a PHP process of its own. A failing source does not stop the
+run, and the command exits with a failure code if any source failed.
+
+### The nightly import on the server
+
+On the server, [supercronic](https://github.com/itk-dev/documentation/blob/main/docs/web/server/supercronic.md) runs
+the jobs in [`crontab.prod`](crontab.prod) in the `phpfpm` container. Each night, it imports all the sources at 01:00
+and runs all the merges at 05:00, in the time zone of the container (Europe/Copenhagen). `CRONFILE` in
+`docker-compose.server.override.yml` selects the file. Thus the jobs do not run in development.
+
+Both commands exit with a failure code if a source or a merge failed. Supercronic counts the failed runs of each job.
+It publishes the counters on `/cron-metrics`, behind the ITK metrics login.
+
+The merges read what the broker has. If the import of a source failed, its merges use the data of its last successful
+import.
 
 ### Sources
 
-Adding a data source means adding a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way
-to do this is by extending [`AbstractSource`](src/Source/AbstractSource.php), e.g.:
+To add a data source, add a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way is to
+extend [`AbstractSource`](src/Source/AbstractSource.php). Declare the source with the
+[`#[Definition]`](src/Source/Definition.php) attribute, and implement `createNgsiEntity()`:
 
 ```php
 <?php
 
+use App\Geo\Wgs84Transformer;
+use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
+use App\Source\DataType;
+use App\Source\Definition;
 
-final readonly class MySource extends AbstractSource
+#[Definition(
+    id: 'my-source',
+    title: 'My source with some cool data',
+    description: '',
+    publisher: 'Me',
+    contact: 'me@example.com',
+    landingPage: 'https://my-data.example.com',
+    accessUrl: 'https://my-data.example.com/data',
+    dataType: DataType::GeoJSON,
+    mediaType: 'application/geo+json',
+    crs: 'EPSG:4326',
+    model: 'MyModel',
+    contextUrl: '',
+    updateFrequency: 'daily',
+    licence: null,
+    omittedFields: [],
+    dataset: 'my-source',
+    datasetTitle: 'My source with some cool data',
+)]
+final class MySource extends AbstractSource
 {
-    public function __construct(
-    ) {
-        parent::__construct(
-            id: 'my-source',
-            title: 'My source with some cool data',
-            description: '',
-            publisher: 'Me',
-            contact: 'me@example.com',
-            landingPage: 'https://my-data.example.com',
-            accessUrl: 'https://my-data.example.com/data',
-            mediaType: 'application/geo+json',
-            crs: 'EPSG:4326',
-            model: 'MyModel',
-            contextUrl: '',
-            updateFrequency: 'daily',
-        );
+    public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
+    {
+        …
     }
-
-    …
 }
 ```
 

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Conflation\Conflation;
 use App\Conflation\ConflationManager;
+use App\Conflation\ConflationRun;
 use App\Conflation\ConflationRunner;
 use App\Conflation\Data\MergedEntity;
 use App\Conflation\Data\StatedValue;
@@ -36,9 +38,14 @@ class ConflationRunCommand
             return Command::SUCCESS;
         }
 
-        foreach ($conflations as $conflation) {
+        $failed = $runner->runAll($conflations, !$dryRun, function (Conflation $conflation, ConflationRun|\Throwable $run) use ($io): void {
             $io->section($conflation->id);
-            $run = $runner->run($conflation, !$dryRun);
+
+            if ($run instanceof \Throwable) {
+                $io->error($run->getMessage());
+
+                return;
+            }
 
             $io->writeln(\sprintf('Read %d records from %s.', $run->records, implode(', ', $run->dataSet->inputs)));
             $io->writeln(\sprintf('Merged them into %d entities, %d of them with conflicts.', \count($run->entities), \count($run->withConflicts())));
@@ -54,9 +61,10 @@ class ConflationRunCommand
             } else {
                 $io->success(\sprintf('Published %d entities as %s and deleted %d stale ones.', $run->upserted, $run->dataSet->id, $run->deleted));
             }
-        }
+        });
 
-        return Command::SUCCESS;
+        // A scheduled run must be able to tell that something failed.
+        return [] === $failed ? Command::SUCCESS : Command::FAILURE;
     }
 
     private function conflicts(MergedEntity $entity): string

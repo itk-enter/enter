@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-196](https://github.com/itk-enter/enter/pull/196)
   Added CORS headers to the open API
+* [PR-200](https://github.com/itk-enter/enter/pull/200)
+  Tidied the docs
+* [PR-201](https://github.com/itk-enter/enter/pull/201)
+  Security updates
+* [PR-198](https://github.com/itk-enter/enter/pull/198)
+  Added an overview of the conflation conflicts
+* [PR-171](https://github.com/itk-enter/enter/pull/171)
+  Rewrote the API page, added the logo and a footer, and applied the ITK Aarhus design system
+* [PR-169](https://github.com/itk-enter/enter/pull/169)
+  Turned the front page into links to the subpages
+* [PR-168](https://github.com/itk-enter/enter/pull/168)
+  Added the import history to `/sources`
+* [PR-192](https://github.com/itk-enter/enter/pull/192)
+  Rejected the attribute names that NGSI-LD reserves
+* [PR-188](https://github.com/itk-enter/enter/pull/188)
+  Added a test coverage check to CI
+* [PR-186](https://github.com/itk-enter/enter/pull/186)
+  Streamlined the calls to the broker
+* [PR-194](https://github.com/itk-enter/enter/pull/194)
+  Pinned Scorpio to version 6.0.2
+* [PR-182](https://github.com/itk-enter/enter/pull/182)
+  Ran the nightly import and the merges with supercronic
+* [PR-181](https://github.com/itk-enter/enter/pull/181)
+  Imported the sources of one feed right after each other
+* [PR-180](https://github.com/itk-enter/enter/pull/180)
+  Imported each source in a process of its own in `app:source:import-all`
+* [PR-179](https://github.com/itk-enter/enter/pull/179)
+  Separated the conflation from the import
+* [PR-178](https://github.com/itk-enter/enter/pull/178)
+  Made `app:conflation:run` continue after a failed merge
+* [PR-176](https://github.com/itk-enter/enter/pull/176)
+  Added retries and longer timeouts to the feed client
+* [PR-175](https://github.com/itk-enter/enter/pull/175)
+  Marked imports as failed when their process stopped
+* [PR-174](https://github.com/itk-enter/enter/pull/174)
+  Allowed only one import of a source at a time
+* [PR-173](https://github.com/itk-enter/enter/pull/173)
+  Stopped an import that would delete too many entities
 * [PR-172](https://github.com/itk-enter/enter/pull/172)
   Added an architecture diagram
 * [PR-158](https://github.com/itk-enter/enter/pull/158)

@@ -5,10 +5,12 @@ namespace App\SourceImporter;
 use App\Broker\NgsiLdBroker;
 use App\Geo\Wgs84Transformer;
 use App\Import\Exception\SweepFailedException;
+use App\Import\Exception\SweepLimitException;
 use App\Import\Exception\UpsertFailedException;
 use App\Import\ImportResult;
 use App\Import\PayloadHash;
 use App\Ngsi\NgsiEntity;
+use App\Ngsi\ReservedNameException;
 use App\Source\SourceInterface;
 use App\SourceReader\SourceReaderInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -30,6 +32,12 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * Thus the import gives each entity of a test source an id of its own, with
  * "test:" before the local part. Then the test data sets and the published
  * data sets can be in one broker at the same time.
+ *
+ * Before the upsert, the import counts the entities that it would delete. If
+ * that is more than SWEEP_FLOOR and more than the sweep limit of the entities
+ * in the broker, the import fails and changes nothing. A feed that suddenly
+ * gives far fewer records, for example because the records changed format, is
+ * more often broken than true.
  */
 abstract class AbstractSourceImporter implements SourceImporterInterface
 {
@@ -48,7 +56,15 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     private const string TEST_PREFIX = 'test:';
 
     /**
+     * The number of entities that one import may always delete, also above
+     * the sweep limit. Then a small data set can lose a few entities.
+     */
+    public const int SWEEP_FLOOR = 10;
+
+    /**
      * @param list<string> $contextUrls
+     * @param float        $sweepLimit  the largest share of the entities of the source that one import may delete,
+     *                                  from 0 to 1
      */
     public function __construct(
         private readonly SourceReaderInterface $reader,
@@ -57,6 +73,8 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         #[Autowire(env: 'json:APP_NGSI_CONTEXT_URLS')]
         private readonly array $contextUrls,
         LoggerInterface $logger,
+        #[Autowire(env: 'float:APP_IMPORT_SWEEP_LIMIT')]
+        private readonly float $sweepLimit = 0.2,
     ) {
         $this->setLogger($logger);
     }
@@ -119,6 +137,10 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             }
         }
 
+        if (null === $listingFailure) {
+            $this->checkSweepLimit($source, $ids, $held);
+        }
+
         if (1 === count($payload)) {
             $this->info('The import upserts 1 entity');
         } else {
@@ -160,6 +182,24 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     }
 
     /**
+     * Stops the import if it would delete too many of the entities of the
+     * source.
+     *
+     * @param list<string> $ids  the IDs of the entities that the import gives
+     * @param list<string> $held the IDs of the entities of the source that the broker has
+     */
+    private function checkSweepLimit(SourceInterface $source, array $ids, array $held): void
+    {
+        $stale = \count(array_diff($held, $ids));
+
+        if ($stale <= self::SWEEP_FLOOR || $stale <= $this->sweepLimit * \count($held)) {
+            return;
+        }
+
+        throw new SweepLimitException($source->definition->id, $stale, \count($held), $this->sweepLimit);
+    }
+
+    /**
      * Deletes the entities of the source that this import does not give.
      *
      * @param list<string> $ids  the upserted entity IDs
@@ -189,6 +229,13 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     }
 
     /**
+     * Reads the entities of the source. A record that the source cannot read
+     * is skipped and logged.
+     *
+     * A reserved name is a defect in the mapping, not in the record. Thus it
+     * stops the import. If the import skipped the records, the sweep would
+     * delete their entities from the broker.
+     *
      * @return iterable<NgsiEntity>
      */
     private function read(SourceInterface $source): iterable
@@ -201,6 +248,8 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                 if ($entity = $source->createNgsiEntity($item, $this->transformer)) {
                     yield $entity;
                 }
+            } catch (ReservedNameException $e) {
+                throw $e;
             } catch (\Exception $e) {
                 $this->error('Skipped a record of {source}: {message}', ['source' => $source->definition->id, 'message' => $e->getMessage()]);
             }

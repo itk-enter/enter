@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Broker;
 
 use App\Broker\NgsiLdBroker;
+use App\Broker\Rejection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -85,6 +86,25 @@ class NgsiLdBrokerTest extends TestCase
 
         $broker->delete(['urn:a', 'urn:b']);
         $this->assertSame([['POST', 'http://broker.example/ngsi-ld/v1/entityOperations/delete', ['urn:a', 'urn:b']]], $sent);
+    }
+
+    /**
+     * The broker answers 207 if it did not delete some entities. The result
+     * gives the reason for each id. The method skips an error without an id.
+     */
+    public function testItGivesTheEntitiesThatTheBrokerDidNotDelete(): void
+    {
+        $errors = [
+            ['entityId' => 'urn:b', 'error' => ['type' => 'https://uri.etsi.org/ngsi-ld/errors/ResourceNotFound', 'title' => 'Entity not found']],
+            ['entityId' => 'urn:c', 'error' => []],
+            ['error' => ['title' => 'An error without an entity']],
+            'not an error',
+        ];
+        $client = new MockHttpClient([new MockResponse(json_encode(['success' => ['urn:a'], 'errors' => $errors], \JSON_THROW_ON_ERROR), ['http_code' => 207])]);
+
+        $rejected = new NgsiLdBroker($client, 'http://broker.example')->delete(['urn:a', 'urn:b', 'urn:c']);
+
+        $this->assertSame(['urn:b' => 'Entity not found', 'urn:c' => 'no reason given'], array_map(static fn (Rejection $rejection): string => $rejection->reason, $rejected));
     }
 
     public function testItFailsWhenTheBrokerRejectsTheRead(): void

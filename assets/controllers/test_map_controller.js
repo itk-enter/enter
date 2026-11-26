@@ -14,9 +14,6 @@ const ZOOM = 11;
 /* The prefix of a source layer id. */
 const LAYER_PREFIX = "source-";
 
-/* The maximum number of entities for each broker request. */
-const PAGE_SIZE = 1000;
-
 /* The stroke around each point and area. */
 const STROKE_COLOUR = "#212121";
 const STROKE_WIDTH = 1.5;
@@ -46,53 +43,22 @@ function createMap(container) {
     });
 }
 
-/* Gives the URL of the next page, or null on the last page. */
-function nextPage(response, url) {
-    const match = /<([^>]*)>[^,]*rel="next"/.exec(
-        response.headers.get("link") ?? "",
-    );
-
-    if (match === null) {
-        return null;
-    }
-
-    const next = new URL(url);
-    next.search = new URL(match[1], url).search;
-
-    return next;
-}
-
-/* Reads the entities of a source from the broker into a GeoJSON collection. */
+/* Reads the entities of a source into a GeoJSON collection. */
 async function loadFeatures(source) {
-    const features = [];
+    const response = await fetch(source.features_url, {
+        headers: { accept: "application/geo+json" },
+    });
 
-    let url = new URL(source.entities_url, window.location.href);
-    url.searchParams.set("type", source.model);
-    url.searchParams.set("format", "simplified");
-    url.searchParams.set("limit", PAGE_SIZE);
-
-    while (url !== null) {
-        const response = await fetch(url, {
-            headers: {
-                accept: "application/geo+json",
-                link: `<${source.context_url}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`,
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`${url} answered ${response.status}`);
-        }
-
-        const page = ((await response.json()).features ?? []).map(
-            (feature) => ({
-                ...feature,
-                properties: { ...feature.properties, id: feature.id },
-            }),
-        );
-        features.push(...page);
-
-        url = nextPage(response, url);
+    if (!response.ok) {
+        throw new Error(`${source.features_url} answered ${response.status}`);
     }
+
+    const features = ((await response.json()).features ?? []).map(
+        (feature) => ({
+            ...feature,
+            properties: { ...feature.properties, id: feature.id },
+        }),
+    );
 
     return { type: "FeatureCollection", features };
 }

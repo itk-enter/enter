@@ -38,6 +38,11 @@ class PublicToiletTest extends TestCase
         $this->assertCount(3, $this->entities);
     }
 
+    public function testItSkipsARecordWithoutAnId(): void
+    {
+        $this->assertNull($this->source->createNgsiEntity(['id' => '', 'location' => ['lat' => '56.139321', 'long' => '10.207297']], new Wgs84Transformer()));
+    }
+
     public function testItAddressesEntitiesById(): void
     {
         $this->assertSame(

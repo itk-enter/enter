@@ -35,4 +35,11 @@ class FeedTest extends TestCase
         $this->assertSame(\strlen(self::BODY), $feed->getSize());
         $this->assertNull($feed->getContentType());
     }
+
+    public function testItKeepsTheTimeOfTheFirstRead(): void
+    {
+        $feed = new Feed(self::BODY, 'application/json', new \DateTimeImmutable('2026-11-05 01:00:00 UTC'));
+
+        $this->assertEquals(new \DateTimeImmutable('2026-11-05 01:00:00 UTC'), $feed->getFirstReadAt());
+    }
 }

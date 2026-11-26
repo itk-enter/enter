@@ -10,6 +10,7 @@ use App\Conflation\Lookup\LookupHandler;
 use App\Conflation\Lookup\LookupMessage;
 use App\Tests\Conflation\Fixtures\NearestAddress;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\AbstractLogger;
 use Psr\Log\NullLogger;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -123,6 +124,38 @@ class LookupHandlerTest extends TestCase
         ($this->handler(null))(self::message(10.21));
 
         $this->assertSame([], $this->updates);
+    }
+
+    /**
+     * The entity can go away between the read and the write. Then the
+     * handler logs that it skipped the check.
+     */
+    public function testItSkipsAnEntityThatGoesAwayBeforeTheWrite(): void
+    {
+        $client = new MockHttpClient(static fn (string $method): MockResponse => 'POST' === $method
+            ? new MockResponse('', ['http_code' => 404])
+            : new MockResponse(json_encode(self::entity(10.21), \JSON_THROW_ON_ERROR)));
+        $logger = new class extends AbstractLogger {
+            /** @var list<string> */
+            public array $messages = [];
+
+            public function log($level, \Stringable|string $message, array $context = []): void
+            {
+                $this->messages[] = $level.': '.$message;
+            }
+        };
+        $handler = new LookupHandler(
+            new ServiceLocator([NearestAddress::class => static fn (): NearestAddress => new NearestAddress()]),
+            new NgsiLdBroker($client, 'http://broker.example'),
+            new Location(),
+            new MockClock('2026-11-20T12:00:00Z'),
+            $logger,
+        );
+
+        $handler(self::message(10.21));
+
+        $this->assertSame(['info: Skipped lookup {lookup} for {entity}: the entity does not exist.'], $logger->messages);
+        $this->assertSame(2, $client->getRequestsCount());
     }
 
     public function testItIgnoresAnEntityThatHasMoved(): void

@@ -45,4 +45,11 @@ class RecordTest extends TestCase
 
         Record::fromGeometry('A-1', 'data-set-a', ['type' => 'Point', 'coordinates' => []]);
     }
+
+    public function testAPositionOutsideWgs84IsRejected(): void
+    {
+        $this->expectExceptionMessage('Record A-1 is not a WGS84 position: (565000.000000, 6225000.000000).');
+
+        new Record('A-1', 'data-set-a', 565000, 6225000);
+    }
 }

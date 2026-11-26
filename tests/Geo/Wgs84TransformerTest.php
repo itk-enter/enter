@@ -60,6 +60,14 @@ class Wgs84TransformerTest extends TestCase
         );
     }
 
+    public function testItPassesThroughCoordinatesThatStayInWgs84(): void
+    {
+        $this->assertSame(
+            [10.199512, 56.149753],
+            $this->transformer->fromWgs84(Wgs84Transformer::TARGET_SRID, 10.199512, 56.149753)
+        );
+    }
+
     public function testItSupportsAnotherRegisteredCrs(): void
     {
         // UTM zone 33N: same northing, easting near the zone's central
@@ -161,6 +169,13 @@ class Wgs84TransformerTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $this->transformer->transformGeometry(self::UTM32, ['type' => 'Point']);
+    }
+
+    public function testItRejectsAGeometryWithEmptyCoordinates(): void
+    {
+        $this->expectExceptionMessage('GeoJSON coordinates must be a non-empty array.');
+
+        $this->transformer->transformGeometry(self::UTM32, ['type' => 'LineString', 'coordinates' => []]);
     }
 
     public function testItRejectsAGeometryCollection(): void
