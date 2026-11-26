@@ -38,6 +38,11 @@ class ToiletCityTest extends TestCase
         $this->assertCount(3, $this->entities);
     }
 
+    public function testItSkipsARecordWithoutPropertiesOrGeometry(): void
+    {
+        $this->assertNull($this->source->createNgsiEntity(['type' => 'Feature', 'properties' => ['mi_prinx' => 1]], new Wgs84Transformer()));
+    }
+
     public function testItAddressesEntitiesByThePrimaryKey(): void
     {
         $this->assertSame(

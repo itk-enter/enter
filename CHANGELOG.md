@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-188](https://github.com/itk-enter/enter/pull/188)
+  Added a test coverage check to CI
 * [PR-186](https://github.com/itk-enter/enter/pull/186)
   Streamlined the calls to the broker
 * [PR-194](https://github.com/itk-enter/enter/pull/194)

@@ -111,13 +111,6 @@ final class NgsiEntity
         return $this;
     }
 
-    public function relationship(string $name, string $object): self
-    {
-        $this->attributes[$name] = ['type' => 'Relationship', 'object' => $object];
-
-        return $this;
-    }
-
     /**
      * @param list<string> $contextUrls
      *

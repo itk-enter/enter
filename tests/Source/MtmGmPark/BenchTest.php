@@ -36,6 +36,11 @@ class BenchTest extends TestCase
         $this->assertCount(2, $this->entities);
     }
 
+    public function testItSkipsARecordWithoutPropertiesOrGeometry(): void
+    {
+        $this->assertNull(new Bench()->createNgsiEntity(['type' => 'Feature', 'properties' => ['elementid' => 'B-1']], new Wgs84Transformer()));
+    }
+
     public function testItGivesEachBenchAnIdFromTheRegister(): void
     {
         $this->assertSame('urn:ngsi-ld:Bench:aarhus-bench-gmpark-1bf07439-7f4c-4d38-947c-a21016305949', $this->entities[0]['id']);

@@ -164,6 +164,15 @@ class BenchTest extends TestCase
         $this->assertTrue($entity['lyingDown']['value']);
     }
 
+    public function testItMapsBothSpellingsOfSeparatedSeats(): void
+    {
+        $bench = ['type' => 'node', 'id' => 1, 'lat' => 56.15, 'lon' => 10.21, 'tags' => ['amenity' => 'bench', 'hostile_architecture' => 'separated_seats;separate_seats']];
+
+        $entity = new Bench()->createNgsiEntity($bench, new Wgs84Transformer());
+
+        $this->assertSame(['separatedSeats'], $entity?->attribute('hostileArchitecture')['value'] ?? null);
+    }
+
     public function testItMapsAnUnknownHostileFeatureToOtherAndIgnoresNo(): void
     {
         $this->assertSame(['spikes', 'other'], $this->entities[7]['hostileArchitecture']['value']);

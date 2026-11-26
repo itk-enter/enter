@@ -167,6 +167,28 @@ class ImportRecorderTest extends TestCase
         $this->assertSame('Connection refused', $logs[0][2]['message']);
     }
 
+    public function testAFailureToReadTheStoredFeedsIsLoggedAndTheImportContinues(): void
+    {
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('find')->willThrowException(new \RuntimeException('Connection refused'));
+        $recorder = new ImportRecorder($entityManager, $this->clock, $this->logger);
+        $recorder->onSourceImportStarted(new SourceImportStartedEvent(new ToiletCity()));
+
+        $recorder->recordFeed(new ToiletCity(), new FeedResponse(self::BODY, 'application/json'));
+
+        $logs = $this->logger->cleanLogs();
+        $this->assertCount(1, $logs);
+        $this->assertSame('error', $logs[0][0]);
+        $this->assertSame('Connection refused', $logs[0][2]['message']);
+    }
+
+    public function testTheEndOfAnImportThatDidNotStartIsNotRecorded(): void
+    {
+        $this->recorder()->onSourceImportFinished(new SourceImportFinishedEvent(new ToiletCity(), new \RuntimeException('Feed unreachable')));
+
+        $this->assertSame([], $this->persisted);
+    }
+
     private function recorder(): ImportRecorder
     {
         $entityManager = $this->createStub(EntityManagerInterface::class);
