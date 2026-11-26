@@ -1,15 +1,30 @@
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon
     - vendor/phpstan/phpstan-doctrine/rules.neon
+    - vendor/spaze/phpstan-disallowed-calls/extension.neon
 
 parameters:
     level: 6
     paths:
         - bin/
         - config/
+        - migrations/
         - public/
         - src/
         - tests/
+
+    # A migration changes the schema with the Schema API of Doctrine, so
+    # Doctrine writes the SQL. These calls send SQL that we write ourselves.
+    disallowedMethodCalls:
+        - method: 'Doctrine\Migrations\AbstractMigration::addSql()'
+          message: "use the Schema API of Doctrine"
+        - method:
+              - 'Doctrine\DBAL\Connection::executeStatement()'
+              - 'Doctrine\DBAL\Connection::executeQuery()'
+              - 'Doctrine\DBAL\Connection::prepare()'
+          message: "use the Schema API of Doctrine in a migration"
+          allowExceptIn:
+              - migrations/*
 
     scanDirectories:
         - vendor/itamair/geophp/lib
