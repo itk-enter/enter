@@ -203,6 +203,40 @@ class ShapeTest extends TestCase
         Shape::distance(self::point(0, 0), ['type' => 'GeometryCollection', 'geometries' => []]);
     }
 
+    public function testItRejectsAnEmptyGeometry(): void
+    {
+        $this->expectExceptionMessage('Cannot use a geometry of type MultiPolygon.');
+
+        Shape::contains(['type' => 'MultiPolygon', 'coordinates' => []], ...self::at(0, 0));
+    }
+
+    /**
+     * An area of one point has no rectangle around it, and thus no centre
+     * line. Then each position is that point.
+     */
+    public function testPositionsInAnAreaOfOnePointAreThatPoint(): void
+    {
+        $point = self::at(0, 0);
+        $area = ['type' => 'Polygon', 'coordinates' => [[$point, $point, $point, $point]]];
+
+        $this->assertEqualsWithDelta([$point, $point], Shape::spread($area, 2), 1e-9);
+    }
+
+    /**
+     * Shape keeps the geometries that it loaded, up to a limit. After the
+     * limit it starts again, and the answers stay correct.
+     */
+    public function testTheLoadedGeometriesHaveALimit(): void
+    {
+        $area = ['type' => 'Polygon', 'coordinates' => [[self::at(200, 0), self::at(220, 0), self::at(220, 4), self::at(200, 4), self::at(200, 0)]]];
+        for ($metres = 0; $metres <= 1000; ++$metres) {
+            Shape::centroid(['type' => 'Point', 'coordinates' => self::at(300 + $metres, 0)]);
+        }
+
+        $this->assertLessThanOrEqual(1000, \count(new \ReflectionProperty(Shape::class, 'geometries')->getValue()));
+        $this->assertEqualsWithDelta(3.0, Shape::distance(self::point(210, 7), $area), 1e-6);
+    }
+
     public function testItSpreadsPositionsOnlyAlongALineOrInAnArea(): void
     {
         $this->expectException(\InvalidArgumentException::class);

@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Test\Source\MtmSpatialMaps;
 
-use App\Geo\Wgs84Transformer;
-use App\Ngsi\NgsiEntity;
 use App\Source\DataType;
+use App\Source\MtmSpatialMaps\AbstractParkingSpot;
 use App\Test\Source\TestDefinition;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
@@ -34,30 +33,9 @@ use Symfony\Component\DependencyInjection\Attribute\When;
         'mi_style' => 'MapInfo rendering style, empty throughout the export.',
     ],
     dataUrlBase: 'https://webkort.aarhuskommune.dk/spatialmap?page=get_geojson_opendata&datasource=invap',
-    dataset: self::DATASET,
-    datasetTitle: self::DATASET_TITLE,
+    dataset: 'test:mtm_spatialmaps-handicap-parking',
+    datasetTitle: 'Test: Handicapparkering (MTM), Aarhus Kommune',
 )]
-final class TestParkingSpot extends AbstractTestHandicapParking
+final class TestParkingSpot extends AbstractParkingSpot
 {
-    protected function supports(array $properties): bool
-    {
-        return 1 === $this->bays($properties);
-    }
-
-    protected function getModel(array $properties): string
-    {
-        return self::PARKING_SPOT;
-    }
-
-    protected function getKey(array $properties): string
-    {
-        return (string) ($properties['mi_prinx'] ?? '');
-    }
-
-    protected function buildNgsiEntity(array $properties, array $geometry, Wgs84Transformer $transformer): NgsiEntity
-    {
-        return parent::buildNgsiEntity($properties, $geometry, $transformer)
-            ->setProperty('status', 'unknown')
-            ->setProperty('category', ['onStreet']);
-    }
 }

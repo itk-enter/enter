@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{#
+    The page of one merged data set: the conflicts of the last run of its merge.
+    Variables: data_set (a MergedDataSet) and overview (a ConflictOverview, or null if the broker is not available).
+#}
+
+{% block title %}{{ data_set.title }}{% endblock %}
+
+{% block header %}
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [
+            {label: 'Home', url: path('app_default')},
+            {label: 'Data sources', url: path('app_sources') ~ '#' ~ data_set.id},
+        ],
+        current: data_set.title,
+    }) }}
+{% endblock %}
+
+{#
+    A list of horizontal bars, one for each count. The bar is as long as the share of the count in the total. The
+    labels give the text of each key, and the key itself is the text if labels is null or does not have the key.
+#}
+{% macro bars(counts, total, labels = null) %}
+    <ul class="list-unstyled conflict-bars">
+        {% for key, count in counts %}
+            <li class="conflict-bar">
+                <span class="conflict-bar-label">{{ labels[key] ?? key }}</span>
+                <span class="conflict-bar-track" aria-hidden="true"><span class="conflict-bar-fill" style="width: {{ (100 * count / total)|round(1) }}%"></span></span>
+                <span class="conflict-bar-count">{{ count|number_format }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% block content %}
+    <p class="page-meta">
+        <code>{{ data_set.id }}</code> · Model
+        {% if data_set.modelUrl %}
+            <a href="{{ data_set.modelUrl }}"><code>{{ data_set.model }}</code></a>
+        {% else %}
+            <code>{{ data_set.model }}</code>
+        {% endif %}
+        · Merged from {{ data_set.inputs|length }} {{ data_set.inputs|length == 1 ? 'data set' : 'data sets' }}
+    </p>
+
+    <p class="page-intro">
+        A conflict is an attribute that the data sets state with different values, and that no approach of the merge
+        settles. The merged entity does not have the attribute. It keeps the values of the data sets in
+        <code>additionalInformation.conflicts</code>. The page shows the merged entities that the last run of the merge
+        published.
+    </p>
+
+    {% if overview is null %}
+        <p class="text-body-secondary">The broker is not available, so the page cannot show the conflicts.</p>
+    {% elseif overview.entities is empty %}
+        <div class="conflict-summary">
+            <span class="itkaarhus-tag itkaarhus-tag--success">No conflicts</span>
+            <span>The merge settled each attribute that the data sets disagree on.</span>
+        </div>
+    {% else %}
+        {% set attributes = overview.attributes %}
+        {% set entities = overview.entities %}
+        <div class="conflict-summary">
+            <span class="itkaarhus-tag itkaarhus-tag--warning">{{ entities|length|number_format }} {{ entities|length == 1 ? 'conflict' : 'conflicts' }}</span>
+            <span><b>{{ entities|length|number_format }}</b> merged {{ entities|length == 1 ? 'entity has' : 'entities have' }} a conflict</span>
+            <span><b>{{ attributes|length }}</b> {{ attributes|length == 1 ? 'attribute' : 'attributes' }} in conflict</span>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-xl-7">
+                <h2 class="h4">Where the conflicts are</h2>
+                <div
+                    class="conflict-map"
+                    data-controller="conflict-map"
+                    data-conflict-map-features-value="{{ overview.featureCollection|json_encode }}"
+                    role="region"
+                    aria-label="Map of the merged entities with conflicts"
+                ></div>
+                <p class="small text-body-secondary mt-1">Select a point to see the attributes in conflict.</p>
+            </div>
+
+            <div class="col-xl-5">
+                <h2 class="h4">Attributes in conflict</h2>
+                <p class="small text-body-secondary">The number of merged entities with a conflict on each attribute.</p>
+                {{ _self.bars(attributes, entities|length) }}
+
+                <h2 class="h4 mt-4">Data sets in the conflicts</h2>
+                <p class="small text-body-secondary">The number of conflicts that each data set states a value in.</p>
+                {{ _self.bars(overview.dataSets, attributes|reduce((sum, count) => sum + count, 0), overview.dataSetTitles) }}
+            </div>
+        </div>
+
+        <h2 class="h4 mt-4">Merged entities with conflicts</h2>
+        {% for number, entity in entities %}
+            <section class="itkaarhus-card fold-card conflict-entity" id="conflict-{{ number }}">
+                <h3 class="visually-hidden">{{ entity.title }}</h3>
+                <details>
+                    <summary class="fold-card-summary">
+                        <span class="fold-card-title">{{ entity.title }}</span>
+                        <span class="source-card-status">
+                            {% for attribute in entity.conflicts|keys %}
+                                <code>{{ attribute }}</code>
+                            {% endfor %}
+                        </span>
+                    </summary>
+                    <div class="fold-card-body">
+                        <p class="small text-body-secondary"><code class="text-break">{{ entity.id }}</code></p>
+                        <dl class="fold-card-facts">
+                            {% for attribute, values in entity.conflicts %}
+                                <dt><code>{{ attribute }}</code></dt>
+                                <dd>
+                                    <ul class="list-unstyled mb-0 conflict-values">
+                                        {% for stated in values %}
+                                            <li>
+                                                <b>{{ stated.value|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES')) }}</b>
+                                                from {{ overview.dataSetTitle(stated.dataSet) }}
+                                                <span class="conflict-record" title="The entity in the data set">{{ stated.entity }}</span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </details>
+            </section>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

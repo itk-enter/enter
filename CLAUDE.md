@@ -31,6 +31,8 @@ The data sets are published on `/sources` and `/sources.json`. The `/test` page 
   and `APP_BROKER_BASE_URI`.
 - **Symfony HttpClient** reads the feeds and calls the broker. **Monolog** logs.
 - **Twig**, **Stimulus** and **AssetMapper** (`importmap.php`) make the front end. **MapLibre GL** draws the map.
+- The pages use the [ITK Aarhus design system](https://itk-dev.github.io/itkaarhus-design-system/) on top of
+  **Bootstrap 5**. The Composer package `itk-dev/itkaarhus-design-system` supplies `tokens.css` and `components.css`.
 - **proj4php** and **geoPHP** reproject and measure geometries.
 - **Symfony Messenger** sends messages to **RabbitMQ** (`rabbit`). On the server, the `supervisor` service runs the
   worker. In development, run `bin/console messenger:consume --all` in `phpfpm`.
@@ -94,10 +96,17 @@ task coding-standards:php:check      # also php, twig, yaml, markdown, assets, c
 task coding-standards:php:apply      # each check has an apply task
 task code-analysis                   # PHPStan
 task test                            # PHPUnit, one task for each folder in tests/
+task test:coverage                   # all the tests, with a check of the code coverage
+task test:coverage:html              # all the tests, with the coverage as HTML in var/coverage/html/
 ```
 
 `task test` does not run `tests/Merge` and `tests/Unit`. To run all the tests, use
 `docker compose exec phpfpm vendor/bin/phpunit`.
+
+CI requires 100 % code coverage of `src/`. If you add or change code in `src/`, run `task test:coverage`. If the
+coverage is too low, run `task test:coverage:html` and open `var/coverage/html/index.html` to see the lines that no
+test runs. Write a test for each of these lines. If no code calls a line, remove it. If a line cannot run in a test,
+put `// @codeCoverageIgnore` after it, with the reason.
 
 ### Tests are not modified without approval
 
@@ -207,6 +216,16 @@ Give `@param` and `@return` when they tell more than the signature, for example 
   without the prefix reads only the published data sets. Test classes are in `src/Test/` and are registered only in
   `dev` and `test`.
 - Do not write an ADR for a new source. Write an ADR only for a decision that applies to more than one source.
+
+### Pages follow the design system
+
+The pages follow the [ITK Aarhus design system](https://itk-dev.github.io/itkaarhus-design-system/). Read its
+`README.md` in `vendor/itk-dev/itkaarhus-design-system/` before you change a page.
+
+- Use the `--itkaarhus-*` tokens for colours, type sizes, spacing, radii and shadows. Do not write a hex colour in CSS.
+- Use an `.itkaarhus-*` component class, for example a tag, a button or a card, before you write new CSS.
+- `assets/styles/app.css` sets the Bootstrap variables to the tokens. Thus the Bootstrap classes match the tokens.
+- Give each page the shared header `_page_header.html.twig`, with breadcrumbs from "Home".
 
 ## Branching and PRs
 

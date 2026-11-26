@@ -10,6 +10,7 @@ use App\Import\Exception\UpsertFailedException;
 use App\Import\ImportResult;
 use App\Import\PayloadHash;
 use App\Ngsi\NgsiEntity;
+use App\Ngsi\ReservedNameException;
 use App\Source\SourceInterface;
 use App\SourceReader\SourceReaderInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -228,6 +229,13 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     }
 
     /**
+     * Reads the entities of the source. A record that the source cannot read
+     * is skipped and logged.
+     *
+     * A reserved name is a defect in the mapping, not in the record. Thus it
+     * stops the import. If the import skipped the records, the sweep would
+     * delete their entities from the broker.
+     *
      * @return iterable<NgsiEntity>
      */
     private function read(SourceInterface $source): iterable
@@ -240,6 +248,8 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                 if ($entity = $source->createNgsiEntity($item, $this->transformer)) {
                     yield $entity;
                 }
+            } catch (ReservedNameException $e) {
+                throw $e;
             } catch (\Exception $e) {
                 $this->error('Skipped a record of {source}: {message}', ['source' => $source->definition->id, 'message' => $e->getMessage()]);
             }
