@@ -10,8 +10,9 @@ namespace App\Import\History;
 enum ImportStatus: string
 {
     /**
-     * The import started and did not finish yet. If the worker stops during
-     * the import, the status stays running.
+     * The import started and did not finish yet. If the process stops during
+     * the import, the status stays running until the next import of the
+     * source starts. Then StaleImportCloser marks it as failed.
      */
     case Running = 'running';
 
