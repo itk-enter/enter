@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [],
+        current: block('title'),
+    }) }}
+{% endblock %}
+
+{% block content %}
+    <nav class="link-boxes" aria-label="Pages">
+        <a class="itkaarhus-card link-box" href="{{ path('app_sources') }}">
+            <span class="itkaarhus-card__body">
+                <span class="itkaarhus-card__title link-box-title">Data sources</span>
+                <span class="itkaarhus-card__excerpt">Data sets, sources and import history</span>
+            </span>
+        </a>
+        <a class="itkaarhus-card link-box" href="{{ path('app_default', {path: 'api'}) }}">
+            <span class="itkaarhus-card__body">
+                <span class="itkaarhus-card__title link-box-title">API</span>
+                <span class="itkaarhus-card__excerpt">Example requests to the NGSI-LD API</span>
+            </span>
+        </a>
+        {% if 'dev' == app.environment %}
+            <a class="itkaarhus-card link-box" href="{{ path('test_default') }}">
+                <span class="itkaarhus-card__body">
+                    <span class="itkaarhus-card__title link-box-title">Test map</span>
+                    <span class="itkaarhus-card__excerpt">View data sets on a map</span>
+                </span>
+            </a>
+        {% endif %}
+    </nav>
+{% endblock %}

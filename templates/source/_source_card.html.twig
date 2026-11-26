@@ -1,0 +1,140 @@
+{#
+    One source on /sources. The closed card shows the title, the entities that came and went since the first import,
+    and the status of the last import. The open card adds the figures of the period and the facts about the source.
+    Variables: source, history (a SourceHistory, or null), totals (the {added, removed} of all the imports, or null),
+    idle (true if the history has no import of the source) and entities_url (the broker URL of the entities of the
+    source).
+    The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in
+    a button. The heading is visually hidden, and the summary shows the title.
+#}
+{% import 'source/_history_macros.html.twig' as h %}
+{% set definition = source.definition %}
+<section class="itkaarhus-card fold-card{{ idle ? ' source-card-idle' }}" id="{{ definition.id }}">
+    <h3 class="visually-hidden">{{ definition.title }}</h3>
+    <details>
+        <summary class="fold-card-summary">
+            <span class="fold-card-title">{{ definition.title }}</span>
+            {% if history %}
+                {% set last = history.lastImport %}
+                {% set success = history.lastSuccess %}
+                <span class="source-card-entities" title="{{ success ? 'At the last successful import, ' ~ success.startedAt|date('Y-m-d H:i') : 'No import succeeded' }}">
+                    <b>{{ success ? success.upserted|number_format : '–' }}</b> entities
+                </span>
+                <span class="source-card-change" title="Entities added and removed by all the imports, without full loads">
+                    {{ h.change(totals.added ?? 0, '+', 'import-change-added') }}
+                    {{ h.change(totals.removed ?? 0, '−', 'import-change-removed') }}
+                </span>
+                <span class="source-card-status">
+                    <span class="source-card-state">{{ h.status(last) }}</span>
+                    <span class="source-card-ago" title="{{ last.startedAt|date('Y-m-d H:i') }}">{{ h.duration(history.sinceLastImport) }} ago</span>
+                </span>
+            {% elseif idle %}
+                <span class="source-card-status">No import</span>
+            {% endif %}
+        </summary>
+
+        <div class="fold-card-body">
+            {% if history %}
+                {% set success = history.lastSuccess %}
+                <div class="source-figures">
+                    {% if success and success.rejected %}
+                        <span class="source-figure"><b class="text-danger-emphasis">{{ success.rejected|number_format }}</b> rejected at the last import</span>
+                    {% endif %}
+                    <span class="source-figure-period">Last {{ history.days|length }} days</span>
+                    <span class="source-figure">
+                        <b>{{ history.imports|length }}</b> {{ history.imports|length == 1 ? 'import' : 'imports' }}
+                        {%- if history.failed %}, <b class="text-danger-emphasis">{{ history.failed }}</b> failed{% endif %}
+                    </span>
+                    {% if history.importInterval is not null %}
+                        <span class="source-figure"><b>{{ h.duration(history.importInterval) }}</b> between imports</span>
+                    {% endif %}
+                    <span class="source-figure" title="{{ history.lastDataChange ? 'The last at ' ~ history.lastDataChange.startedAt|date('Y-m-d H:i') : 'The data did not change' }}">
+                        <b>{{ history.dataChanges }}</b> data {{ history.dataChanges == 1 ? 'change' : 'changes' }}
+                    </span>
+                    {% if history.busiestDay > 0 %}
+                        <span class="source-figure source-figure-chart">
+                            {{ include('source/_history_chart.html.twig', {history: history, compact: true}, with_context: false) }}
+                        </span>
+                    {% endif %}
+                    <a class="itkaarhus-btn itkaarhus-btn--secondary itkaarhus-btn--sm source-figure-link" href="{{ path('app_source_show', {id: definition.id}) }}">Import history</a>
+                </div>
+                {% if history.lastImport.failure %}
+                    <p class="source-card-failure">{{ history.lastImport.failure }}</p>
+                {% endif %}
+            {% endif %}
+
+            <dl class="fold-card-facts source-facts">
+                <dt>Id</dt>
+                <dd><code>{{ definition.id }}</code></dd>
+
+                {% if definition.description %}
+                    <dt>Description</dt>
+                    <dd>{{ definition.description }}</dd>
+                {% endif %}
+
+                {% if definition.publisher %}
+                    <dt>Publisher</dt>
+                    <dd>{{ definition.publisher }}</dd>
+                {% endif %}
+
+                {% if definition.contact %}
+                    <dt>Contact</dt>
+                    <dd>{{ definition.contact }}</dd>
+                {% endif %}
+
+                {% if definition.landingPage %}
+                    <dt>Landing page</dt>
+                    <dd><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
+                {% endif %}
+
+                <dt>Access URL</dt>
+                <dd>
+                    <a href="{{ definition.accessUrlBase }}">{{ definition.accessUrlBase }}</a>
+                    {% if definition.accessUrlQuery %}
+                        <pre class="mt-2 mb-0">{{ definition.accessUrlQuery|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    {% endif %}
+                </dd>
+
+                <dt>Data type</dt>
+                <dd>{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
+
+                <dt>Model</dt>
+                <dd>
+                    {% if definition.modelUrl %}
+                        <a href="{{ definition.modelUrl }}"><code>{{ definition.model }}</code></a>
+                    {% else %}
+                        <code>{{ definition.model }}</code>
+                    {% endif %}
+                </dd>
+
+                <dt>Context</dt>
+                <dd><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
+
+                <dt>Entities</dt>
+                <dd><a href="{{ entities_url }}">{{ entities_url }}</a></dd>
+
+                {% if definition.updateFrequency %}
+                    <dt>Update frequency</dt>
+                    <dd>{{ definition.updateFrequency }}</dd>
+                {% endif %}
+
+                {% if definition.licence %}
+                    <dt>Licence</dt>
+                    <dd><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
+                {% endif %}
+
+                {% if definition.omittedFields %}
+                    <dt>Omitted fields</dt>
+                    <dd>
+                        <dl class="mb-0">
+                            {% for field, reason in definition.omittedFields %}
+                                <dt><code>{{ field }}</code></dt>
+                                <dd>{{ reason }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </dd>
+                {% endif %}
+            </dl>
+        </div>
+    </details>
+</section>

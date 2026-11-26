@@ -1,0 +1,8651 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-11-01T12:12:21Z",
+    "timestamp_areas_base": "2026-11-01T07:10:31Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 449205911,
+  "lat": 56.0870571,
+  "lon": 10.2298122,
+  "tags": {
+    "armrest": "no",
+    "backrest": "no",
+    "bench": "yes",
+    "check_date": "2026-05-02",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood",
+    "wikimedia_commons": "File:Moesgård shelter.jpg"
+  }
+},
+{
+  "type": "node",
+  "id": 757449569,
+  "lat": 56.1019287,
+  "lon": 10.1689807,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 3508282193,
+  "lat": 56.1396281,
+  "lon": 10.2205171,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 3613023234,
+  "lat": 56.1262229,
+  "lon": 10.0252641,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 3613067012,
+  "lat": 56.1358233,
+  "lon": 10.0609926,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 3631896360,
+  "lat": 56.0399880,
+  "lon": 10.2225698,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 3823274800,
+  "lat": 56.1476927,
+  "lon": 10.0890891,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 3970065107,
+  "lat": 56.1056797,
+  "lon": 10.2312656,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4308832454,
+  "lat": 56.1205648,
+  "lon": 10.1291283,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4308832455,
+  "lat": 56.1205954,
+  "lon": 10.1291397,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4317343219,
+  "lat": 56.1461088,
+  "lon": 10.1401363,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4317343220,
+  "lat": 56.1461091,
+  "lon": 10.1400954,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4478427117,
+  "lat": 56.2524026,
+  "lon": 10.3070088,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4478427129,
+  "lat": 56.2527625,
+  "lon": 10.3051699,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4548866518,
+  "lat": 56.1563299,
+  "lon": 10.1150155,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4732334667,
+  "lat": 56.0827079,
+  "lon": 10.1329381,
+  "tags": {
+    "check_date": "2021-05-15",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4732334668,
+  "lat": 56.0827222,
+  "lon": 10.1327946,
+  "tags": {
+    "check_date": "2021-05-15",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 4732334669,
+  "lat": 56.0827499,
+  "lon": 10.1328791,
+  "tags": {
+    "check_date": "2021-05-15",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 5657204439,
+  "lat": 56.1563696,
+  "lon": 10.2008471,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "sport": "chess"
+  }
+},
+{
+  "type": "node",
+  "id": 5669705762,
+  "lat": 56.0895365,
+  "lon": 10.2206205,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 5688421959,
+  "lat": 56.1745527,
+  "lon": 10.2275269,
+  "tags": {
+    "check_date": "2026-08-14",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 5694879727,
+  "lat": 56.0695645,
+  "lon": 10.1880299,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6000809647,
+  "lat": 56.2311934,
+  "lon": 10.1712685,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6000809648,
+  "lat": 56.2312274,
+  "lon": 10.1712294,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6461216995,
+  "lat": 56.2592893,
+  "lon": 10.1356657,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6461216996,
+  "lat": 56.2595389,
+  "lon": 10.1367310,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6461216997,
+  "lat": 56.2598200,
+  "lon": 10.1371769,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6796389246,
+  "lat": 56.1127096,
+  "lon": 10.2314259,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6900882820,
+  "lat": 56.2100877,
+  "lon": 10.1165146,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6900882821,
+  "lat": 56.2101160,
+  "lon": 10.1165313,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6900882846,
+  "lat": 56.2065526,
+  "lon": 10.1155597,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6926165374,
+  "lat": 56.1926121,
+  "lon": 10.1776335,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6926165377,
+  "lat": 56.1926066,
+  "lon": 10.1777846,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 6926165382,
+  "lat": 56.1926305,
+  "lon": 10.1778672,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7175605927,
+  "lat": 56.1887275,
+  "lon": 10.0115217,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7175605928,
+  "lat": 56.1887582,
+  "lon": 10.0115234,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7554309439,
+  "lat": 56.1844001,
+  "lon": 10.2133342,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7554309440,
+  "lat": 56.1844575,
+  "lon": 10.2134113,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7554309441,
+  "lat": 56.1843778,
+  "lon": 10.2134128,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7554309442,
+  "lat": 56.1846264,
+  "lon": 10.2134529,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7554309443,
+  "lat": 56.1844610,
+  "lon": 10.2135145,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7598629625,
+  "lat": 56.1512675,
+  "lon": 10.1071215,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7598629626,
+  "lat": 56.1513526,
+  "lon": 10.1069055,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7598629627,
+  "lat": 56.1512734,
+  "lon": 10.1069216,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7598629628,
+  "lat": 56.1512577,
+  "lon": 10.1067044,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761153973,
+  "lat": 56.1752901,
+  "lon": 10.0664002,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168733,
+  "lat": 56.1752722,
+  "lon": 10.0661378,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168738,
+  "lat": 56.1756843,
+  "lon": 10.0665933,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168739,
+  "lat": 56.1757410,
+  "lon": 10.0665879,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168740,
+  "lat": 56.1757168,
+  "lon": 10.0665564,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168741,
+  "lat": 56.1756328,
+  "lon": 10.0664337,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168742,
+  "lat": 56.1756074,
+  "lon": 10.0664022,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168743,
+  "lat": 56.1754256,
+  "lon": 10.0662929,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168744,
+  "lat": 56.1754025,
+  "lon": 10.0663861,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168745,
+  "lat": 56.1754432,
+  "lon": 10.0663901,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168746,
+  "lat": 56.1754644,
+  "lon": 10.0663358,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168747,
+  "lat": 56.1754876,
+  "lon": 10.0663640,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7761168748,
+  "lat": 56.1754674,
+  "lon": 10.0664210,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871393,
+  "lat": 56.1784881,
+  "lon": 10.0653977,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871394,
+  "lat": 56.1784721,
+  "lon": 10.0654607,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871395,
+  "lat": 56.1784381,
+  "lon": 10.0654312,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871396,
+  "lat": 56.1784247,
+  "lon": 10.0654842,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871397,
+  "lat": 56.1783855,
+  "lon": 10.0654560,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871398,
+  "lat": 56.1782140,
+  "lon": 10.0653625,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871399,
+  "lat": 56.1782222,
+  "lon": 10.0653246,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871400,
+  "lat": 56.1782060,
+  "lon": 10.0653095,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871401,
+  "lat": 56.1781983,
+  "lon": 10.0653404,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871402,
+  "lat": 56.1781925,
+  "lon": 10.0653679,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871403,
+  "lat": 56.1780996,
+  "lon": 10.0652525,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871404,
+  "lat": 56.1781156,
+  "lon": 10.0652622,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871405,
+  "lat": 56.1781360,
+  "lon": 10.0652797,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871406,
+  "lat": 56.1781839,
+  "lon": 10.0653065,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871407,
+  "lat": 56.1781774,
+  "lon": 10.0653410,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871408,
+  "lat": 56.1781294,
+  "lon": 10.0653112,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871409,
+  "lat": 56.1781095,
+  "lon": 10.0652988,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 7762871410,
+  "lat": 56.1780925,
+  "lon": 10.0652907,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8047581404,
+  "lat": 56.1664711,
+  "lon": 10.1552980,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8050544152,
+  "lat": 56.1851087,
+  "lon": 10.1859114,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8050544153,
+  "lat": 56.1851550,
+  "lon": 10.1858523,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8050544154,
+  "lat": 56.1851192,
+  "lon": 10.1857316,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8050544155,
+  "lat": 56.1851722,
+  "lon": 10.1856793,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8151205540,
+  "lat": 56.0960604,
+  "lon": 10.2444592,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8151499794,
+  "lat": 56.0871885,
+  "lon": 10.2258690,
+  "tags": {
+    "check_date": "2026-09-07",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 8151499795,
+  "lat": 56.0872056,
+  "lon": 10.2259347,
+  "tags": {
+    "check_date": "2026-09-07",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 8151499796,
+  "lat": 56.0872595,
+  "lon": 10.2261709,
+  "tags": {
+    "check_date": "2026-09-07",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 8151499797,
+  "lat": 56.0872446,
+  "lon": 10.2260953,
+  "tags": {
+    "check_date": "2026-09-07",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 8171290868,
+  "lat": 56.1238222,
+  "lon": 10.2188540,
+  "tags": {
+    "check_date": "2026-07-08",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8176474772,
+  "lat": 56.0883877,
+  "lon": 10.2197228,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8245291954,
+  "lat": 56.2086213,
+  "lon": 10.1201992,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8338226508,
+  "lat": 56.1364823,
+  "lon": 10.2066817,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8338226509,
+  "lat": 56.1365159,
+  "lon": 10.2066891,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8338226510,
+  "lat": 56.1365226,
+  "lon": 10.2066207,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8388076849,
+  "lat": 56.1213318,
+  "lon": 10.2185002,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8388076850,
+  "lat": 56.1213296,
+  "lon": 10.2184318,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8388076860,
+  "lat": 56.1228030,
+  "lon": 10.2177666,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8388076861,
+  "lat": 56.1228254,
+  "lon": 10.2179101,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8422163922,
+  "lat": 56.1938247,
+  "lon": 10.1945906,
+  "tags": {
+    "check_date": "2026-08-17",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 8425951219,
+  "lat": 56.1263814,
+  "lon": 10.0212425,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8425951220,
+  "lat": 56.1260254,
+  "lon": 10.0169342,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8436810123,
+  "lat": 56.2819670,
+  "lon": 10.3252579,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8454779418,
+  "lat": 56.2190268,
+  "lon": 10.2074549,
+  "tags": {
+    "check_date": "2026-10-02",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8454779423,
+  "lat": 56.2115984,
+  "lon": 10.2281059,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8815321409,
+  "lat": 56.1958161,
+  "lon": 10.1907634,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8815321411,
+  "lat": 56.1962686,
+  "lon": 10.1910732,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8815321412,
+  "lat": 56.1961499,
+  "lon": 10.1905996,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8815321413,
+  "lat": 56.1952750,
+  "lon": 10.1908223,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8827329566,
+  "lat": 56.1775046,
+  "lon": 10.2196350,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8827329567,
+  "lat": 56.1775309,
+  "lon": 10.2196310,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 8827329568,
+  "lat": 56.1775580,
+  "lon": 10.2196263,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9054283851,
+  "lat": 56.0682685,
+  "lon": 10.1858741,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9054307608,
+  "lat": 56.0662010,
+  "lon": 10.1787772,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9054307720,
+  "lat": 56.0861111,
+  "lon": 10.2304468,
+  "tags": {
+    "armrest": "no",
+    "backrest": "no",
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 9074742355,
+  "lat": 56.0802498,
+  "lon": 10.1329498,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9074758217,
+  "lat": 56.0830823,
+  "lon": 10.1359847,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9098741925,
+  "lat": 56.1695773,
+  "lon": 10.2198440,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9134456960,
+  "lat": 56.2978303,
+  "lon": 10.1515224,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9134456961,
+  "lat": 56.2977833,
+  "lon": 10.1516572,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9134456962,
+  "lat": 56.2977175,
+  "lon": 10.1518166,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9134456963,
+  "lat": 56.2977094,
+  "lon": 10.1518998,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9144795768,
+  "lat": 56.0424247,
+  "lon": 10.1032296,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9147662919,
+  "lat": 56.1505202,
+  "lon": 10.1068150,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9209048882,
+  "lat": 56.2066201,
+  "lon": 10.0509872,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9209048883,
+  "lat": 56.2066216,
+  "lon": 10.0510294,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9209048884,
+  "lat": 56.2065120,
+  "lon": 10.0509376,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9209048885,
+  "lat": 56.2063967,
+  "lon": 10.0508484,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9209048890,
+  "lat": 56.2082371,
+  "lon": 10.0484218,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9276968100,
+  "lat": 56.1503704,
+  "lon": 10.1422910,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9277422010,
+  "lat": 56.1797740,
+  "lon": 10.0036309,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9277422011,
+  "lat": 56.1797647,
+  "lon": 10.0035813,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9343666963,
+  "lat": 56.2036948,
+  "lon": 10.2338899,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9343666964,
+  "lat": 56.2036565,
+  "lon": 10.2338191,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9343666965,
+  "lat": 56.2045941,
+  "lon": 10.2323357,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9343666966,
+  "lat": 56.2045948,
+  "lon": 10.2324188,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9414939164,
+  "lat": 56.1713393,
+  "lon": 10.0949687,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9414939165,
+  "lat": 56.1721200,
+  "lon": 10.0972350,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9414939166,
+  "lat": 56.1722744,
+  "lon": 10.0969146,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9414939167,
+  "lat": 56.1698752,
+  "lon": 10.0967333,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9415344892,
+  "lat": 56.2104288,
+  "lon": 10.0249868,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9417069298,
+  "lat": 56.1627296,
+  "lon": 10.1980709,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9417069299,
+  "lat": 56.1627311,
+  "lon": 10.1980957,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9417069300,
+  "lat": 56.1627321,
+  "lon": 10.1981815,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9417069301,
+  "lat": 56.1627129,
+  "lon": 10.1981788,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9417069302,
+  "lat": 56.1626878,
+  "lon": 10.1981664,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9417069303,
+  "lat": 56.1626626,
+  "lon": 10.1980373,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9424682688,
+  "lat": 56.1675002,
+  "lon": 9.9981001,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9459892987,
+  "lat": 56.1825605,
+  "lon": 10.1765656,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9465602325,
+  "lat": 56.1679429,
+  "lon": 10.1295058,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9465602360,
+  "lat": 56.1672688,
+  "lon": 10.1287921,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9465667950,
+  "lat": 56.1694114,
+  "lon": 10.1350797,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9465667951,
+  "lat": 56.1700057,
+  "lon": 10.1344166,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9466300138,
+  "lat": 56.1696820,
+  "lon": 10.1232035,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9502029774,
+  "lat": 56.2024370,
+  "lon": 10.2064997,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9502029775,
+  "lat": 56.2018876,
+  "lon": 10.2074262,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9502029776,
+  "lat": 56.2019186,
+  "lon": 10.2073753,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9523607606,
+  "lat": 56.2958974,
+  "lon": 10.1486215,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9523631727,
+  "lat": 56.3018990,
+  "lon": 10.1379834,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9523641523,
+  "lat": 56.3018414,
+  "lon": 10.1380635,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9523641529,
+  "lat": 56.3017041,
+  "lon": 10.1375855,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9523916818,
+  "lat": 56.1714362,
+  "lon": 10.0777360,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9523916819,
+  "lat": 56.1713965,
+  "lon": 10.0777535,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9524116075,
+  "lat": 56.1723243,
+  "lon": 10.0803010,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9544469688,
+  "lat": 56.1583080,
+  "lon": 10.2154088,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9544502010,
+  "lat": 56.1563671,
+  "lon": 10.2007908,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "sport": "chess"
+  }
+},
+{
+  "type": "node",
+  "id": 9544502011,
+  "lat": 56.1563721,
+  "lon": 10.2009039,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "sport": "chess"
+  }
+},
+{
+  "type": "node",
+  "id": 9544502012,
+  "lat": 56.1563746,
+  "lon": 10.2009603,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "sport": "chess"
+  }
+},
+{
+  "type": "node",
+  "id": 9544502013,
+  "lat": 56.1563771,
+  "lon": 10.2010163,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "sport": "chess"
+  }
+},
+{
+  "type": "node",
+  "id": 9551834474,
+  "lat": 56.2014665,
+  "lon": 10.1994792,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9551834475,
+  "lat": 56.2014267,
+  "lon": 10.1997033,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9559895302,
+  "lat": 56.1441061,
+  "lon": 10.1903987,
+  "tags": {
+    "check_date": "2026-10-07",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9559895303,
+  "lat": 56.1439643,
+  "lon": 10.1901535,
+  "tags": {
+    "backrest": "yes",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9561959684,
+  "lat": 56.1432945,
+  "lon": 10.1888313,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 9561959685,
+  "lat": 56.1433908,
+  "lon": 10.1891169,
+  "tags": {
+    "check_date": "2026-10-07",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9561959686,
+  "lat": 56.1434491,
+  "lon": 10.1892328,
+  "tags": {
+    "check_date": "2026-10-07",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9562129340,
+  "lat": 56.0660224,
+  "lon": 10.1722889,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9565819547,
+  "lat": 56.1708353,
+  "lon": 10.0412055,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9577120615,
+  "lat": 56.0883354,
+  "lon": 10.2442927,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9609900067,
+  "lat": 56.0896392,
+  "lon": 10.2431436,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9672758635,
+  "lat": 56.1090224,
+  "lon": 10.1894237,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9672758636,
+  "lat": 56.1084071,
+  "lon": 10.1921857,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9672759276,
+  "lat": 56.1087248,
+  "lon": 10.1901305,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9692055353,
+  "lat": 56.1435673,
+  "lon": 10.1971904,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9692055354,
+  "lat": 56.1435707,
+  "lon": 10.1972636,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9692055355,
+  "lat": 56.1435772,
+  "lon": 10.1973229,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9692055356,
+  "lat": 56.1435814,
+  "lon": 10.1973837,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9692328516,
+  "lat": 56.1944731,
+  "lon": 10.2050514,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9692354417,
+  "lat": 56.1944634,
+  "lon": 10.2055449,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9692354418,
+  "lat": 56.1944293,
+  "lon": 10.2054617,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9696732496,
+  "lat": 56.1995792,
+  "lon": 10.1608400,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9733200710,
+  "lat": 56.1095807,
+  "lon": 10.1618882,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9733200711,
+  "lat": 56.1095515,
+  "lon": 10.1618456,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9733200712,
+  "lat": 56.1095223,
+  "lon": 10.1618030,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9742852195,
+  "lat": 56.1914107,
+  "lon": 10.1093121,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9742912107,
+  "lat": 56.1864988,
+  "lon": 10.2022298,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9761187940,
+  "lat": 56.1353060,
+  "lon": 10.1181645,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 9765043911,
+  "lat": 56.0924390,
+  "lon": 10.2336812,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9765061764,
+  "lat": 56.0969695,
+  "lon": 10.1803698,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 9765063533,
+  "lat": 56.0890044,
+  "lon": 10.2477626,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9765067494,
+  "lat": 56.0889788,
+  "lon": 10.2477606,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9770502029,
+  "lat": 56.1430633,
+  "lon": 10.0609051,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9779782490,
+  "lat": 56.1582947,
+  "lon": 10.2163926,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9812322286,
+  "lat": 56.1654793,
+  "lon": 10.1559865,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9812750099,
+  "lat": 56.1122702,
+  "lon": 10.2299952,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9895371547,
+  "lat": 56.1507318,
+  "lon": 10.2516054,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9895371557,
+  "lat": 56.1512025,
+  "lon": 10.2529787,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9895371558,
+  "lat": 56.1511494,
+  "lon": 10.2519500,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9895371559,
+  "lat": 56.1511877,
+  "lon": 10.2519816,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9895371560,
+  "lat": 56.1512551,
+  "lon": 10.2520374,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9895371561,
+  "lat": 56.1513197,
+  "lon": 10.2520908,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9933412813,
+  "lat": 56.0610230,
+  "lon": 10.2593036,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9947446067,
+  "lat": 56.1692819,
+  "lon": 9.9932931,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 9979049560,
+  "lat": 56.1095282,
+  "lon": 10.2354305,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10008078983,
+  "lat": 56.1473001,
+  "lon": 10.0693874,
+  "tags": {
+    "access": "private",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10082498000,
+  "lat": 56.0533003,
+  "lon": 10.2657258,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10108196193,
+  "lat": 56.2400996,
+  "lon": 10.2135541,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10132140808,
+  "lat": 56.1401875,
+  "lon": 10.1138195,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10137884903,
+  "lat": 56.1013146,
+  "lon": 10.2374587,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10137884904,
+  "lat": 56.1013434,
+  "lon": 10.2374091,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10196282868,
+  "lat": 56.0411107,
+  "lon": 10.0956537,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10219558420,
+  "lat": 56.0864764,
+  "lon": 10.2275464,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10238128048,
+  "lat": 56.2523621,
+  "lon": 10.3069045,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10245383580,
+  "lat": 56.1848315,
+  "lon": 10.1832513,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10257956756,
+  "lat": 56.1825465,
+  "lon": 10.1829247,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10593588438,
+  "lat": 56.1651332,
+  "lon": 10.2221418,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10593588439,
+  "lat": 56.1649366,
+  "lon": 10.2217702,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10593588440,
+  "lat": 56.1646400,
+  "lon": 10.2212155,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10593588441,
+  "lat": 56.1645139,
+  "lon": 10.2209907,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10687043438,
+  "lat": 56.1951397,
+  "lon": 10.0960989,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10819337901,
+  "lat": 56.1026008,
+  "lon": 10.1702064,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10821348055,
+  "lat": 56.1026236,
+  "lon": 10.1657673,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10821348056,
+  "lat": 56.1020001,
+  "lon": 10.1664288,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10821376010,
+  "lat": 56.1008698,
+  "lon": 10.1819045,
+  "tags": {
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10822000017,
+  "lat": 56.1048717,
+  "lon": 10.1735796,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10826955795,
+  "lat": 56.1030871,
+  "lon": 10.1698568,
+  "tags": {
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10827018515,
+  "lat": 56.1023217,
+  "lon": 10.1641994,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10833938483,
+  "lat": 56.1356306,
+  "lon": 10.1917600,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10877139419,
+  "lat": 56.1395659,
+  "lon": 10.1585701,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10926774064,
+  "lat": 56.1116930,
+  "lon": 10.2264623,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10937798263,
+  "lat": 56.1707994,
+  "lon": 10.0690186,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10943621262,
+  "lat": 56.1529525,
+  "lon": 10.1935669,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10943621263,
+  "lat": 56.1529821,
+  "lon": 10.1936108,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10943621264,
+  "lat": 56.1530080,
+  "lon": 10.1936496,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10943621265,
+  "lat": 56.1530361,
+  "lon": 10.1936872,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10961950169,
+  "lat": 56.0847691,
+  "lon": 10.1986603,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10961950170,
+  "lat": 56.0847842,
+  "lon": 10.1986612,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10964394836,
+  "lat": 56.1086411,
+  "lon": 10.1771779,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10964438922,
+  "lat": 56.1030495,
+  "lon": 10.1680548,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10964438923,
+  "lat": 56.1030503,
+  "lon": 10.1681002,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10964438924,
+  "lat": 56.1030511,
+  "lon": 10.1681441,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10964455841,
+  "lat": 56.1036116,
+  "lon": 10.1693627,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10965878078,
+  "lat": 56.1121413,
+  "lon": 10.1935346,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10965878079,
+  "lat": 56.1121420,
+  "lon": 10.1935904,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10966180120,
+  "lat": 56.1074455,
+  "lon": 10.1982012,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10966180121,
+  "lat": 56.1075002,
+  "lon": 10.1978378,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10967362558,
+  "lat": 56.1606987,
+  "lon": 10.1927129,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10967362559,
+  "lat": 56.1606753,
+  "lon": 10.1924965,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10967370649,
+  "lat": 56.1698435,
+  "lon": 10.1994370,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10967578392,
+  "lat": 56.1065838,
+  "lon": 10.2010926,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10967589819,
+  "lat": 56.1081487,
+  "lon": 10.2003492,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10967589820,
+  "lat": 56.1081463,
+  "lon": 10.1967377,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10967592151,
+  "lat": 56.1060256,
+  "lon": 10.2007817,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10967592152,
+  "lat": 56.1059845,
+  "lon": 10.2008313,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10968009360,
+  "lat": 56.0593276,
+  "lon": 10.2596055,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10968009361,
+  "lat": 56.0591765,
+  "lon": 10.2595753,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10968009362,
+  "lat": 56.0592444,
+  "lon": 10.2595980,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10968009363,
+  "lat": 56.0592376,
+  "lon": 10.2597517,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10968009364,
+  "lat": 56.0591528,
+  "lon": 10.2597017,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10968093207,
+  "lat": 56.1050276,
+  "lon": 10.1709388,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10968093208,
+  "lat": 56.1050115,
+  "lon": 10.1709774,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 10968211079,
+  "lat": 56.1025165,
+  "lon": 10.1735698,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10969359516,
+  "lat": 56.2086605,
+  "lon": 10.1260298,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10989935947,
+  "lat": 56.1078202,
+  "lon": 10.1842614,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10989935948,
+  "lat": 56.1077797,
+  "lon": 10.1842614,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 10989937777,
+  "lat": 56.1065871,
+  "lon": 10.1849323,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11003255567,
+  "lat": 56.1029951,
+  "lon": 10.1639018,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11003255578,
+  "lat": 56.1031820,
+  "lon": 10.1637791,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11003255579,
+  "lat": 56.1031823,
+  "lon": 10.1638096,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599230,
+  "lat": 56.1649174,
+  "lon": 10.2074424,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599235,
+  "lat": 56.1671738,
+  "lon": 10.1957948,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599239,
+  "lat": 56.1671550,
+  "lon": 10.1948567,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599241,
+  "lat": 56.1670803,
+  "lon": 10.2000445,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599244,
+  "lat": 56.1711794,
+  "lon": 10.1926969,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599247,
+  "lat": 56.1644278,
+  "lon": 10.2083388,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599250,
+  "lat": 56.1712117,
+  "lon": 10.1927124,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599254,
+  "lat": 56.1693840,
+  "lon": 10.1995039,
+  "tags": {
+    "backrest": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599256,
+  "lat": 56.1667460,
+  "lon": 10.1999045,
+  "tags": {
+    "backrest": "yes",
+    "covered": "yes",
+    "leisure": "picnic_table",
+    "material": "wood",
+    "tourism": "picnic_site"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599258,
+  "lat": 56.1673335,
+  "lon": 10.1970639,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "metal"
+  }
+},
+{
+  "type": "node",
+  "id": 11038599262,
+  "lat": 56.1672491,
+  "lon": 10.1957053,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621423,
+  "lat": 56.1668165,
+  "lon": 10.1997927,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621454,
+  "lat": 56.1681663,
+  "lon": 10.1968904,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621460,
+  "lat": 56.1681680,
+  "lon": 10.1968288,
+  "tags": {
+    "backrest": "no",
+    "covered": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621466,
+  "lat": 56.1681638,
+  "lon": 10.1970397,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621468,
+  "lat": 56.1720495,
+  "lon": 10.1883138,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621475,
+  "lat": 56.1678029,
+  "lon": 10.1971308,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621477,
+  "lat": 56.1674970,
+  "lon": 10.1984153,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621478,
+  "lat": 56.1675195,
+  "lon": 10.1983963,
+  "tags": {
+    "backrest": "no",
+    "covered": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621479,
+  "lat": 56.1681592,
+  "lon": 10.1971199,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621485,
+  "lat": 56.1708731,
+  "lon": 10.2023593,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621488,
+  "lat": 56.1720021,
+  "lon": 10.1886310,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621490,
+  "lat": 56.1706668,
+  "lon": 10.1938914,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11042621493,
+  "lat": 56.1720277,
+  "lon": 10.1884559,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11046616494,
+  "lat": 56.1675504,
+  "lon": 10.1957416,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11046616502,
+  "lat": 56.1679692,
+  "lon": 10.1957974,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11046617412,
+  "lat": 56.1677324,
+  "lon": 10.1957554,
+  "tags": {
+    "backrest": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11081677844,
+  "lat": 56.1048796,
+  "lon": 10.1721172,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11083806858,
+  "lat": 56.1062161,
+  "lon": 10.1783855,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11083806859,
+  "lat": 56.1061899,
+  "lon": 10.1783729,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11083806860,
+  "lat": 56.1061614,
+  "lon": 10.1783745,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11085373332,
+  "lat": 56.1080483,
+  "lon": 10.1749542,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11085373333,
+  "lat": 56.1080566,
+  "lon": 10.1749895,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11085373334,
+  "lat": 56.1080597,
+  "lon": 10.1750294,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11085373335,
+  "lat": 56.1080375,
+  "lon": 10.1749969,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11088598883,
+  "lat": 56.1615580,
+  "lon": 10.1918291,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11088598884,
+  "lat": 56.1615177,
+  "lon": 10.1918760,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11109411261,
+  "lat": 56.1065930,
+  "lon": 10.1690491,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11109411262,
+  "lat": 56.1065734,
+  "lon": 10.1690301,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11112666869,
+  "lat": 56.2039711,
+  "lon": 10.2307836,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11112666870,
+  "lat": 56.2039396,
+  "lon": 10.2306499,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11125079239,
+  "lat": 56.1080779,
+  "lon": 10.1691984,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11125079240,
+  "lat": 56.1080771,
+  "lon": 10.1692275,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11142925484,
+  "lat": 56.1071940,
+  "lon": 10.1986404,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11142925485,
+  "lat": 56.1071903,
+  "lon": 10.1986746,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11169122828,
+  "lat": 56.1500730,
+  "lon": 10.0984616,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222203480,
+  "lat": 56.1201642,
+  "lon": 10.1804414,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222203481,
+  "lat": 56.1201813,
+  "lon": 10.1805843,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222203508,
+  "lat": 56.1201594,
+  "lon": 10.1790619,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222203509,
+  "lat": 56.1201605,
+  "lon": 10.1790376,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222203510,
+  "lat": 56.1201608,
+  "lon": 10.1790869,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222247237,
+  "lat": 56.1196233,
+  "lon": 10.1779959,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222247238,
+  "lat": 56.1196239,
+  "lon": 10.1779650,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222739856,
+  "lat": 56.1204986,
+  "lon": 10.1772961,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222739863,
+  "lat": 56.1205439,
+  "lon": 10.1770089,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222739864,
+  "lat": 56.1205439,
+  "lon": 10.1770378,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222739877,
+  "lat": 56.1198404,
+  "lon": 10.1775182,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11222739891,
+  "lat": 56.1202627,
+  "lon": 10.1774825,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11224559931,
+  "lat": 56.1213191,
+  "lon": 10.1817854,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11224559932,
+  "lat": 56.1213214,
+  "lon": 10.1818290,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11224587390,
+  "lat": 56.1216359,
+  "lon": 10.1802794,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "lit": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 11224587422,
+  "lat": 56.1214816,
+  "lon": 10.1766658,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11224587423,
+  "lat": 56.1214608,
+  "lon": 10.1766650,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11224587424,
+  "lat": 56.1214503,
+  "lon": 10.1765574,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11249125217,
+  "lat": 56.2028528,
+  "lon": 10.2330304,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11249125218,
+  "lat": 56.2032601,
+  "lon": 10.2328636,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11259414530,
+  "lat": 56.2349571,
+  "lon": 10.1927172,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11264473669,
+  "lat": 56.1042680,
+  "lon": 10.2306160,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11264476240,
+  "lat": 56.1563118,
+  "lon": 10.1949222,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11288742048,
+  "lat": 56.2314781,
+  "lon": 10.1287711,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11292625743,
+  "lat": 56.2140618,
+  "lon": 10.0344920,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11292625744,
+  "lat": 56.2140472,
+  "lon": 10.0345536,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11302953054,
+  "lat": 56.1629517,
+  "lon": 10.1963210,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11308961900,
+  "lat": 56.0624793,
+  "lon": 10.1579238,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11330842931,
+  "lat": 56.0958874,
+  "lon": 10.1142354,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11394965860,
+  "lat": 56.2033975,
+  "lon": 10.2312831,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11394965861,
+  "lat": 56.2033680,
+  "lon": 10.2313047,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11394965862,
+  "lat": 56.2033362,
+  "lon": 10.2313275,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11406453012,
+  "lat": 56.1220270,
+  "lon": 10.1907139,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11406453013,
+  "lat": 56.1214132,
+  "lon": 10.1899581,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11406453014,
+  "lat": 56.1217964,
+  "lon": 10.1901747,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11409429933,
+  "lat": 56.1161579,
+  "lon": 10.1724296,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11409429944,
+  "lat": 56.1162290,
+  "lon": 10.1731625,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11409429945,
+  "lat": 56.1162847,
+  "lon": 10.1731045,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11409429946,
+  "lat": 56.1162895,
+  "lon": 10.1731435,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11409435882,
+  "lat": 56.1165719,
+  "lon": 10.1728301,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11409605404,
+  "lat": 56.1076708,
+  "lon": 10.1954336,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11409605439,
+  "lat": 56.1075455,
+  "lon": 10.1994838,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11409605440,
+  "lat": 56.1075519,
+  "lon": 10.1995658,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11443748667,
+  "lat": 56.2041685,
+  "lon": 10.2307649,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11551892874,
+  "lat": 56.1693051,
+  "lon": 10.2244621,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "yes",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11573216572,
+  "lat": 56.1237883,
+  "lon": 10.0203107,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11716156082,
+  "lat": 56.1969444,
+  "lon": 10.1761667,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11726643088,
+  "lat": 56.1989737,
+  "lon": 10.1702623,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11768398938,
+  "lat": 56.1324498,
+  "lon": 10.1026339,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11783498153,
+  "lat": 56.1869835,
+  "lon": 10.0935128,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 11795003021,
+  "lat": 56.2395329,
+  "lon": 10.3398620,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795003022,
+  "lat": 56.2398481,
+  "lon": 10.3399151,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795003023,
+  "lat": 56.2406596,
+  "lon": 10.3399699,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795003024,
+  "lat": 56.2409629,
+  "lon": 10.3395922,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795003025,
+  "lat": 56.2410853,
+  "lon": 10.3405110,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795003026,
+  "lat": 56.2414115,
+  "lon": 10.3405920,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795050390,
+  "lat": 56.2179929,
+  "lon": 10.2961399,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795050391,
+  "lat": 56.2177858,
+  "lon": 10.2963585,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11795050393,
+  "lat": 56.2181964,
+  "lon": 10.2966794,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11804854826,
+  "lat": 56.1963451,
+  "lon": 10.1741720,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11815613948,
+  "lat": 56.1391897,
+  "lon": 10.2198876,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11816147627,
+  "lat": 56.1396731,
+  "lon": 10.2206355,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11816147628,
+  "lat": 56.1395970,
+  "lon": 10.2204673,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11816400555,
+  "lat": 56.1393538,
+  "lon": 10.2200325,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11816456149,
+  "lat": 56.1285468,
+  "lon": 10.2046034,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11816456151,
+  "lat": 56.1283840,
+  "lon": 10.2047908,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11889382268,
+  "lat": 56.1711059,
+  "lon": 10.1954571,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11889383749,
+  "lat": 56.1711377,
+  "lon": 10.1955614,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11889390813,
+  "lat": 56.1720160,
+  "lon": 10.1966128,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11889394229,
+  "lat": 56.1711222,
+  "lon": 10.1955133,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11889401151,
+  "lat": 56.1720091,
+  "lon": 10.1966555,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11889403200,
+  "lat": 56.1709794,
+  "lon": 10.1953404,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11914026252,
+  "lat": 56.2581644,
+  "lon": 10.3077530,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11914045110,
+  "lat": 56.2581820,
+  "lon": 10.3077747,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11926126083,
+  "lat": 56.1382430,
+  "lon": 10.1588466,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11928058126,
+  "lat": 56.2179548,
+  "lon": 10.1646943,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11938058695,
+  "lat": 56.1763784,
+  "lon": 10.1209859,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11939547483,
+  "lat": 56.1656684,
+  "lon": 10.1308805,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11939547484,
+  "lat": 56.1658049,
+  "lon": 10.1296103,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11939547485,
+  "lat": 56.1655026,
+  "lon": 10.1288607,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11939547486,
+  "lat": 56.1657054,
+  "lon": 10.1281766,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11939547487,
+  "lat": 56.1669507,
+  "lon": 10.1309281,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11940663940,
+  "lat": 56.0884846,
+  "lon": 10.1486972,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11941519939,
+  "lat": 56.0938981,
+  "lon": 10.1071900,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11950751131,
+  "lat": 56.1374345,
+  "lon": 10.2029163,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11956625486,
+  "lat": 56.0806963,
+  "lon": 10.1388500,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11956625487,
+  "lat": 56.0799579,
+  "lon": 10.1383098,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11958102031,
+  "lat": 56.1712099,
+  "lon": 10.1780380,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11958102032,
+  "lat": 56.1713490,
+  "lon": 10.1774367,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11958102033,
+  "lat": 56.1713685,
+  "lon": 10.1773526,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11958102034,
+  "lat": 56.1714714,
+  "lon": 10.1759030,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11958102035,
+  "lat": 56.1715023,
+  "lon": 10.1759084,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11966365048,
+  "lat": 56.0864123,
+  "lon": 10.2299618,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11966385968,
+  "lat": 56.0860267,
+  "lon": 10.2303318,
+  "tags": {
+    "armrest": "no",
+    "backrest": "no",
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11966396839,
+  "lat": 56.0876554,
+  "lon": 10.2326133,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11966396840,
+  "lat": 56.0874855,
+  "lon": 10.2337655,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 11970176113,
+  "lat": 56.1099902,
+  "lon": 10.2323237,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972116226,
+  "lat": 56.1129213,
+  "lon": 10.2278763,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972116227,
+  "lat": 56.1130229,
+  "lon": 10.2279061,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124549,
+  "lat": 56.1127425,
+  "lon": 10.2313982,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124551,
+  "lat": 56.1107576,
+  "lon": 10.2305353,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124552,
+  "lat": 56.1107634,
+  "lon": 10.2304830,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124553,
+  "lat": 56.1107499,
+  "lon": 10.2304266,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124554,
+  "lat": 56.1107181,
+  "lon": 10.2304089,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124555,
+  "lat": 56.1106880,
+  "lon": 10.2304025,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124562,
+  "lat": 56.1106067,
+  "lon": 10.2305366,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972124563,
+  "lat": 56.1105088,
+  "lon": 10.2307011,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11972159951,
+  "lat": 56.1104805,
+  "lon": 10.2308400,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11981583250,
+  "lat": 56.1621294,
+  "lon": 10.1923439,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11981583251,
+  "lat": 56.1622001,
+  "lon": 10.1922852,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11981583252,
+  "lat": 56.1623558,
+  "lon": 10.1924456,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11981583253,
+  "lat": 56.1623026,
+  "lon": 10.1921535,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11985661193,
+  "lat": 56.1727727,
+  "lon": 10.1918142,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11985666181,
+  "lat": 56.1722332,
+  "lon": 10.1915655,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11985666415,
+  "lat": 56.1722469,
+  "lon": 10.1914110,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11985667796,
+  "lat": 56.1720142,
+  "lon": 10.1917420,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11992675185,
+  "lat": 56.2596091,
+  "lon": 10.3125131,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11992675186,
+  "lat": 56.2598748,
+  "lon": 10.3121116,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 11993291613,
+  "lat": 56.1033117,
+  "lon": 10.0680687,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12007368222,
+  "lat": 56.1321536,
+  "lon": 10.1308686,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12042227002,
+  "lat": 56.1726419,
+  "lon": 10.1969698,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12042275809,
+  "lat": 56.1768575,
+  "lon": 10.1995372,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12042277344,
+  "lat": 56.1746478,
+  "lon": 10.1946793,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12042303132,
+  "lat": 56.1768592,
+  "lon": 10.1994676,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12042320651,
+  "lat": 56.1716046,
+  "lon": 10.2006053,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12042325586,
+  "lat": 56.1739944,
+  "lon": 10.2027542,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12052746468,
+  "lat": 56.1687455,
+  "lon": 10.2022499,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12052821805,
+  "lat": 56.1704963,
+  "lon": 10.2007858,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12052829521,
+  "lat": 56.1694264,
+  "lon": 10.1970324,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12052831791,
+  "lat": 56.1661601,
+  "lon": 10.1916776,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12057919697,
+  "lat": 56.1648546,
+  "lon": 10.1933672,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12068194283,
+  "lat": 56.1652046,
+  "lon": 10.2291438,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12068198618,
+  "lat": 56.1654812,
+  "lon": 10.2294623,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12104211709,
+  "lat": 56.0896367,
+  "lon": 10.2481627,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12112524152,
+  "lat": 56.1934104,
+  "lon": 10.2005794,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12112524153,
+  "lat": 56.1931323,
+  "lon": 10.2013324,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12121934532,
+  "lat": 56.2025850,
+  "lon": 10.2336873,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12165204520,
+  "lat": 56.1111854,
+  "lon": 10.1524537,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12165204524,
+  "lat": 56.1114461,
+  "lon": 10.1518202,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12171619245,
+  "lat": 56.2104012,
+  "lon": 10.2887488,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12174982158,
+  "lat": 56.2104702,
+  "lon": 10.2889677,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12175118108,
+  "lat": 56.2105115,
+  "lon": 10.2883338,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12216759453,
+  "lat": 56.1996189,
+  "lon": 10.1846377,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12216759454,
+  "lat": 56.1995941,
+  "lon": 10.1846951,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12232024627,
+  "lat": 56.1666708,
+  "lon": 10.2207369,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12233136092,
+  "lat": 56.1666225,
+  "lon": 10.2206909,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12233136093,
+  "lat": 56.1665725,
+  "lon": 10.2206496,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12233136094,
+  "lat": 56.1665273,
+  "lon": 10.2206125,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12245889838,
+  "lat": 56.2398601,
+  "lon": 10.2334007,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12247369607,
+  "lat": 56.0421655,
+  "lon": 10.0927388,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12248364012,
+  "lat": 56.0903227,
+  "lon": 10.2438441,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12253521922,
+  "lat": 56.2387891,
+  "lon": 10.2338583,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "plastic"
+  }
+},
+{
+  "type": "node",
+  "id": 12255742978,
+  "lat": 56.0896133,
+  "lon": 10.2239096,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12259554516,
+  "lat": 56.2410972,
+  "lon": 10.2335171,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12259584702,
+  "lat": 56.2406686,
+  "lon": 10.2312514,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12259687255,
+  "lat": 56.1027228,
+  "lon": 10.2070527,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12264507138,
+  "lat": 56.2392058,
+  "lon": 10.2336531,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12264507479,
+  "lat": 56.2403186,
+  "lon": 10.2334201,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "plastic"
+  }
+},
+{
+  "type": "node",
+  "id": 12290736866,
+  "lat": 56.2418005,
+  "lon": 10.2332899,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "plastic"
+  }
+},
+{
+  "type": "node",
+  "id": 12291859626,
+  "lat": 56.2389111,
+  "lon": 10.2342559,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12316069506,
+  "lat": 56.2381492,
+  "lon": 10.2347644,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "plastic"
+  }
+},
+{
+  "type": "node",
+  "id": 12328737680,
+  "lat": 56.1630497,
+  "lon": 10.1972366,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12334174154,
+  "lat": 56.2108855,
+  "lon": 10.2293510,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12334174155,
+  "lat": 56.2108549,
+  "lon": 10.2293952,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12361482186,
+  "lat": 56.0458558,
+  "lon": 10.0840263,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12368245505,
+  "lat": 56.1846117,
+  "lon": 10.2119728,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12368245506,
+  "lat": 56.1846464,
+  "lon": 10.2120063,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263167,
+  "lat": 56.2143108,
+  "lon": 10.2915655,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263168,
+  "lat": 56.2149686,
+  "lon": 10.2919483,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263169,
+  "lat": 56.2149529,
+  "lon": 10.2921133,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263170,
+  "lat": 56.2168265,
+  "lon": 10.2944768,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263171,
+  "lat": 56.2185707,
+  "lon": 10.2971303,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263172,
+  "lat": 56.2208842,
+  "lon": 10.2994233,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263173,
+  "lat": 56.2206879,
+  "lon": 10.2992000,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12385263174,
+  "lat": 56.2211633,
+  "lon": 10.2994349,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12495919560,
+  "lat": 56.0734204,
+  "lon": 10.2543017,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12495944846,
+  "lat": 56.0845560,
+  "lon": 10.2484048,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12495947913,
+  "lat": 56.0740798,
+  "lon": 10.2534652,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12496228048,
+  "lat": 56.0729640,
+  "lon": 10.2549009,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657460,
+  "lat": 56.1629540,
+  "lon": 10.2220164,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657461,
+  "lat": 56.1629403,
+  "lon": 10.2220472,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657462,
+  "lat": 56.1629459,
+  "lon": 10.2220903,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657463,
+  "lat": 56.1628974,
+  "lon": 10.2222197,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657464,
+  "lat": 56.1628494,
+  "lon": 10.2222382,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657465,
+  "lat": 56.1628172,
+  "lon": 10.2222506,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657466,
+  "lat": 56.1629245,
+  "lon": 10.2220765,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12506657467,
+  "lat": 56.1629087,
+  "lon": 10.2221842,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12533883793,
+  "lat": 56.0909787,
+  "lon": 10.2218948,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12534279890,
+  "lat": 56.1347713,
+  "lon": 10.1972592,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12534279891,
+  "lat": 56.1347573,
+  "lon": 10.1972166,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12535913372,
+  "lat": 56.2054250,
+  "lon": 10.1162515,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12539441670,
+  "lat": 56.0873652,
+  "lon": 10.2276259,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12539441671,
+  "lat": 56.0874398,
+  "lon": 10.2273960,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12539441672,
+  "lat": 56.0874586,
+  "lon": 10.2279967,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12539441673,
+  "lat": 56.0873220,
+  "lon": 10.2286009,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591280,
+  "lat": 56.1539165,
+  "lon": 10.1863699,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591281,
+  "lat": 56.1538811,
+  "lon": 10.1869753,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591282,
+  "lat": 56.1539483,
+  "lon": 10.1872831,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591283,
+  "lat": 56.1538246,
+  "lon": 10.1876573,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591284,
+  "lat": 56.1538605,
+  "lon": 10.1880245,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591285,
+  "lat": 56.1539166,
+  "lon": 10.1878457,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591286,
+  "lat": 56.1537584,
+  "lon": 10.1883556,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591287,
+  "lat": 56.1554610,
+  "lon": 10.1938534,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12549591288,
+  "lat": 56.1554474,
+  "lon": 10.1938822,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552094842,
+  "lat": 56.1638946,
+  "lon": 10.1696447,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552094843,
+  "lat": 56.1643002,
+  "lon": 10.1699201,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552094851,
+  "lat": 56.1635299,
+  "lon": 10.1714720,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552094852,
+  "lat": 56.1636675,
+  "lon": 10.1713285,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552094857,
+  "lat": 56.1634798,
+  "lon": 10.1711474,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552094880,
+  "lat": 56.1637272,
+  "lon": 10.1694886,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552094887,
+  "lat": 56.1638978,
+  "lon": 10.1687699,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552131396,
+  "lat": 56.1637932,
+  "lon": 10.1889661,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12552131397,
+  "lat": 56.1639125,
+  "lon": 10.1888114,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12553695936,
+  "lat": 56.1705150,
+  "lon": 10.2045081,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12553695937,
+  "lat": 56.1703806,
+  "lon": 10.2046118,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12553726402,
+  "lat": 56.1614299,
+  "lon": 10.1854030,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12554402863,
+  "lat": 56.1731525,
+  "lon": 10.2081886,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12554402864,
+  "lat": 56.1730636,
+  "lon": 10.2082713,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12554402865,
+  "lat": 56.1730120,
+  "lon": 10.2082599,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12554413267,
+  "lat": 56.1697395,
+  "lon": 10.2115005,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12554413268,
+  "lat": 56.1696870,
+  "lon": 10.2115373,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12554481752,
+  "lat": 56.1728456,
+  "lon": 10.2095332,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12554481765,
+  "lat": 56.1727051,
+  "lon": 10.2095450,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556033495,
+  "lat": 56.1794615,
+  "lon": 10.2011885,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556033496,
+  "lat": 56.1798320,
+  "lon": 10.2012034,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556033497,
+  "lat": 56.1799273,
+  "lon": 10.2013956,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556033498,
+  "lat": 56.1795918,
+  "lon": 10.2028486,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556033499,
+  "lat": 56.1796180,
+  "lon": 10.2035107,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556033500,
+  "lat": 56.1795943,
+  "lon": 10.2036410,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556111701,
+  "lat": 56.1795125,
+  "lon": 10.2035956,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556111702,
+  "lat": 56.1793118,
+  "lon": 10.2040289,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556111703,
+  "lat": 56.1793607,
+  "lon": 10.2033804,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556205329,
+  "lat": 56.1896204,
+  "lon": 10.2168466,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556205330,
+  "lat": 56.1897437,
+  "lon": 10.2170573,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556205331,
+  "lat": 56.1895638,
+  "lon": 10.2176394,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253856,
+  "lat": 56.1905428,
+  "lon": 10.2171580,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253857,
+  "lat": 56.1906103,
+  "lon": 10.2169701,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253858,
+  "lat": 56.1907654,
+  "lon": 10.2175852,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253859,
+  "lat": 56.1908784,
+  "lon": 10.2175580,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253860,
+  "lat": 56.1907721,
+  "lon": 10.2163019,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253861,
+  "lat": 56.1905900,
+  "lon": 10.2152566,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253866,
+  "lat": 56.1914928,
+  "lon": 10.2174169,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253867,
+  "lat": 56.1914940,
+  "lon": 10.2179808,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253868,
+  "lat": 56.1918001,
+  "lon": 10.2176137,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253869,
+  "lat": 56.1918487,
+  "lon": 10.2164299,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253870,
+  "lat": 56.1916465,
+  "lon": 10.2160379,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556253871,
+  "lat": 56.1914960,
+  "lon": 10.2155489,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556255609,
+  "lat": 56.1878619,
+  "lon": 10.2142508,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556255610,
+  "lat": 56.1878404,
+  "lon": 10.2141855,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556579843,
+  "lat": 56.1545028,
+  "lon": 10.1947442,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556579844,
+  "lat": 56.1545734,
+  "lon": 10.1945541,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556579855,
+  "lat": 56.1516466,
+  "lon": 10.1947117,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556579856,
+  "lat": 56.1516772,
+  "lon": 10.1943115,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12556764054,
+  "lat": 56.1700311,
+  "lon": 10.2203968,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12557121262,
+  "lat": 56.1617550,
+  "lon": 10.1978239,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12557121263,
+  "lat": 56.1616646,
+  "lon": 10.1976704,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12557121264,
+  "lat": 56.1618671,
+  "lon": 10.1973661,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12557121265,
+  "lat": 56.1617950,
+  "lon": 10.1973989,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12557137875,
+  "lat": 56.1664228,
+  "lon": 10.2069803,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12559270569,
+  "lat": 56.1656340,
+  "lon": 10.2199239,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12559286249,
+  "lat": 56.1663547,
+  "lon": 10.2204723,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12559286250,
+  "lat": 56.1663742,
+  "lon": 10.2204953,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12559286251,
+  "lat": 56.1663917,
+  "lon": 10.2205096,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12587091414,
+  "lat": 56.1461375,
+  "lon": 10.1878728,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12590249534,
+  "lat": 56.1704668,
+  "lon": 10.2001997,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12590249535,
+  "lat": 56.1705358,
+  "lon": 10.2007785,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12591307587,
+  "lat": 56.1698246,
+  "lon": 10.1976179,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12591307588,
+  "lat": 56.1697981,
+  "lon": 10.1975379,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12591307589,
+  "lat": 56.1698221,
+  "lon": 10.1979280,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12591307590,
+  "lat": 56.1697808,
+  "lon": 10.1978525,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12591307591,
+  "lat": 56.1695731,
+  "lon": 10.1974676,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12591307592,
+  "lat": 56.1691536,
+  "lon": 10.1956330,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12601604571,
+  "lat": 56.0232523,
+  "lon": 10.2614120,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12620848783,
+  "lat": 56.1530219,
+  "lon": 10.1819501,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12620848784,
+  "lat": 56.1529999,
+  "lon": 10.1819236,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12620859829,
+  "lat": 56.1590998,
+  "lon": 10.1787585,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12630271922,
+  "lat": 56.1745083,
+  "lon": 10.2274919,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630271923,
+  "lat": 56.1744349,
+  "lon": 10.2274307,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630271924,
+  "lat": 56.1743798,
+  "lon": 10.2273786,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630271925,
+  "lat": 56.1743417,
+  "lon": 10.2273215,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630315980,
+  "lat": 56.1636972,
+  "lon": 10.2187765,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630315981,
+  "lat": 56.1636395,
+  "lon": 10.2186763,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630335337,
+  "lat": 56.1648368,
+  "lon": 10.2192511,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630335338,
+  "lat": 56.1647011,
+  "lon": 10.2191294,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12630351373,
+  "lat": 56.1582096,
+  "lon": 10.2145538,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12655503368,
+  "lat": 56.1639847,
+  "lon": 10.2068377,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12655562839,
+  "lat": 56.1666954,
+  "lon": 10.2034194,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12673538818,
+  "lat": 56.1550312,
+  "lon": 10.1931405,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 12681348698,
+  "lat": 56.1559541,
+  "lon": 10.1947062,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12686482075,
+  "lat": 56.2375333,
+  "lon": 10.2351091,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "level": "0",
+    "lit": "yes",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12686769147,
+  "lat": 56.2349022,
+  "lon": 10.2350936,
+  "tags": {
+    "backrest": "yes",
+    "bench": "no",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12693771888,
+  "lat": 56.1345855,
+  "lon": 10.1986173,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12693771889,
+  "lat": 56.1346052,
+  "lon": 10.1985658,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12693771890,
+  "lat": 56.1343162,
+  "lon": 10.1978475,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12694594856,
+  "lat": 56.2398926,
+  "lon": 10.2395014,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12695179465,
+  "lat": 56.2398925,
+  "lon": 10.2394624,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "yes",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12696023208,
+  "lat": 56.1971316,
+  "lon": 10.1727063,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12696956614,
+  "lat": 56.1990161,
+  "lon": 10.2742182,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12697314636,
+  "lat": 56.1941976,
+  "lon": 10.2571579,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12697314637,
+  "lat": 56.1947483,
+  "lon": 10.2584224,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12697314642,
+  "lat": 56.1979992,
+  "lon": 10.2680920,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12697314643,
+  "lat": 56.1978123,
+  "lon": 10.2680501,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12708066724,
+  "lat": 56.1606738,
+  "lon": 10.1843769,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12712774263,
+  "lat": 56.0459483,
+  "lon": 10.0913139,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12715887352,
+  "lat": 56.2362794,
+  "lon": 10.2406062,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12733465137,
+  "lat": 56.0867271,
+  "lon": 10.2259628,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12751864608,
+  "lat": 56.1443451,
+  "lon": 10.2057779,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12754454875,
+  "lat": 56.2338468,
+  "lon": 10.2373524,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12777087021,
+  "lat": 56.1012614,
+  "lon": 10.2375155,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12778941399,
+  "lat": 56.1695262,
+  "lon": 10.2171108,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12798646425,
+  "lat": 56.2356738,
+  "lon": 10.2369537,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "plastic"
+  }
+},
+{
+  "type": "node",
+  "id": 12804375153,
+  "lat": 56.1663274,
+  "lon": 10.2058263,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12811235139,
+  "lat": 56.1010245,
+  "lon": 10.2365460,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12812001464,
+  "lat": 56.1904057,
+  "lon": 10.1765515,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12812001465,
+  "lat": 56.1903710,
+  "lon": 10.1766114,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12812020402,
+  "lat": 56.1933159,
+  "lon": 10.1649620,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12814765779,
+  "lat": 56.1862591,
+  "lon": 10.1712979,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12814807510,
+  "lat": 56.1883006,
+  "lon": 10.1726190,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12815220122,
+  "lat": 56.1930236,
+  "lon": 10.1703306,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12815220123,
+  "lat": 56.1929929,
+  "lon": 10.1703573,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12839378798,
+  "lat": 56.3036499,
+  "lon": 10.1329468,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12839378799,
+  "lat": 56.2999395,
+  "lon": 10.1350081,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12849615546,
+  "lat": 56.2542850,
+  "lon": 10.2959231,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12883509903,
+  "lat": 56.1530954,
+  "lon": 10.1645680,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12888429292,
+  "lat": 56.1636419,
+  "lon": 10.1917937,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12888429293,
+  "lat": 56.1636725,
+  "lon": 10.1920676,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12888429294,
+  "lat": 56.1635572,
+  "lon": 10.1920477,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12888429295,
+  "lat": 56.1635534,
+  "lon": 10.1920841,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12905314137,
+  "lat": 56.2406257,
+  "lon": 10.2449626,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12905314138,
+  "lat": 56.2406347,
+  "lon": 10.2450077,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12909844230,
+  "lat": 56.1417496,
+  "lon": 10.2031340,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12909844231,
+  "lat": 56.1418630,
+  "lon": 10.2030592,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 12920545501,
+  "lat": 56.1976872,
+  "lon": 10.1692962,
+  "tags": {
+    "bench": "yes",
+    "colour": "brown",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "yes",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 12920545502,
+  "lat": 56.1977073,
+  "lon": 10.1692710,
+  "tags": {
+    "bench": "yes",
+    "colour": "brown",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12920545503,
+  "lat": 56.1976936,
+  "lon": 10.1692113,
+  "tags": {
+    "bench": "yes",
+    "colour": "brown",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12937990303,
+  "lat": 56.2390316,
+  "lon": 10.2341060,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12981730782,
+  "lat": 56.2440120,
+  "lon": 10.2375418,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 12981748123,
+  "lat": 56.2439973,
+  "lon": 10.2374867,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13003901172,
+  "lat": 56.0466670,
+  "lon": 10.0840337,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13015430911,
+  "lat": 56.1751824,
+  "lon": 10.0657050,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13045668217,
+  "lat": 56.0936816,
+  "lon": 10.2322211,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13063887850,
+  "lat": 56.1958335,
+  "lon": 10.1908327,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13092589675,
+  "lat": 56.1227959,
+  "lon": 10.2174886,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13092591171,
+  "lat": 56.1228538,
+  "lon": 10.2181444,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13092615085,
+  "lat": 56.1214310,
+  "lon": 10.2184049,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13092616216,
+  "lat": 56.1227335,
+  "lon": 10.2184305,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152325,
+  "lat": 56.1875006,
+  "lon": 10.1006554,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152329,
+  "lat": 56.1877824,
+  "lon": 10.1004034,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152330,
+  "lat": 56.1881896,
+  "lon": 10.1004197,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152331,
+  "lat": 56.1891963,
+  "lon": 10.1018833,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152332,
+  "lat": 56.1892947,
+  "lon": 10.1011840,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152333,
+  "lat": 56.1891646,
+  "lon": 10.1014869,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152334,
+  "lat": 56.1891827,
+  "lon": 10.1054832,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152335,
+  "lat": 56.1891918,
+  "lon": 10.1058817,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152336,
+  "lat": 56.1894271,
+  "lon": 10.1060626,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152337,
+  "lat": 56.1899236,
+  "lon": 10.1053938,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152338,
+  "lat": 56.1898976,
+  "lon": 10.1059894,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13096152339,
+  "lat": 56.1899813,
+  "lon": 10.1067822,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13115307278,
+  "lat": 56.1710627,
+  "lon": 10.1811033,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "lit": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 13116537506,
+  "lat": 56.1717040,
+  "lon": 10.1913567,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13116537507,
+  "lat": 56.1717234,
+  "lon": 10.1911745,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13137637979,
+  "lat": 56.1707398,
+  "lon": 10.1141450,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13147805507,
+  "lat": 56.1449812,
+  "lon": 10.1942385,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13147805508,
+  "lat": 56.1450052,
+  "lon": 10.1941637,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13147805509,
+  "lat": 56.1450268,
+  "lon": 10.1941046,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13159908657,
+  "lat": 56.1706468,
+  "lon": 10.2020024,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13163707615,
+  "lat": 56.1585656,
+  "lon": 10.2104591,
+  "tags": {
+    "bench": "yes",
+    "colour": "#ff7800",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13163707616,
+  "lat": 56.1585565,
+  "lon": 10.2104887,
+  "tags": {
+    "bench": "yes",
+    "colour": "#ff7800",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13163707617,
+  "lat": 56.1584718,
+  "lon": 10.2105613,
+  "tags": {
+    "bench": "yes",
+    "colour": "#ff7800",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13165719879,
+  "lat": 56.1556697,
+  "lon": 10.0967029,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13165719880,
+  "lat": 56.1555593,
+  "lon": 10.0965580,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167047608,
+  "lat": 56.1689037,
+  "lon": 10.1898765,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167047609,
+  "lat": 56.1689573,
+  "lon": 10.1899566,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167511186,
+  "lat": 56.1523655,
+  "lon": 10.1922512,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167511187,
+  "lat": 56.1523688,
+  "lon": 10.1921584,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167516331,
+  "lat": 56.1519871,
+  "lon": 10.1919152,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167520334,
+  "lat": 56.1523605,
+  "lon": 10.1922760,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167532341,
+  "lat": 56.1522874,
+  "lon": 10.1922589,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167559121,
+  "lat": 56.1523068,
+  "lon": 10.1920580,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167561627,
+  "lat": 56.1523406,
+  "lon": 10.1924589,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167561628,
+  "lat": 56.1523681,
+  "lon": 10.1923066,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167561629,
+  "lat": 56.1523271,
+  "lon": 10.1920896,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167562498,
+  "lat": 56.1524011,
+  "lon": 10.1921900,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167566172,
+  "lat": 56.1527793,
+  "lon": 10.1932553,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167567078,
+  "lat": 56.1527612,
+  "lon": 10.1932228,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167567735,
+  "lat": 56.1523853,
+  "lon": 10.1924221,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167575903,
+  "lat": 56.1527057,
+  "lon": 10.1931328,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167583130,
+  "lat": 56.1528029,
+  "lon": 10.1932920,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13167715894,
+  "lat": 56.1523490,
+  "lon": 10.1923551,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13168244854,
+  "lat": 56.1688152,
+  "lon": 10.1880509,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13171616324,
+  "lat": 56.1426211,
+  "lon": 10.1777482,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173696945,
+  "lat": 56.1689282,
+  "lon": 10.1866551,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173696989,
+  "lat": 56.1680461,
+  "lon": 10.1880485,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173717658,
+  "lat": 56.1683145,
+  "lon": 10.1888644,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173721562,
+  "lat": 56.1683299,
+  "lon": 10.1888796,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173733963,
+  "lat": 56.1676852,
+  "lon": 10.1860185,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173737934,
+  "lat": 56.1684458,
+  "lon": 10.1875049,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173747759,
+  "lat": 56.1672865,
+  "lon": 10.1878765,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173770426,
+  "lat": 56.1677467,
+  "lon": 10.1846847,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173778815,
+  "lat": 56.1677456,
+  "lon": 10.1847073,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173778955,
+  "lat": 56.1686019,
+  "lon": 10.1849852,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173778956,
+  "lat": 56.1690102,
+  "lon": 10.1847649,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173783060,
+  "lat": 56.1702069,
+  "lon": 10.1857662,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173785377,
+  "lat": 56.1695321,
+  "lon": 10.1855221,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173789509,
+  "lat": 56.1677610,
+  "lon": 10.1846627,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173798069,
+  "lat": 56.1693228,
+  "lon": 10.1872217,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173802325,
+  "lat": 56.1682709,
+  "lon": 10.1866585,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173803701,
+  "lat": 56.1681850,
+  "lon": 10.1853349,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173804229,
+  "lat": 56.1695339,
+  "lon": 10.1857381,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173804448,
+  "lat": 56.1690193,
+  "lon": 10.1848251,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173821402,
+  "lat": 56.1695228,
+  "lon": 10.1854468,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173821403,
+  "lat": 56.1695576,
+  "lon": 10.1855634,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173828740,
+  "lat": 56.1680623,
+  "lon": 10.1871294,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173830427,
+  "lat": 56.1680086,
+  "lon": 10.1871067,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173830442,
+  "lat": 56.1698803,
+  "lon": 10.1863389,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173831790,
+  "lat": 56.1682409,
+  "lon": 10.1865735,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173833534,
+  "lat": 56.1683120,
+  "lon": 10.1865833,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13173839002,
+  "lat": 56.1682056,
+  "lon": 10.1867558,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13188171093,
+  "lat": 56.1603083,
+  "lon": 10.1394073,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13188171094,
+  "lat": 56.1602039,
+  "lon": 10.1393552,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13188171095,
+  "lat": 56.1605869,
+  "lon": 10.1393139,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13197431261,
+  "lat": 56.1729358,
+  "lon": 10.1990160,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13206914289,
+  "lat": 56.2026399,
+  "lon": 10.2341080,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13206914290,
+  "lat": 56.2026635,
+  "lon": 10.2341157,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13206914295,
+  "lat": 56.2026163,
+  "lon": 10.2339876,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13206914296,
+  "lat": 56.2026182,
+  "lon": 10.2339584,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13222214216,
+  "lat": 56.0713287,
+  "lon": 10.2460557,
+  "tags": {
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13227971830,
+  "lat": 56.2426822,
+  "lon": 10.2672708,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13234340199,
+  "lat": 56.1694114,
+  "lon": 10.0729454,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13243372120,
+  "lat": 56.1577407,
+  "lon": 10.1837132,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13247225698,
+  "lat": 56.1428450,
+  "lon": 10.1422031,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249401879,
+  "lat": 56.1694351,
+  "lon": 10.1970746,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249401880,
+  "lat": 56.1694713,
+  "lon": 10.1970446,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249401881,
+  "lat": 56.1694581,
+  "lon": 10.1970048,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469020,
+  "lat": 56.1680483,
+  "lon": 10.1929208,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469021,
+  "lat": 56.1680743,
+  "lon": 10.1928878,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469022,
+  "lat": 56.1680355,
+  "lon": 10.1931435,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469023,
+  "lat": 56.1680526,
+  "lon": 10.1931776,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469024,
+  "lat": 56.1681829,
+  "lon": 10.1930360,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469081,
+  "lat": 56.1691666,
+  "lon": 10.1955737,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469082,
+  "lat": 56.1691419,
+  "lon": 10.1955512,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13249469083,
+  "lat": 56.1691260,
+  "lon": 10.1955707,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13254655154,
+  "lat": 56.1458120,
+  "lon": 10.1401087,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13254655173,
+  "lat": 56.1462777,
+  "lon": 10.1403113,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13261369843,
+  "lat": 56.1718572,
+  "lon": 10.1796192,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13261369845,
+  "lat": 56.1720594,
+  "lon": 10.1804066,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13261369847,
+  "lat": 56.1726471,
+  "lon": 10.1820879,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13273728273,
+  "lat": 56.3013644,
+  "lon": 10.2121273,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13275668023,
+  "lat": 56.1289979,
+  "lon": 10.0218807,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13277480741,
+  "lat": 56.1678517,
+  "lon": 10.1923158,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13277480742,
+  "lat": 56.1678221,
+  "lon": 10.1923853,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13277480743,
+  "lat": 56.1677835,
+  "lon": 10.1922142,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13288789176,
+  "lat": 56.1863799,
+  "lon": 10.2316241,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13288789177,
+  "lat": 56.1863132,
+  "lon": 10.2321869,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13288789180,
+  "lat": 56.1859602,
+  "lon": 10.2315161,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13288789181,
+  "lat": 56.1858680,
+  "lon": 10.2319731,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13288789186,
+  "lat": 56.1856479,
+  "lon": 10.2314321,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13288789187,
+  "lat": 56.1856083,
+  "lon": 10.2317868,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13307014240,
+  "lat": 56.1690670,
+  "lon": 10.2088963,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13307014241,
+  "lat": 56.1690778,
+  "lon": 10.2089431,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13307088044,
+  "lat": 56.1683938,
+  "lon": 10.2076873,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13307088045,
+  "lat": 56.1683965,
+  "lon": 10.2077623,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13307088046,
+  "lat": 56.1684174,
+  "lon": 10.2078323,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13308211536,
+  "lat": 56.1307926,
+  "lon": 10.2101239,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13308216655,
+  "lat": 56.1297323,
+  "lon": 10.2106907,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13323044325,
+  "lat": 56.1672047,
+  "lon": 10.2224568,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13325808793,
+  "lat": 56.1572782,
+  "lon": 10.1896863,
+  "tags": {
+    "access": "private",
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13325808794,
+  "lat": 56.1572792,
+  "lon": 10.1897360,
+  "tags": {
+    "access": "private",
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13325808795,
+  "lat": 56.1572859,
+  "lon": 10.1898308,
+  "tags": {
+    "access": "private",
+    "bench": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13410842453,
+  "lat": 56.1509173,
+  "lon": 10.2517844,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13423557390,
+  "lat": 56.1426740,
+  "lon": 10.1617492,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13429112617,
+  "lat": 56.2338789,
+  "lon": 10.3037427,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13429112618,
+  "lat": 56.2338120,
+  "lon": 10.3036267,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13429112619,
+  "lat": 56.2338012,
+  "lon": 10.3037837,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13429112645,
+  "lat": 56.2337267,
+  "lon": 10.3035431,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13429112646,
+  "lat": 56.2337023,
+  "lon": 10.3037949,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13429145956,
+  "lat": 56.2348390,
+  "lon": 10.3055546,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13429174149,
+  "lat": 56.2360243,
+  "lon": 10.3032059,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13432649604,
+  "lat": 56.1000349,
+  "lon": 10.1157490,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13432649605,
+  "lat": 56.1000366,
+  "lon": 10.1158367,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13483633415,
+  "lat": 56.1288433,
+  "lon": 10.2102185,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13483633416,
+  "lat": 56.1284396,
+  "lon": 10.2103014,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13592108888,
+  "lat": 56.1526453,
+  "lon": 10.1421359,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13592108889,
+  "lat": 56.1529976,
+  "lon": 10.1423392,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13615214933,
+  "lat": 56.1753960,
+  "lon": 10.0661687,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13615214934,
+  "lat": 56.1753607,
+  "lon": 10.0661213,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13615214936,
+  "lat": 56.1753030,
+  "lon": 10.0660419,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13646988380,
+  "lat": 56.1301150,
+  "lon": 10.1038031,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13663004059,
+  "lat": 56.2373548,
+  "lon": 10.2431982,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13685941187,
+  "lat": 56.1472186,
+  "lon": 10.2072583,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13733406901,
+  "lat": 56.1871125,
+  "lon": 10.1975705,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13733406902,
+  "lat": 56.1867773,
+  "lon": 10.1982818,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13742593350,
+  "lat": 56.1310893,
+  "lon": 10.1720902,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 13811269029,
+  "lat": 56.0777868,
+  "lon": 10.2498034,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood",
+    "panoramax": "3046d4db-39d8-476a-8bf5-5d23eeab7299"
+  }
+},
+{
+  "type": "node",
+  "id": 13866340509,
+  "lat": 56.2390642,
+  "lon": 10.3395405,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13866340512,
+  "lat": 56.2404513,
+  "lon": 10.3401649,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13869233113,
+  "lat": 56.0675732,
+  "lon": 10.1782874,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13869233114,
+  "lat": 56.0676215,
+  "lon": 10.1782761,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13869233115,
+  "lat": 56.0691207,
+  "lon": 10.1811916,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13869263015,
+  "lat": 56.0728115,
+  "lon": 10.1854189,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13871161086,
+  "lat": 56.1868427,
+  "lon": 10.2304100,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13871161087,
+  "lat": 56.1868498,
+  "lon": 10.2303622,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13901378526,
+  "lat": 56.0471564,
+  "lon": 10.1976885,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13912886452,
+  "lat": 56.1496565,
+  "lon": 10.2515750,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13912886453,
+  "lat": 56.1495727,
+  "lon": 10.2512856,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13912886454,
+  "lat": 56.1495118,
+  "lon": 10.2510616,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13928234150,
+  "lat": 56.1419291,
+  "lon": 10.2314792,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13958097055,
+  "lat": 56.0996180,
+  "lon": 10.2373851,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13960465022,
+  "lat": 56.0996180,
+  "lon": 10.2373850,
+  "tags": {
+    "leisure": "picnic_table",
+    "panoramax": "0c035587-6d4d-4ab4-80be-0fda0bcc9c14"
+  }
+},
+{
+  "type": "node",
+  "id": 13995027252,
+  "lat": 56.2565158,
+  "lon": 10.3468830,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 13995027253,
+  "lat": 56.2562883,
+  "lon": 10.3468321,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14013997001,
+  "lat": 56.1285877,
+  "lon": 10.1953916,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14019836715,
+  "lat": 56.1263713,
+  "lon": 10.1028778,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14019836716,
+  "lat": 56.1274129,
+  "lon": 10.1004621,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14019836747,
+  "lat": 56.1285748,
+  "lon": 10.1006543,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14019836762,
+  "lat": 56.1276683,
+  "lon": 10.1021120,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14024484155,
+  "lat": 56.1769160,
+  "lon": 10.2233833,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14026579283,
+  "lat": 56.1526116,
+  "lon": 10.1929371,
+  "tags": {
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14038769976,
+  "lat": 56.1644166,
+  "lon": 10.1349022,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14045502611,
+  "lat": 56.1596814,
+  "lon": 10.1348482,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14045502612,
+  "lat": 56.1596769,
+  "lon": 10.1348995,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14045604697,
+  "lat": 56.1734947,
+  "lon": 10.2025270,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14045604698,
+  "lat": 56.1734914,
+  "lon": 10.2026050,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14148468061,
+  "lat": 56.1772277,
+  "lon": 10.1661831,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14154056532,
+  "lat": 56.1776812,
+  "lon": 10.1680094,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14154056537,
+  "lat": 56.1790201,
+  "lon": 10.1685285,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14159794172,
+  "lat": 56.0890392,
+  "lon": 10.2478348,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14159794173,
+  "lat": 56.0890382,
+  "lon": 10.2478686,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14162437566,
+  "lat": 56.1582574,
+  "lon": 10.1987035,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14162437567,
+  "lat": 56.1583300,
+  "lon": 10.1990644,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14175890380,
+  "lat": 56.2139532,
+  "lon": 10.2733335,
+  "tags": {
+    "covered": "yes",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14201173704,
+  "lat": 56.1703176,
+  "lon": 10.0873388,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14201173705,
+  "lat": 56.1689396,
+  "lon": 10.0872950,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14204337811,
+  "lat": 56.1582314,
+  "lon": 10.2172236,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14204337812,
+  "lat": 56.1582452,
+  "lon": 10.2172018,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14204337813,
+  "lat": 56.1582510,
+  "lon": 10.2171720,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14204414015,
+  "lat": 56.1581393,
+  "lon": 10.2174921,
+  "tags": {
+    "covered": "no",
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14204414016,
+  "lat": 56.1578989,
+  "lon": 10.2179115,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14204414017,
+  "lat": 56.1579115,
+  "lon": 10.2180768,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14282958388,
+  "lat": 56.1937559,
+  "lon": 10.1948358,
+  "tags": {
+    "check_date": "2026-08-17",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "yes",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14297070991,
+  "lat": 56.1381856,
+  "lon": 10.1875993,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14301910389,
+  "lat": 56.0389959,
+  "lon": 10.2033144,
+  "tags": {
+    "bench": "yes",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14301910390,
+  "lat": 56.0394420,
+  "lon": 10.2032847,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no",
+    "material": "wood"
+  }
+},
+{
+  "type": "node",
+  "id": 14301910391,
+  "lat": 56.0399837,
+  "lon": 10.2031861,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14301910392,
+  "lat": 56.0400388,
+  "lon": 10.2040287,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14303063140,
+  "lat": 56.0365212,
+  "lon": 10.2015857,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 14303063141,
+  "lat": 56.0365170,
+  "lon": 10.2015862,
+  "tags": {
+    "bench": "yes",
+    "covered": "no",
+    "leisure": "picnic_table",
+    "lit": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 14303379305,
+  "lat": 56.0360986,
+  "lon": 10.1930771,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14308329344,
+  "lat": 56.0367910,
+  "lon": 10.1996370,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14318543532,
+  "lat": 56.0369376,
+  "lon": 10.1986309,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14323573815,
+  "lat": 56.0462567,
+  "lon": 10.1998422,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14324724770,
+  "lat": 56.0482676,
+  "lon": 10.1978882,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14324724771,
+  "lat": 56.0482426,
+  "lon": 10.1978882,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14335391183,
+  "lat": 56.0485305,
+  "lon": 10.1983606,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+},
+{
+  "type": "node",
+  "id": 14335391184,
+  "lat": 56.0485309,
+  "lon": 10.1984068,
+  "tags": {
+    "leisure": "picnic_table"
+  }
+}
+
+  ]
+}

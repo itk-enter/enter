@@ -1,0 +1,60 @@
+{#
+    One merged data set on /sources. The closed card shows the title and the number of data sets that the merge
+    reads. The open card adds a link to the conflicts of the merge, and the facts about the merged data set.
+    Variables: data_set (a MergedDataSet) and entities_url (the broker URL of its entities).
+    The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in
+    a button. The heading is visually hidden, and the summary shows the title.
+#}
+<section class="itkaarhus-card fold-card" id="{{ data_set.id }}">
+    <h3 class="visually-hidden">{{ data_set.title }}</h3>
+    <details>
+        <summary class="fold-card-summary">
+            <span class="fold-card-title">{{ data_set.title }}</span>
+            <span class="source-card-status">
+                Merged from {{ data_set.inputs|length }} {{ data_set.inputs|length == 1 ? 'data set' : 'data sets' }}
+            </span>
+        </summary>
+        <div class="fold-card-body">
+            <div class="source-figures">
+                <a class="itkaarhus-btn itkaarhus-btn--secondary itkaarhus-btn--sm source-figure-link" href="{{ path('app_source_show', {id: data_set.id}) }}">Conflicts</a>
+            </div>
+
+            <dl class="fold-card-facts source-facts">
+                <dt>Id</dt>
+                <dd><code>{{ data_set.id }}</code></dd>
+
+                <dt>Description</dt>
+                <dd>{{ data_set.description }}</dd>
+
+                <dt>Merged from</dt>
+                <dd>
+                    {% for input in data_set.inputs %}
+                        <code>{{ input }}</code>{% if not loop.last %}, {% endif %}
+                    {% else %}
+                        No data set publishes its models.
+                    {% endfor %}
+                </dd>
+
+                <dt>Model</dt>
+                <dd>
+                    {% if data_set.modelUrl %}
+                        <a href="{{ data_set.modelUrl }}"><code>{{ data_set.model }}</code></a>
+                    {% else %}
+                        <code>{{ data_set.model }}</code>
+                    {% endif %}
+                </dd>
+
+                <dt>Context</dt>
+                <dd><a href="{{ data_set.contextUrl }}">{{ data_set.contextUrl }}</a></dd>
+
+                <dt>Entities</dt>
+                <dd><a href="{{ entities_url }}">{{ entities_url }}</a></dd>
+
+                {% if data_set.licence %}
+                    <dt>Licence</dt>
+                    <dd><a href="{{ data_set.licence }}">{{ data_set.licence }}</a></dd>
+                {% endif %}
+            </dl>
+        </div>
+    </details>
+</section>
