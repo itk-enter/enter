@@ -232,6 +232,25 @@ class ConflationPipelineTest extends TestCase
         ]);
     }
 
+    /**
+     * An augmentation can name an attribute without a value. The merge then
+     * adds nothing, and it records no conflict.
+     */
+    public function testAnAugmentedAttributeWithoutValuesAddsNothing(): void
+    {
+        $augmentation = new class(5.0) extends AbstractAugmentation {
+            public function augment(array $entities, array $records, array $attributesByModel): array
+            {
+                return ['A-3' => ['surface' => []]];
+            }
+        };
+
+        $entities = new ConflationPipeline()->run(self::conflation(augmentation: $augmentation), self::records());
+
+        $this->assertSame(['thing' => 't3'], $entities[2]->attributes);
+        $this->assertSame([], $entities[2]->conflicts);
+    }
+
     public function testAugmentingMustNotOverwriteWhatTheMembersState(): void
     {
         $this->expectException(ConflationLimitException::class);

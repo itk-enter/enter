@@ -141,4 +141,11 @@ class WithinAreaOrRadiusTest extends TestCase
 
         $this->assertEquals(['P-1' => ['surface' => [new StatedValue('grass', 'C-5', 'data-set-c')]]], self::augment([self::space('P-1', 10, 10)], $records));
     }
+
+    public function testTheRadiusMustBePositive(): void
+    {
+        $this->expectExceptionMessage('The radius must be positive, got 0.000000.');
+
+        new WithinAreaOrRadius(0.0);
+    }
 }

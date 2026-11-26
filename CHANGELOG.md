@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-201](https://github.com/itk-enter/enter/pull/201)
   Security updates
+* [PR-192](https://github.com/itk-enter/enter/pull/192)
+  Rejected the attribute names that NGSI-LD reserves
+* [PR-188](https://github.com/itk-enter/enter/pull/188)
+  Added a test coverage check to CI
+* [PR-186](https://github.com/itk-enter/enter/pull/186)
+  Streamlined the calls to the broker
 * [PR-194](https://github.com/itk-enter/enter/pull/194)
   Pinned Scorpio to version 6.0.2
 * [PR-182](https://github.com/itk-enter/enter/pull/182)

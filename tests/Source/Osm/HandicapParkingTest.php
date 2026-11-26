@@ -9,6 +9,7 @@ use App\Source\Osm\AbstractHandicapParking;
 use App\Source\Osm\OffStreetParking;
 use App\Source\Osm\OnStreetParking;
 use App\Source\Osm\ParkingSpot;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -207,6 +208,43 @@ class HandicapParkingTest extends TestCase
         $this->assertSame('perpendicularParking', $this->entities[4]['parkingMode']['value']);
         $this->assertSame(['parallelParking'], $this->entities[8]['parkingMode']['value']);
         $this->assertArrayNotHasKey('parkingMode', $this->entities[0]);
+    }
+
+    public function testItMapsADiagonalOrientationOntoEchelonParking(): void
+    {
+        $site = [
+            'type' => 'way',
+            'id' => 1,
+            'geometry' => [['lon' => 10.21, 'lat' => 56.15], ['lon' => 10.2101, 'lat' => 56.15]],
+            'tags' => ['amenity' => 'parking', 'parking' => 'street_side', 'capacity:disabled' => '2', 'orientation' => 'diagonal'],
+        ];
+
+        $entity = new OnStreetParking()->createNgsiEntity($site, new Wgs84Transformer());
+
+        $this->assertSame('echelonParking', $entity?->attribute('parkingMode')['value'] ?? null);
+    }
+
+    /**
+     * @param array<string, mixed> $element
+     */
+    #[DataProvider('elementsWithoutAUsableGeometry')]
+    public function testItSkipsAnElementWithoutAUsableGeometry(array $element): void
+    {
+        $element += ['id' => 1, 'tags' => ['amenity' => 'parking_space', 'parking_space' => 'disabled']];
+
+        $this->assertNull(new ParkingSpot()->createNgsiEntity($element, new Wgs84Transformer()));
+    }
+
+    /**
+     * @return iterable<string, array{array<string, mixed>}>
+     */
+    public static function elementsWithoutAUsableGeometry(): iterable
+    {
+        yield 'a way without vertices' => [['type' => 'way', 'geometry' => null]];
+        yield 'a way with a vertex without a position' => [['type' => 'way', 'geometry' => [['lon' => 10.21], ['lon' => 10.22, 'lat' => 56.15]]]];
+        yield 'a way of one vertex' => [['type' => 'way', 'geometry' => [['lon' => 10.21, 'lat' => 56.15]]]];
+        yield 'a relation without bounds' => [['type' => 'relation', 'bounds' => null]];
+        yield 'a relation with an edge missing' => [['type' => 'relation', 'bounds' => ['minlon' => 10.21, 'minlat' => 56.15, 'maxlon' => 10.22]]];
     }
 
     public function testItPublishesTheNameWhenOneIsMapped(): void

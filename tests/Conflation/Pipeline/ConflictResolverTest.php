@@ -45,6 +45,11 @@ class ConflictResolverTest extends TestCase
         $this->assertSame(['fee' => 'free', 'openingHours' => '08–20', 'wheelchair' => 'no'], $entity->attributes);
     }
 
+    public function testAnAttributeWithoutValuesIsNotSettled(): void
+    {
+        $this->assertSame([false, null], new ConflictResolver([new SourceAuthority(['data-set-a'])])->settle('fee', []));
+    }
+
     public function testAnAbsentValueIsNoConflict(): void
     {
         // Data set B states no fee and agrees on everything else, so no

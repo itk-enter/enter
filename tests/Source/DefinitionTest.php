@@ -17,6 +17,13 @@ class DefinitionTest extends TestCase
         $this->assertSame(['id' => 'shared', 'title' => 'Shared'], $definition->toArray()['dataset']);
     }
 
+    public function testASourceClassMustDeclareTheAttribute(): void
+    {
+        $this->expectExceptionMessage('Source stdClass declares no #[App\Source\Definition] attribute.');
+
+        Definition::of(\stdClass::class);
+    }
+
     private function definition(string $dataset, string $datasetTitle): Definition
     {
         return new Definition(

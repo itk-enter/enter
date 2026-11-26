@@ -24,6 +24,11 @@ class SourceImportTest extends TestCase
         $this->assertNull($import->getFeed());
     }
 
+    public function testANewImportHasNoIdUntilTheDatabaseGivesIt(): void
+    {
+        $this->assertNull(new SourceImport(self::SOURCE_ID, $this->at('01:00'))->getId());
+    }
+
     public function testItRecordsASuccessfulImport(): void
     {
         $import = new SourceImport(self::SOURCE_ID, $this->at('01:00'));

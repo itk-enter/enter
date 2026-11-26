@@ -6,7 +6,7 @@ namespace App\Source;
  * The base class of a source.
  *
  * The class reads the #[Definition] attribute of the concrete source. It
- * gives the key, the string and the JSON of the source from that attribute.
+ * gives the string and the JSON of the source from that attribute.
  * A concrete source adds the #[Definition] attribute and implements
  * createNgsiEntity().
  */
@@ -20,11 +20,6 @@ abstract class AbstractSource implements SourceInterface
          * @throws \ReflectionException
          */
         get => Definition::of(static::class);
-    }
-
-    public function key(): string
-    {
-        return $this->definition->id;
     }
 
     public function __toString(): string
