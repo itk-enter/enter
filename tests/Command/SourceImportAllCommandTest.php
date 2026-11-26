@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace App\Tests\Command;
 
-use App\Import\SourcesImporter;
-use App\Tests\Import\FakeSourceImporter;
+use App\Import\SourceProcessImporter;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
  * Tests the console output of app:source:import-all.
  *
- * A fake importer takes the place of the feeds and the broker.
+ * The command imports each source in a process of its own. A short PHP script
+ * takes the place of app:source:import. It prints the id of the source, and it
+ * fails for the source that the test names.
  */
 class SourceImportAllCommandTest extends KernelTestCase
 {
     public function testItImportsEachSourceExceptTheTestSources(): void
     {
-        $fake = $this->fake([]);
+        $this->importer(null);
 
         $result = self::runCommand('app:source:import-all', normalizers: [self::oneLine(...)]);
 
         $this->assertCommandIsSuccessful($result);
-        $this->assertContains('osm-public-toilet', $fake->imported);
-        $this->assertSame([], array_filter($fake->imported, static fn (string $id): bool => str_starts_with($id, 'test:')));
-        $this->assertStringContainsString('Upserted 3 entities into http://broker.example/ (HTTP 201).', $result->getDisplay());
+        $this->assertStringContainsString('Imported osm-public-toilet', $result->getDisplay());
+        $this->assertStringNotContainsString('Imported test:', $result->getDisplay());
     }
 
     /**
@@ -33,27 +33,26 @@ class SourceImportAllCommandTest extends KernelTestCase
      */
     public function testItFailsIfASourceFails(): void
     {
-        $fake = $this->fake(['osm-bench']);
+        $this->importer('osm-bench');
 
         $result = self::runCommand('app:source:import-all', normalizers: [self::oneLine(...)]);
 
         $this->assertCommandFailed($result);
-        $this->assertContains('osm-public-toilet', $fake->imported);
-        $this->assertStringContainsString('The feed of osm-bench is not available.', $result->getDisplay());
+        $this->assertStringContainsString('Imported osm-public-toilet', $result->getDisplay());
+        $this->assertStringContainsString('The import of osm-bench failed.', $result->getDisplay());
     }
 
     /**
-     * Puts a fake importer in place of the real one.
+     * Puts an importer in place of the real one. It runs the short script
+     * instead of app:source:import.
      *
-     * @param list<string> $failing the ids of the sources whose import fails
+     * @param string|null $failing the id of the source whose import fails
      */
-    private function fake(array $failing): FakeSourceImporter
+    private function importer(?string $failing): void
     {
         self::bootKernel();
-        $fake = new FakeSourceImporter($failing);
-        static::getContainer()->set(SourcesImporter::class, $fake->sourcesImporter());
-
-        return $fake;
+        $script = \sprintf('echo "Imported ", $argv[1], PHP_EOL; exit(%s === $argv[1] ? 1 : 0);', var_export($failing, true));
+        static::getContainer()->set(SourceProcessImporter::class, new SourceProcessImporter(['-r', $script, '--']));
     }
 
     /**

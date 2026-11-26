@@ -66,6 +66,28 @@ class ConflationRunCommandTest extends KernelTestCase
         }
     }
 
+    /**
+     * A scheduled run must be able to see that a merge failed, so the exit
+     * code tells it. The other merges still run.
+     */
+    public function testItRunsTheOtherMergesAfterAFailedMerge(): void
+    {
+        self::ensureKernelShutdown();
+        self::bootKernel();
+        $client = new MockHttpClient(static fn (string $method, string $url): MockResponse => str_contains(urldecode($url), 'sourceId=="test:osm-bench"')
+            ? new MockResponse('', ['http_code' => 500])
+            : new MockResponse(json_encode(['type' => 'FeatureCollection', 'features' => []], \JSON_THROW_ON_ERROR)));
+        static::getContainer()->set(NgsiLdBroker::class, new NgsiLdBroker($client, 'http://broker.example'));
+
+        $result = self::runCommand('app:conflation:run', ['--dry-run' => true], normalizers: [self::oneLine(...)]);
+
+        $this->assertCommandFailed($result);
+        $display = $result->getDisplay();
+        $this->assertStringContainsString('The broker rejected the read of test:osm-bench with HTTP 500', $display);
+        $this->assertStringContainsString(self::MERGE, $display);
+        $this->assertStringContainsString('Dry run: the command published nothing.', $display);
+    }
+
     public function testItWarnsIfNoMergeIsDeclared(): void
     {
         static::getContainer()->set(ConflationManager::class, new ConflationManager([]));
