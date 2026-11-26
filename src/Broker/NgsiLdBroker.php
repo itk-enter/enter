@@ -8,6 +8,7 @@ use App\SourceImporter\AbstractSourceImporter;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -26,6 +27,10 @@ final readonly class NgsiLdBroker
     private const string DELETE_PATH = '/ngsi-ld/v1/entityOperations/delete';
 
     private const string ENTITIES_PATH = '/ngsi-ld/v1/entities';
+
+    private const string TYPES_PATH = '/ngsi-ld/v1/types';
+
+    private const string RESULTS_COUNT_HEADER = 'ngsild-results-count';
 
     /**
      * The number of entities in each read request.
@@ -57,20 +62,14 @@ final readonly class NgsiLdBroker
         $partlyRejectedResponses = [];
 
         foreach (array_chunk($entities, self::BATCH_SIZE) as $batch) {
-            $response = $this->brokerClient->request(
-                Request::METHOD_POST,
-                self::UPSERT_PATH,
-                [
-                    'headers' => ['Content-Type' => self::CONTENT_TYPE],
-                    'json' => $batch,
-                ]
-            );
+            $response = $this->send(Request::METHOD_POST, self::UPSERT_PATH, [
+                'headers' => ['Content-Type' => self::CONTENT_TYPE],
+                'json' => $batch,
+            ]);
+
+            self::check($response, 'the upsert');
 
             $batchStatus = $response->getStatusCode();
-
-            if ($batchStatus >= Response::HTTP_BAD_REQUEST) {
-                throw new \RuntimeException(\sprintf('The broker rejected the upsert with HTTP %d: %s', $batchStatus, $response->getContent(false)));
-            }
 
             if (Response::HTTP_MULTI_STATUS === $batchStatus) {
                 $partlyRejectedResponses[] = $response;
@@ -136,103 +135,136 @@ final readonly class NgsiLdBroker
      */
     public function fetchIdsWhereAttributeEquals(string $type, string $contextUrl, string $attribute, string $value): array
     {
-        $pages = [];
+        return $this->ids([
+            'type' => $type,
+            'q' => \sprintf('%s=="%s"', $attribute, $value),
+            'attrs' => $attribute,
+        ], $contextUrl, \sprintf('the list of %s entities', $type));
+    }
 
-        for ($offset = 0;; $offset += self::PAGE_SIZE) {
-            $response = $this->brokerClient->request(
-                Request::METHOD_GET,
-                self::ENTITIES_PATH,
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
-                    ],
-                    'query' => [
-                        'type' => $type,
-                        'q' => \sprintf('%s=="%s"', $attribute, $value),
-                        'attrs' => $attribute,
-                        'limit' => self::PAGE_SIZE,
-                        'offset' => $offset,
-                    ],
-                ]
-            );
+    /**
+     * Gets the IDs of all the entities of a type.
+     *
+     * The method sends no context, so the type must be the full URI. A short
+     * name gives no entities.
+     *
+     * @return list<string>
+     */
+    public function idsOfType(string $type): array
+    {
+        return $this->ids(['type' => $type], null, \sprintf('the list of %s entities', $type));
+    }
 
-            $status = $response->getStatusCode();
-            if ($status >= Response::HTTP_BAD_REQUEST) {
-                throw new \RuntimeException(\sprintf('The broker refused to list %s entities with HTTP %d: %s', $type, $status, $response->getContent(false)));
-            }
+    /**
+     * Gets the types of all the entities in the broker, as full URIs.
+     *
+     * @return list<string>
+     */
+    public function types(): array
+    {
+        $response = $this->send(Request::METHOD_GET, self::TYPES_PATH, [
+            'headers' => ['Accept' => 'application/json'],
+        ]);
 
-            $page = $response->toArray();
-            $pages[] = $page;
+        self::check($response, 'the list of types');
 
-            if (\count($page) < self::PAGE_SIZE) {
-                break;
+        $types = $response->toArray()['typeList'] ?? [];
+
+        return array_values(array_filter(\is_array($types) ? $types : [], \is_string(...)));
+    }
+
+    /**
+     * Counts the entities that a data set published.
+     *
+     * @param string|null $type the type of the entities to count, or null for all types
+     */
+    public function count(string $sourceId, string $contextUrl, ?string $type = null): int
+    {
+        return self::readCount($this->sendCount($sourceId, $contextUrl, $type), $sourceId);
+    }
+
+    /**
+     * Counts the entities of several data sets in parallel.
+     *
+     * @param array<string, array{contextUrl: string, type: string|null}> $dataSets the data sets, by source id
+     *
+     * @return array<string, int|null> the counts by source id, or null for a data set that the broker could not count
+     */
+    public function counts(array $dataSets): array
+    {
+        $responses = [];
+        foreach ($dataSets as $sourceId => $dataSet) {
+            $responses[$sourceId] = $this->sendCount($sourceId, $dataSet['contextUrl'], $dataSet['type']);
+        }
+
+        $counts = [];
+        foreach ($responses as $sourceId => $response) {
+            try {
+                $counts[$sourceId] = self::readCount($response, $sourceId);
+            } catch (\RuntimeException|ExceptionInterface) {
+                $counts[$sourceId] = null;
             }
         }
 
-        return array_column(array_merge(...$pages), 'id');
+        return $counts;
     }
 
     /**
      * Deletes entities by id in batches.
      *
      * @param list<string> $ids
+     *
+     * @return array<string, Rejection> the entities that the broker did not delete, by id
      */
-    public function delete(array $ids): void
+    public function delete(array $ids): array
     {
-        foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
-            $response = $this->brokerClient->request(
-                Request::METHOD_POST,
-                rtrim($this->brokerUrl, '/').self::DELETE_PATH,
-                ['json' => $batch]
-            );
+        $rejected = [];
 
-            $status = $response->getStatusCode();
-            if ($status >= Response::HTTP_BAD_REQUEST) {
-                throw new \RuntimeException(\sprintf('The broker rejected the delete with HTTP %d: %s', $status, $response->getContent(false)));
+        foreach (array_chunk($ids, self::BATCH_SIZE) as $batch) {
+            $response = $this->send(Request::METHOD_POST, self::DELETE_PATH, ['json' => $batch]);
+
+            self::check($response, 'the delete');
+
+            if (Response::HTTP_MULTI_STATUS === $response->getStatusCode()) {
+                $rejected += $this->rejections($response);
             }
         }
+
+        return $rejected;
     }
 
     /**
      * Reads all the entities that a data set published, as GeoJSON features.
      *
-     * The method finds the entities of all models by the source id that the
-     * importer adds to each entity. The broker gives them in the simplified
-     * format. The properties of each feature hold only the values, not the
-     * NGSI-LD objects with a type and a value.
+     * The method finds the entities by the source id that the importer adds
+     * to each entity. The broker gives them in the simplified format. The
+     * properties of each feature hold only the values, not the NGSI-LD
+     * objects with a type and a value.
      * The Link header holds the context of the data set. Thus the broker
      * gives the attribute names that the source declared. The method reads
      * the next page until the broker gives no next page.
      *
-     * The map sends the same request to show a data set.
-     *
-     * @param string $sourceId   the source id of the data set
-     * @param string $contextUrl the JSON-LD context of the data set
+     * @param string      $sourceId   the source id of the data set
+     * @param string      $contextUrl the JSON-LD context of the data set
+     * @param string|null $type       the type of the entities to read, or null for all types
      *
      * @return \Generator<int, array<string, mixed>> GeoJSON features, each with an id, a geometry and properties
      */
-    public function features(string $sourceId, string $contextUrl): \Generator
+    public function features(string $sourceId, string $contextUrl, ?string $type = null): \Generator
     {
         $query = [
-            'q' => \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId),
+            ...self::dataSetQuery($sourceId, $type),
             'format' => 'simplified',
             'limit' => self::PAGE_SIZE,
         ];
 
         while (null !== $query) {
-            $response = $this->brokerClient->request('GET', rtrim($this->brokerUrl, '/').self::ENTITIES_PATH, [
+            $response = $this->send(Request::METHOD_GET, self::ENTITIES_PATH, [
                 'query' => $query,
-                'headers' => [
-                    'Accept' => 'application/geo+json',
-                    'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
-                ],
-            ]);
+                'headers' => ['Accept' => 'application/geo+json'],
+            ], $contextUrl);
 
-            $status = $response->getStatusCode();
-            if ($status >= 400) {
-                throw new \RuntimeException(\sprintf('The broker rejected the read of %s with HTTP %d: %s', $sourceId, $status, $response->getContent(false)));
-            }
+            self::check($response, \sprintf('the read of %s', $sourceId));
 
             $collection = $response->toArray();
             foreach (\is_array($collection['features'] ?? null) ? $collection['features'] : [] as $feature) {
@@ -262,23 +294,17 @@ final readonly class NgsiLdBroker
     public function entities(string $sourceId, string $contextUrl, array $attributes): \Generator
     {
         for ($offset = 0;; $offset += self::PAGE_SIZE) {
-            $response = $this->brokerClient->request(Request::METHOD_GET, self::ENTITIES_PATH, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
-                ],
+            $response = $this->send(Request::METHOD_GET, self::ENTITIES_PATH, [
+                'headers' => ['Accept' => 'application/json'],
                 'query' => [
-                    'q' => \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId),
+                    'q' => self::sourceQuery($sourceId),
                     'attrs' => implode(',', $attributes),
                     'limit' => self::PAGE_SIZE,
                     'offset' => $offset,
                 ],
-            ]);
+            ], $contextUrl);
 
-            $status = $response->getStatusCode();
-            if ($status >= Response::HTTP_BAD_REQUEST) {
-                throw new \RuntimeException(\sprintf('The broker rejected the read of %s with HTTP %d: %s', $sourceId, $status, $response->getContent(false)));
-            }
+            self::check($response, \sprintf('the read of %s', $sourceId));
 
             $page = $response->toArray();
             foreach ($page as $entity) {
@@ -302,22 +328,16 @@ final readonly class NgsiLdBroker
      */
     public function entity(string $id, string $contextUrl, array $attributes): ?array
     {
-        $response = $this->brokerClient->request(Request::METHOD_GET, rtrim($this->brokerUrl, '/').self::ENTITIES_PATH.'/'.rawurlencode($id), [
-            'headers' => [
-                'Accept' => 'application/json',
-                'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
-            ],
+        $response = $this->send(Request::METHOD_GET, self::ENTITIES_PATH.'/'.rawurlencode($id), [
+            'headers' => ['Accept' => 'application/json'],
             'query' => ['attrs' => implode(',', $attributes)],
-        ]);
+        ], $contextUrl);
 
-        $status = $response->getStatusCode();
-        if (Response::HTTP_NOT_FOUND === $status) {
+        if (Response::HTTP_NOT_FOUND === $response->getStatusCode()) {
             return null;
         }
 
-        if ($status >= Response::HTTP_BAD_REQUEST) {
-            throw new \RuntimeException(\sprintf('The broker rejected the read of %s with HTTP %d: %s', $id, $status, $response->getContent(false)));
-        }
+        self::check($response, \sprintf('the read of %s', $id));
 
         return $response->toArray();
     }
@@ -335,24 +355,145 @@ final readonly class NgsiLdBroker
      */
     public function appendAttributes(string $id, string $contextUrl, array $attributes): bool
     {
-        $response = $this->brokerClient->request(Request::METHOD_POST, rtrim($this->brokerUrl, '/').self::ENTITIES_PATH.'/'.rawurlencode($id).'/attrs', [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Link' => \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl),
-            ],
+        $response = $this->send(Request::METHOD_POST, self::ENTITIES_PATH.'/'.rawurlencode($id).'/attrs', [
+            'headers' => ['Content-Type' => 'application/json'],
             'json' => $attributes,
-        ]);
+        ], $contextUrl);
 
         $status = $response->getStatusCode();
         if (Response::HTTP_NOT_FOUND === $status) {
             return false;
         }
 
-        if ($status >= Response::HTTP_BAD_REQUEST || Response::HTTP_MULTI_STATUS === $status) {
-            throw new \RuntimeException(\sprintf('The broker rejected the update of %s with HTTP %d: %s', $id, $status, $response->getContent(false)));
+        if (Response::HTTP_MULTI_STATUS === $status) {
+            throw self::rejected($response, \sprintf('the update of %s', $id));
         }
 
+        self::check($response, \sprintf('the update of %s', $id));
+
         return true;
+    }
+
+    public function brokerUrl(): string
+    {
+        return $this->brokerUrl;
+    }
+
+    /**
+     * Reads the IDs of the entities that a query selects, page by page.
+     *
+     * @param array<string, string> $query      the query without limit and offset
+     * @param string|null           $contextUrl the context for the names in the query, or null for no context
+     * @param string                $action     the request, for the message if the broker rejects it
+     *
+     * @return list<string>
+     */
+    private function ids(array $query, ?string $contextUrl, string $action): array
+    {
+        $ids = [];
+
+        for ($offset = 0;; $offset += self::PAGE_SIZE) {
+            $response = $this->send(Request::METHOD_GET, self::ENTITIES_PATH, [
+                'headers' => ['Accept' => 'application/json'],
+                'query' => [...$query, 'limit' => self::PAGE_SIZE, 'offset' => $offset],
+            ], $contextUrl);
+
+            self::check($response, $action);
+
+            $page = $response->toArray();
+            $ids[] = array_column($page, 'id');
+
+            if (\count($page) < self::PAGE_SIZE) {
+                break;
+            }
+        }
+
+        return array_merge(...$ids);
+    }
+
+    /**
+     * Sends a count request without waiting for the answer. The request asks
+     * for one entity, because Scorpio counts 0 if the limit is 0.
+     */
+    private function sendCount(string $sourceId, string $contextUrl, ?string $type): ResponseInterface
+    {
+        return $this->send(Request::METHOD_GET, self::ENTITIES_PATH, [
+            'headers' => ['Accept' => 'application/json'],
+            'query' => [
+                ...self::dataSetQuery($sourceId, $type),
+                'count' => 'true',
+                'limit' => 1,
+            ],
+        ], $contextUrl);
+    }
+
+    private static function readCount(ResponseInterface $response, string $sourceId): int
+    {
+        self::check($response, \sprintf('the count of %s', $sourceId));
+
+        $count = $response->getHeaders()[self::RESULTS_COUNT_HEADER][0] ?? '';
+        if (!ctype_digit($count)) {
+            throw new \RuntimeException(\sprintf('The broker gave no count of %s', $sourceId));
+        }
+
+        return (int) $count;
+    }
+
+    /**
+     * Sends a request to the broker. A context URL goes in the Link header, so
+     * that the broker uses the names of that context.
+     *
+     * @param array<string, mixed> $options the options of the HTTP client
+     */
+    private function send(string $method, string $path, array $options, ?string $contextUrl = null): ResponseInterface
+    {
+        if (null !== $contextUrl) {
+            $options['headers']['Link'] = \sprintf('<%s>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"', $contextUrl);
+        }
+
+        return $this->brokerClient->request($method, rtrim($this->brokerUrl, '/').$path, $options);
+    }
+
+    /**
+     * Throws an exception if the broker rejected the request.
+     *
+     * @param string $action the request, for example "the upsert"
+     */
+    private static function check(ResponseInterface $response, string $action): void
+    {
+        if ($response->getStatusCode() >= Response::HTTP_BAD_REQUEST) {
+            throw self::rejected($response, $action);
+        }
+    }
+
+    private static function rejected(ResponseInterface $response, string $action): \RuntimeException
+    {
+        return new \RuntimeException(\sprintf('The broker rejected %s with HTTP %d: %s', $action, $response->getStatusCode(), $response->getContent(false)));
+    }
+
+    /**
+     * Gets the query that selects the entities of a data set.
+     */
+    public static function sourceQuery(string $sourceId): string
+    {
+        return \sprintf('%s=="%s"', AbstractSourceImporter::SOURCE_ID_ATTRIBUTE, $sourceId);
+    }
+
+    /**
+     * Gets the query parameters that select the entities of a data set, and
+     * of one type if the method gets a type.
+     *
+     * @return array<string, string>
+     */
+    private static function dataSetQuery(string $sourceId, ?string $type): array
+    {
+        $query = ['q' => self::sourceQuery($sourceId)];
+
+        if (null !== $type) {
+            $query['type'] = $type;
+        }
+
+        return $query;
     }
 
     /**
@@ -377,10 +518,5 @@ final readonly class NgsiLdBroker
         }
 
         return null;
-    }
-
-    public function brokerUrl(): string
-    {
-        return $this->brokerUrl;
     }
 }
