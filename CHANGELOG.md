@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-201](https://github.com/itk-enter/enter/pull/201)
   Security updates
+* [PR-198](https://github.com/itk-enter/enter/pull/198)
+  Added an overview of the conflation conflicts
+* [PR-171](https://github.com/itk-enter/enter/pull/171)
+  Rewrote the API page, added the logo and a footer, and applied the ITK Aarhus design system
+* [PR-169](https://github.com/itk-enter/enter/pull/169)
+  Turned the front page into links to the subpages
+* [PR-168](https://github.com/itk-enter/enter/pull/168)
+  Added the import history to `/sources`
 * [PR-192](https://github.com/itk-enter/enter/pull/192)
   Rejected the attribute names that NGSI-LD reserves
 * [PR-188](https://github.com/itk-enter/enter/pull/188)

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Conflation\Io;
 
+use App\Source\Definition;
+
 /**
  * What describes a merged data set, as a source's definition describes the
  * data set it publishes.
@@ -26,6 +28,15 @@ final readonly class MergedDataSet
         public ?string $licence,
         public array $inputs,
     ) {
+    }
+
+    /**
+     * The URL of the page that describes the result model, or null if the
+     * context is not in a repository of data models on GitHub.
+     */
+    public function modelUrl(): ?string
+    {
+        return Definition::modelUrlOf($this->contextUrl, $this->model);
     }
 
     /**

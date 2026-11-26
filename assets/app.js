@@ -6,4 +6,6 @@ import "./stimulus_bootstrap.js";
  */
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "itkaarhus-design-system/tokens.css";
+import "itkaarhus-design-system/components.css";
 import "./styles/app.css";

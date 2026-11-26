@@ -31,4 +31,6 @@ return [
     'bootstrap' => ['version' => '5.3.8'],
     '@popperjs/core' => ['version' => '2.11.8'],
     'bootstrap/dist/css/bootstrap.min.css' => ['version' => '5.3.8', 'type' => 'css'],
+    'itkaarhus-design-system/tokens.css' => ['path' => './vendor/itk-dev/itkaarhus-design-system/assets/tokens.css', 'type' => 'css'],
+    'itkaarhus-design-system/components.css' => ['path' => './vendor/itk-dev/itkaarhus-design-system/assets/components.css', 'type' => 'css'],
 ];

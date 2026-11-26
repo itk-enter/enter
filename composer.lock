@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dbc51b8c100be3a805c23956b89950b3",
+    "content-hash": "6265dfc1d97508d23320f5df288ad244",
     "packages": [
         {
             "name": "composer/semver",
@@ -1259,6 +1259,38 @@
                 "source": "https://github.com/itamair/geoPHP/tree/1.12"
             },
             "time": "2026-04-02T10:02:52+00:00"
+        },
+        {
+            "name": "itk-dev/itkaarhus-design-system",
+            "version": "0.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/itk-dev/itkaarhus-design-system.git",
+                "reference": "affd377a3ea122b43ebc1d455233572beac3d418"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/itk-dev/itkaarhus-design-system/zipball/affd377a3ea122b43ebc1d455233572beac3d418",
+                "reference": "affd377a3ea122b43ebc1d455233572beac3d418",
+                "shasum": ""
+            },
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "description": "ITK Aarhus design system — assets-only package shipping the design tokens (tokens.css), namespaced component styles (components.css) and the Lucide icon sprite under assets/.",
+            "homepage": "https://itk-dev.github.io/itkaarhus-design-system/",
+            "keywords": [
+                "aarhus-kommune",
+                "css",
+                "design-system",
+                "design-tokens"
+            ],
+            "support": {
+                "issues": "https://github.com/itk-dev/itkaarhus-design-system/issues",
+                "source": "https://github.com/itk-dev/itkaarhus-design-system"
+            },
+            "time": "2026-11-19T10:09:50+00:00"
         },
         {
             "name": "monolog/monolog",

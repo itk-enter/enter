@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% set base = url('app_default')|trim('/', 'right') %}
+{% set osm_bench = '/ngsi-ld/v1/entities?q=sourceId=="osm-bench"' %}
+
+{% block title %}API{% endblock %}
+
+{% block header %}
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [{label: 'Home', url: path('app_default')}],
+        current: block('title'),
+    }) }}
+{% endblock %}
+
+{% macro summary(path, label) %}
+    <summary class="fold-card-summary">
+        <h2 class="fold-card-title">
+            <span class="itkaarhus-tag itkaarhus-tag--primary">GET</span>
+            <code>{{ path }}</code>
+            <span class="api-endpoint-label">{{ label }}</span>
+        </h2>
+    </summary>
+{% endmacro %}
+
+{% macro example(base, description, path) %}
+    <p class="fold-card-label">Example</p>
+    <p class="api-example">
+        {{ description }}
+        <a class="api-example-url" href="{{ base ~ path }}"><code>{{ base ~ path }}</code></a>
+    </p>
+{% endmacro %}
+
+{% block content %}
+    {% import _self as api %}
+
+    <p class="page-intro">
+        Read the data in the broker with GET requests.<br>
+        Open an endpoint to see its parameters, an example and the response.
+    </p>
+
+    <section class="itkaarhus-card fold-card">
+        <details>
+            {{ api.summary('/sources.json', 'The list of data sets') }}
+            <div class="fold-card-body">
+                <p>
+                    Lists the data sets. Each data set has an <code>id</code>, a <code>title</code>, a
+                    <code>model</code>, the <code>context_url</code> of the model and the <code>entities_url</code> that
+                    selects its entities. A merged data set also has the <code>inputs</code> that it is merged from.
+                </p>
+                {{ api.example(base, 'All the data sets', '/sources.json') }}
+                <p class="fold-card-label">Response, shortened</p>
+                <pre class="api-code"><code>[
+  {
+    "id": "osm-bench",
+    "title": "Bænke (OpenStreetMap), Aarhus Kommune",
+    "description": "Benches mapped in OpenStreetMap within Aarhus Municipality.",
+    "publisher": "OpenStreetMap contributors",
+    "model": "Bench",
+    "context_url": "https://raw.githubusercontent.com/itk-enter/data-models/Bench/v0.0.1/dataModel.PointOfInterest/context.jsonld",
+    "licence": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "entities_url": "{{ base }}/ngsi-ld/v1/entities?q=sourceId%3D%3D%22osm-bench%22",
+    …
+  },
+  …
+]</code></pre>
+            </div>
+        </details>
+    </section>
+
+    <section class="itkaarhus-card fold-card">
+        <details>
+            {{ api.summary('/ngsi-ld/v1/types', 'The types in the broker') }}
+            <div class="fold-card-body">
+                <p>Lists the types of the entities in the broker.</p>
+                {{ api.example(base, 'All the types', '/ngsi-ld/v1/types') }}
+                <p class="fold-card-label">Response</p>
+                <pre class="api-code"><code>{
+  "id": "urn:ngsi-ld:EntityTypeList:1795095971325",
+  "type": "EntityTypeList",
+  "typeList": [
+    "https://itk-enter.github.io/data-models/dataModel.PointOfInterest/Bench",
+    "https://smartdatamodels.org/dataModel.Parking/ParkingSpot",
+    "https://smartdatamodels.org/dataModel.Parking/OffStreetParking",
+    "https://itk-enter.github.io/data-models/dataModel.PointOfInterest/PublicToilet",
+    "https://smartdatamodels.org/dataModel.Parking/OnStreetParking"
+  ]
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    <section class="itkaarhus-card fold-card">
+        <details>
+            {{ api.summary('/ngsi-ld/v1/entities', 'The entities that match a query') }}
+            <div class="fold-card-body">
+                <p>Lists the entities that match the query. Give a <code>type</code>, a <code>q</code> or both.</p>
+                <p class="fold-card-label">Parameters</p>
+                <dl class="fold-card-facts">
+                    <dt><code>type</code></dt>
+                    <dd>The full URI of a type.</dd>
+
+                    <dt><code>q</code></dt>
+                    <dd>A filter on the attributes, for example <code>sourceId=="osm-bench"</code>.</dd>
+
+                    <dt><code>format=simplified</code></dt>
+                    <dd>Gives the value of each attribute only, without the NGSI-LD structure around it.</dd>
+
+                    <dt><code>attrs</code></dt>
+                    <dd>Gives only the attributes in the list, for example <code>location</code>.</dd>
+
+                    <dt><code>limit</code>, <code>offset</code></dt>
+                    <dd>
+                        Give one page of the result. If there is a next page, the <code>Link</code> header of the
+                        response points to it.
+                    </dd>
+
+                    <dt><code>count=true</code></dt>
+                    <dd>Adds the header <code>NGSILD-Results-Count</code> with the number of all the entities that match.</dd>
+
+                    <dt><code>georel</code>, <code>geometry</code>, <code>coordinates</code></dt>
+                    <dd>
+                        Find entities near a point, for example <code>georel=near;maxDistance==300</code>,
+                        <code>geometry=Point</code> and <code>coordinates=[10.2039,56.1572]</code>. The coordinates
+                        are longitude, then latitude, and the distance is in metres.
+                    </dd>
+                </dl>
+                <p class="fold-card-label">Headers</p>
+                <dl class="fold-card-facts">
+                    <dt><code>Accept</code></dt>
+                    <dd>
+                        <code>application/ld+json</code> gives JSON-LD, with the context in the body.
+                        <code>application/json</code> gives plain JSON. <code>application/geo+json</code> gives a
+                        GeoJSON feature collection, which map libraries can show.
+                    </dd>
+
+                    <dt><code>Link</code></dt>
+                    <dd>
+                        The JSON-LD context of a data model, for example the <code>context_url</code> of a data set.
+                        With it, the response uses the short attribute names of the model, and <code>type</code>,
+                        <code>q</code> and <code>attrs</code> can use the short names too, for example
+                        <code>Bench</code>.
+                    </dd>
+                </dl>
+                {{ api.example(base, 'One entity of the data set osm-bench, with the values only', osm_bench ~ '&format=simplified&limit=1') }}
+                <p class="fold-card-label">Response, shortened</p>
+                <pre class="api-code"><code>[
+  {
+    "id": "urn:ngsi-ld:Bench:aarhus-bench-osm-node-14331600814",
+    "type": "https://itk-enter.github.io/data-models/dataModel.PointOfInterest/Bench",
+    "https://smartdatamodels.org/dataProvider": "OpenStreetMap contributors",
+    "https://smartdatamodels.org/seeAlso": "https://www.openstreetmap.org/node/14331600814",
+    "sourceId": "osm-bench",
+    "location": {
+      "type": "Point",
+      "coordinates": [10.3324159, 56.232945]
+    },
+    …
+  }
+]</code></pre>
+            </div>
+        </details>
+    </section>
+
+    <section class="itkaarhus-card fold-card">
+        <details>
+            {{ api.summary('/ngsi-ld/v1/entities/{id}', 'One entity') }}
+            <div class="fold-card-body">
+                <p>
+                    Gives one entity. The id is the <code>id</code> of the entity in a list of entities. Without
+                    <code>format=simplified</code>, each attribute is an object with a type and a value.
+                </p>
+                {{ api.example(base, 'One bench', '/ngsi-ld/v1/entities/urn:ngsi-ld:Bench:aarhus-bench-osm-node-14331600814') }}
+                <p class="fold-card-label">Response, shortened</p>
+                <pre class="api-code"><code>{
+  "id": "urn:ngsi-ld:Bench:aarhus-bench-osm-node-14331600814",
+  "type": "https://itk-enter.github.io/data-models/dataModel.PointOfInterest/Bench",
+  "https://smartdatamodels.org/dataProvider": {
+    "type": "Property",
+    "value": "OpenStreetMap contributors"
+  },
+  "sourceId": {
+    "type": "Property",
+    "value": "osm-bench"
+  },
+  "location": {
+    "type": "GeoProperty",
+    "value": {
+      "type": "Point",
+      "coordinates": [10.3324159, 56.232945]
+    }
+  },
+  …
+}</code></pre>
+            </div>
+        </details>
+    </section>
+{% endblock %}

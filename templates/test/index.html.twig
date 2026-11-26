@@ -1,6 +1,20 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Test map{% endblock %}
+
+{% block header %}
+    {{ include('_page_header.html.twig', {
+        breadcrumbs: [{label: 'Home', url: path('app_default')}],
+        current: block('title'),
+    }) }}
+{% endblock %}
+
 {% block content %}
+    <p class="page-intro">
+        See the test data sets on a map.<br>
+        Select the data sets in the panel, and click an object on the map to see its data.
+    </p>
+
     <div class="test-map-wrapper"
          data-controller="test-map test-datasets"
          data-test-datasets-url-value="{{ path('test_data_sets') }}"
@@ -8,14 +22,19 @@
         <div class="test-map" data-test-map-target="canvas"></div>
 
         <div class="test-map-panel">
-            <button class="btn btn-light btn-sm shadow-sm" type="button"
+            <button class="itkaarhus-btn itkaarhus-btn--secondary itkaarhus-btn--sm" type="button"
                     data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
                     aria-expanded="true" aria-controls="test-map-datasets">
                 Datamodeller
             </button>
             <form id="test-map-datasets" class="test-map-datasets collapse show shadow-sm"
                   data-test-datasets-target="form" data-action="change->test-datasets#toggle"
-                  aria-label="Datamodeller"></form>
+                  aria-label="Datamodeller">
+                <p class="test-map-loading" role="status" data-test-datasets-target="loading">
+                    <span class="spinner-border" aria-hidden="true"></span>
+                    Henter datasæt…
+                </p>
+            </form>
         </div>
     </div>
 {% endblock %}
