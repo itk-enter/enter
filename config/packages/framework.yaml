@@ -16,6 +16,20 @@ framework:
             broker.client:
                 base_uri: '%env(APP_BROKER_BASE_URI)%'
 
+            # Reads the feeds of the sources. The idle timeout is longer than
+            # the 180 seconds that the Overpass queries allow. A failed request
+            # gets four more tries, after 30 seconds and 1, 2 and 4 minutes,
+            # because a busy Overpass server can refuse requests for minutes.
+            # https://symfony.com/doc/current/http_client.html#retry-failed-requests
+            source_reader.client:
+                scope: '^https?://'
+                timeout: 200
+                max_duration: 600
+                retry_failed:
+                    max_retries: 4
+                    delay: 30000
+                    multiplier: 2
+
             # Fetches the live feeds for the test fixtures.
             test_fixture.client:
                 scope: '^https?://'

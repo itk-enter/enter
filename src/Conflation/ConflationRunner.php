@@ -27,6 +27,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * Before it publishes, the runner keeps the answers of the lookups of the
  * merge from the entities that it published before, and marks the checks of
  * the lookups that are due. After it publishes, it requests these checks.
+ *
+ * runAll() runs several merges. If a merge fails, runAll() logs the error and
+ * continues with the next merge.
  */
 final readonly class ConflationRunner
 {
@@ -45,6 +48,35 @@ final readonly class ConflationRunner
         #[Autowire(env: 'json:APP_NGSI_CONTEXT_URLS')]
         private array $contextUrls,
     ) {
+    }
+
+    /**
+     * Runs each merge, also after a merge failed.
+     *
+     * @param iterable<Conflation>                                        $conflations
+     * @param bool                                                        $publish     false to publish nothing
+     * @param (callable(Conflation, ConflationRun|\Throwable): void)|null $onEach      called after each merge
+     *
+     * @return array<string, \Throwable> the errors of the merges that failed, by merge id
+     */
+    public function runAll(iterable $conflations, bool $publish = true, ?callable $onEach = null): array
+    {
+        $failed = [];
+
+        foreach ($conflations as $conflation) {
+            try {
+                $result = $this->run($conflation, $publish);
+            } catch (\Throwable $exception) {
+                $result = $failed[$conflation->id] = $exception;
+                $this->logger->error('Merge {merge} failed: {message}', ['merge' => $conflation->id, 'message' => $exception->getMessage(), 'exception' => $exception]);
+            }
+
+            if (null !== $onEach) {
+                $onEach($conflation, $result);
+            }
+        }
+
+        return $failed;
     }
 
     /**

@@ -41,6 +41,9 @@ services:
 
                 USER deploy
 
+        environment:
+            # Supercronic runs the nightly import and the merges in crontab.prod.
+            - CRONFILE=/app/crontab.prod
         depends_on:
             rabbit:
                 condition: service_healthy
