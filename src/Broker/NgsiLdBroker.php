@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Broker;
 
+use App\Conflation\Io\ConflationFetcher;
+use App\Conflation\Io\MergedEntityFactory;
 use App\SourceImporter\AbstractSourceImporter;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -252,8 +254,40 @@ final readonly class NgsiLdBroker
      */
     public function features(string $sourceId, string $contextUrl, ?string $type = null): \Generator
     {
+        return $this->readFeatures(self::dataSetQuery($sourceId, $type), $sourceId, $contextUrl);
+    }
+
+    /**
+     * Reads the entities of a merged data set that have conflicts, as GeoJSON
+     * features.
+     *
+     * A merge writes the values that it could not settle to the key
+     * "conflicts" in additionalInformation. The broker filters on that key,
+     * so the method reads only the merged entities with conflicts. The
+     * features have the same form as the features of features().
+     *
+     * @param string $sourceId   the id of the merged data set
+     * @param string $contextUrl the JSON-LD context of the merged data set
+     *
+     * @return \Generator<int, array<string, mixed>> GeoJSON features, each with an id, a geometry and properties
+     */
+    public function conflictedFeatures(string $sourceId, string $contextUrl): \Generator
+    {
+        return $this->readFeatures(['q' => \sprintf('%s;%s[%s]', self::sourceQuery($sourceId), ConflationFetcher::ADDITIONAL_INFORMATION, MergedEntityFactory::CONFLICTS)], $sourceId, $contextUrl);
+    }
+
+    /**
+     * Reads all the pages of the entities that a query selects, as GeoJSON
+     * features.
+     *
+     * @param array<string, string> $filter the query parameters that select the entities, for example q and type
+     *
+     * @return \Generator<int, array<string, mixed>>
+     */
+    private function readFeatures(array $filter, string $sourceId, string $contextUrl): \Generator
+    {
         $query = [
-            ...self::dataSetQuery($sourceId, $type),
+            ...$filter,
             'format' => 'simplified',
             'limit' => self::PAGE_SIZE,
         ];

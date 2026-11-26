@@ -74,6 +74,16 @@ final readonly class DataSetCatalog
     }
 
     /**
+     * Gets a merged data set by its id, or null if no merge has the id.
+     */
+    public function mergedDataSet(string $id): ?MergedDataSet
+    {
+        $conflation = $this->conflations->getConflations()[$id] ?? null;
+
+        return null === $conflation ? null : $this->mergedDataSets->create($conflation);
+    }
+
+    /**
      * Gets the data sets for /sources.json.
      *
      * @return list<array<string, mixed>> one item for each data set, with

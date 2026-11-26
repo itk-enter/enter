@@ -1,6 +1,6 @@
 {#
     One merged data set on /sources. The closed card shows the title and the number of data sets that the merge
-    reads. The open card adds the facts about the merged data set.
+    reads. The open card adds a link to the conflicts of the merge, and the facts about the merged data set.
     Variables: data_set (a MergedDataSet) and entities_url (the broker URL of its entities).
     The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in
     a button. The heading is visually hidden, and the summary shows the title.
@@ -15,6 +15,10 @@
             </span>
         </summary>
         <div class="fold-card-body">
+            <div class="source-figures">
+                <a class="itkaarhus-btn itkaarhus-btn--secondary itkaarhus-btn--sm source-figure-link" href="{{ path('app_source_show', {id: data_set.id}) }}">Conflicts</a>
+            </div>
+
             <dl class="fold-card-facts source-facts">
                 <dt>Id</dt>
                 <dd><code>{{ data_set.id }}</code></dd>
