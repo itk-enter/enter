@@ -1,0 +1,9 @@
+# Production cron jobs. Supercronic runs them in the phpfpm container, see
+# https://github.com/itk-dev/documentation/blob/main/docs/web/server/supercronic.md
+# CRONFILE in docker-compose.server.override.yml selects this file.
+
+# Each night at 01:00: import all the sources.
+0 1 * * * bin/console app:source:import-all
+
+# Each night at 05:00: run all the merges.
+0 5 * * * bin/console app:conflation:run

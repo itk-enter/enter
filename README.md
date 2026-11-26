@@ -45,6 +45,19 @@ task import:all
 The command imports the sources one after another, each in a PHP process of its own. A failing source does not stop the
 run, and the command exits with a failure code if any source failed.
 
+### The nightly import on the server
+
+On the server, [supercronic](https://github.com/itk-dev/documentation/blob/main/docs/web/server/supercronic.md) runs
+the jobs in [`crontab.prod`](crontab.prod) in the `phpfpm` container. Each night, it imports all the sources at 01:00
+and runs all the merges at 05:00, in the time zone of the container (Europe/Copenhagen). `CRONFILE` in
+`docker-compose.server.override.yml` selects the file. Thus the jobs do not run in development.
+
+Both commands exit with a failure code if a source or a merge failed. Supercronic counts the failed runs of each job.
+It publishes the counters on `/cron-metrics`, behind the ITK metrics login.
+
+The merges read what the broker has. If the import of a source failed, its merges use the data of its last successful
+import.
+
 ### Sources
 
 Adding a data source means adding a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way
