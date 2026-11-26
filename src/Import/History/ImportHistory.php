@@ -96,6 +96,8 @@ final readonly class ImportHistory
      *
      * @return array<string, array{added: int, removed: int}>|null the totals of each source with a successful
      *                                                             import, by source id. Null if the database failed.
+     *
+     * @codeCoverageIgnore The queries need MariaDB, which the tests do not have.
      */
     public function totalsBySource(): ?array
     {
