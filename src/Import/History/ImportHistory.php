@@ -42,6 +42,8 @@ final readonly class ImportHistory
      *
      * @return array<string, SourceHistory>|null the history of each source, by source id. Null if the database
      *                                           failed.
+     *
+     * @codeCoverageIgnore The queries need MariaDB, which the tests do not have.
      */
     public function bySource(?string $sourceId = null): ?array
     {
@@ -94,6 +96,8 @@ final readonly class ImportHistory
      * @param int $limit the maximum number of changes
      *
      * @return list<EntityChange>|null the changes, with their imports. Null if the database failed.
+     *
+     * @codeCoverageIgnore The query needs MariaDB, which the tests do not have.
      */
     public function entityChanges(string $sourceId, int $limit): ?array
     {
@@ -125,6 +129,8 @@ final readonly class ImportHistory
      * @param array<string, mixed> $parameters the parameters of the condition
      *
      * @return list<ImportSummary>
+     *
+     * @codeCoverageIgnore The query needs MariaDB, which the tests do not have.
      */
     private function summaries(?string $sourceId, string $condition, array $parameters): array
     {
