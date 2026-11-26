@@ -1,3 +1,7 @@
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
+
 parameters:
     level: 6
     paths:
@@ -7,14 +11,11 @@ parameters:
         - src/
         - tests/
 
+    scanDirectories:
+        - vendor/itamair/geophp/lib
+
     excludePaths:
         - src/Kernel.php
         - tests/bootstrap.php
 
     treatPhpDocTypesAsCertain: false
-
-    ignoreErrors:
-        - messages:
-              - "#contains generic class RecursiveArrayIterator but does not specify its types#"
-              - '#Call to an undefined method RecursiveIterator::getArrayCopy\(\).#'
-          path: src/GeometryHelper.php

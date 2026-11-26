@@ -54,8 +54,7 @@ command can be used to import *all test sources*:
 docker compose exec phpfpm php bin/console test:source:import-all
 ```
 
-Like `app:source:import-all`, it dispatches a `SourcesImportedEvent` when it is done, so listeners can be tried
-against the test sources.
+It dispatches a `SourcesImportedEvent` when it is done, so listeners can be tried against the test sources.
 
 To empty your local broker, e.g. before loading test data, run
 

@@ -6,6 +6,7 @@ namespace App\Merge\Parking;
 
 use App\Conflation\Data\Record;
 use App\Conflation\Io\ConflationFetcher;
+use App\Conflation\Spatial\Shape;
 
 /**
  * Restates an OnStreetParking record as one ParkingSpot record for each of
@@ -23,9 +24,11 @@ final class OnStreetParkingIntoSpots
      * The bays of a site, as ParkingSpot records.
      *
      * The site gives one record for each bay in totalSpotNumber, or one
-     * record if it states no number. Each record lies at the site's point,
-     * has the data set of the site and names the site in restatedFrom. A
-     * site of one bay also gives its full geometry to that bay.
+     * record if it states no number. If the site is a line or an area, the
+     * records lie spread along it, as Shape::spread() gives them. Otherwise
+     * each record lies at the site's point. Each record has the data set of
+     * the site and names the site in restatedFrom. A site of one bay also
+     * gives its full geometry to that bay.
      *
      * @return list<Record>
      */
@@ -36,10 +39,14 @@ final class OnStreetParkingIntoSpots
 
         $attributes = self::attributes($site);
         $geometry = 1 === $count ? $site->geometry : null;
+        $positions = $count > 1 && \in_array($site->geometry['type'] ?? null, ['LineString', 'Polygon', 'MultiPolygon'], true)
+            ? Shape::spread((array) $site->geometry, $count)
+            : [];
 
         $spots = [];
         for ($number = 1; $number <= $count; ++$number) {
-            $spots[] = new Record(self::spotId($site->id, $number), $site->sourceId, $site->longitude, $site->latitude, self::SPOT_MODEL, $attributes, $geometry, $site->id);
+            [$longitude, $latitude] = $positions[$number - 1] ?? [$site->longitude, $site->latitude];
+            $spots[] = new Record(self::spotId($site->id, $number), $site->sourceId, $longitude, $latitude, self::SPOT_MODEL, $attributes, $geometry, $site->id);
         }
 
         return $spots;
@@ -48,7 +55,8 @@ final class OnStreetParkingIntoSpots
     /**
      * The attributes of a site, as a ParkingSpot states them.
      *
-     * The name, the description and the additional information are kept.
+     * The name, the address, the description and the additional information
+     * are kept.
      * The fee in the category becomes the fee in the additional
      * information. The number of bays and the parking mode are left out.
      *
@@ -58,7 +66,7 @@ final class OnStreetParkingIntoSpots
     {
         $attributes = array_filter(
             $site->attributes,
-            static fn (string $attribute): bool => \in_array($attribute, ['name', 'description'], true)
+            static fn (string $attribute): bool => \in_array($attribute, ['name', 'address', 'description'], true)
                 || str_starts_with($attribute, ConflationFetcher::ADDITIONAL_INFORMATION.ConflationFetcher::KEY_SEPARATOR),
             \ARRAY_FILTER_USE_KEY,
         );

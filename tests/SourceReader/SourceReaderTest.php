@@ -27,8 +27,8 @@ class SourceReaderTest extends TestCase
     {
         $reader = $this->reader([new MockResponse('{"elements": [1]}')]);
 
-        $this->assertSame(['elements' => [1]], $reader->read(new ParkingSpot()));
-        $this->assertSame(['elements' => [1]], $reader->read(new OnStreetParking()));
+        $this->assertSame(['elements' => [1]], $reader->read(new ParkingSpot())->toArray());
+        $this->assertSame(['elements' => [1]], $reader->read(new OnStreetParking())->toArray());
         $this->assertCount(1, $this->requested);
     }
 
@@ -51,8 +51,8 @@ class SourceReaderTest extends TestCase
     {
         $reader = $this->reader([new MockResponse('{"elements": [1]}'), new MockResponse('{"elements": [2]}')]);
 
-        $this->assertSame(['elements' => [1]], $reader->read(new ParkingSpot()));
-        $this->assertSame(['elements' => [2]], $reader->read(new Bench()));
+        $this->assertSame(['elements' => [1]], $reader->read(new ParkingSpot())->toArray());
+        $this->assertSame(['elements' => [2]], $reader->read(new Bench())->toArray());
         $this->assertCount(2, $this->requested);
     }
 
@@ -66,8 +66,39 @@ class SourceReaderTest extends TestCase
         } catch (\Throwable) {
         }
 
-        $this->assertSame(['elements' => [1]], $reader->read(new OnStreetParking()));
+        $this->assertSame(['elements' => [1]], $reader->read(new OnStreetParking())->toArray());
         $this->assertCount(2, $this->requested);
+    }
+
+    public function testItGivesTheBodyAndTheContentTypeAsTheSourceSentThem(): void
+    {
+        $reader = $this->reader([new MockResponse("{ \"elements\": [1] }\n", ['response_headers' => [
+            'content-type' => 'application/json; charset=utf-8',
+        ]])]);
+
+        $response = $reader->read(new ParkingSpot());
+
+        $this->assertSame("{ \"elements\": [1] }\n", $response->body);
+        $this->assertSame('application/json; charset=utf-8', $response->contentType);
+    }
+
+    public function testTheContentTypeIsNullWhenTheSourceSendsNone(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}')]);
+
+        $this->assertNull($reader->read(new ParkingSpot())->contentType);
+    }
+
+    public function testASharedFetchKeepsTheContentType(): void
+    {
+        $reader = $this->reader([new MockResponse('{"elements": [1]}', ['response_headers' => [
+            'content-type' => 'application/json',
+        ]])]);
+
+        $reader->read(new ParkingSpot());
+
+        $this->assertSame('application/json', $reader->read(new OnStreetParking())->contentType);
+        $this->assertCount(1, $this->requested);
     }
 
     /**

@@ -21,6 +21,7 @@ final class FixedLifetimeCachingHttpClient implements HttpClientInterface
     use DecoratorTrait;
 
     public function __construct(
+        #[Autowire(service: 'source_reader.client')]
         HttpClientInterface $client,
         #[Autowire(service: 'source_reader.cache')]
         private readonly CacheInterface $cache,

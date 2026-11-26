@@ -7,6 +7,8 @@ namespace App\Conflation;
 use App\Conflation\Augmentation\AbstractAugmentation;
 use App\Conflation\Augmentation\WithinAreaOrRadius;
 use App\Conflation\ConflictResolution\AbstractConflictResolution;
+use App\Conflation\Lookup\AsLocationLookup;
+use App\Conflation\Lookup\LocationLookupInterface;
 use App\Conflation\MergeByLocation\AbstractMergeByLocation;
 use App\Conflation\MergeByLocation\OneToOneClosestFirst;
 
@@ -30,25 +32,28 @@ final readonly class Conflation
     public ?AbstractAugmentation $augmentation;
 
     /**
-     * @param string                           $id                 the merged data set's source identifier, stamped on
-     *                                                             every merged entity as its sourceId
-     * @param string                           $title              the merged data set's title, as a source's
-     * @param string                           $description        what the merged data set holds, as a source's
-     * @param string                           $resultModel        the data model merged entities are built in
-     * @param list<string>                     $defining           the models whose records the merge matches; each one
-     *                                                             can form a merged entity
-     * @param list<AbstractConflictResolution> $conflictResolution the approaches that the pipeline tries in order on an
-     *                                                             attribute in conflict; with none, the merge leaves
-     *                                                             out and records every conflict
-     * @param array<string, list<string>>      $augmenting         models that only add attributes, with the attributes
-     *                                                             each supplies, named as in the result model
-     * @param AbstractAugmentation|null        $augmentation       how augmenting records reach merged entities; if not
-     *                                                             given, WithinAreaOrRadius with the merge's radius
-     * @param string|null                      $contextUrl         the result model's JSON-LD context; if not given, the
-     *                                                             one that the input data sets of the result model
-     *                                                             declare
-     * @param string|null                      $licence            the merged data set's licence; if not given, the one
-     *                                                             that its input data sets share, if they state one
+     * @param string                            $id                 the merged data set's source identifier, stamped on
+     *                                                              every merged entity as its sourceId
+     * @param string                            $title              the merged data set's title, as a source's
+     * @param string                            $description        what the merged data set holds, as a source's
+     * @param string                            $resultModel        the data model merged entities are built in
+     * @param list<string>                      $defining           the models whose records the merge matches; each one
+     *                                                              can form a merged entity
+     * @param list<AbstractConflictResolution>  $conflictResolution the approaches that the pipeline tries in order on an
+     *                                                              attribute in conflict; with none, the merge leaves
+     *                                                              out and records every conflict
+     * @param array<string, list<string>>       $augmenting         models that only add attributes, with the attributes
+     *                                                              each supplies, named as in the result model
+     * @param AbstractAugmentation|null         $augmentation       how augmenting records reach merged entities; if not
+     *                                                              given, WithinAreaOrRadius with the merge's radius
+     * @param string|null                       $contextUrl         the result model's JSON-LD context; if not given, the
+     *                                                              one that the input data sets of the result model
+     *                                                              declare
+     * @param string|null                       $licence            the merged data set's licence; if not given, the one
+     *                                                              that its input data sets share, if they state one
+     * @param array<class-string, list<string>> $lookups            remote services that supply attributes after the
+     *                                                              run, with the attributes the merge takes from each;
+     *                                                              each class implements LocationLookupInterface
      */
     public function __construct(
         public string $id,
@@ -62,6 +67,7 @@ final readonly class Conflation
         ?AbstractAugmentation $augmentation = null,
         public ?string $contextUrl = null,
         public ?string $licence = null,
+        public array $lookups = [],
     ) {
         if ([] === $defining) {
             throw new \InvalidArgumentException(\sprintf('Merge %s names no defining model.', $id));
@@ -87,6 +93,8 @@ final readonly class Conflation
             throw new \InvalidArgumentException(\sprintf('Merge %s reads %s, which is not its result model %s, so it needs a merge by location of its own that restates those records in %s.', $id, implode(', ', $otherModels), $resultModel, $resultModel));
         }
 
+        self::checkLookups($id, $lookups);
+
         $this->augmentation = $augmentation ?? ([] === $augmenting ? null : new WithinAreaOrRadius($mergeByLocation->radius));
     }
 
@@ -106,6 +114,36 @@ final readonly class Conflation
             ?? throw new \LogicException(\sprintf('Merge %s declares no #[%s] attribute.', $class, self::class));
 
         return $attribute->newInstance();
+    }
+
+    /**
+     * Makes sure that each lookup is a lookup class, and that the merge takes
+     * only attributes that the lookup declares. Two lookups cannot supply one
+     * attribute, because the worker of each writes it without the other.
+     *
+     * @param array<class-string, list<string>> $lookups
+     */
+    private static function checkLookups(string $id, array $lookups): void
+    {
+        $suppliers = [];
+        foreach ($lookups as $class => $attributes) {
+            if (!is_a($class, LocationLookupInterface::class, true)) {
+                throw new \InvalidArgumentException(\sprintf('Merge %s names %s as a lookup; it must implement %s.', $id, $class, LocationLookupInterface::class));
+            }
+
+            $lookup = AsLocationLookup::of($class);
+            $unknown = array_diff($attributes, $lookup->attributes);
+            if ([] === $attributes || [] !== $unknown) {
+                throw new \InvalidArgumentException(\sprintf('Merge %s must take one or more of the attributes of lookup %s (%s), not "%s".', $id, $lookup->id, implode(', ', $lookup->attributes), implode(', ', $unknown)));
+            }
+
+            foreach ($attributes as $attribute) {
+                if (isset($suppliers[$attribute])) {
+                    throw new \InvalidArgumentException(\sprintf('Merge %s takes %s from both lookup %s and lookup %s.', $id, $attribute, $suppliers[$attribute], $lookup->id));
+                }
+                $suppliers[$attribute] = $lookup->id;
+            }
+        }
     }
 
     public function isDefining(string $model): bool

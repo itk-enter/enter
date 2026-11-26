@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Test\Fixture;
 
+use App\Geo\Wgs84Transformer;
+use App\Ngsi\NgsiEntity;
+use App\Source\AbstractSource;
+use App\Source\DataType;
 use App\Source\Osm\Bench;
 use App\Test\Fixture\FixtureFetcher;
 use App\Test\Source\MtmSpatialMaps\TestOnStreetParking;
 use App\Test\Source\MtmSpatialMaps\TestParkingSpot;
 use App\Test\Source\Osm\TestBench;
+use App\Test\Source\TestDefinition;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -81,6 +86,20 @@ class FixtureFetcherTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $this->fetcher([])->fetch(new Bench());
+    }
+
+    public function testItRefusesATestSourceWhoseUrlIsNotUnderTest(): void
+    {
+        $source = new #[TestDefinition(id: 'test:outside', title: 'Test: Outside', accessUrl: 'http://nginx:8080/data/outside', dataType: DataType::GeoJSON, mediaType: 'application/geo+json', crs: 'EPSG:4326', model: 'Bench', contextUrl: 'https://example.com/context.jsonld', omittedFields: [], dataset: 'test:outside', datasetTitle: 'Test: Outside', dataUrlBase: 'https://example.com/feed', )] class extends AbstractSource {
+            public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
+            {
+                return null;
+            }
+        };
+
+        $this->expectExceptionMessage('Invalid test source URL: http://nginx:8080/data/outside. Its path must start with "/test/".');
+
+        $this->fetcher([new MockResponse('{"features": []}')])->fetch($source);
     }
 
     /**

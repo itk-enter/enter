@@ -9,7 +9,8 @@ use proj4php\Proj;
 use proj4php\Proj4php;
 
 /**
- * Reprojects coordinates from any registered CRS to WGS84.
+ * Reprojects coordinates from any registered CRS to WGS84, and from WGS84 to
+ * any registered CRS.
  *
  * GeoJSON uses WGS84 coordinates, and NGSI-LD uses the same rule. Thus each
  * geometry goes through this class, and only this class, before it goes into an
@@ -84,6 +85,27 @@ final class Wgs84Transformer
     }
 
     /**
+     * This method does not round the coordinates.
+     *
+     * @param string $srid target CRS
+     *
+     * @return array{float, float} the x and y ordinates in the target CRS
+     */
+    public function fromWgs84(string $srid, float $longitude, float $latitude): array
+    {
+        if (self::TARGET_SRID === $srid) {
+            return [$longitude, $latitude];
+        }
+
+        $transformed = $this->proj4->transform(
+            $this->projection($srid),
+            new Point($longitude, $latitude, $this->projection(self::TARGET_SRID))
+        );
+
+        return [(float) $transformed->x, (float) $transformed->y];
+    }
+
+    /**
      * @param string $srid source CRS
      *
      * @return array{type: string, coordinates: array{float, float}} GeoJSON Point
@@ -114,6 +136,31 @@ final class Wgs84Transformer
      */
     public function transformGeometry(string $srid, array $geometry): array
     {
+        return $this->transformPositions($geometry, fn (float $x, float $y): array => $this->toWgs84($srid, $x, $y));
+    }
+
+    /**
+     * Reprojects a whole GeoJSON geometry from WGS84 to another CRS. The
+     * limits of transformGeometry() also apply to this method.
+     *
+     * @param string               $srid     target CRS
+     * @param array<string, mixed> $geometry GeoJSON geometry object in WGS84
+     *
+     * @return array{type: string, coordinates: mixed}
+     */
+    public function geometryFromWgs84(string $srid, array $geometry): array
+    {
+        return $this->transformPositions($geometry, fn (float $longitude, float $latitude): array => $this->fromWgs84($srid, $longitude, $latitude));
+    }
+
+    /**
+     * @param array<string, mixed>                        $geometry
+     * @param \Closure(float, float): array{float, float} $position transforms one position
+     *
+     * @return array{type: string, coordinates: mixed}
+     */
+    private function transformPositions(array $geometry, \Closure $position): array
+    {
         $type = $geometry['type'] ?? null;
 
         if (!\is_string($type) || !\array_key_exists('coordinates', $geometry)) {
@@ -122,7 +169,7 @@ final class Wgs84Transformer
 
         return [
             'type' => $type,
-            'coordinates' => $this->transformCoordinates($srid, $geometry['coordinates']),
+            'coordinates' => $this->transformCoordinates($position, $geometry['coordinates']),
         ];
     }
 
@@ -133,11 +180,12 @@ final class Wgs84Transformer
      * element is a number. Thus it handles each depth, and it does not list the
      * types.
      *
-     * @param array<array-key, mixed> $coordinates
+     * @param \Closure(float, float): array{float, float} $position    transforms one position
+     * @param array<array-key, mixed>                     $coordinates
      *
      * @return array<int, mixed>
      */
-    private function transformCoordinates(string $srid, array $coordinates): array
+    private function transformCoordinates(\Closure $position, array $coordinates): array
     {
         if ([] === $coordinates) {
             throw new \InvalidArgumentException('GeoJSON coordinates must be a non-empty array.');
@@ -148,11 +196,11 @@ final class Wgs84Transformer
                 throw new \InvalidArgumentException('A GeoJSON position needs at least two ordinates.');
             }
 
-            return $this->toWgs84($srid, (float) $coordinates[0], (float) $coordinates[1]);
+            return $position((float) $coordinates[0], (float) $coordinates[1]);
         }
 
         return array_map(
-            fn (mixed $nested): array => $this->transformCoordinates($srid, $nested),
+            fn (mixed $nested): array => $this->transformCoordinates($position, $nested),
             array_values($coordinates)
         );
     }

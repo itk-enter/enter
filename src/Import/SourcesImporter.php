@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Import;
 
+use App\Import\Event\SourceImportFinishedEvent;
+use App\Import\Event\SourceImportStartedEvent;
 use App\Import\Event\SourcesImportedEvent;
+use App\Import\Exception\ImportRunningException;
 use App\Source\SourceInterface;
 use App\SourceImporter\SourceImporterFactory;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\Store\InMemoryStore;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -18,12 +23,21 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * sources failed. Thus a listener can decide if the run is sufficiently
  * complete for its purpose. The importer returns the failures and does not
  * log them. The caller reports them.
+ *
+ * Each import of one source goes through importOne(), which dispatches an
+ * event before and after the import. The import history listens to these
+ * events.
+ *
+ * Only one process at a time can import a source. importOne() takes a lock
+ * for the source before it dispatches the first event. If another process
+ * has the lock, the import fails at once, and the history gets no record.
  */
 final readonly class SourcesImporter
 {
     public function __construct(
         private SourceImporterFactory $factory,
         private EventDispatcherInterface $dispatcher,
+        private LockFactory $locks = new LockFactory(new InMemoryStore()),
     ) {
     }
 
@@ -40,7 +54,7 @@ final readonly class SourcesImporter
             $id = $source->definition->id;
 
             try {
-                $result = $this->factory->getSourceImporter($source)->import($source);
+                $result = $this->importOne($source);
                 $imported[$id] = $result;
             } catch (\Throwable $exception) {
                 $result = $failed[$id] = $exception;
@@ -55,5 +69,41 @@ final readonly class SourcesImporter
         $this->dispatcher->dispatch($event);
 
         return $event;
+    }
+
+    /**
+     * Imports one source.
+     *
+     * The method dispatches SourceImportStartedEvent before the import and
+     * SourceImportFinishedEvent after it. If the import fails, the method
+     * dispatches the finished event with the error and then throws the
+     * error again.
+     *
+     * @throws ImportRunningException if another process imports the source now
+     */
+    public function importOne(SourceInterface $source): ImportResult
+    {
+        $lock = $this->locks->createLock('source-import-'.$source->definition->id, ttl: null);
+        if (!$lock->acquire()) {
+            throw new ImportRunningException($source->definition->id);
+        }
+
+        try {
+            $this->dispatcher->dispatch(new SourceImportStartedEvent($source));
+
+            try {
+                $result = $this->factory->getSourceImporter($source)->import($source);
+            } catch (\Throwable $exception) {
+                $this->dispatcher->dispatch(new SourceImportFinishedEvent($source, $exception));
+
+                throw $exception;
+            }
+
+            $this->dispatcher->dispatch(new SourceImportFinishedEvent($source, $result));
+
+            return $result;
+        } finally {
+            $lock->release();
+        }
     }
 }

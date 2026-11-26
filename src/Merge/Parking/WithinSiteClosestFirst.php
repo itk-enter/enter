@@ -24,6 +24,12 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     public const string GENERATED = ConflationFetcher::ADDITIONAL_INFORMATION.ConflationFetcher::KEY_SEPARATOR.'generated';
 
     /**
+     * How far apart, in metres, two point sites of one data set may lie and
+     * still be bays of one address.
+     */
+    private const float BAY_SPACING = 5.0;
+
+    /**
      * The sites of the current run, by id.
      *
      * @var array<string, Record>
@@ -38,6 +44,14 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
     private array $bayCounts = [];
 
     /**
+     * The positions of the bay records of each site of the current run that
+     * has a line or an area, by site id. The bays lie spread along the site.
+     *
+     * @var array<string, list<array{float, float}>>
+     */
+    private array $positions = [];
+
+    /**
      * Restates each site as bay records, and then groups all records closest
      * first, with at most one record from each data set in a group.
      */
@@ -46,6 +60,9 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
         $restater = new OnStreetParkingIntoSpots();
         $this->sites = [];
         $this->bayCounts = [];
+        $this->positions = [];
+
+        $oneBayEach = self::sitesOfOneBayEach($records);
 
         $spots = [];
         foreach ($records as $record) {
@@ -54,9 +71,12 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
                 continue;
             }
 
-            $bays = $restater->restate($record);
+            $bays = $restater->restate(isset($oneBayEach[$record->id]) ? self::withOneBay($record) : $record);
             $this->sites[$record->id] = $record;
             $this->bayCounts[$record->id] = \count($bays);
+            if (\count($bays) > 1 && null !== $this->siteShape($bays[0])) {
+                $this->positions[$record->id] = array_map(static fn (Record $bay): array => [$bay->longitude, $bay->latitude], $bays);
+            }
             array_push($spots, ...$bays);
         }
 
@@ -84,16 +104,13 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
 
         // Pair each bay of a site with each record of another source within the radius of the site's shape.
         // The box around the shape, widened by the radius, skips the records that are far away.
-        foreach ($bySite as $siteId => $bays) {
-            $shape = (array) $this->siteShape($bays[0]);
-            [$west, $south, $east, $north] = Shape::bounds($shape);
-            $latitudeMargin = $this->radius / Distance::METRES_PER_DEGREE;
-            $longitudeMargin = $latitudeMargin / max(0.01, cos(deg2rad(($south + $north) / 2)));
+        foreach ($bySite as $bays) {
+            [$west, $south, $east, $north] = Shape::bounds((array) $this->siteShape($bays[0]), $this->radius);
 
             foreach ($records as $other) {
                 if ($other->sourceId === $bays[0]->sourceId
-                    || $other->longitude < $west - $longitudeMargin || $other->longitude > $east + $longitudeMargin
-                    || $other->latitude < $south - $latitudeMargin || $other->latitude > $north + $latitudeMargin) {
+                    || $other->longitude < $west || $other->longitude > $east
+                    || $other->latitude < $south || $other->latitude > $north) {
                     continue;
                 }
 
@@ -113,6 +130,21 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
         }
 
         return array_values($pairs);
+    }
+
+    /**
+     * The pairs of mapped records first, closest first, and then the pairs
+     * with a bay of a site. A bay of a site with a line or an area is 0 m from
+     * every record inside its site. Thus, if it came first, it would join the
+     * records in the order of their ids, not of their distances. A bay of a
+     * site at a point also comes last. Otherwise it could take a mapped bay
+     * before a bay of a site with an area at the same place.
+     */
+    protected function rank(Pair $pair): array
+    {
+        $site = null !== $pair->a->restatedFrom || null !== $pair->b->restatedFrom;
+
+        return [$site ? 1 : 0, ...parent::rank($pair)];
     }
 
     /**
@@ -160,44 +192,71 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
      */
     private function placeUnmatched(array $clusters): array
     {
-        // Collect the mapped bays that matched a bay of each site.
+        // Collect the mapped bays that matched a bay of each site, and the
+        // point of each match: the mean point of its mapped bays.
         $mappedBySite = [];
+        $takenBySite = [];
         foreach ($clusters as $cluster) {
-            $mapped = array_filter($cluster->records, static fn (Record $record): bool => null === $record->restatedFrom);
+            $mapped = array_values(array_filter($cluster->records, static fn (Record $record): bool => null === $record->restatedFrom));
+            if ([] === $mapped) {
+                continue;
+            }
+
             foreach ($cluster->records as $record) {
                 if (null !== $record->restatedFrom) {
                     $mappedBySite[$record->restatedFrom] = [...$mappedBySite[$record->restatedFrom] ?? [], ...$mapped];
+                    $takenBySite[$record->restatedFrom][] = self::mean($record->id, $mapped);
                 }
             }
         }
 
-        return array_map(function (Cluster $cluster) use ($mappedBySite): Cluster {
+        // Find the positions along each site that no match took.
+        $free = [];
+        foreach ($this->positions as $siteId => $positions) {
+            $free[$siteId] = self::freePositions($positions, $takenBySite[$siteId] ?? []);
+        }
+
+        $placed = [];
+        foreach ($clusters as $cluster) {
             if (array_any($cluster->records, static fn (Record $record): bool => null === $record->restatedFrom)) {
-                return $cluster;
+                $placed[] = $cluster;
+                continue;
             }
 
             // A site of one bay gives the exact place of its bay.
             $generated = array_all($cluster->records, fn (Record $record): bool => ($this->bayCounts[(string) $record->restatedFrom] ?? 1) > 1);
 
-            return new Cluster(array_map(
-                fn (Record $record): Record => $this->placed($record, $mappedBySite[(string) $record->restatedFrom] ?? [], $generated),
-                $cluster->records,
-            ));
-        }, $clusters);
+            $records = [];
+            foreach ($cluster->records as $record) {
+                $siteId = (string) $record->restatedFrom;
+                $position = isset($free[$siteId]) ? array_shift($free[$siteId]) : null;
+                $records[] = $this->placed($record, $mappedBySite[$siteId] ?? [], $position, $generated);
+            }
+            $placed[] = new Cluster($records);
+        }
+
+        return $placed;
     }
 
     /**
-     * The bay record, moved to the mean point of the mapped bays and marked GENERATED if generated.
+     * The bay record, placed and marked GENERATED if generated.
      *
-     * @param list<Record> $mapped the mapped bays that matched other bays of its site
+     * A bay of a site with a line or an area moves to a free position along
+     * the site. A bay of a site at a point moves to the mean point of the
+     * mapped bays, if that point lies within the radius of the site.
+     *
+     * @param list<Record>             $mapped   the mapped bays that matched other bays of its site
+     * @param array{float, float}|null $position a free position along the site, if the site has a line or an area
      */
-    private function placed(Record $bay, array $mapped, bool $generated): Record
+    private function placed(Record $bay, array $mapped, ?array $position, bool $generated): Record
     {
         $longitude = $bay->longitude;
         $latitude = $bay->latitude;
 
-        if ([] !== $mapped && null === $bay->geometry) {
-            $mean = new Record($bay->id, $bay->sourceId, array_sum(array_column($mapped, 'longitude')) / \count($mapped), array_sum(array_column($mapped, 'latitude')) / \count($mapped));
+        if (null !== $position) {
+            [$longitude, $latitude] = $position;
+        } elseif ([] !== $mapped && null === $bay->geometry && !isset($this->positions[(string) $bay->restatedFrom])) {
+            $mean = self::mean($bay->id, $mapped);
             $site = $this->sites[(string) $bay->restatedFrom];
             if (Shape::distance($mean, $site->location()) <= $this->radius) {
                 $longitude = $mean->longitude;
@@ -209,5 +268,114 @@ final class WithinSiteClosestFirst extends OneToOneClosestFirst
         ksort($attributes, \SORT_STRING);
 
         return new Record($bay->id, $bay->sourceId, $longitude, $latitude, $bay->model, $attributes, $bay->geometry, $bay->restatedFrom);
+    }
+
+    /**
+     * The positions that no match took, in their order along the site. Each
+     * match takes the free position nearest to it, closest first.
+     *
+     * @param list<array{float, float}> $positions
+     * @param list<Record>              $taken     the point of each match
+     *
+     * @return list<array{float, float}>
+     */
+    private static function freePositions(array $positions, array $taken): array
+    {
+        $pairs = [];
+        foreach ($taken as $t => $match) {
+            foreach ($positions as $p => [$longitude, $latitude]) {
+                $pairs[] = [Distance::between($match, new Record('', '', $longitude, $latitude)), $t, $p];
+            }
+        }
+        sort($pairs);
+
+        $usedMatches = [];
+        $usedPositions = [];
+        foreach ($pairs as [, $t, $p]) {
+            if (!isset($usedMatches[$t]) && !isset($usedPositions[$p])) {
+                $usedMatches[$t] = true;
+                $usedPositions[$p] = true;
+            }
+        }
+
+        return array_values(array_diff_key($positions, $usedPositions));
+    }
+
+    /**
+     * A record at the mean point of the records.
+     *
+     * @param non-empty-list<Record> $records
+     */
+    private static function mean(string $id, array $records): Record
+    {
+        return new Record($id, '', array_sum(array_column($records, 'longitude')) / \count($records), array_sum(array_column($records, 'latitude')) / \count($records));
+    }
+
+    /**
+     * The point sites that each state one bay of an address, by id.
+     *
+     * A register can state each bay of an address as a site of its own, with
+     * the number of bays at the whole address. For example, two sites 3 m
+     * apart that each state 2 bays are the 2 bays. Point sites of one data
+     * set with the same number N of bays, each within BAY_SPACING of the
+     * next, are such bays if there are 2 to N of them.
+     *
+     * @param list<Record> $records
+     *
+     * @return array<string, true>
+     */
+    private static function sitesOfOneBayEach(array $records): array
+    {
+        $sites = array_values(array_filter(
+            $records,
+            static fn (Record $record): bool => OnStreetParkingIntoSpots::SITE_MODEL === $record->model
+                && null === $record->geometry
+                && \is_int($record->attributes['totalSpotNumber'] ?? null)
+                && $record->attributes['totalSpotNumber'] > 1,
+        ));
+
+        // Link the sites of one data set with the same number of bays that lie near each other.
+        $root = array_keys($sites);
+        $find = static function (int $i) use (&$root): int {
+            while ($root[$i] !== $i) {
+                $i = $root[$i];
+            }
+
+            return $i;
+        };
+        foreach ($sites as $i => $a) {
+            foreach (\array_slice($sites, $i + 1, null, true) as $j => $b) {
+                if ($a->sourceId === $b->sourceId
+                    && $a->attributes['totalSpotNumber'] === $b->attributes['totalSpotNumber']
+                    && Distance::between($a, $b) <= self::BAY_SPACING) {
+                    $root[$find($j)] = $find($i);
+                }
+            }
+        }
+
+        $groups = [];
+        foreach ($sites as $i => $site) {
+            $groups[$find($i)][] = $site;
+        }
+
+        $oneBayEach = [];
+        foreach ($groups as $group) {
+            $count = \count($group);
+            if ($count >= 2 && $count <= $group[0]->attributes['totalSpotNumber']) {
+                foreach ($group as $site) {
+                    $oneBayEach[$site->id] = true;
+                }
+            }
+        }
+
+        return $oneBayEach;
+    }
+
+    /**
+     * The site, as a site of one bay.
+     */
+    private static function withOneBay(Record $site): Record
+    {
+        return new Record($site->id, $site->sourceId, $site->longitude, $site->latitude, $site->model, ['totalSpotNumber' => 1] + $site->attributes, $site->geometry, $site->restatedFrom);
     }
 }

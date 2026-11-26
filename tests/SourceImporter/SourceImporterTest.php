@@ -7,8 +7,11 @@ namespace App\Tests\SourceImporter;
 use App\Broker\NgsiLdBroker;
 use App\Broker\Rejection;
 use App\Geo\Wgs84Transformer;
+use App\Import\Exception\SweepFailedException;
+use App\Import\Exception\UpsertFailedException;
 use App\Import\ImportResult;
 use App\Ngsi\NgsiEntity;
+use App\Ngsi\ReservedNameException;
 use App\Source\AbstractSource;
 use App\Source\DataType;
 use App\Source\Definition;
@@ -17,7 +20,9 @@ use App\Source\Osm\Bench;
 use App\Source\SourceInterface;
 use App\SourceImporter\GetJsonSourceImporter;
 use App\SourceImporter\OverpassSourceImporter;
+use App\SourceReader\FeedResponse;
 use App\SourceReader\SourceReaderInterface;
+use App\Test\Source\MtmSpatialMaps\TestOnStreetParking;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -52,6 +57,21 @@ class SourceImporterTest extends TestCase
                 $entity['sourceId'],
             );
         }
+    }
+
+    /**
+     * Makes sure that a test source gives entity ids of its own, so that its
+     * entities do not replace the entities of the published source.
+     */
+    public function testItGivesTheEntitiesOfATestSourceIdsOfTheirOwn(): void
+    {
+        $this->import(new OnStreetParking(), $this->features(1));
+        $this->import(new TestOnStreetParking(), $this->features(1));
+
+        $this->assertSame(
+            ['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1', 'urn:ngsi-ld:OnStreetParking:test:aarhus-handicap-1'],
+            array_column($this->upserted(), 'id'),
+        );
     }
 
     /**
@@ -150,6 +170,149 @@ class SourceImporterTest extends TestCase
         $this->assertSame(0, $result->deleted);
     }
 
+    public function testItReportsTheEntitiesItAddedAndDeleted(): void
+    {
+        $result = $this->import(new OnStreetParking(), $this->features(1, 2, 3), held: [
+            'urn:ngsi-ld:OnStreetParking:aarhus-handicap-1',
+            'urn:ngsi-ld:OnStreetParking:aarhus-handicap-9',
+        ]);
+
+        $this->assertSame(['urn:ngsi-ld:OnStreetParking:aarhus-handicap-2', 'urn:ngsi-ld:OnStreetParking:aarhus-handicap-3'], $result->addedIds);
+        $this->assertSame(['urn:ngsi-ld:OnStreetParking:aarhus-handicap-9'], $result->deletedIds);
+    }
+
+    public function testAnEntityThatTheBrokerRejectedIsNotAdded(): void
+    {
+        $rejected = 'urn:ngsi-ld:OnStreetParking:aarhus-handicap-2';
+
+        $result = $this->import(new OnStreetParking(), $this->features(1, 2), upserted: new MockResponse(json_encode([
+            'success' => ['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1'],
+            'errors' => [['entityId' => $rejected, 'error' => ['detail' => 'Invalid location']]],
+        ], \JSON_THROW_ON_ERROR), ['http_code' => Response::HTTP_MULTI_STATUS]));
+
+        $this->assertSame(['urn:ngsi-ld:OnStreetParking:aarhus-handicap-1'], $result->addedIds);
+    }
+
+    /**
+     * Makes sure that the import still upserts when the broker cannot list
+     * the entities of the source, and fails after the upsert. The import()
+     * helper cannot make the listing fail, so this test makes its own broker.
+     */
+    public function testAFailedListingStillUpsertsAndThenFails(): void
+    {
+        $requests = [];
+        $client = new MockHttpClient(static function (string $method, string $url) use (&$requests): MockResponse {
+            $requests[] = $method.' '.parse_url($url, \PHP_URL_PATH);
+
+            return Request::METHOD_GET === $method
+                ? new MockResponse('', ['http_code' => Response::HTTP_SERVICE_UNAVAILABLE])
+                : new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT]);
+        }, 'http://broker.example');
+        $reader = new readonly class($this->features(1)) implements SourceReaderInterface {
+            /**
+             * @param array<string, mixed> $data
+             */
+            public function __construct(
+                private array $data,
+            ) {
+            }
+
+            public function read(SourceInterface $source): FeedResponse
+            {
+                return new FeedResponse(json_encode($this->data, \JSON_THROW_ON_ERROR), 'application/json');
+            }
+        };
+        $importer = new GetJsonSourceImporter($reader, new NgsiLdBroker($client, 'http://broker.example'), new Wgs84Transformer(), ['https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld'], new NullLogger());
+
+        try {
+            $importer->import(new OnStreetParking());
+            $this->fail('The import must fail when the broker cannot list the entities.');
+        } catch (SweepFailedException) {
+        }
+
+        $this->assertSame(['GET /ngsi-ld/v1/entities', 'POST /ngsi-ld/v1/entityOperations/upsert'], $requests);
+    }
+
+    public function testAFailedUpsertFailsTheImport(): void
+    {
+        $this->expectException(UpsertFailedException::class);
+
+        $this->import(new OnStreetParking(), $this->features(1), upserted: new MockResponse('', ['http_code' => Response::HTTP_INTERNAL_SERVER_ERROR]));
+    }
+
+    /**
+     * Makes sure that the import fails after the upsert if the broker cannot
+     * delete the stale entities. The import() helper cannot make the delete
+     * fail, so this test makes its own broker.
+     */
+    public function testAFailedDeleteFailsTheImport(): void
+    {
+        $client = new MockHttpClient(static fn (string $method, string $url): MockResponse => match (true) {
+            Request::METHOD_GET === $method => new MockResponse(json_encode([['id' => 'urn:ngsi-ld:OnStreetParking:stale', 'type' => 'OnStreetParking']], \JSON_THROW_ON_ERROR)),
+            str_ends_with($url, '/entityOperations/delete') => new MockResponse('', ['http_code' => Response::HTTP_SERVICE_UNAVAILABLE]),
+            default => new MockResponse('', ['http_code' => Response::HTTP_NO_CONTENT]),
+        }, 'http://broker.example');
+        $reader = new readonly class($this->features(1)) implements SourceReaderInterface {
+            /**
+             * @param array<string, mixed> $data
+             */
+            public function __construct(
+                private array $data,
+            ) {
+            }
+
+            public function read(SourceInterface $source): FeedResponse
+            {
+                return new FeedResponse(json_encode($this->data, \JSON_THROW_ON_ERROR), 'application/json');
+            }
+        };
+        $importer = new GetJsonSourceImporter($reader, new NgsiLdBroker($client, 'http://broker.example'), new Wgs84Transformer(), ['https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld'], new NullLogger());
+
+        $this->expectException(SweepFailedException::class);
+
+        $importer->import(new OnStreetParking());
+    }
+
+    /**
+     * A record that the source cannot read does not stop the import. The
+     * import skips it and imports the other records.
+     */
+    public function testItSkipsARecordThatTheSourceCannotRead(): void
+    {
+        $data = $this->features(1, 2);
+        $data['features'][1]['geometry']['coordinates'] = [575000];
+
+        $result = $this->import(new OnStreetParking(), $data);
+
+        $this->assertSame(1, $result->count);
+        $this->assertCount(1, $this->upserted());
+    }
+
+    /**
+     * A reserved name is a defect in the mapping, so it stops the import
+     * before the import sends anything to the broker. If the import skipped
+     * the records, the sweep would delete their entities.
+     */
+    public function testAReservedNameStopsTheImportOfTheSource(): void
+    {
+        $source = new #[Definition(id: 'test:reserved-name', title: 'Test', description: '', publisher: '', contact: '', landingPage: '', accessUrl: 'https://example.com', dataType: DataType::GeoJSON, mediaType: 'application/geo+json', crs: 'EPSG:4326', model: 'OnStreetParking', contextUrl: 'https://example.com/context.jsonld', updateFrequency: '', licence: null, omittedFields: [], dataset: 'test:reserved-name', datasetTitle: 'Test', )] class extends AbstractSource {
+            public function createNgsiEntity(array $data, Wgs84Transformer $transformer): NgsiEntity
+            {
+                return new NgsiEntity('urn:ngsi-ld:OnStreetParking:test', 'OnStreetParking')
+                    ->additionalInformation(['createdAt' => '2026-11-23']);
+            }
+        };
+
+        try {
+            $this->import($source, $this->features(1, 2));
+            $this->fail('The import did not stop.');
+        } catch (ReservedNameException $exception) {
+            $this->assertStringContainsString('"createdAt"', $exception->getMessage());
+        }
+
+        $this->assertSame([], $this->requests);
+    }
+
     /**
      * Makes sure that the import refuses a partial Overpass result.
      */
@@ -202,9 +365,9 @@ class SourceImporterTest extends TestCase
             ) {
             }
 
-            public function read(SourceInterface $source): iterable
+            public function read(SourceInterface $source): FeedResponse
             {
-                return $this->data;
+                return new FeedResponse(json_encode($this->data, \JSON_THROW_ON_ERROR), 'application/json');
             }
         };
 

@@ -12,7 +12,8 @@ place, such as benches or parking spaces, each with a configuration of its own.
 ![Four toilet sources become one merged dataset; the originals stay untouched](images/conflation-overview.svg)
 
 Because the sources stay published next to the merged dataset, every merged value can be traced back to where it came
-from, and a bad merge is fixed by running conflation again.
+from. A value from a remote service tells which service gave it, and when. To correct a bad merge, run conflation
+again. A run keeps the values from remote services, so such a value changes only at its next check.
 
 ## What each merge configures
 
@@ -27,6 +28,7 @@ stricter distance or another order of trusted sources is a change of configurati
 | Conflict rules      | Which rules settle a disagreement, and in what order                   | Trusted sources: Kommune city toilets first, then Kommune other toilets |
 | Augmenting data     | Which datasets about the surroundings add which details                | District areas add the district                                         |
 | Augmentation method | How data about the surroundings reaches places                         | An area reaches every place inside it; a point, places nearby           |
+| Remote lookups      | Which remote services add which details, after the run                 | None yet                                                                |
 | Dataset details     | The merged dataset's name, description and licence                     | "Offentlige toiletter (samlet), Aarhus Kommune"                         |
 
 ## How records are matched
@@ -60,6 +62,22 @@ toilet inside it its district; an area of asphalt gives every parking space on i
 
 This data never becomes a place of its own, and it never overrides what the sources themselves state.
 
+## Adding details from remote services
+
+Some details come from a remote service that answers a question about one point, for example "the nearest address".
+A merge names these services, the lookups, and the details that it takes from each. This is step 7 in the overview.
+
+The run does not ask the services. After it publishes, it sends a message for each place that is due for a check.
+RabbitMQ keeps the messages, and a worker asks the service later. The worker writes only the details of the service,
+and the time of the check, to the merged record.
+
+- A detail without a value is checked again after a short period, for example 7 days.
+- A detail with a value is checked again after a long period, for example 90 days.
+- A place has one message at a time in the queue for each service. The run marks the check as requested, and does
+  not send it again until the worker answers or the request times out, for example after 1 day.
+- A service only fills details that the sources do not give.
+- A service never removes a value. If the service has no answer, the place keeps its value.
+
 ## Worked example: the toilet at Ørnereden
 
 ![One toilet, three sources, one merged record](images/conflation-example.svg)
@@ -67,6 +85,23 @@ This data never becomes a place of its own, and it never overrides what the sour
 The three records lie within 1.8 m of each other and come from three different sources, so they form one group. Most
 details agree or are stated by only one source. The names disagree, so the trusted source order decides: the Kommune
 name wins. Finally, the district area the toilet lies in adds its district.
+
+## Parking bays
+
+Parking needs rules of its own, because the sources describe bays in two ways: as single bays, and as sites with a
+number of bays. The merge restates each site as one bay for each of its bays, and then matches all the bays.
+
+- If a site is a line or an area, its bays lie spread along the long centre line of the site. A site at a point gives
+  all its bays that point.
+- The mapped bays pair with each other first, closest first. The bays of the sites join after them. A bay of a site
+  with an area is 0 m from each record in the area, so it would otherwise pair the records in the order of their ids.
+- A bay of a site that no mapped bay matches is marked as generated. It gets a free position along its site, away
+  from the mapped bays.
+- If a member of a group states an area, and the OpenStreetMap bays of the group lie in it or within 3 m of it, the
+  merged bay gets the area as its location.
+- The register of the municipality can state each bay of an address as a record of its own, with the number of bays
+  at the whole address. Thus records with the same number of bays within 5 m of each other count as one bay each.
+- The merge distance for parking is 8 m.
 
 ## Background
 
@@ -76,3 +111,4 @@ The design is described in these architecture decision records:
 - [ADR 005: Merge by location](adr/005-conflation-merge-by-location.md)
 - [ADR 006: Conflict resolution](adr/006-conflation-conflict-resolution.md)
 - [ADR 007: Augmentation](adr/007-conflation-augmentation.md)
+- [ADR 008: Remote lookups through a message queue](adr/008-conflation-remote-lookups.md)

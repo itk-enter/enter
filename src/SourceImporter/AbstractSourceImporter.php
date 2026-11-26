@@ -5,9 +5,12 @@ namespace App\SourceImporter;
 use App\Broker\NgsiLdBroker;
 use App\Geo\Wgs84Transformer;
 use App\Import\Exception\SweepFailedException;
+use App\Import\Exception\SweepLimitException;
 use App\Import\Exception\UpsertFailedException;
 use App\Import\ImportResult;
+use App\Import\PayloadHash;
 use App\Ngsi\NgsiEntity;
+use App\Ngsi\ReservedNameException;
 use App\Source\SourceInterface;
 use App\SourceReader\SourceReaderInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -24,6 +27,17 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  *
  * For example, the importer for GeoJSON feeds returns true from supports()
  * for DataType::GeoJSON. Its extractItems() returns the list in "features".
+ *
+ * A test source and its published source make entities from the same records.
+ * Thus the import gives each entity of a test source an id of its own, with
+ * "test:" before the local part. Then the test data sets and the published
+ * data sets can be in one broker at the same time.
+ *
+ * Before the upsert, the import counts the entities that it would delete. If
+ * that is more than SWEEP_FLOOR and more than the sweep limit of the entities
+ * in the broker, the import fails and changes nothing. A feed that suddenly
+ * gives far fewer records, for example because the records changed format, is
+ * more often broken than true.
  */
 abstract class AbstractSourceImporter implements SourceImporterInterface
 {
@@ -36,7 +50,21 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
     public const string SOURCE_ID_ATTRIBUTE = 'sourceId';
 
     /**
+     * The start of the id of a test source, and of the local part of the id
+     * of each entity that a test source gives.
+     */
+    private const string TEST_PREFIX = 'test:';
+
+    /**
+     * The number of entities that one import may always delete, also above
+     * the sweep limit. Then a small data set can lose a few entities.
+     */
+    public const int SWEEP_FLOOR = 10;
+
+    /**
      * @param list<string> $contextUrls
+     * @param float        $sweepLimit  the largest share of the entities of the source that one import may delete,
+     *                                  from 0 to 1
      */
     public function __construct(
         private readonly SourceReaderInterface $reader,
@@ -45,6 +73,8 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
         #[Autowire(env: 'json:APP_NGSI_CONTEXT_URLS')]
         private readonly array $contextUrls,
         LoggerInterface $logger,
+        #[Autowire(env: 'float:APP_IMPORT_SWEEP_LIMIT')]
+        private readonly float $sweepLimit = 0.2,
     ) {
         $this->setLogger($logger);
     }
@@ -84,11 +114,31 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                 throw new \LogicException(sprintf('Source %s mapped %s onto model %s, but declares %s.', $source->definition->id, $entity->id(), $entity->type(), $source->definition->model));
             }
 
+            if (str_starts_with($source->definition->id, self::TEST_PREFIX)) {
+                $entity = $entity->withId(self::testId($entity->id()));
+            }
+
             $this->info('The import adds {entity} to the payload', ['entity' => $entity->id()]);
             $ids[] = $entity->id();
             $payload[] = $entity
                 ->setProperty(self::SOURCE_ID_ATTRIBUTE, $source->definition->id)
                 ->toPayload($contextUrls);
+        }
+
+        // Ask the broker before the upsert. After the upsert, the broker has
+        // every id of the feed, and the import cannot tell the added ones.
+        $held = [];
+        $listingFailure = null;
+        if ([] !== $ids) {
+            try {
+                $held = $this->broker->fetchIdsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id);
+            } catch (\Throwable $exception) {
+                $listingFailure = $exception;
+            }
+        }
+
+        if (null === $listingFailure) {
+            $this->checkSweepLimit($source, $ids, $held);
         }
 
         if (1 === count($payload)) {
@@ -107,34 +157,65 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
             $this->warning('Broker rejected {entity}: {reason}', ['entity' => $id, 'reason' => $rejection->reason, 'error' => $rejection->error]);
         }
 
+        if (null !== $listingFailure) {
+            throw new SweepFailedException($listingFailure);
+        }
+
         try {
-            $deleted = $this->sweep($source, $ids);
+            $deletedIds = $this->sweep($source, $ids, $held);
         } catch (\Throwable $exception) {
             throw new SweepFailedException($exception);
         }
 
-        return new ImportResult(\count($payload), $deleted, $upsert->status, $this->broker->brokerUrl(), $upsert->rejected);
+        $addedIds = array_values(array_diff($ids, $held, array_keys($upsert->rejected)));
+
+        return new ImportResult(\count($payload), \count($deletedIds), $upsert->status, $this->broker->brokerUrl(), PayloadHash::of($payload), $upsert->rejected, $addedIds, $deletedIds);
+    }
+
+    /**
+     * The id of an entity of a test source: "test:" before the local part,
+     * for example urn:ngsi-ld:ParkingSpot:test:aarhus-handicap-179.
+     */
+    private static function testId(string $id): string
+    {
+        return 1 === preg_match('/^(urn:ngsi-ld:[^:]+:)(.+)$/', $id, $match) ? $match[1].self::TEST_PREFIX.$match[2] : self::TEST_PREFIX.$id;
+    }
+
+    /**
+     * Stops the import if it would delete too many of the entities of the
+     * source.
+     *
+     * @param list<string> $ids  the IDs of the entities that the import gives
+     * @param list<string> $held the IDs of the entities of the source that the broker has
+     */
+    private function checkSweepLimit(SourceInterface $source, array $ids, array $held): void
+    {
+        $stale = \count(array_diff($held, $ids));
+
+        if ($stale <= self::SWEEP_FLOOR || $stale <= $this->sweepLimit * \count($held)) {
+            return;
+        }
+
+        throw new SweepLimitException($source->definition->id, $stale, \count($held), $this->sweepLimit);
     }
 
     /**
      * Deletes the entities of the source that this import does not give.
      *
-     * @param list<string> $ids the upserted entity IDs
+     * @param list<string> $ids  the upserted entity IDs
+     * @param list<string> $held the IDs of the entities of the source that the broker had before the upsert
      *
-     * @return int the number of deleted entities
+     * @return list<string> the IDs of the deleted entities
      */
-    private function sweep(SourceInterface $source, array $ids): int
+    private function sweep(SourceInterface $source, array $ids, array $held): array
     {
         if ([] === $ids) {
             $this->warning('Source {source} gave no entities. The broker keeps its entities of the source', ['source' => $source->definition->id]);
 
-            return 0;
+            return [];
         }
 
-        $stale = array_values(array_diff(
-            $this->broker->fetchIdsWhereAttributeEquals($source->definition->model, $source->definition->contextUrl, self::SOURCE_ID_ATTRIBUTE, $source->definition->id),
-            $ids,
-        ));
+        $stale = array_values(array_diff($held, $ids));
 
         if (1 === count($stale)) {
             $this->info('The import deletes 1 stale entity');
@@ -144,15 +225,22 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
 
         $this->broker->delete($stale);
 
-        return \count($stale);
+        return $stale;
     }
 
     /**
+     * Reads the entities of the source. A record that the source cannot read
+     * is skipped and logged.
+     *
+     * A reserved name is a defect in the mapping, not in the record. Thus it
+     * stops the import. If the import skipped the records, the sweep would
+     * delete their entities from the broker.
+     *
      * @return iterable<NgsiEntity>
      */
     private function read(SourceInterface $source): iterable
     {
-        $data = $this->reader->read($source);
+        $data = $this->reader->read($source)->toArray();
         $items = $this->extractItems($data, $source);
 
         foreach ($items as $item) {
@@ -160,6 +248,8 @@ abstract class AbstractSourceImporter implements SourceImporterInterface
                 if ($entity = $source->createNgsiEntity($item, $this->transformer)) {
                     yield $entity;
                 }
+            } catch (ReservedNameException $e) {
+                throw $e;
             } catch (\Exception $e) {
                 $this->error('Skipped a record of {source}: {message}', ['source' => $source->definition->id, 'message' => $e->getMessage()]);
             }

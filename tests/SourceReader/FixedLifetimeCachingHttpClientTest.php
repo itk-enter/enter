@@ -38,6 +38,16 @@ class FixedLifetimeCachingHttpClientTest extends TestCase
         $this->assertSame(2, $this->requests);
     }
 
+    public function testItDoesNotKeepARequestThatIsNotAGet(): void
+    {
+        $client = $this->client();
+
+        $client->request(Request::METHOD_POST, 'https://example.com/feed')->getContent();
+        $client->request(Request::METHOD_POST, 'https://example.com/feed')->getContent();
+
+        $this->assertSame(2, $this->requests);
+    }
+
     public function testItRefusesOptionsThatJsonCannotEncode(): void
     {
         $this->expectException(\JsonException::class);

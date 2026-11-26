@@ -7,6 +7,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-200](https://github.com/itk-enter/enter/pull/200)
+  Tidied the docs
+* [PR-201](https://github.com/itk-enter/enter/pull/201)
+  Security updates
+* [PR-198](https://github.com/itk-enter/enter/pull/198)
+  Added an overview of the conflation conflicts
+* [PR-171](https://github.com/itk-enter/enter/pull/171)
+  Rewrote the API page, added the logo and a footer, and applied the ITK Aarhus design system
+* [PR-169](https://github.com/itk-enter/enter/pull/169)
+  Turned the front page into links to the subpages
+* [PR-168](https://github.com/itk-enter/enter/pull/168)
+  Added the import history to `/sources`
+* [PR-192](https://github.com/itk-enter/enter/pull/192)
+  Rejected the attribute names that NGSI-LD reserves
+* [PR-188](https://github.com/itk-enter/enter/pull/188)
+  Added a test coverage check to CI
+* [PR-186](https://github.com/itk-enter/enter/pull/186)
+  Streamlined the calls to the broker
+* [PR-194](https://github.com/itk-enter/enter/pull/194)
+  Pinned Scorpio to version 6.0.2
+* [PR-182](https://github.com/itk-enter/enter/pull/182)
+  Ran the nightly import and the merges with supercronic
+* [PR-181](https://github.com/itk-enter/enter/pull/181)
+  Imported the sources of one feed right after each other
+* [PR-180](https://github.com/itk-enter/enter/pull/180)
+  Imported each source in a process of its own in `app:source:import-all`
+* [PR-179](https://github.com/itk-enter/enter/pull/179)
+  Separated the conflation from the import
+* [PR-178](https://github.com/itk-enter/enter/pull/178)
+  Made `app:conflation:run` continue after a failed merge
+* [PR-176](https://github.com/itk-enter/enter/pull/176)
+  Added retries and longer timeouts to the feed client
+* [PR-175](https://github.com/itk-enter/enter/pull/175)
+  Marked imports as failed when their process stopped
+* [PR-174](https://github.com/itk-enter/enter/pull/174)
+  Allowed only one import of a source at a time
+* [PR-173](https://github.com/itk-enter/enter/pull/173)
+  Stopped an import that would delete too many entities
+* [PR-172](https://github.com/itk-enter/enter/pull/172)
+  Added an architecture diagram
+* [PR-158](https://github.com/itk-enter/enter/pull/158)
+  Recorded the entities that each import added and removed
+* [PR-157](https://github.com/itk-enter/enter/pull/157)
+  Recorded each import of a source
+* [PR-156](https://github.com/itk-enter/enter/pull/156)
+  Changed `SourceReader` to return the raw feed
+* [PR-155](https://github.com/itk-enter/enter/pull/155)
+  Turned off the history in Scorpio
+* [PR-152](https://github.com/itk-enter/enter/pull/152)
+  Added the tables of the import history: `Feed` and `SourceImport`
+* [PR-151](https://github.com/itk-enter/enter/pull/151)
+  Added MariaDB and Doctrine
+* [PR-154](https://github.com/itk-enter/enter/pull/154)
+  Security updates
+* [PR-135](https://github.com/itk-enter/enter/pull/135)
+  Added the merge `merged-benches` of the benches and picnic tables from OSM and GM Park
+* [PR-147](https://github.com/itk-enter/enter/pull/147)
+  Added the address to the MTM parking sources
+* [PR-145](https://github.com/itk-enter/enter/pull/145)
+  Pointed the landing page of the MTM toilet sources to their data set on opendata.dk
+* [PR-143](https://github.com/itk-enter/enter/pull/143)
+  Added the OSM picnic tables as a source
+* [PR-125](https://github.com/itk-enter/enter/pull/125)
+  Added the GM Park benches and picnic tables as sources
+* [PR-121](https://github.com/itk-enter/enter/pull/121)
+  Fixed the /test map, which hid every test data set
+* [PR-123](https://github.com/itk-enter/enter/pull/123)
+  Improved how the parking merge uses the shapes of the sites
+* [PR-118](https://github.com/itk-enter/enter/pull/118)
+  Spread the bays of a parking site along it with GEOS
+* [PR-116](https://github.com/itk-enter/enter/pull/116)
+  Replaced the home-made geometry in Shape with GEOS
+* [PR-120](https://github.com/itk-enter/enter/pull/120)
+  Removed the unused transform methods from GeometryHelper
+* [PR-131](https://github.com/itk-enter/enter/pull/131)
+  Added a transport, a rate limiter and a log channel for the lookups
+* [PR-130](https://github.com/itk-enter/enter/pull/130)
+  Added the lookup messages and the handler that updates the merged entities
+* [PR-128](https://github.com/itk-enter/enter/pull/128)
+  Added the lookup interface and the `lookups` option of a merge
+* [PR-127](https://github.com/itk-enter/enter/pull/127)
+  Added Symfony Messenger with RabbitMQ
 * [PR-126](https://github.com/itk-enter/enter/pull/126)
   Added ADR 008 on remote lookups through a message queue
 * [PR-108](https://github.com/itk-enter/enter/pull/108)

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Conflation\Data;
 
-use App\GeometryHelper;
+use App\Conflation\Spatial\Shape;
 
 /**
  * One input record as conflation sees it: which entity, from which data set,
@@ -43,9 +43,7 @@ final readonly class Record
      * representative point: a point's own position, or the centroid of any
      * other geometry.
      *
-     * The centroid comes from GeometryHelper::getCentroid(). Without the GEOS
-     * extension, geoPHP calculates the centroid of a small area with less
-     * precision. Thus only points match reliably.
+     * The centroid comes from Shape::centroid().
      *
      * @param array<string, mixed> $geometry
      * @param array<string, mixed> $attributes
@@ -61,7 +59,7 @@ final readonly class Record
             return new self($id, $sourceId, (float) $coordinates[0], (float) $coordinates[1], $model, $attributes);
         }
 
-        [$longitude, $latitude] = new GeometryHelper()->getCentroid($geometry)->toArray();
+        [$longitude, $latitude] = Shape::centroid($geometry);
 
         return new self($id, $sourceId, (float) $longitude, (float) $latitude, $model, $attributes, $geometry);
     }

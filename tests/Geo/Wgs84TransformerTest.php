@@ -60,6 +60,14 @@ class Wgs84TransformerTest extends TestCase
         );
     }
 
+    public function testItPassesThroughCoordinatesThatStayInWgs84(): void
+    {
+        $this->assertSame(
+            [10.199512, 56.149753],
+            $this->transformer->fromWgs84(Wgs84Transformer::TARGET_SRID, 10.199512, 56.149753)
+        );
+    }
+
     public function testItSupportsAnotherRegisteredCrs(): void
     {
         // UTM zone 33N: same northing, easting near the zone's central
@@ -163,6 +171,13 @@ class Wgs84TransformerTest extends TestCase
         $this->transformer->transformGeometry(self::UTM32, ['type' => 'Point']);
     }
 
+    public function testItRejectsAGeometryWithEmptyCoordinates(): void
+    {
+        $this->expectExceptionMessage('GeoJSON coordinates must be a non-empty array.');
+
+        $this->transformer->transformGeometry(self::UTM32, ['type' => 'LineString', 'coordinates' => []]);
+    }
+
     public function testItRejectsAGeometryCollection(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -178,5 +193,31 @@ class Wgs84TransformerTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $this->transformer->transformGeometry(self::UTM32, ['type' => 'Point', 'coordinates' => [574108.0]]);
+    }
+
+    public function testItReprojectsFromWgs84ToUtm32AndBack(): void
+    {
+        [$longitude, $latitude] = $this->transformer->toWgs84(self::UTM32, self::REFERENCE_EASTING, self::REFERENCE_NORTHING);
+
+        [$easting, $northing] = $this->transformer->fromWgs84(self::UTM32, $longitude, $latitude);
+
+        $this->assertEqualsWithDelta(self::REFERENCE_EASTING, $easting, 0.001);
+        $this->assertEqualsWithDelta(self::REFERENCE_NORTHING, $northing, 0.001);
+    }
+
+    public function testItReprojectsAGeometryFromWgs84AndBack(): void
+    {
+        $line = [
+            'type' => 'LineString',
+            'coordinates' => [
+                [574108.2557507273, 6222343.6199512165],
+                [self::REFERENCE_EASTING, self::REFERENCE_NORTHING],
+            ],
+        ];
+
+        $geometry = $this->transformer->geometryFromWgs84(self::UTM32, $this->transformer->transformGeometry(self::UTM32, $line));
+
+        $this->assertSame('LineString', $geometry['type']);
+        $this->assertEqualsWithDelta($line['coordinates'], $geometry['coordinates'], 0.001);
     }
 }

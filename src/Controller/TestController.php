@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Test\Fixture\FixtureFiles;
+use App\Test\Map\MapDataSets;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\Requirement\Requirement;
 
 /**
- * Shows the developer map and serves the fixture files of the test sources.
+ * Shows the developer map, gives its data and serves the fixture files of the test sources.
  */
 #[When('dev')]
 #[When('test')]
@@ -39,14 +40,40 @@ final class TestController extends AbstractController
     }
 
     /**
+     * Gives the test data sets that have entities in the broker.
+     */
+    #[Route('/data-sets.json', name: 'data_sets', methods: [Request::METHOD_GET])]
+    public function dataSets(MapDataSets $dataSets): JsonResponse
+    {
+        return new JsonResponse($dataSets->all());
+    }
+
+    /**
+     * Gives the entities of a test data set as a GeoJSON feature collection.
+     */
+    #[Route('/data-sets/{id}.geojson', name: 'features', requirements: ['id' => '[^/]+'], methods: [Request::METHOD_GET])]
+    public function features(string $id, MapDataSets $dataSets): JsonResponse
+    {
+        $features = $dataSets->features($id) ?? throw new NotFoundHttpException();
+
+        return new JsonResponse(
+            ['type' => 'FeatureCollection', 'features' => $features],
+            headers: ['Content-Type' => self::APPLICATION_GEOJSON],
+        );
+    }
+
+    /**
      * Serves the fixture file of a test source. The query of the URL is a
      * part of the file name.
+     *
+     * The path is the shortest match. Thus a file name that ends in
+     * ".geojson" gives the format, and the path does not take the extension.
      */
     #[Route(
         path: '/data/{path}.{_format}',
         methods: [Request::METHOD_GET],
         requirements: [
-            'path' => Requirement::CATCH_ALL,
+            'path' => '.+?',
             '_format' => 'json|geojson',
         ],
         defaults: ['_format' => self::FORMAT_JSON],

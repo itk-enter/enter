@@ -93,7 +93,7 @@ class BenchTest extends TestCase
         // Tri-state: an absent tag is unknown, not false.
         $this->assertArrayNotHasKey('armrest', $this->entities[0]);
         $this->assertArrayNotHasKey('lyingDown', $this->entities[0]);
-        $this->assertArrayNotHasKey('additionalInformation', $this->entities[0]);
+        $this->assertSame(['kind' => 'bench'], $this->entities[0]['additionalInformation']['value']);
     }
 
     public function testItMapsHostileArchitecture(): void
@@ -129,7 +129,7 @@ class BenchTest extends TestCase
     public function testItCarriesThePanoramaxIdAsAdditionalInformation(): void
     {
         $this->assertSame(
-            ['panoramax' => 'df851d52-3032-4e23-b70e-b75ce41bc3ba'],
+            ['kind' => 'bench', 'panoramax' => 'df851d52-3032-4e23-b70e-b75ce41bc3ba'],
             $this->entities[5]['additionalInformation']['value']
         );
     }
@@ -164,6 +164,15 @@ class BenchTest extends TestCase
         $this->assertTrue($entity['lyingDown']['value']);
     }
 
+    public function testItMapsBothSpellingsOfSeparatedSeats(): void
+    {
+        $bench = ['type' => 'node', 'id' => 1, 'lat' => 56.15, 'lon' => 10.21, 'tags' => ['amenity' => 'bench', 'hostile_architecture' => 'separated_seats;separate_seats']];
+
+        $entity = new Bench()->createNgsiEntity($bench, new Wgs84Transformer());
+
+        $this->assertSame(['separatedSeats'], $entity?->attribute('hostileArchitecture')['value'] ?? null);
+    }
+
     public function testItMapsAnUnknownHostileFeatureToOtherAndIgnoresNo(): void
     {
         $this->assertSame(['spikes', 'other'], $this->entities[7]['hostileArchitecture']['value']);
@@ -178,6 +187,7 @@ class BenchTest extends TestCase
         $this->assertArrayNotHasKey('seats', $entity);
         $this->assertSame(
             [
+                'kind' => 'bench',
                 'material' => 'bamboo',
                 'direction' => 'forward',
                 'seats' => 'many',
