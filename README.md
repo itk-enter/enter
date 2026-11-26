@@ -60,35 +60,44 @@ import.
 
 ### Sources
 
-Adding a data source means adding a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way
-to do this is by extending [`AbstractSource`](src/Source/AbstractSource.php), e.g.:
+To add a data source, add a [`SourceInterface`](src/Source/SourceInterface.php) implementation. The easiest way is to
+extend [`AbstractSource`](src/Source/AbstractSource.php). Declare the source with the
+[`#[Definition]`](src/Source/Definition.php) attribute, and implement `createNgsiEntity()`:
 
 ```php
 <?php
 
+use App\Geo\Wgs84Transformer;
+use App\Ngsi\NgsiEntity;
 use App\Source\AbstractSource;
+use App\Source\DataType;
+use App\Source\Definition;
 
-final readonly class MySource extends AbstractSource
+#[Definition(
+    id: 'my-source',
+    title: 'My source with some cool data',
+    description: '',
+    publisher: 'Me',
+    contact: 'me@example.com',
+    landingPage: 'https://my-data.example.com',
+    accessUrl: 'https://my-data.example.com/data',
+    dataType: DataType::GeoJSON,
+    mediaType: 'application/geo+json',
+    crs: 'EPSG:4326',
+    model: 'MyModel',
+    contextUrl: '',
+    updateFrequency: 'daily',
+    licence: null,
+    omittedFields: [],
+    dataset: 'my-source',
+    datasetTitle: 'My source with some cool data',
+)]
+final class MySource extends AbstractSource
 {
-    public function __construct(
-    ) {
-        parent::__construct(
-            id: 'my-source',
-            title: 'My source with some cool data',
-            description: '',
-            publisher: 'Me',
-            contact: 'me@example.com',
-            landingPage: 'https://my-data.example.com',
-            accessUrl: 'https://my-data.example.com/data',
-            mediaType: 'application/geo+json',
-            crs: 'EPSG:4326',
-            model: 'MyModel',
-            contextUrl: '',
-            updateFrequency: 'daily',
-        );
+    public function createNgsiEntity(array $data, Wgs84Transformer $transformer): ?NgsiEntity
+    {
+        …
     }
-
-    …
 }
 ```
 
