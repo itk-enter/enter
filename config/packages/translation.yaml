@@ -1,0 +1,8 @@
+framework:
+    # The pages are in Danish. The English texts are in messages.en.yaml.
+    default_locale: da
+    enabled_locales: ['da', 'en']
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks: ['da']
+        providers:

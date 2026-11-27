@@ -2,6 +2,10 @@ twig:
     file_name_pattern: '*.twig'
     date:
         timezone: Europe/Copenhagen
+    # The pages are in Danish, so the numbers use the Danish separators.
+    number_format:
+        decimal_point: ','
+        thousands_separator: '.'
 
 when@test:
     twig:
