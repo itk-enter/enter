@@ -1,0 +1,8 @@
+{% props import %}
+{# The status of an import as a tag. `import` is an ImportSummary. A failed import shows its failure on hover. #}
+{% set variants = {
+    succeeded: 'success',
+    failed: 'danger',
+    running: 'warning',
+} %}
+<twig:Tag variant="{{ variants[import.status.value] }}" dot :title="import.failure">{{ import.status.value|capitalize }}</twig:Tag>

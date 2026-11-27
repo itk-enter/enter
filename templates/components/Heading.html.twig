@@ -1,0 +1,11 @@
+{% props level = 2, size = null %}
+{# A heading. `level` gives the element, h1 to h6. `size` gives the look: lg, md or sm. Without `size`, the heading has #}
+{# the look of its level or of its classes. Thus the outline of the page and the look do not depend on each other. #}
+{% set sizes = {
+    lg: 'h3',
+    md: 'h4',
+    sm: 'h5',
+} %}
+<h{{ level }} {{ attributes.defaults(size ? {class: sizes[size]} : {}) }}>
+    {%- block content %}{% endblock -%}
+</h{{ level }}>

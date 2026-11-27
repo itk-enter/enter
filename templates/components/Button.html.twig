@@ -1,0 +1,20 @@
+{% props variant = 'primary', size = 'md', href = null, type = 'submit' %}
+{# A button of the design system. With `href`, it is a link that looks like a button. `variant` is primary, secondary #}
+{# or danger. `size` is sm, md or lg. `attributes` go on the element. #}
+{% set variants = {
+    primary: 'itkaarhus-btn--primary',
+    secondary: 'itkaarhus-btn--secondary',
+    danger: 'itkaarhus-btn--danger',
+} %}
+{% set sizes = {
+    sm: 'itkaarhus-btn--sm',
+    md: '',
+    lg: 'itkaarhus-btn--lg',
+} %}
+{% set classes = 'itkaarhus-btn ' ~ variants[variant] ~ (sizes[size] ? ' ' ~ sizes[size]) %}
+{% set content %}{% block content %}{% endblock %}{% endset %}
+{% if href %}
+    <a href="{{ href }}" {{ attributes.defaults({class: classes}) }}>{{ content|trim }}</a>
+{% else %}
+    <button type="{{ type }}" {{ attributes.defaults({class: classes}) }}>{{ content|trim }}</button>
+{% endif %}

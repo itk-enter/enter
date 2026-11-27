@@ -1,0 +1,18 @@
+{% props title, level = 3 %}
+{# A card of the design system that opens and closes. The closed card shows the title and the block "summary". The #}
+{# open card adds the content. Put the id and the classes of the card in `attributes`. #}
+{# The block "title" changes the visible title, for example to add a tag. `title` stays the text of the heading. #}
+{# The heading is outside the summary, because a summary is a button, and some screen readers do not show a heading in #}
+{# a button. The heading is visually hidden, and the summary shows the title. #}
+<section {{ attributes.defaults({class: 'itkaarhus-card fold-card'}) }}>
+    <twig:Heading level="{{ level }}" class="visually-hidden">{{ title }}</twig:Heading>
+    <details>
+        <summary class="fold-card-summary">
+            <span class="fold-card-title">{% block title %}{{ title }}{% endblock %}</span>
+            {% block summary %}{% endblock %}
+        </summary>
+        <div class="fold-card-body">
+            {% block content %}{% endblock %}
+        </div>
+    </details>
+</section>

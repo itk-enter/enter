@@ -3,10 +3,8 @@
 {% block title %}Data sources{% endblock %}
 
 {% block header %}
-    {{ include('_page_header.html.twig', {
-        breadcrumbs: [{label: 'Home', url: path('app_default')}],
-        current: block('title'),
-    }) }}
+    {% set title = block('title') %}
+    <twig:Layout:PageHeader :current="title" :breadcrumbs="[{label: 'Home', url: path('app_default')}]" />
 {% endblock %}
 
 {% block content %}
@@ -25,10 +23,10 @@
         {% set count = group.sources|length + group.merged|length %}
 
         <section class="source-group">
-            <h2 class="source-group-title">
+            <twig:Heading level="2" class="source-group-title">
                 {{ group.title }}
                 <span class="source-group-count">{{ count }} {{ count == 1 ? 'data set' : 'data sets' }}</span>
-            </h2>
+            </twig:Heading>
 
             {% if group.merged %}
                 <details class="source-part">
@@ -39,10 +37,7 @@
                         </span>
                     </summary>
                     {% for dataSet in group.merged %}
-                        {{ include('source/_merged_card.html.twig', {
-                            data_set: dataSet,
-                            entities_url: entitiesUrls[dataSet.id],
-                        }, with_context: false) }}
+                        <twig:Source:MergedCard :dataSet="dataSet" :entitiesUrl="entitiesUrls[dataSet.id]" />
                     {% endfor %}
                 </details>
             {% endif %}
@@ -56,23 +51,16 @@
                         </span>
                     </summary>
                     {% for source in imported %}
-                        {{ include('source/_source_card.html.twig', {
-                            source: source,
-                            history: histories[source.definition.id] ?? null,
-                            totals: totals[source.definition.id] ?? null,
-                            idle: false,
-                            entities_url: entitiesUrls[source.definition.id],
-                        }, with_context: false) }}
+                        <twig:Source:Card
+                            :source="source"
+                            :history="histories[source.definition.id] ?? null"
+                            :totals="totals[source.definition.id] ?? null"
+                            :entitiesUrl="entitiesUrls[source.definition.id]"
+                        />
                     {% endfor %}
 
                     {% for source in idle %}
-                        {{ include('source/_source_card.html.twig', {
-                            source: source,
-                            history: null,
-                            totals: null,
-                            idle: true,
-                            entities_url: entitiesUrls[source.definition.id],
-                        }, with_context: false) }}
+                        <twig:Source:Card :source="source" :entitiesUrl="entitiesUrls[source.definition.id]" idle />
                     {% endfor %}
                 </details>
             {% endif %}

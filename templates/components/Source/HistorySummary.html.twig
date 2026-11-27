@@ -1,0 +1,74 @@
+{% props history = null %}
+{# The import status of one source: the last import and four figures for the period. `history` is a SourceHistory, or #}
+{# null if the source has no import. #}
+<div class="import-summary">
+    {% if history is null %}
+        <div class="import-summary-head mb-0">
+            <span class="text-body-secondary">No import of this source is recorded.</span>
+        </div>
+    {% else %}
+        {% set last = history.lastImport %}
+        {% set success = history.lastSuccess %}
+        {% set dataChange = history.lastDataChange %}
+        {% set days = history.days|length %}
+        <div class="import-summary-head">
+            <twig:Import:Status :import="last" />
+            <span>Last import {{ history.sinceLastImport|duration }} ago</span>
+            <span class="text-body-secondary small"><twig:Time :date="last.startedAt" /></span>
+        </div>
+
+        {% if last.failure %}
+            <p class="import-summary-failure small">{{ last.failure }}</p>
+        {% endif %}
+
+        <div class="import-tiles">
+            <div class="import-tile">
+                <div class="import-tile-label">Entities</div>
+                <div class="import-tile-value">{{ success ? success.upserted|number_format : '–' }}</div>
+                <div class="import-tile-note">
+                    {% if success and success.rejected %}
+                        The broker rejected {{ success.rejected|number_format }}.
+                    {% elseif success %}
+                        At the last successful import.
+                    {% else %}
+                        No import succeeded.
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="import-tile">
+                <div class="import-tile-label">Time between imports</div>
+                <div class="import-tile-value">{{ history.importInterval is null ? '–' : history.importInterval|duration }}</div>
+                <div class="import-tile-note">
+                    {{ history.imports|length }} {{ history.imports|length == 1 ? 'import' : 'imports' }} in {{ days }} days
+                    {%- if history.failed %}, {{ history.failed }} failed{% endif %}.
+                </div>
+            </div>
+
+            <div class="import-tile">
+                <div class="import-tile-label">Data changes</div>
+                <div class="import-tile-value">{{ history.dataChanges }}</div>
+                <div class="import-tile-note">
+                    {% if dataChange %}
+                        The last at <twig:Time :date="dataChange.startedAt" />.
+                    {% else %}
+                        None in {{ days }} days.
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="import-tile">
+                <div class="import-tile-label">Entities in and out</div>
+                {% if history.busiestDay > 0 %}
+                    <div class="import-tile-value">
+                        <twig:Import:Swatch type="added" />+{{ history.added|number_format }}
+                        <twig:Import:Swatch type="removed" class="ms-2" />−{{ history.removed|number_format }}
+                    </div>
+                {% else %}
+                    <div class="import-tile-value">0</div>
+                    <div class="import-tile-note">No entities came or went in {{ days }} days.</div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>

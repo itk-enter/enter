@@ -1,0 +1,7 @@
+{% props type %}
+{# A small square in the colour of the added or removed entities. `type` is added or removed. #}
+{% set types = {
+    added: 'import-swatch-added',
+    removed: 'import-swatch-removed',
+} %}
+<span {{ attributes.defaults({class: 'import-swatch ' ~ types[type]}) }}></span>

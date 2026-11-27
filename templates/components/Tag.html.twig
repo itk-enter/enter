@@ -1,0 +1,15 @@
+{% props variant = 'neutral', dot = false %}
+{# A tag of the design system. `variant` is neutral, primary, secondary, info, success, warning or danger. With `dot`, #}
+{# the tag has a dot before the text. #}
+{% set variants = {
+    neutral: 'itkaarhus-tag--neutral',
+    primary: 'itkaarhus-tag--primary',
+    secondary: 'itkaarhus-tag--secondary',
+    info: 'itkaarhus-tag--info',
+    success: 'itkaarhus-tag--success',
+    warning: 'itkaarhus-tag--warning',
+    danger: 'itkaarhus-tag--danger',
+} %}
+<span {{ attributes.defaults({class: 'itkaarhus-tag ' ~ variants[variant] ~ (dot ? ' itkaarhus-tag--dot')}) }}>
+    {%- block content %}{% endblock -%}
+</span>

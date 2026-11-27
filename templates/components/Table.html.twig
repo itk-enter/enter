@@ -1,0 +1,11 @@
+{% props labelledby %}
+{# A table of the design system that scrolls sideways on a narrow screen. `labelledby` is the id of the visible #}
+{# heading of the table. The content is the thead and the tbody. #}
+{# The wrapper is a region with the heading as its name, so that a screen reader can find the table. It is in the tab #}
+{# order, so that a keyboard user can scroll it with the arrow keys. Chromium and Firefox do this without tabindex, but #}
+{# Safari does not. #}
+<div class="table-responsive" role="region" aria-labelledby="{{ labelledby }}" tabindex="0">
+    <table aria-labelledby="{{ labelledby }}" {{ attributes.defaults({class: 'itkaarhus-table'}) }}>
+        {%- block content %}{% endblock -%}
+    </table>
+</div>

@@ -3,10 +3,8 @@
 {% block title %}Test map{% endblock %}
 
 {% block header %}
-    {{ include('_page_header.html.twig', {
-        breadcrumbs: [{label: 'Home', url: path('app_default')}],
-        current: block('title'),
-    }) }}
+    {% set title = block('title') %}
+    <twig:Layout:PageHeader :current="title" :breadcrumbs="[{label: 'Home', url: path('app_default')}]" />
 {% endblock %}
 
 {% block content %}
@@ -22,11 +20,11 @@
         <div class="test-map" data-test-map-target="canvas"></div>
 
         <div class="test-map-panel">
-            <button class="itkaarhus-btn itkaarhus-btn--secondary itkaarhus-btn--sm" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
-                    aria-expanded="true" aria-controls="test-map-datasets">
+            <twig:Button variant="secondary" size="sm" type="button"
+                         data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
+                         aria-expanded="true" aria-controls="test-map-datasets">
                 Datamodeller
-            </button>
+            </twig:Button>
             <form id="test-map-datasets" class="test-map-datasets collapse show shadow-sm"
                   data-test-datasets-target="form" data-action="change->test-datasets#toggle"
                   aria-label="Datamodeller">
