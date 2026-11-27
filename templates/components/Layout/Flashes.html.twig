@@ -1,0 +1,14 @@
+{# The messages after an action, one Bootstrap alert for each message. An error is an alert, so that a screen reader #}
+{# reads it at once. Each other type is a status. Without messages, the component renders nothing. #}
+{% set variants = {
+    error: {role: 'alert', class: 'alert-danger'},
+    warning: {role: 'status', class: 'alert-warning'},
+    success: {role: 'status', class: 'alert-success'},
+    info: {role: 'status', class: 'alert-info'},
+} %}
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        {% set variant = variants[type] ?? variants.info %}
+        <div role="{{ variant.role }}" {{ attributes.defaults({class: 'alert ' ~ variant.class}) }}>{{ message|trans }}</div>
+    {% endfor %}
+{% endfor %}

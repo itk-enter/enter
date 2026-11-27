@@ -38,7 +38,7 @@ class MergedDataSetPageTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextSame('h1', 'Test: Offentlige toiletter (samlet), Aarhus Kommune');
-        $this->assertSelectorTextContains('.conflict-summary', '2 merged entities have a conflict');
+        $this->assertSelectorTextContains('.conflict-summary', '2 samlede entiteter har en konflikt');
         $this->assertSelectorCount(2, '.conflict-entity');
         $this->assertSelectorTextSame('#conflict-0 .fold-card-title', 'Toilet ved Hotel Marselis');
         $this->assertSelectorTextContains('#conflict-0 .conflict-values', 'Test: Offentlige toiletter (FindToilet), Aarhus Kommune');
@@ -53,7 +53,7 @@ class MergedDataSetPageTest extends WebTestCase
         $client->request(Request::METHOD_GET, '/sources/'.self::MERGE);
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('.conflict-summary', 'No conflicts');
+        $this->assertSelectorTextContains('.conflict-summary', 'Ingen konflikter');
         $this->assertSelectorNotExists('[data-controller="conflict-map"]');
     }
 
@@ -64,7 +64,7 @@ class MergedDataSetPageTest extends WebTestCase
         $client->request(Request::METHOD_GET, '/sources/'.self::MERGE);
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('body', 'The broker is not available');
+        $this->assertSelectorTextContains('body', 'Brokeren er ikke tilgængelig');
     }
 
     public function testTheCardOfAMergedDataSetLinksToItsPage(): void

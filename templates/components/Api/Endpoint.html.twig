@@ -1,0 +1,11 @@
+{% props path, label %}
+{# One endpoint on the API page, as a card that opens and closes. The closed card shows the method, `path` and #}
+{# `label`. The content is the description of the endpoint. #}
+<twig:FoldCard title="{{ path }}: {{ label }}" level="2">
+    <twig:block name="title">
+        <twig:Tag variant="primary">GET</twig:Tag>
+        <code>{{ path }}</code>
+        <span class="api-endpoint-label">{{ label }}</span>
+    </twig:block>
+    {{ block(outerBlocks.content) }}
+</twig:FoldCard>

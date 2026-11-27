@@ -1,0 +1,46 @@
+{% props dataSet, entitiesUrl %}
+{# One merged data set on /sources. The closed card shows the title and the number of data sets that the merge reads. #}
+{# The open card adds a link to the conflicts of the merge, and the facts about the merged data set. `dataSet` is a #}
+{# MergedDataSet. `entitiesUrl` is the broker URL of its entities. #}
+<twig:FoldCard :title="dataSet.title" id="{{ dataSet.id }}">
+    <twig:block name="summary">
+        <span class="source-card-status">
+            {{ 'merged.from'|trans({'%count%': dataSet.inputs|length}) }}
+        </span>
+    </twig:block>
+
+    <div class="source-figures">
+        <twig:Button variant="secondary" size="sm" href="{{ path('app_source_show', {id: dataSet.id}) }}" class="source-figure-link">{{ 'merged.card.conflicts'|trans }}</twig:Button>
+    </div>
+
+    <dl class="fold-card-facts source-facts">
+        <dt>{{ 'facts.id'|trans }}</dt>
+        <dd><code>{{ dataSet.id }}</code></dd>
+
+        <dt>{{ 'facts.description'|trans }}</dt>
+        <dd>{{ dataSet.description }}</dd>
+
+        <dt>{{ 'facts.merged_from'|trans }}</dt>
+        <dd>
+            {% for input in dataSet.inputs %}
+                <code>{{ input }}</code>{% if not loop.last %}, {% endif %}
+            {% else %}
+                {{ 'merged.card.no_inputs'|trans }}
+            {% endfor %}
+        </dd>
+
+        <dt>{{ 'facts.model'|trans }}</dt>
+        <dd><twig:Source:ModelLink :model="dataSet.model" :url="dataSet.modelUrl" /></dd>
+
+        <dt>{{ 'facts.context'|trans }}</dt>
+        <dd><a href="{{ dataSet.contextUrl }}">{{ dataSet.contextUrl }}</a></dd>
+
+        <dt>{{ 'facts.entities'|trans }}</dt>
+        <dd><a href="{{ entitiesUrl }}">{{ entitiesUrl }}</a></dd>
+
+        {% if dataSet.licence %}
+            <dt>{{ 'facts.licence'|trans }}</dt>
+            <dd><a href="{{ dataSet.licence }}">{{ dataSet.licence }}</a></dd>
+        {% endif %}
+    </dl>
+</twig:FoldCard>

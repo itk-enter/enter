@@ -1,0 +1,12 @@
+{% props counts, total, labels = null %}
+{# A list of horizontal bars, one for each count in `counts`. A bar is as long as the share of its count in `total`. #}
+{# `labels` gives the text of each key. If `labels` is null or does not have the key, the key is the text. #}
+<ul {{ attributes.defaults({class: 'list-unstyled conflict-bars'}) }}>
+    {% for key, count in counts %}
+        <li class="conflict-bar">
+            <span class="conflict-bar-label">{{ labels[key] ?? key }}</span>
+            <span class="conflict-bar-track" aria-hidden="true"><span class="conflict-bar-fill" style="width: {{ (100 * count / total)|round(1) }}%"></span></span>
+            <span class="conflict-bar-count">{{ count|number_format }}</span>
+        </li>
+    {% endfor %}
+</ul>

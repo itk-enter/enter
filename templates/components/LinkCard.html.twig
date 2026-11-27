@@ -1,0 +1,8 @@
+{% props href, title %}
+{# A card of the design system that is one link, with a title and a short text. The text is the content. #}
+<a href="{{ href }}" {{ attributes.defaults({class: 'itkaarhus-card link-box'}) }}>
+    <span class="itkaarhus-card__body">
+        <span class="itkaarhus-card__title link-box-title">{{ title }}</span>
+        <span class="itkaarhus-card__excerpt">{% block content %}{% endblock %}</span>
+    </span>
+</a>

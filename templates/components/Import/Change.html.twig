@@ -1,0 +1,12 @@
+{% props count, sign, variant = null %}
+{# A number of entities with `sign` before it, for example "+12". `variant` is added or removed, and gives the colour. #}
+{# Zero has no sign and a light colour. #}
+{% set variants = {
+    added: 'import-change-added',
+    removed: 'import-change-removed',
+} %}
+{%- if count > 0 -%}
+    <span class="import-change{{ variant ? ' ' ~ variants[variant] }}">{{ sign }}{{ count|number_format }}</span>
+{%- else -%}
+    <span class="import-change import-change-zero">0</span>
+{%- endif -%}

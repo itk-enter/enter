@@ -1,0 +1,7 @@
+{% props model, url = null %}
+{# The name of a data model, as a link to its description if `url` is given. #}
+{% if url %}
+    <a href="{{ url }}"><code>{{ model }}</code></a>
+{% else %}
+    <code>{{ model }}</code>
+{% endif %}

@@ -68,9 +68,12 @@ src/
   SourceImporter/     Reads a feed and imports it, one importer per feed type
   SourceReader/       Reads the feeds over HTTP and keeps them in a cache
   Test/               Test sources, test merges and test:* commands (dev only)
+  Twig/               Twig extensions, for example the filter "duration"
 tests/                PHPUnit tests, mirrors src/
 assets/               Stimulus controllers and styles
 templates/            Twig templates
+  components/         Twig components, for example <twig:Heading> and <twig:Source:Card>
+translations/         The texts of the pages, in Danish and English
 docs/                 Notes on NGSI-LD, Scorpio, tests and conflation
 docs/adr/             Architecture Decision Records. Read docs/adr/CLAUDE.md before you write one
 .docker/              Nginx configuration and templates
@@ -225,7 +228,39 @@ The pages follow the [ITK Aarhus design system](https://itk-dev.github.io/itkaar
 - Use the `--itkaarhus-*` tokens for colours, type sizes, spacing, radii and shadows. Do not write a hex colour in CSS.
 - Use an `.itkaarhus-*` component class, for example a tag, a button or a card, before you write new CSS.
 - `assets/styles/app.css` sets the Bootstrap variables to the tokens. Thus the Bootstrap classes match the tokens.
-- Give each page the shared header `_page_header.html.twig`, with breadcrumbs from "Home".
+- Give each page the shared header `<twig:Layout:PageHeader>`, with breadcrumbs from "Home".
+
+### Twig components
+
+The pages use [Symfony UX Twig Components](https://symfony.com/bundles/ux-twig-component/current/index.html).
+A component is an anonymous template in `templates/components/`. `<twig:Source:Card>` is
+`templates/components/Source/Card.html.twig`.
+
+- Before you write HTML for a common shape, look in `templates/components/`. Use `<twig:…>`.
+- If a call site needs more, add a prop, a variant or `attributes` to the component.
+- Start a component with `{% props %}` and a comment that tells what it shows and what each prop holds.
+- Give a variant as a map of complete class names, for example `success: 'itkaarhus-tag--success'`.
+- Use the `.itkaarhus-*` classes of the design system in the components, not in the pages.
+- Use a filter for a value that is only text, for example `{{ seconds|duration }}`.
+
+Outside `templates/components/`, `RawElementsTest` refuses a raw `<button>`, `<h1>` to `<h6>`, `<label>`, `<input>`,
+`<select>`, `<textarea>` and `role="alert"`. It also refuses the classes `itkaarhus-btn` and `itkaarhus-tag`. If an
+element must stay raw, put `{# raw: <reason> #}` on the same line or on the line above.
+
+### Texts on the pages
+
+The pages are in Danish. Danish is the default locale, and English is the second language.
+
+- Text that people read goes through `|trans`, with a key, in `translations/messages.da.yaml` and `messages.en.yaml`.
+  Add each key to both files.
+- Write a singular and a plural form as `'%count% data set|%count% data sets'`. Give the number as `%count%`. Give a
+  number that `number_format` changed as `%number%`, because `%count%` must be a number.
+- If a text must have HTML, for example `<code>`, give it a key that ends in `_html`, and show it with `|trans|raw`.
+  Do not put data in such a text. `RawElementsTest` refuses `|raw` in other places.
+- Data, for example the title of a source, is not translated.
+- Run `bin/console debug:translation da --only-missing` to find a key without a text.
+
+ASD-STE100 applies to the English texts in `messages.en.yaml`.
 
 ## Branching and PRs
 

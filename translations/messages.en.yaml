@@ -1,0 +1,210 @@
+# The English texts of the pages. Danish is the default language, see messages.da.yaml.
+# A key that ends in "_html" holds HTML, and the template shows it with |trans|raw. Do not put data in such a text.
+# A text with "|" has a singular and a plural form. The parameter %count% selects the form.
+
+layout:
+    home: Home
+    breadcrumb: Breadcrumb
+    footer: Footer
+    source_code: Source code on GitHub
+
+home:
+    pages: Pages
+    sources: Data sets, sources and import history
+    api: Example requests to the NGSI-LD API
+    test_map: View data sets on a map
+
+duration:
+    seconds: "%count% s"
+    minutes: "%count% min"
+    hours: "%count% h"
+    days: "%count% d"
+
+model:
+    Bench: Benches and picnic tables
+    OffStreetParking: Off-street parking
+    ParkingSpot: Parking spaces
+    PublicToilet: Public toilets
+
+facts:
+    id: Id
+    description: Description
+    publisher: Publisher
+    contact: Contact
+    landing_page: Landing page
+    access_url: Access URL
+    data_type: Data type
+    model: Model
+    context: Context
+    entities: Entities
+    update_frequency: Update frequency
+    licence: Licence
+    omitted_fields: Omitted fields
+    merged_from: Merged from
+
+import:
+    added: Added
+    removed: Removed
+    status:
+        succeeded: Succeeded
+        failed: Failed
+        running: Running
+
+sources:
+    title: Data sources
+    intro: Browse the data sets in the broker, grouped by topic.
+    intro_more: Open a data set to see its source, its import history and the link to its entities.
+    data_sets: "%count% data set|%count% data sets"
+    merged: Merged data set|Merged data sets
+    sources: Source|Sources
+
+source:
+    card:
+        entities: entities
+        entities_at: At the last successful import, %time%
+        no_success: No import succeeded
+        change_title: Entities added and removed by all the imports, without full loads
+        ago: "%duration% ago"
+        no_import: No import
+        rejected: rejected at the last import
+        period: Last %days% days
+        imports: import|imports
+        failed: failed
+        interval: between imports
+        last_change: The last at %time%
+        no_change: The data did not change
+        data_changes: data change|data changes
+        history: Import history
+
+history:
+    unavailable: The import history is not available.
+    last_import_ago: Last import %duration% ago
+    intro: >-
+        The figures count the last %days% days. The data changed if the entities of an import are different from the
+        entities of the import before it. A full load adds all the entities of the source. The figures and the chart do not
+        count its added entities. All times are in Danish time.
+    days: Entities added and removed each day
+    no_entities_moved: No entities came or went in the last %days% days.
+    summary:
+        no_import: No import of this source is recorded.
+        entities: Entities
+        rejected: The broker rejected %number%.
+        at_last_success: At the last successful import.
+        no_success: No import succeeded.
+        interval: Time between imports
+        imports: "%count% import in %days% days|%count% imports in %days% days"
+        failed: ", %count% failed"
+        data_changes: Data changes
+        last_change: The last at
+        no_change: None in %days% days.
+        in_and_out: Entities in and out
+        no_entities: No entities came or went in %days% days.
+    chart:
+        label: "%added% entities added and %removed% removed from %from% to %to%"
+        day: "%date%: %added% added, %removed% removed, %count% imports"
+    table:
+        show: Show the days as a table
+        day: Day
+        imports: Imports
+        failed: Failed
+    events:
+        title: Imports that changed something or failed
+        full_load: Full load
+        added: "%number% added"
+        removed: "%number% removed"
+        changed: The data changed
+        entities: "%number% entities"
+        rejected: "%number% rejected"
+        none: No import changed something or failed in the last %days% days.
+    changes:
+        title: The last entities that came and went
+        added: Added
+        removed: Removed
+        none: No import added or removed an entity.
+
+merged:
+    from: Merged from %count% data set|Merged from %count% data sets
+    intro_html: >-
+        A conflict is an attribute that the data sets state with different values, and that no approach of the merge
+        settles. The merged entity does not have the attribute. It keeps the values of the data sets in
+        <code>additionalInformation.conflicts</code>. The page shows the merged entities that the last run of the merge
+        published.
+    broker_unavailable: The broker is not available, so the page cannot show the conflicts.
+    no_conflicts: No conflicts
+    all_settled: The merge settled each attribute that the data sets disagree on.
+    conflicts: "%count% conflict|%count% conflicts"
+    entities_in_conflict: merged entity has a conflict|merged entities have a conflict
+    attributes_in_conflict: attribute in conflict|attributes in conflict
+    map:
+        title: Where the conflicts are
+        label: Map of the merged entities with conflicts
+        help: Select a point to see the attributes in conflict.
+    attributes:
+        title: Attributes in conflict
+        help: The number of merged entities with a conflict on each attribute.
+    data_sets:
+        title: Data sets in the conflicts
+        help: The number of conflicts that each data set states a value in.
+    entities:
+        title: Merged entities with conflicts
+        from: from %data_set%
+        record: The entity in the data set
+    card:
+        conflicts: Conflicts
+        no_inputs: No data set publishes its models.
+
+test_map:
+    title: Test map
+    intro: See the test data sets on a map.
+    intro_more: Select the data sets in the panel, and click an object on the map to see its data.
+    models: Data models
+    loading: Loading data sets…
+
+api:
+    title: API
+    intro: Read the data in the broker with GET requests.
+    intro_more: Open an endpoint to see its parameters, an example and the response.
+    example: Example
+    response: Response
+    response_shortened: Response, shortened
+    parameters: Parameters
+    headers: Headers
+    sources:
+        label: The list of data sets
+        text_html: >-
+            Lists the data sets. Each data set has an <code>id</code>, a <code>title</code>, a <code>model</code>, the
+            <code>context_url</code> of the model and the <code>entities_url</code> that selects its entities. A merged data
+            set also has the <code>inputs</code> that it is merged from.
+        example: All the data sets
+    types:
+        label: The types in the broker
+        text: Lists the types of the entities in the broker.
+        example: All the types
+    entities:
+        label: The entities that match a query
+        text_html: Lists the entities that match the query. Give a <code>type</code>, a <code>q</code> or both.
+        type: The full URI of a type.
+        q_html: A filter on the attributes, for example <code>sourceId=="osm-bench"</code>.
+        simplified: Gives the value of each attribute only, without the NGSI-LD structure around it.
+        attrs_html: Gives only the attributes in the list, for example <code>location</code>.
+        paging_html: >-
+            Give one page of the result. If there is a next page, the <code>Link</code> header of the response points to it.
+        count_html: Adds the header <code>NGSILD-Results-Count</code> with the number of all the entities that match.
+        near_html: >-
+            Find entities near a point, for example <code>georel=near;maxDistance==300</code>, <code>geometry=Point</code>
+            and <code>coordinates=[10.2039,56.1572]</code>. The coordinates are longitude, then latitude, and the distance
+            is in metres.
+        accept_html: >-
+            <code>application/ld+json</code> gives JSON-LD, with the context in the body. <code>application/json</code> gives
+            plain JSON. <code>application/geo+json</code> gives a GeoJSON feature collection, which map libraries can show.
+        link_html: >-
+            The JSON-LD context of a data model, for example the <code>context_url</code> of a data set. With it, the
+            response uses the short attribute names of the model, and <code>type</code>, <code>q</code> and
+            <code>attrs</code> can use the short names too, for example <code>Bench</code>.
+        example: One entity of the data set osm-bench, with the values only
+    entity:
+        label: One entity
+        text_html: >-
+            Gives one entity. The id is the <code>id</code> of the entity in a list of entities. Without
+            <code>format=simplified</code>, each attribute is an object with a type and a value.
+        example: One bench

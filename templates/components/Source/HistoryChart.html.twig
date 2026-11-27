@@ -1,15 +1,14 @@
-{#
-    The entities that the imports of a source added and removed each day.
-    Variables: history (a SourceHistory) and compact (true for a small chart without scale and dates).
-#}
+{% props history, compact = false %}
+{# The entities that the imports of a source added and removed each day. `history` is a SourceHistory. With `compact`, #}
+{# the chart is small and has no legend, scale or dates. #}
 {% set busiest = history.busiestDay %}
 {% set first = history.days|first %}
 {% set last = history.days|last %}
 <div class="import-chart{{ compact ? ' import-chart-compact' }}">
     {% if not compact %}
         <div class="import-chart-legend small mb-1">
-            <span><span class="import-swatch import-swatch-added"></span>Added</span>
-            <span><span class="import-swatch import-swatch-removed"></span>Removed</span>
+            <span><twig:Import:Swatch type="added" />{{ 'import.added'|trans }}</span>
+            <span><twig:Import:Swatch type="removed" />{{ 'import.removed'|trans }}</span>
         </div>
     {% endif %}
     <div class="import-chart-plot">
@@ -24,12 +23,12 @@
             class="import-chart-days"
             style="--import-chart-day-count: {{ history.days|length }}"
             role="img"
-            aria-label="{{ history.added }} entities added and {{ history.removed }} removed from {{ first.date|date('Y-m-d') }} to {{ last.date|date('Y-m-d') }}"
+            aria-label="{{ 'history.chart.label'|trans({'%added%': history.added, '%removed%': history.removed, '%from%': first.date|date('Y-m-d'), '%to%': last.date|date('Y-m-d')}) }}"
         >
             {% for day in history.days %}
                 <div
                     class="import-chart-day"
-                    title="{{ day.date|date('Y-m-d') }}: {{ day.added }} added, {{ day.removed }} removed, {{ day.imports }} imports"
+                    title="{{ 'history.chart.day'|trans({'%date%': day.date|date('Y-m-d'), '%added%': day.added, '%removed%': day.removed, '%count%': day.imports}) }}"
                 >
                     <div class="import-chart-up">
                         {% if day.added > 0 %}
@@ -47,8 +46,8 @@
     </div>
     {% if not compact %}
         <div class="import-chart-axis small" aria-hidden="true">
-            <span>{{ first.date|date('j M') }}</span>
-            <span>{{ last.date|date('j M') }}</span>
+            <span>{{ first.date|date('j/n') }}</span>
+            <span>{{ last.date|date('j/n') }}</span>
         </div>
     {% endif %}
 </div>

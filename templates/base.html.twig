@@ -18,24 +18,19 @@
     {% block body %}
         <div class="container-fluid page-main">
         {% block header %}
-            <h1>{{ block('title') }}</h1>
+            {% set title = block('title') %}
+            <twig:Heading level="1">{{ title }}</twig:Heading>
         {% endblock %}
 
         {% block flashes %}
-            {% for type, messages in app.flashes %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ type == 'error' ? 'danger' : type }}" role="alert">
-                        {{ message|trans }}
-                    </div>
-                {% endfor %}
-            {% endfor %}
+            <twig:Layout:Flashes />
         {% endblock %}
 
         {% block content %}{% endblock %}
     </div>
 
     {% block footer %}
-        {{ include('_page_footer.html.twig') }}
+        <twig:Layout:PageFooter />
     {% endblock %}
 {% endblock %}
 </body>

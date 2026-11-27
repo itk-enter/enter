@@ -1,18 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Test map{% endblock %}
+{% block title %}{{ 'test_map.title'|trans }}{% endblock %}
 
 {% block header %}
-    {{ include('_page_header.html.twig', {
-        breadcrumbs: [{label: 'Home', url: path('app_default')}],
-        current: block('title'),
-    }) }}
+    {% set title = block('title') %}
+    <twig:Layout:PageHeader :current="title" :breadcrumbs="[{label: 'layout.home'|trans, url: path('app_default')}]" />
 {% endblock %}
 
 {% block content %}
     <p class="page-intro">
-        See the test data sets on a map.<br>
-        Select the data sets in the panel, and click an object on the map to see its data.
+        {{ 'test_map.intro'|trans }}<br>
+        {{ 'test_map.intro_more'|trans }}
     </p>
 
     <div class="test-map-wrapper"
@@ -22,17 +20,17 @@
         <div class="test-map" data-test-map-target="canvas"></div>
 
         <div class="test-map-panel">
-            <button class="itkaarhus-btn itkaarhus-btn--secondary itkaarhus-btn--sm" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
-                    aria-expanded="true" aria-controls="test-map-datasets">
-                Datamodeller
-            </button>
+            <twig:Button variant="secondary" size="sm" type="button"
+                         data-bs-toggle="collapse" data-bs-target="#test-map-datasets"
+                         aria-expanded="true" aria-controls="test-map-datasets">
+                {{ 'test_map.models'|trans }}
+            </twig:Button>
             <form id="test-map-datasets" class="test-map-datasets collapse show shadow-sm"
                   data-test-datasets-target="form" data-action="change->test-datasets#toggle"
-                  aria-label="Datamodeller">
+                  aria-label="{{ 'test_map.models'|trans }}">
                 <p class="test-map-loading" role="status" data-test-datasets-target="loading">
                     <span class="spinner-border" aria-hidden="true"></span>
-                    Henter datasæt…
+                    {{ 'test_map.loading'|trans }}
                 </p>
             </form>
         </div>

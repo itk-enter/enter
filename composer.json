@@ -35,7 +35,9 @@
         "symfony/runtime": "~8.1.10",
         "symfony/serializer": "~8.1.10",
         "symfony/stimulus-bundle": "^3.6",
+        "symfony/translation": "~8.1.0",
         "symfony/twig-bundle": "~8.1.9",
+        "symfony/ux-twig-component": "^3.8",
         "symfony/yaml": "~8.1.10",
         "twig/extra-bundle": "^2.12 || ^3.29",
         "twig/twig": "^2.12 || ^3.30"

@@ -1,0 +1,24 @@
+{% props current, breadcrumbs = [] %}
+{# The grey header at the top of a page. The logo is on the left. On a subpage, the heading and the breadcrumbs are to #}
+{# the right of the logo, and the logo links to the front page. The header has the same height on each page. #}
+{# `breadcrumbs` is a list of {label, url} for the pages above this page. `current` is the name of this page, as the #}
+{# last breadcrumb and as the heading. On the front page, `breadcrumbs` is empty. Then the logo is the heading, and #}
+{# `current` is its alternative text. #}
+<header {{ attributes.defaults({class: 'page-header'}) }}>
+    {% if breadcrumbs is empty %}
+        <twig:Heading level="1" class="page-header-logo"><img src="{{ asset('images/enter-logo.png') }}" alt="{{ current }}" width="600" height="212" fetchpriority="high"></twig:Heading>
+    {% else %}
+        <a class="page-header-logo" href="{{ path('app_default') }}"><img src="{{ asset('images/enter-logo.png') }}" alt="Enter" width="600" height="212" fetchpriority="high"></a>
+        <div class="page-header-text">
+            <twig:Heading level="1" class="page-header-title">{{ current }}</twig:Heading>
+            <nav aria-label="{{ 'layout.breadcrumb'|trans }}">
+                <ol class="itkaarhus-breadcrumb page-header-breadcrumb">
+                    {% for crumb in breadcrumbs %}
+                        <li><a href="{{ crumb.url }}">{{ crumb.label }}</a><span class="sep" aria-hidden="true">/</span></li>
+                    {% endfor %}
+                    <li class="cur" aria-current="page">{{ current }}</li>
+                </ol>
+            </nav>
+        </div>
+    {% endif %}
+</header>

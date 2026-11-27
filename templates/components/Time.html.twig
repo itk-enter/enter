@@ -1,0 +1,6 @@
+{% props date, dateOnly = false %}
+{# A time in the time zone of the app, with the minutes. With `dateOnly`, only the date. The machine-readable value is #}
+{# in `datetime`. Without `date`, the component renders nothing. #}
+{%- if date -%}
+    <time datetime="{{ date|date(dateOnly ? 'Y-m-d' : 'c') }}" {{ attributes }}>{{ date|date(dateOnly ? 'Y-m-d' : 'Y-m-d H:i') }}</time>
+{%- endif -%}

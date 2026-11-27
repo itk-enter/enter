@@ -1,0 +1,210 @@
+# The Danish texts of the pages. Danish is the default language. The English texts are in messages.en.yaml.
+# A key that ends in "_html" holds HTML, and the template shows it with |trans|raw. Do not put data in such a text.
+# A text with "|" has a singular and a plural form. The parameter %count% selects the form.
+
+layout:
+    home: Forside
+    breadcrumb: Brødkrummesti
+    footer: Sidefod
+    source_code: Kildekode på GitHub
+
+home:
+    pages: Sider
+    sources: Datasæt, kilder og importhistorik
+    api: Eksempler på forespørgsler til NGSI-LD-API'et
+    test_map: Se datasæt på et kort
+
+duration:
+    seconds: "%count% s"
+    minutes: "%count% min"
+    hours: "%count% t"
+    days: "%count% d"
+
+model:
+    Bench: Bænke og bordbænkesæt
+    OffStreetParking: Parkering uden for gaden
+    ParkingSpot: Parkeringspladser
+    PublicToilet: Offentlige toiletter
+
+facts:
+    id: Id
+    description: Beskrivelse
+    publisher: Udgiver
+    contact: Kontakt
+    landing_page: Landingsside
+    access_url: Adgangs-URL
+    data_type: Datatype
+    model: Model
+    context: Kontekst
+    entities: Entiteter
+    update_frequency: Opdateringsfrekvens
+    licence: Licens
+    omitted_fields: Udeladte felter
+    merged_from: Samlet fra
+
+import:
+    added: Tilføjet
+    removed: Fjernet
+    status:
+        succeeded: Gennemført
+        failed: Fejlet
+        running: I gang
+
+sources:
+    title: Datakilder
+    intro: Gennemse datasættene i brokeren, grupperet efter emne.
+    intro_more: Åbn et datasæt for at se dets kilde, dets importhistorik og linket til dets entiteter.
+    data_sets: "%count% datasæt|%count% datasæt"
+    merged: Samlet datasæt|Samlede datasæt
+    sources: Kilde|Kilder
+
+source:
+    card:
+        entities: entiteter
+        entities_at: Ved den seneste gennemførte import, %time%
+        no_success: Ingen import er gennemført
+        change_title: Entiteter tilføjet og fjernet af alle importerne, uden fulde indlæsninger
+        ago: for %duration% siden
+        no_import: Ingen import
+        rejected: afvist ved den seneste import
+        period: Seneste %days% dage
+        imports: import|importer
+        failed: fejlet
+        interval: mellem importer
+        last_change: Den seneste %time%
+        no_change: Dataene er ikke ændret
+        data_changes: dataændring|dataændringer
+        history: Importhistorik
+
+history:
+    unavailable: Importhistorikken er ikke tilgængelig.
+    last_import_ago: Seneste import for %duration% siden
+    intro: >-
+        Tallene tæller de seneste %days% dage. Dataene er ændret, hvis entiteterne i en import er forskellige fra
+        entiteterne i importen før. En fuld indlæsning tilføjer alle kildens entiteter. Tallene og diagrammet tæller ikke
+        dens tilføjede entiteter. Alle tider er i dansk tid.
+    days: Entiteter tilføjet og fjernet hver dag
+    no_entities_moved: Ingen entiteter kom eller gik de seneste %days% dage.
+    summary:
+        no_import: Der er ikke registreret nogen import af denne kilde.
+        entities: Entiteter
+        rejected: Brokeren afviste %number%.
+        at_last_success: Ved den seneste gennemførte import.
+        no_success: Ingen import er gennemført.
+        interval: Tid mellem importer
+        imports: "%count% import på %days% dage|%count% importer på %days% dage"
+        failed: ", %count% fejlet"
+        data_changes: Dataændringer
+        last_change: Den seneste
+        no_change: Ingen på %days% dage.
+        in_and_out: Entiteter ind og ud
+        no_entities: Ingen entiteter kom eller gik på %days% dage.
+    chart:
+        label: "%added% entiteter tilføjet og %removed% fjernet fra %from% til %to%"
+        day: "%date%: %added% tilføjet, %removed% fjernet, %count% importer"
+    table:
+        show: Vis dagene som en tabel
+        day: Dag
+        imports: Importer
+        failed: Fejlet
+    events:
+        title: Importer, der ændrede noget eller fejlede
+        full_load: Fuld indlæsning
+        added: "%number% tilføjet"
+        removed: "%number% fjernet"
+        changed: Dataene blev ændret
+        entities: "%number% entiteter"
+        rejected: "%number% afvist"
+        none: Ingen import ændrede noget eller fejlede de seneste %days% dage.
+    changes:
+        title: De seneste entiteter, der kom og gik
+        added: Tilføjet
+        removed: Fjernet
+        none: Ingen import tilføjede eller fjernede en entitet.
+
+merged:
+    from: Samlet fra %count% datasæt|Samlet fra %count% datasæt
+    intro_html: >-
+        En konflikt er en attribut, som datasættene angiver med forskellige værdier, og som ingen af sammenlægningens
+        metoder afgør. Den samlede entitet har ikke attributten. Den gemmer datasættenes værdier i
+        <code>additionalInformation.conflicts</code>. Siden viser de samlede entiteter, som sammenlægningens seneste kørsel
+        udgav.
+    broker_unavailable: Brokeren er ikke tilgængelig, så siden kan ikke vise konflikterne.
+    no_conflicts: Ingen konflikter
+    all_settled: Sammenlægningen afgjorde hver attribut, som datasættene er uenige om.
+    conflicts: "%count% konflikt|%count% konflikter"
+    entities_in_conflict: samlet entitet har en konflikt|samlede entiteter har en konflikt
+    attributes_in_conflict: attribut i konflikt|attributter i konflikt
+    map:
+        title: Hvor konflikterne er
+        label: Kort over de samlede entiteter med konflikter
+        help: Vælg et punkt for at se attributterne i konflikt.
+    attributes:
+        title: Attributter i konflikt
+        help: Antallet af samlede entiteter med en konflikt på hver attribut.
+    data_sets:
+        title: Datasæt i konflikterne
+        help: Antallet af konflikter, som hvert datasæt angiver en værdi i.
+    entities:
+        title: Samlede entiteter med konflikter
+        from: fra %data_set%
+        record: Entiteten i datasættet
+    card:
+        conflicts: Konflikter
+        no_inputs: Intet datasæt udgiver dets modeller.
+
+test_map:
+    title: Testkort
+    intro: Se testdatasættene på et kort.
+    intro_more: Vælg datasættene i panelet, og klik på et objekt på kortet for at se dets data.
+    models: Datamodeller
+    loading: Henter datasæt…
+
+api:
+    title: API
+    intro: Læs dataene i brokeren med GET-forespørgsler.
+    intro_more: Åbn et endpoint for at se dets parametre, et eksempel og svaret.
+    example: Eksempel
+    response: Svar
+    response_shortened: Svar, forkortet
+    parameters: Parametre
+    headers: Headers
+    sources:
+        label: Listen over datasæt
+        text_html: >-
+            Viser datasættene. Hvert datasæt har et <code>id</code>, en <code>title</code>, en <code>model</code>, modellens
+            <code>context_url</code> og den <code>entities_url</code>, der vælger dets entiteter. Et samlet datasæt har også
+            de <code>inputs</code>, det er samlet fra.
+        example: Alle datasættene
+    types:
+        label: Typerne i brokeren
+        text: Viser typerne af entiteterne i brokeren.
+        example: Alle typerne
+    entities:
+        label: Entiteterne, der passer til en forespørgsel
+        text_html: Viser entiteterne, der passer til forespørgslen. Angiv en <code>type</code>, en <code>q</code> eller begge.
+        type: Den fulde URI for en type.
+        q_html: Et filter på attributterne, for eksempel <code>sourceId=="osm-bench"</code>.
+        simplified: Giver kun værdien af hver attribut, uden NGSI-LD-strukturen omkring den.
+        attrs_html: Giver kun attributterne i listen, for eksempel <code>location</code>.
+        paging_html: >-
+            Giver én side af resultatet. Hvis der er en næste side, peger svarets <code>Link</code>-header på den.
+        count_html: Tilføjer headeren <code>NGSILD-Results-Count</code> med antallet af alle de entiteter, der passer.
+        near_html: >-
+            Find entiteter nær et punkt, for eksempel <code>georel=near;maxDistance==300</code>,
+            <code>geometry=Point</code> og <code>coordinates=[10.2039,56.1572]</code>. Koordinaterne er længdegrad og derefter
+            breddegrad, og afstanden er i meter.
+        accept_html: >-
+            <code>application/ld+json</code> giver JSON-LD med konteksten i svaret. <code>application/json</code> giver
+            almindelig JSON. <code>application/geo+json</code> giver en GeoJSON-featurecollection, som kortbiblioteker kan vise.
+        link_html: >-
+            JSON-LD-konteksten for en datamodel, for eksempel et datasæts <code>context_url</code>. Med den bruger svaret
+            modellens korte attributnavne, og <code>type</code>, <code>q</code> og <code>attrs</code> kan også bruge de korte
+            navne, for eksempel <code>Bench</code>.
+        example: Én entitet fra datasættet osm-bench, kun med værdierne
+    entity:
+        label: Én entitet
+        text_html: >-
+            Giver én entitet. Id'et er entitetens <code>id</code> i en liste over entiteter. Uden
+            <code>format=simplified</code> er hver attribut et objekt med en type og en værdi.
+        example: Én bænk

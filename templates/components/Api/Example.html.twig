@@ -1,0 +1,7 @@
+{% props base, path %}
+{# An example request on the API page: a description, which is the content, and a link to `base` and `path`. #}
+<p class="fold-card-label">{{ 'api.example'|trans }}</p>
+<p class="api-example">
+    {% block content %}{% endblock %}
+    <a class="api-example-url" href="{{ base ~ path }}"><code>{{ base ~ path }}</code></a>
+</p>

@@ -10,6 +10,7 @@ use App\Conflation\Io\MergedDataSet;
 use App\Conflation\Io\MergedDataSetFactory;
 use App\Source\SourceInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Lists the data sets that the app publishes: first the sources, then the
@@ -17,22 +18,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final readonly class DataSetCatalog
 {
-    /**
-     * The English name of each data model, for the headings on /sources. A
-     * model that is not in the list uses its own name.
-     */
-    private const array MODEL_TITLES = [
-        'Bench' => 'Benches and picnic tables',
-        'OffStreetParking' => 'Off-street parking',
-        'ParkingSpot' => 'Parking spaces',
-        'PublicToilet' => 'Public toilets',
-    ];
-
     public function __construct(
         private SourceManager $sources,
         private ConflationManager $conflations,
         private MergedDataSetFactory $mergedDataSets,
         private UrlGeneratorInterface $urlGenerator,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -42,8 +33,10 @@ final readonly class DataSetCatalog
      *
      * The groups hold the same data sets, grouped by model. A source that a
      * merge reads is in the group of the merged data set, because the merged
-     * data set is the result that a reader uses. Each group has the English
-     * name of its model as title, and the groups are sorted by title.
+     * data set is the result that a reader uses. Each group has the name of
+     * its model in the language of the request as title, from the translation
+     * key "model.<model>". A model without a translation uses its own name.
+     * The groups are sorted by title.
      *
      * @return array{
      *     sources: list<SourceInterface>,
@@ -68,7 +61,7 @@ final readonly class DataSetCatalog
         return [
             'sources' => $sources,
             'merged' => $merged,
-            'groups' => self::groups($sources, $merged),
+            'groups' => $this->groups($sources, $merged),
             'entitiesUrls' => $entitiesUrls,
         ];
     }
@@ -141,12 +134,12 @@ final readonly class DataSetCatalog
      *
      * @return list<array{model: string, title: string, merged: list<MergedDataSet>, sources: list<SourceInterface>}>
      */
-    private static function groups(array $sources, array $merged): array
+    private function groups(array $sources, array $merged): array
     {
         $groups = [];
         $modelOfInput = [];
         foreach ($merged as $dataSet) {
-            $groups[$dataSet->model] ??= self::group($dataSet->model);
+            $groups[$dataSet->model] ??= $this->group($dataSet->model);
             $groups[$dataSet->model]['merged'][] = $dataSet;
             foreach ($dataSet->inputs as $id) {
                 $modelOfInput[$id] ??= $dataSet->model;
@@ -155,7 +148,7 @@ final readonly class DataSetCatalog
 
         foreach ($sources as $source) {
             $model = $modelOfInput[$source->definition->id] ?? $source->definition->model;
-            $groups[$model] ??= self::group($model);
+            $groups[$model] ??= $this->group($model);
             $groups[$model]['sources'][] = $source;
         }
 
@@ -169,9 +162,13 @@ final readonly class DataSetCatalog
      *
      * @return array{model: string, title: string, merged: list<MergedDataSet>, sources: list<SourceInterface>}
      */
-    private static function group(string $model): array
+    private function group(string $model): array
     {
-        return ['model' => $model, 'title' => self::MODEL_TITLES[$model] ?? $model, 'merged' => [], 'sources' => []];
+        // The translator gives the key back if the model has no translation.
+        $key = 'model.'.$model;
+        $title = $this->translator->trans($key);
+
+        return ['model' => $model, 'title' => $key === $title ? $model : $title, 'merged' => [], 'sources' => []];
     }
 
     /**

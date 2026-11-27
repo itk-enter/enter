@@ -1,105 +1,95 @@
 {% extends 'base.html.twig' %}
 
-{% import 'source/_history_macros.html.twig' as h %}
-
 {% block title %}{{ source.definition.title }}{% endblock %}
 
 {% block header %}
-    {{ include('_page_header.html.twig', {
-        breadcrumbs: [
-            {label: 'Home', url: path('app_default')},
-            {label: 'Data sources', url: path('app_sources') ~ '#' ~ source.definition.id},
-        ],
-        current: source.definition.title,
-    }) }}
+    <twig:Layout:PageHeader
+        :current="source.definition.title"
+        :breadcrumbs="[
+            {label: 'layout.home'|trans, url: path('app_default')},
+            {label: 'sources.title'|trans, url: path('app_sources') ~ '#' ~ source.definition.id},
+        ]"
+    />
 {% endblock %}
 
 {% block content %}
     {% set definition = source.definition %}
     <p class="page-meta">
-        <code>{{ definition.id }}</code> · Model
-        {% if definition.modelUrl %}
-            <a href="{{ definition.modelUrl }}"><code>{{ definition.model }}</code></a>
-        {% else %}
-            <code>{{ definition.model }}</code>
-        {% endif %}
+        <code>{{ definition.id }}</code> · {{ 'facts.model'|trans }}
+        <twig:Source:ModelLink :model="definition.model" :url="definition.modelUrl" />
     </p>
 
     {% if histories is null %}
-        <p class="text-body-secondary">The import history is not available.</p>
+        <p class="text-body-secondary">{{ 'history.unavailable'|trans }}</p>
     {% else %}
-        {{ include('source/_history_summary.html.twig', {history: history}, with_context: false) }}
+        <twig:Source:HistorySummary :history="history" />
 
         {% if history %}
             <p class="small text-body-secondary">
-                The figures count the last {{ history.days|length }} days. The data changed if the entities of an
-                import are different from the entities of the import before it. A full load adds all the entities of
-                the source. The figures and the chart do not count its added entities. All times are in Danish time.
+                {{ 'history.intro'|trans({'%days%': history.days|length}) }}
             </p>
 
             <div class="row g-4">
                 <div class="col-xl-7">
-                    <h2 class="h4">Entities added and removed each day</h2>
+                    <twig:Heading level="2" size="md" id="import-days">{{ 'history.days'|trans }}</twig:Heading>
                     {% if history.busiestDay > 0 %}
-                        {{ include('source/_history_chart.html.twig', {history: history, compact: false}, with_context: false) }}
+                        <twig:Source:HistoryChart :history="history" />
                     {% else %}
-                        <p class="text-body-secondary mb-0">No entities came or went in the last {{ history.days|length }} days.</p>
+                        <p class="text-body-secondary mb-0">{{ 'history.no_entities_moved'|trans({'%days%': history.days|length}) }}</p>
                     {% endif %}
 
                     <details class="mt-2 mb-4">
-                        <summary class="small">Show the days as a table</summary>
-                        <div class="table-responsive">
-                            <table class="itkaarhus-table import-table">
-                                <thead>
+                        <summary class="small">{{ 'history.table.show'|trans }}</summary>
+                        <twig:Table labelledby="import-days" class="import-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">{{ 'history.table.day'|trans }}</th>
+                                    <th scope="col" class="text-end">{{ 'history.table.imports'|trans }}</th>
+                                    <th scope="col" class="text-end">{{ 'history.table.failed'|trans }}</th>
+                                    <th scope="col" class="text-end">{{ 'import.added'|trans }}</th>
+                                    <th scope="col" class="text-end">{{ 'import.removed'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day in history.days|reverse|filter(day => day.imports > 0) %}
                                     <tr>
-                                        <th scope="col">Day</th>
-                                        <th scope="col" class="text-end">Imports</th>
-                                        <th scope="col" class="text-end">Failed</th>
-                                        <th scope="col" class="text-end">Added</th>
-                                        <th scope="col" class="text-end">Removed</th>
+                                        <td><twig:Time :date="day.date" dateOnly /></td>
+                                        <td class="text-end">{{ day.imports }}</td>
+                                        <td class="text-end">{{ day.failed ?: '' }}</td>
+                                        <td class="text-end"><twig:Import:Change :count="day.added" sign="+" /></td>
+                                        <td class="text-end"><twig:Import:Change :count="day.removed" sign="−" /></td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {% for day in history.days|reverse|filter(day => day.imports > 0) %}
-                                        <tr>
-                                            <td><time datetime="{{ day.date|date('Y-m-d') }}">{{ day.date|date('Y-m-d') }}</time></td>
-                                            <td class="text-end">{{ day.imports }}</td>
-                                            <td class="text-end">{{ day.failed ?: '' }}</td>
-                                            <td class="text-end">{{ h.change(day.added, '+') }}</td>
-                                            <td class="text-end">{{ h.change(day.removed, '−') }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                                {% endfor %}
+                            </tbody>
+                        </twig:Table>
                     </details>
 
-                    <h2 class="h4">Imports that changed something or failed</h2>
+                    <twig:Heading level="2" size="md">{{ 'history.events.title'|trans }}</twig:Heading>
                     {% set imports = history.events(events) %}
                     {% if imports %}
                         <ol class="import-timeline">
                             {% for import in imports %}
                                 <li class="import-timeline-item import-timeline-{{ import.status.value }}">
                                     <div class="import-timeline-head">
-                                        {{ h.time(import.startedAt) }}
-                                        {{ h.status(import) }}
-                                        {% if import.fullLoad %}<span class="itkaarhus-tag itkaarhus-tag--neutral">Full load</span>{% endif %}
+                                        <twig:Time :date="import.startedAt" />
+                                        <twig:Import:Status :import="import" />
+                                        {% if import.fullLoad %}<twig:Tag variant="neutral">{{ 'history.events.full_load'|trans }}</twig:Tag>{% endif %}
                                     </div>
                                     {% if import.succeeded %}
                                         <div class="import-timeline-body">
                                             {% if import.added %}
-                                                <span><span class="import-swatch import-swatch-added"></span>{{ import.added|number_format }} added</span>
+                                                <span><twig:Import:Swatch type="added" />{{ 'history.events.added'|trans({'%number%': import.added|number_format}) }}</span>
                                             {% endif %}
                                             {% if import.removed %}
-                                                <span><span class="import-swatch import-swatch-removed"></span>{{ import.removed|number_format }} removed</span>
+                                                <span><twig:Import:Swatch type="removed" />{{ 'history.events.removed'|trans({'%number%': import.removed|number_format}) }}</span>
                                             {% endif %}
                                             {% if history.changedData(import) %}
-                                                <span>The data changed</span>
+                                                <span>{{ 'history.events.changed'|trans }}</span>
                                             {% endif %}
                                             <span class="text-body-secondary">
-                                                {{ import.upserted|number_format }} entities
-                                                {%- if import.rejected %}, {{ import.rejected|number_format }} rejected{% endif %}
-                                                · {{ h.duration(import.duration) }}
+                                                {{ 'history.events.entities'|trans({'%number%': import.upserted|number_format}) }}
+                                                {%- if import.rejected %}, {{ 'history.events.rejected'|trans({'%number%': import.rejected|number_format}) }}{% endif %}
+                                                · {{ import.duration|duration }}
                                             </span>
                                         </div>
                                     {% elseif import.failure %}
@@ -109,24 +99,24 @@
                             {% endfor %}
                         </ol>
                     {% else %}
-                        <p class="text-body-secondary">No import changed something or failed in the last {{ history.days|length }} days.</p>
+                        <p class="text-body-secondary">{{ 'history.events.none'|trans({'%days%': history.days|length}) }}</p>
                     {% endif %}
                 </div>
 
                 <div class="col-xl-5">
-                    <h2 class="h4">The last entities that came and went</h2>
+                    <twig:Heading level="2" size="md">{{ 'history.changes.title'|trans }}</twig:Heading>
                     {% if changes %}
                         <ul class="list-group list-group-flush import-changes">
                             {% for change in changes %}
                                 <li class="list-group-item">
-                                    <span class="import-swatch import-swatch-{{ change.type.value }}"></span>
+                                    <twig:Import:Swatch :type="change.type.value" />
                                     <code class="text-break">{{ change.entityId }}</code>
-                                    <span class="import-changes-time">{{ change.type.value|capitalize }} {{ h.time(change.sourceImport.startedAt) }}</span>
+                                    <span class="import-changes-time">{{ ('history.changes.' ~ change.type.value)|trans }} <twig:Time :date="change.sourceImport.startedAt" /></span>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-body-secondary">No import added or removed an entity.</p>
+                        <p class="text-body-secondary">{{ 'history.changes.none'|trans }}</p>
                     {% endif %}
                 </div>
             </div>
