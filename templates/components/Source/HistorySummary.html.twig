@@ -4,7 +4,7 @@
 <div class="import-summary">
     {% if history is null %}
         <div class="import-summary-head mb-0">
-            <span class="text-body-secondary">No import of this source is recorded.</span>
+            <span class="text-body-secondary">{{ 'history.summary.no_import'|trans }}</span>
         </div>
     {% else %}
         {% set last = history.lastImport %}
@@ -13,7 +13,7 @@
         {% set days = history.days|length %}
         <div class="import-summary-head">
             <twig:Import:Status :import="last" />
-            <span>Last import {{ history.sinceLastImport|duration }} ago</span>
+            <span>{{ 'history.last_import_ago'|trans({'%duration%': history.sinceLastImport|duration}) }}</span>
             <span class="text-body-secondary small"><twig:Time :date="last.startedAt" /></span>
         </div>
 
@@ -23,42 +23,42 @@
 
         <div class="import-tiles">
             <div class="import-tile">
-                <div class="import-tile-label">Entities</div>
+                <div class="import-tile-label">{{ 'history.summary.entities'|trans }}</div>
                 <div class="import-tile-value">{{ success ? success.upserted|number_format : '–' }}</div>
                 <div class="import-tile-note">
                     {% if success and success.rejected %}
-                        The broker rejected {{ success.rejected|number_format }}.
+                        {{ 'history.summary.rejected'|trans({'%number%': success.rejected|number_format}) }}
                     {% elseif success %}
-                        At the last successful import.
+                        {{ 'history.summary.at_last_success'|trans }}
                     {% else %}
-                        No import succeeded.
+                        {{ 'history.summary.no_success'|trans }}
                     {% endif %}
                 </div>
             </div>
 
             <div class="import-tile">
-                <div class="import-tile-label">Time between imports</div>
+                <div class="import-tile-label">{{ 'history.summary.interval'|trans }}</div>
                 <div class="import-tile-value">{{ history.importInterval is null ? '–' : history.importInterval|duration }}</div>
                 <div class="import-tile-note">
-                    {{ history.imports|length }} {{ history.imports|length == 1 ? 'import' : 'imports' }} in {{ days }} days
-                    {%- if history.failed %}, {{ history.failed }} failed{% endif %}.
+                    {{ 'history.summary.imports'|trans({'%count%': history.imports|length, '%days%': days}) }}
+                    {%- if history.failed %}{{ 'history.summary.failed'|trans({'%count%': history.failed}) }}{% endif %}.
                 </div>
             </div>
 
             <div class="import-tile">
-                <div class="import-tile-label">Data changes</div>
+                <div class="import-tile-label">{{ 'history.summary.data_changes'|trans }}</div>
                 <div class="import-tile-value">{{ history.dataChanges }}</div>
                 <div class="import-tile-note">
                     {% if dataChange %}
-                        The last at <twig:Time :date="dataChange.startedAt" />.
+                        {{ 'history.summary.last_change'|trans }} <twig:Time :date="dataChange.startedAt" />.
                     {% else %}
-                        None in {{ days }} days.
+                        {{ 'history.summary.no_change'|trans({'%days%': days}) }}
                     {% endif %}
                 </div>
             </div>
 
             <div class="import-tile">
-                <div class="import-tile-label">Entities in and out</div>
+                <div class="import-tile-label">{{ 'history.summary.in_and_out'|trans }}</div>
                 {% if history.busiestDay > 0 %}
                     <div class="import-tile-value">
                         <twig:Import:Swatch type="added" />+{{ history.added|number_format }}
@@ -66,7 +66,7 @@
                     </div>
                 {% else %}
                     <div class="import-tile-value">0</div>
-                    <div class="import-tile-note">No entities came or went in {{ days }} days.</div>
+                    <div class="import-tile-note">{{ 'history.summary.no_entities'|trans({'%days%': days}) }}</div>
                 {% endif %}
             </div>
         </div>

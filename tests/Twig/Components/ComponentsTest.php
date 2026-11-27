@@ -64,7 +64,7 @@ class ComponentsTest extends KernelTestCase
     {
         $tag = $this->renderTwigComponent('Import:Status', ['import' => $this->import(ImportStatus::Failed, 'Timeout')])->crawler()->filter('span');
 
-        $this->assertSame('Failed', $tag->text());
+        $this->assertSame('Fejlet', $tag->text());
         $this->assertSame('Timeout', $tag->attr('title'));
         $this->assertStringContainsString('itkaarhus-tag--danger', (string) $tag->attr('class'));
     }
@@ -81,7 +81,7 @@ class ComponentsTest extends KernelTestCase
     {
         $change = $this->renderTwigComponent('Import:Change', ['count' => 1234, 'sign' => '+', 'variant' => 'added'])->crawler()->filter('span');
 
-        $this->assertSame('+1,234', $change->text());
+        $this->assertSame('+1.234', $change->text());
         $this->assertSame('import-change import-change-added', $change->attr('class'));
     }
 

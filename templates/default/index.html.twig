@@ -6,11 +6,11 @@
 {% endblock %}
 
 {% block content %}
-    <nav class="link-boxes" aria-label="Pages">
-        <twig:LinkCard href="{{ path('app_sources') }}" title="Data sources">Data sets, sources and import history</twig:LinkCard>
-        <twig:LinkCard href="{{ path('app_default', {path: 'api'}) }}" title="API">Example requests to the NGSI-LD API</twig:LinkCard>
+    <nav class="link-boxes" aria-label="{{ 'home.pages'|trans }}">
+        <twig:LinkCard href="{{ path('app_sources') }}" title="{{ 'sources.title'|trans }}">{{ 'home.sources'|trans }}</twig:LinkCard>
+        <twig:LinkCard href="{{ path('app_default', {path: 'api'}) }}" title="{{ 'api.title'|trans }}">{{ 'home.api'|trans }}</twig:LinkCard>
         {% if 'dev' == app.environment %}
-            <twig:LinkCard href="{{ path('test_default') }}" title="Test map">View data sets on a map</twig:LinkCard>
+            <twig:LinkCard href="{{ path('test_default') }}" title="{{ 'test_map.title'|trans }}">{{ 'home.test_map'|trans }}</twig:LinkCard>
         {% endif %}
     </nav>
 {% endblock %}

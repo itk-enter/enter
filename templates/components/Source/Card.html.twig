@@ -9,44 +9,44 @@
 <twig:FoldCard :title="definition.title" id="{{ definition.id }}" :class="idle ? 'source-card-idle' : null">
     <twig:block name="summary">
         {% if history %}
-            <span class="source-card-entities" title="{{ success ? 'At the last successful import, ' ~ success.startedAt|date('Y-m-d H:i') : 'No import succeeded' }}">
-                <b>{{ success ? success.upserted|number_format : '–' }}</b> entities
+            <span class="source-card-entities" title="{{ success ? 'source.card.entities_at'|trans({'%time%': success.startedAt|date('Y-m-d H:i')}) : 'source.card.no_success'|trans }}">
+                <b>{{ success ? success.upserted|number_format : '–' }}</b> {{ 'source.card.entities'|trans }}
             </span>
-            <span class="source-card-change" title="Entities added and removed by all the imports, without full loads">
+            <span class="source-card-change" title="{{ 'source.card.change_title'|trans }}">
                 <twig:Import:Change :count="totals.added ?? 0" sign="+" variant="added" />
                 <twig:Import:Change :count="totals.removed ?? 0" sign="−" variant="removed" />
             </span>
             <span class="source-card-status">
                 <span class="source-card-state"><twig:Import:Status :import="last" /></span>
-                <span class="source-card-ago" title="{{ last.startedAt|date('Y-m-d H:i') }}">{{ history.sinceLastImport|duration }} ago</span>
+                <span class="source-card-ago" title="{{ last.startedAt|date('Y-m-d H:i') }}">{{ 'source.card.ago'|trans({'%duration%': history.sinceLastImport|duration}) }}</span>
             </span>
         {% elseif idle %}
-            <span class="source-card-status">No import</span>
+            <span class="source-card-status">{{ 'source.card.no_import'|trans }}</span>
         {% endif %}
     </twig:block>
 
     {% if history %}
         <div class="source-figures">
             {% if success and success.rejected %}
-                <span class="source-figure"><b class="text-danger-emphasis">{{ success.rejected|number_format }}</b> rejected at the last import</span>
+                <span class="source-figure"><b class="text-danger-emphasis">{{ success.rejected|number_format }}</b> {{ 'source.card.rejected'|trans }}</span>
             {% endif %}
-            <span class="source-figure-period">Last {{ history.days|length }} days</span>
+            <span class="source-figure-period">{{ 'source.card.period'|trans({'%days%': history.days|length}) }}</span>
             <span class="source-figure">
-                <b>{{ history.imports|length }}</b> {{ history.imports|length == 1 ? 'import' : 'imports' }}
-                {%- if history.failed %}, <b class="text-danger-emphasis">{{ history.failed }}</b> failed{% endif %}
+                <b>{{ history.imports|length }}</b> {{ 'source.card.imports'|trans({'%count%': history.imports|length}) }}
+                {%- if history.failed %}, <b class="text-danger-emphasis">{{ history.failed }}</b> {{ 'source.card.failed'|trans }}{% endif %}
             </span>
             {% if history.importInterval is not null %}
-                <span class="source-figure"><b>{{ history.importInterval|duration }}</b> between imports</span>
+                <span class="source-figure"><b>{{ history.importInterval|duration }}</b> {{ 'source.card.interval'|trans }}</span>
             {% endif %}
-            <span class="source-figure" title="{{ history.lastDataChange ? 'The last at ' ~ history.lastDataChange.startedAt|date('Y-m-d H:i') : 'The data did not change' }}">
-                <b>{{ history.dataChanges }}</b> data {{ history.dataChanges == 1 ? 'change' : 'changes' }}
+            <span class="source-figure" title="{{ history.lastDataChange ? 'source.card.last_change'|trans({'%time%': history.lastDataChange.startedAt|date('Y-m-d H:i')}) : 'source.card.no_change'|trans }}">
+                <b>{{ history.dataChanges }}</b> {{ 'source.card.data_changes'|trans({'%count%': history.dataChanges}) }}
             </span>
             {% if history.busiestDay > 0 %}
                 <span class="source-figure source-figure-chart">
                     <twig:Source:HistoryChart :history="history" compact />
                 </span>
             {% endif %}
-            <twig:Button variant="secondary" size="sm" href="{{ path('app_source_show', {id: definition.id}) }}" class="source-figure-link">Import history</twig:Button>
+            <twig:Button variant="secondary" size="sm" href="{{ path('app_source_show', {id: definition.id}) }}" class="source-figure-link">{{ 'source.card.history'|trans }}</twig:Button>
         </div>
         {% if last.failure %}
             <p class="source-card-failure">{{ last.failure }}</p>
@@ -54,30 +54,30 @@
     {% endif %}
 
     <dl class="fold-card-facts source-facts">
-        <dt>Id</dt>
+        <dt>{{ 'facts.id'|trans }}</dt>
         <dd><code>{{ definition.id }}</code></dd>
 
         {% if definition.description %}
-            <dt>Description</dt>
+            <dt>{{ 'facts.description'|trans }}</dt>
             <dd>{{ definition.description }}</dd>
         {% endif %}
 
         {% if definition.publisher %}
-            <dt>Publisher</dt>
+            <dt>{{ 'facts.publisher'|trans }}</dt>
             <dd>{{ definition.publisher }}</dd>
         {% endif %}
 
         {% if definition.contact %}
-            <dt>Contact</dt>
+            <dt>{{ 'facts.contact'|trans }}</dt>
             <dd>{{ definition.contact }}</dd>
         {% endif %}
 
         {% if definition.landingPage %}
-            <dt>Landing page</dt>
+            <dt>{{ 'facts.landing_page'|trans }}</dt>
             <dd><a href="{{ definition.landingPage }}">{{ definition.landingPage }}</a></dd>
         {% endif %}
 
-        <dt>Access URL</dt>
+        <dt>{{ 'facts.access_url'|trans }}</dt>
         <dd>
             <a href="{{ definition.accessUrlBase }}">{{ definition.accessUrlBase }}</a>
             {% if definition.accessUrlQuery %}
@@ -85,30 +85,30 @@
             {% endif %}
         </dd>
 
-        <dt>Data type</dt>
+        <dt>{{ 'facts.data_type'|trans }}</dt>
         <dd>{{ definition.dataType.value }} ({{ definition.mediaType }}, {{ definition.crs }})</dd>
 
-        <dt>Model</dt>
+        <dt>{{ 'facts.model'|trans }}</dt>
         <dd><twig:Source:ModelLink :model="definition.model" :url="definition.modelUrl" /></dd>
 
-        <dt>Context</dt>
+        <dt>{{ 'facts.context'|trans }}</dt>
         <dd><a href="{{ definition.contextUrl }}">{{ definition.contextUrl }}</a></dd>
 
-        <dt>Entities</dt>
+        <dt>{{ 'facts.entities'|trans }}</dt>
         <dd><a href="{{ entitiesUrl }}">{{ entitiesUrl }}</a></dd>
 
         {% if definition.updateFrequency %}
-            <dt>Update frequency</dt>
+            <dt>{{ 'facts.update_frequency'|trans }}</dt>
             <dd>{{ definition.updateFrequency }}</dd>
         {% endif %}
 
         {% if definition.licence %}
-            <dt>Licence</dt>
+            <dt>{{ 'facts.licence'|trans }}</dt>
             <dd><a href="{{ definition.licence }}">{{ definition.licence }}</a></dd>
         {% endif %}
 
         {% if definition.omittedFields %}
-            <dt>Omitted fields</dt>
+            <dt>{{ 'facts.omitted_fields'|trans }}</dt>
             <dd>
                 <dl class="mb-0">
                     {% for field, reason in definition.omittedFields %}

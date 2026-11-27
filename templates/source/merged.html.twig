@@ -11,62 +11,59 @@
     <twig:Layout:PageHeader
         :current="data_set.title"
         :breadcrumbs="[
-            {label: 'Home', url: path('app_default')},
-            {label: 'Data sources', url: path('app_sources') ~ '#' ~ data_set.id},
+            {label: 'layout.home'|trans, url: path('app_default')},
+            {label: 'sources.title'|trans, url: path('app_sources') ~ '#' ~ data_set.id},
         ]"
     />
 {% endblock %}
 
 {% block content %}
     <p class="page-meta">
-        <code>{{ data_set.id }}</code> · Model
+        <code>{{ data_set.id }}</code> · {{ 'facts.model'|trans }}
         <twig:Source:ModelLink :model="data_set.model" :url="data_set.modelUrl" />
-        · Merged from {{ data_set.inputs|length }} {{ data_set.inputs|length == 1 ? 'data set' : 'data sets' }}
+        · {{ 'merged.from'|trans({'%count%': data_set.inputs|length}) }}
     </p>
 
     <p class="page-intro">
-        A conflict is an attribute that the data sets state with different values, and that no approach of the merge
-        settles. The merged entity does not have the attribute. It keeps the values of the data sets in
-        <code>additionalInformation.conflicts</code>. The page shows the merged entities that the last run of the merge
-        published.
+        {{ 'merged.intro_html'|trans|raw }}
     </p>
 
     {% if overview is null %}
-        <p class="text-body-secondary">The broker is not available, so the page cannot show the conflicts.</p>
+        <p class="text-body-secondary">{{ 'merged.broker_unavailable'|trans }}</p>
     {% elseif overview.entities is empty %}
         <div class="conflict-summary">
-            <twig:Tag variant="success">No conflicts</twig:Tag>
-            <span>The merge settled each attribute that the data sets disagree on.</span>
+            <twig:Tag variant="success">{{ 'merged.no_conflicts'|trans }}</twig:Tag>
+            <span>{{ 'merged.all_settled'|trans }}</span>
         </div>
     {% else %}
         {% set attributeCounts = overview.attributes %}
         {% set entities = overview.entities %}
         <div class="conflict-summary">
-            <twig:Tag variant="warning">{{ entities|length|number_format }} {{ entities|length == 1 ? 'conflict' : 'conflicts' }}</twig:Tag>
-            <span><b>{{ entities|length|number_format }}</b> merged {{ entities|length == 1 ? 'entity has' : 'entities have' }} a conflict</span>
-            <span><b>{{ attributeCounts|length }}</b> {{ attributeCounts|length == 1 ? 'attribute' : 'attributes' }} in conflict</span>
+            <twig:Tag variant="warning">{{ 'merged.conflicts'|trans({'%count%': entities|length}) }}</twig:Tag>
+            <span><b>{{ entities|length|number_format }}</b> {{ 'merged.entities_in_conflict'|trans({'%count%': entities|length}) }}</span>
+            <span><b>{{ attributeCounts|length }}</b> {{ 'merged.attributes_in_conflict'|trans({'%count%': attributeCounts|length}) }}</span>
         </div>
 
         <div class="row g-4">
             <div class="col-xl-7">
-                <twig:Heading level="2" size="md">Where the conflicts are</twig:Heading>
+                <twig:Heading level="2" size="md">{{ 'merged.map.title'|trans }}</twig:Heading>
                 <div
                     class="conflict-map"
                     data-controller="conflict-map"
                     data-conflict-map-features-value="{{ overview.featureCollection|json_encode }}"
                     role="region"
-                    aria-label="Map of the merged entities with conflicts"
+                    aria-label="{{ 'merged.map.label'|trans }}"
                 ></div>
-                <p class="small text-body-secondary mt-1">Select a point to see the attributes in conflict.</p>
+                <p class="small text-body-secondary mt-1">{{ 'merged.map.help'|trans }}</p>
             </div>
 
             <div class="col-xl-5">
-                <twig:Heading level="2" size="md">Attributes in conflict</twig:Heading>
-                <p class="small text-body-secondary">The number of merged entities with a conflict on each attribute.</p>
+                <twig:Heading level="2" size="md">{{ 'merged.attributes.title'|trans }}</twig:Heading>
+                <p class="small text-body-secondary">{{ 'merged.attributes.help'|trans }}</p>
                 <twig:Conflict:Bars :counts="attributeCounts" :total="entities|length" />
 
-                <twig:Heading level="2" size="md" class="mt-4">Data sets in the conflicts</twig:Heading>
-                <p class="small text-body-secondary">The number of conflicts that each data set states a value in.</p>
+                <twig:Heading level="2" size="md" class="mt-4">{{ 'merged.data_sets.title'|trans }}</twig:Heading>
+                <p class="small text-body-secondary">{{ 'merged.data_sets.help'|trans }}</p>
                 <twig:Conflict:Bars
                     :counts="overview.dataSets"
                     :total="attributeCounts|reduce((sum, count) => sum + count, 0)"
@@ -75,7 +72,7 @@
             </div>
         </div>
 
-        <twig:Heading level="2" size="md" class="mt-4">Merged entities with conflicts</twig:Heading>
+        <twig:Heading level="2" size="md" class="mt-4">{{ 'merged.entities.title'|trans }}</twig:Heading>
         {% for number, entity in entities %}
             <twig:FoldCard :title="entity.title" id="conflict-{{ number }}" class="conflict-entity">
                 <twig:block name="summary">
@@ -95,8 +92,8 @@
                                 {% for stated in values %}
                                     <li>
                                         <b>{{ stated.value|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES')) }}</b>
-                                        from {{ overview.dataSetTitle(stated.dataSet) }}
-                                        <span class="conflict-record" title="The entity in the data set">{{ stated.entity }}</span>
+                                        {{ 'merged.entities.from'|trans({'%data_set%': overview.dataSetTitle(stated.dataSet)}) }}
+                                        <span class="conflict-record" title="{{ 'merged.entities.record'|trans }}">{{ stated.entity }}</span>
                                     </li>
                                 {% endfor %}
                             </ul>

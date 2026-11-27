@@ -11,7 +11,7 @@
         <a class="page-header-logo" href="{{ path('app_default') }}"><img src="{{ asset('images/enter-logo.png') }}" alt="Enter" width="600" height="212" fetchpriority="high"></a>
         <div class="page-header-text">
             <twig:Heading level="1" class="page-header-title">{{ current }}</twig:Heading>
-            <nav aria-label="Breadcrumb">
+            <nav aria-label="{{ 'layout.breadcrumb'|trans }}">
                 <ol class="itkaarhus-breadcrumb page-header-breadcrumb">
                     {% for crumb in breadcrumbs %}
                         <li><a href="{{ crumb.url }}">{{ crumb.label }}</a><span class="sep" aria-hidden="true">/</span></li>

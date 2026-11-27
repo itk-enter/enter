@@ -16,12 +16,19 @@ use Symfony\Component\Finder\Finder;
  * design system. Use the component in templates/components/. If an element
  * must stay raw, put {# raw: <reason> #} on the same line or on the line
  * above.
+ *
+ * The filter "raw" is only for a translation with HTML. The key of such a
+ * translation ends in "_html", for example {{ 'api.intro_html'|trans|raw }}.
  */
 class RawElementsTest extends TestCase
 {
     private const string RAW = '~<(button|h[1-6]|label|input|select|textarea)\b|role="alert"|class="[^"]*\bitkaarhus-(btn|tag)\b~';
 
     private const string MARKER = '~\{#\s*raw:\s*\S~';
+
+    private const string RAW_FILTER = '~\|\s*raw\b~';
+
+    private const string HTML_TRANSLATION = '~\'[a-z_.]+_html\'\|trans\|raw~';
 
     /**
      * @return iterable<string, array{string}>
@@ -58,6 +65,21 @@ class RawElementsTest extends TestCase
         $this->assertSame([], $found, 'Use a <twig:…> component, or add {# raw: <reason> #}.');
     }
 
+    #[DataProvider('templates')]
+    public function testTheTemplateUsesRawOnlyForATranslationWithHtml(string $path): void
+    {
+        $found = [];
+
+        foreach (file($path) ?: [] as $index => $line) {
+            $rest = preg_replace(self::HTML_TRANSLATION, '', $line) ?? $line;
+            if (1 === preg_match(self::RAW_FILTER, $rest)) {
+                $found[] = \sprintf('line %d: %s', $index + 1, trim($line));
+            }
+        }
+
+        $this->assertSame([], $found, 'Use |raw only after a translation with a key that ends in "_html".');
+    }
+
     public function testItFindsARawElement(): void
     {
         $this->assertMatchesRegularExpression(self::RAW, '<h2 class="h4">Imports</h2>');
@@ -65,5 +87,7 @@ class RawElementsTest extends TestCase
         $this->assertDoesNotMatchRegularExpression(self::RAW, '<twig:Heading level="2">Imports</twig:Heading>');
         $this->assertDoesNotMatchRegularExpression(self::RAW, '<header class="page-header">');
         $this->assertMatchesRegularExpression(self::MARKER, '{# raw: the map script reads this button #}');
+        $this->assertMatchesRegularExpression(self::RAW_FILTER, '{{ source.title|raw }}');
+        $this->assertDoesNotMatchRegularExpression(self::RAW_FILTER, (string) preg_replace(self::HTML_TRANSLATION, '', "{{ 'api.intro_html'|trans|raw }}"));
     }
 }

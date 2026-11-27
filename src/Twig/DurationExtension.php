@@ -4,21 +4,28 @@ declare(strict_types=1);
 
 namespace App\Twig;
 
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Attribute\AsTwigFilter;
 
 /**
  * Gives the Twig filter "duration", which writes a number of seconds in the
- * largest unit that fits.
+ * largest unit that fits. The units come from the translation keys in
+ * "duration".
  *
- * Example: {{ 7200|duration }} gives "2 h".
+ * Example: {{ 7200|duration }} gives "2 h" in English and "2 t" in Danish.
  */
-final class DurationExtension
+final readonly class DurationExtension
 {
     private const int MINUTE = 60;
 
     private const int HOUR = 3600;
 
     private const int DAY = 86400;
+
+    public function __construct(
+        private TranslatorInterface $translator,
+    ) {
+    }
 
     /**
      * Writes a number of seconds in seconds, minutes, hours or days. Up to
@@ -29,12 +36,14 @@ final class DurationExtension
     #[AsTwigFilter('duration')]
     public function duration(?int $seconds): string
     {
-        return match (true) {
-            null === $seconds => '',
-            $seconds < self::MINUTE => $seconds.' s',
-            $seconds < self::HOUR => round($seconds / self::MINUTE).' min',
-            $seconds < 2 * self::DAY => round($seconds / self::HOUR).' h',
-            default => round($seconds / self::DAY).' d',
+        [$key, $count] = match (true) {
+            null === $seconds => [null, 0],
+            $seconds < self::MINUTE => ['duration.seconds', $seconds],
+            $seconds < self::HOUR => ['duration.minutes', (int) round($seconds / self::MINUTE)],
+            $seconds < 2 * self::DAY => ['duration.hours', (int) round($seconds / self::HOUR)],
+            default => ['duration.days', (int) round($seconds / self::DAY)],
         };
+
+        return null === $key ? '' : $this->translator->trans($key, ['%count%' => $count]);
     }
 }
