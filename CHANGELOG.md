@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-206](https://github.com/itk-enter/enter/pull/206)
-  Made the pages with Twig components, and added `RawElementsTest` to make sure that the pages use them
+  Made the pages with Twig components, and added `RawElementsTest` to make sure that the pages use them.
+  Translated the pages into Danish and English, with Danish as the default language
 * [PR-200](https://github.com/itk-enter/enter/pull/200)
   Tidied the docs
 * [PR-201](https://github.com/itk-enter/enter/pull/201)
